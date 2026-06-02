@@ -1,0 +1,18 @@
+export const shots = [
+  { id: "straightDrive", name: "Straight Drive", x: 200, y: 40 },
+  { id: "coverDrive", name: "Cover Drive", x: 330, y: 80 },
+  { id: "offDrive", name: "Off Drive", x: 360, y: 180 },
+  { id: "squareCut", name: "Square Cut", x: 350, y: 260 },
+  { id: "upperCut", name: "Upper Cut", x: 310, y: 320 },
+  { id: "lateCut", name: "Late Cut", x: 250, y: 360 },
+  { id: "pullShot", name: "Pull Shot", x: 140, y: 360 },
+  { id: "hookShot", name: "Hook Shot", x: 90, y: 320 },
+  { id: "sweepShot", name: "Sweep Shot", x: 60, y: 260 },
+  { id: "reverseSweep", name: "Reverse Sweep", x: 40, y: 200 },
+  { id: "paddleSweep", name: "Paddle Sweep", x: 60, y: 140 },
+  { id: "onDrive", name: "On Drive", x: 120, y: 80 },
+  { id: "flickShot", name: "Flick Shot", x: 170, y: 50 },
+  { id: "legGlance", name: "Leg Glance", x: 220, y: 50 },
+  { id: "loftedDrive", name: "Lofted Drive", x: 260, y: 60 },
+  { id: "insideOut", name: "Inside Out Shot", x: 300, y: 120 },
+];
