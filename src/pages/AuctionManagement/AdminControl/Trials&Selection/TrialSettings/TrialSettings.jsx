@@ -16,6 +16,13 @@ import {
   Users,
   Star,
   Settings as SettingsIcon,
+  Phone,
+  User,
+  Plus,
+  Trash2,
+  Search,
+  RotateCcw,
+  Save,
 } from "lucide-react";
 import Loader from "../../../../../components/Loader";
 import RatingInput from "../../../../../components/RatingInput";
@@ -27,6 +34,19 @@ const tabs = [
   { key: "rating", label: "Rating", icon: Star },
   { key: "addFields", label: "Fields", icon: SettingsIcon },
 ];
+
+const panelClass =
+  "overflow-hidden rounded-lg border border-[var(--border-card)] bg-[var(--bg-card)] shadow-[var(--shadow-card)]";
+const panelHeaderClass =
+  "border-b border-[var(--border-card)] bg-[var(--bg-card)] px-4 py-3";
+const fieldClass =
+  "h-10 w-full rounded-lg border border-[var(--border-card)] bg-[var(--bg-main)] px-3 text-sm font-medium text-[var(--text-primary)] outline-none transition placeholder:text-[var(--text-secondary)] focus:border-[var(--border-primary)] focus:bg-[var(--bg-card)]";
+const selectClass =
+  "h-10 w-full rounded-lg border border-[var(--border-card)] bg-[var(--bg-main)] px-3 text-sm font-medium text-[var(--text-primary)] outline-none transition focus:border-[var(--border-primary)] focus:bg-[var(--bg-card)]";
+const secondaryButtonClass =
+  "inline-flex h-10 items-center justify-center gap-2 rounded-lg border border-[var(--border-primary)] bg-[var(--secondary)] px-4 text-sm font-semibold text-[#102033] shadow-sm transition hover:bg-[var(--secondary-strong)] disabled:cursor-not-allowed disabled:opacity-60";
+const outlineButtonClass =
+  "inline-flex h-10 items-center justify-center gap-2 rounded-lg border border-[var(--border-card)] bg-[var(--bg-main)] px-4 text-sm font-semibold text-[var(--text-primary)] transition hover:border-[var(--border-primary)] hover:bg-[var(--accent-light)] disabled:cursor-not-allowed disabled:opacity-50";
 
 const Settings = ({ auctionId, isTrialType }) => {
   const [activeTab, setActiveTab] = useState("addSelectors");
@@ -358,45 +378,51 @@ const Settings = ({ auctionId, isTrialType }) => {
     switch (activeTab) {
       case "addSelectors":
         return (
-          <div className="flex flex-col lg:flex-row gap-6 w-full justify-between">
+          <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
             {/* Add New Selector Form Component */}
-            <div className="border  rounded-lg bg-gray-50 border-gray-300 shadow-lg w-full lg:w-1/2">
-              <div className="border-b px-4 py-3 bg-white rounded-t-lg">
-                <h3 className="font-semibold text-gray-800 flex items-center gap-2">
-                  <UserPlus className="w-4 h-4" />
-                  Add New Selector
-                </h3>
-                <p className="text-xs text-gray-500 mt-1">
-                  Add selectors by phone number
-                </p>
+            <div className={panelClass}>
+              <div className={panelHeaderClass}>
+                <div className="flex items-center gap-3">
+                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[var(--accent-light)] text-[var(--primary)]">
+                    <UserPlus className="h-4 w-4" />
+                  </div>
+                  <div>
+                    <h3 className="text-sm font-semibold text-[var(--text-primary)]">
+                      Add New Selector
+                    </h3>
+                    <p className="mt-0.5 text-xs text-[var(--text-secondary)]">
+                      Search registered users by mobile number.
+                    </p>
+                  </div>
+                </div>
               </div>
 
-              <div className="p-4 space-y-4">
+              <div className="space-y-4 p-4">
                 {/* Phone Input */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="mb-1.5 block text-xs font-semibold text-[var(--text-primary)]">
                     Phone Number
                   </label>
-                  <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-white border border-gray-300 focus-within:border-purple-500 focus-within:ring-1 focus-within:ring-purple-500 transition">
-                    <span className="text-gray-400 text-sm">📱</span>
+                  <div className="flex h-10 items-center gap-2 rounded-lg border border-[var(--border-card)] bg-[var(--bg-main)] px-3 transition focus-within:border-[var(--border-primary)] focus-within:bg-[var(--bg-card)]">
+                    <Phone className="h-4 w-4 text-[var(--primary)]" />
                     <input
                       type="tel"
                       value={contact}
                       onChange={handleContactChange}
                       placeholder="Enter 10 digit mobile number"
                       maxLength={10}
-                      className="w-full bg-transparent outline-none text-sm text-gray-800 placeholder-gray-400"
+                      className="w-full bg-transparent text-sm font-medium text-[var(--text-primary)] outline-none placeholder:text-[var(--text-secondary)]"
                     />
                   </div>
                 </div>
 
                 {/* Name Input */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="mb-1.5 block text-xs font-semibold text-[var(--text-primary)]">
                     Selector Name
                   </label>
-                  <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-white border border-gray-300 focus-within:border-purple-500 focus-within:ring-1 focus-within:ring-purple-500 transition">
-                    <span className="text-gray-400 text-sm">👤</span>
+                  <div className="flex h-10 items-center gap-2 rounded-lg border border-[var(--border-card)] bg-[var(--bg-main)] px-3 transition focus-within:border-[var(--border-primary)] focus-within:bg-[var(--bg-card)]">
+                    <User className="h-4 w-4 text-[var(--primary)]" />
                     <input
                       type="text"
                       value={name}
@@ -405,12 +431,12 @@ const Settings = ({ auctionId, isTrialType }) => {
                         setName(e.target.value);
                       }}
                       placeholder={addName ? "Type Name" : "Auto fetched name"}
-                      className="w-full bg-transparent outline-none text-sm text-gray-800 placeholder-gray-400 disabled:bg-gray-100 disabled:cursor-not-allowed"
+                      className="w-full bg-transparent text-sm font-medium text-[var(--text-primary)] outline-none placeholder:text-[var(--text-secondary)] disabled:cursor-not-allowed disabled:text-[var(--text-secondary)]"
                     />
                   </div>
                   {sendAdminId && !addName && (
-                    <p className="text-xs text-green-600 mt-1">
-                      ✓ Name auto-fetched from registered user
+                    <p className="mt-1 text-xs font-medium text-emerald-600">
+                      Name auto-fetched from registered user
                     </p>
                   )}
                 </div>
@@ -418,29 +444,37 @@ const Settings = ({ auctionId, isTrialType }) => {
                 {/* Add Button */}
                 <button
                   onClick={handleAddSelector}
-                  className="w-full btn-primary py-2.5 flex items-center justify-center gap-2"
+                  className={`${secondaryButtonClass} w-full`}
                 >
-                  <UserPlus className="w-4 h-4" />
+                  <UserPlus className="h-4 w-4" />
                   Add Selector
                 </button>
               </div>
             </div>
 
-            <div className="border rounded-lg bg-gray-50 border-gray-300 shadow-lg w-full lg:w-1/2">
-              <div className="border-b px-4 py-3 bg-white rounded-t-lg">
-                <h3 className="font-semibold text-gray-800 flex items-center gap-2">
-                  <Users className="w-4 h-4" />
-                  Existing Selectors
-                </h3>
-                <p className="text-xs text-gray-500 mt-1">
-                  {selectorList.length} selector
-                  {selectorList.length !== 1 ? "s" : ""} added
-                </p>
+            <div className={panelClass}>
+              <div className={panelHeaderClass}>
+                <div className="flex items-center justify-between gap-3">
+                  <div className="flex items-center gap-3">
+                    <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[var(--accent-light)] text-[var(--primary)]">
+                      <Users className="h-4 w-4" />
+                    </div>
+                    <div>
+                      <h3 className="text-sm font-semibold text-[var(--text-primary)]">
+                        Existing Selectors
+                      </h3>
+                      <p className="mt-0.5 text-xs text-[var(--text-secondary)]">
+                        {selectorList.length} selector
+                        {selectorList.length !== 1 ? "s" : ""} added
+                      </p>
+                    </div>
+                  </div>
+                </div>
               </div>
 
-              <div className="p-4 max-h-[400px] overflow-y-auto">
+              <div className="max-h-[400px] overflow-y-auto p-4 [scrollbar-color:var(--border-primary)_var(--bg-main)] [scrollbar-width:thin] [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-[var(--border-primary)] [&::-webkit-scrollbar-track]:bg-[var(--bg-main)] [&::-webkit-scrollbar]:w-2">
                 {selectorList.length === 0 ? (
-                  <p className="text-center text-gray-400 py-8 text-sm">
+                  <p className="rounded-lg border border-dashed border-[var(--border-card)] bg-[var(--bg-main)] py-8 text-center text-sm text-[var(--text-secondary)]">
                     No selectors added yet
                   </p>
                 ) : (
@@ -448,24 +482,24 @@ const Settings = ({ auctionId, isTrialType }) => {
                     {selectorList.map((selector) => (
                       <div
                         key={selector._id}
-                        className="flex items-center justify-between p-3 bg-white rounded-lg border hover:shadow-sm transition-shadow"
+                        className="flex items-center justify-between rounded-lg border border-[var(--border-card)] bg-[var(--bg-main)] p-3 transition hover:border-[var(--border-primary)] hover:bg-[var(--bg-card)]"
                       >
                         <div className="flex items-center gap-3 flex-1 min-w-0">
-                          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-white font-bold text-sm uppercase flex-shrink-0">
+                          <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg bg-[var(--accent-light)] text-sm font-bold uppercase text-[var(--primary)]">
                             {selector?.name?.substring(0, 2)}
                           </div>
                           <div className="flex-1 min-w-0">
-                            <p className="font-medium text-gray-800 text-sm truncate">
+                            <p className="font-medium text-[var(--text-primary)] text-sm truncate">
                               {selector.name}
                             </p>
                           </div>
                         </div>
                         <button
                           onClick={() => handleRemoveSelector(selector._id)}
-                          className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors flex-shrink-0 ml-2"
+                          className="ml-2 flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg border border-red-200 bg-[var(--bg-card)] text-red-500 transition hover:bg-red-50"
                           title="Remove selector"
                         >
-                          <X className="w-4 h-4" />
+                          <Trash2 className="h-4 w-4" />
                         </button>
                       </div>
                     ))}
@@ -497,30 +531,31 @@ const Settings = ({ auctionId, isTrialType }) => {
 
       case "addFields":
         return (
-          <div className="space-y-6">
+          <div className="space-y-4">
             {/* Add Fields Section */}
-            <div className="border rounded-lg bg-gray-50 border-gray-300 shadow-lg">
-              <div className="border-b px-4 py-3 bg-white  rounded-t-lg flex flex-col sm:flex-row sm:items-center justify-between">
+            <div className={panelClass}>
+              <div className={`${panelHeaderClass} flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between`}>
                 <div>
-                  <h3 className="font-semibold text-gray-800">
+                  <h3 className="text-sm font-semibold text-[var(--text-primary)]">
                     Add Custom Fields
                   </h3>
 
-                  <p className="text-xs text-gray-500 mt-1">
+                  <p className="mt-0.5 text-xs text-[var(--text-secondary)]">
                     Create custom fields for player ratings
                   </p>
                 </div>
                 <button
                   onClick={handleAddField}
-                  className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700 transition-colors mb-4 w-full sm:w-auto"
+                  className={`${secondaryButtonClass} w-full sm:w-auto`}
                 >
-                  + Add New Field
+                  <Plus className="h-4 w-4" />
+                  Add New Field
                 </button>
               </div>
 
               <div className="p-4">
                 {fields.length === 0 && (
-                  <p className="text-gray-500 text-sm text-center py-8">
+                  <p className="rounded-lg border border-dashed border-[var(--border-card)] bg-[var(--bg-main)] py-8 text-center text-sm text-[var(--text-secondary)]">
                     No fields added yet. Click "Add New Field" to get started.
                   </p>
                 )}
@@ -529,7 +564,7 @@ const Settings = ({ auctionId, isTrialType }) => {
                   {fields.map((field) => (
                     <div
                       key={field.id}
-                      className="border rounded-lg p-4 bg-white "
+                      className="rounded-lg border border-[var(--border-card)] bg-[var(--bg-main)] p-3"
                     >
                       <input
                         type="text"
@@ -538,7 +573,7 @@ const Settings = ({ auctionId, isTrialType }) => {
                         onChange={(e) =>
                           handleChange(field.id, "label", e.target.value)
                         }
-                        className="border p-2 rounded w-full mb-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-md"
+                        className={`${fieldClass} mb-3`}
                       />
 
                       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 mb-3">
@@ -547,7 +582,7 @@ const Settings = ({ auctionId, isTrialType }) => {
                           onChange={(e) =>
                             handleFieldTypeChange(field.id, e.target.value)
                           }
-                          className="border p-2 rounded text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-md"
+                          className={selectClass}
                         >
                           <option value="input">Input Field</option>
                           <option value="checkbox">Checkbox</option>
@@ -560,7 +595,7 @@ const Settings = ({ auctionId, isTrialType }) => {
                           onChange={(e) =>
                             handleChange(field.id, "appliesTo", e.target.value)
                           }
-                          className="border p-2 rounded text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-md"
+                          className={selectClass}
                         >
                           <option value="all">All Players</option>
                           <option value="batsman">Batsman Only</option>
@@ -577,13 +612,13 @@ const Settings = ({ auctionId, isTrialType }) => {
                             onChange={(e) =>
                               handleChange(field.id, "type", e.target.value)
                             }
-                            className="border p-2 rounded text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-md"
+                            className={selectClass}
                           >
                             <option value="string">Text Value</option>
                             <option value="number">Number Value</option>
                           </select>
                         ) : (
-                          <div className="border p-2 rounded text-sm text-gray-500 bg-gray-50 flex items-center">
+                          <div className="flex h-10 items-center rounded-lg border border-[var(--border-card)] bg-[var(--secondary-lighter)] px-3 text-sm text-[var(--text-secondary)]">
                             Value type: String
                           </div>
                         )}
@@ -593,7 +628,7 @@ const Settings = ({ auctionId, isTrialType }) => {
                         (field.fieldType || "input") === "radio" ||
                         (field.fieldType || "input") === "checkbox") && (
                         <div className="mb-3 space-y-2">
-                          <label className="text-sm font-medium text-gray-700">
+                          <label className="text-sm font-semibold text-[var(--text-primary)]">
                             Options
                           </label>
                           {(field.optionsList || []).map(
@@ -610,16 +645,16 @@ const Settings = ({ auctionId, isTrialType }) => {
                                       e.target.value,
                                     )
                                   }
-                                  className="border p-2 rounded flex-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-md"
+                                  className={fieldClass}
                                 />
                                 <button
                                   type="button"
                                   onClick={() =>
                                     handleRemoveOption(field.id, optionIndex)
                                   }
-                                  className="px-3 py-1 text-sm border border-red-300 bg-red-600 text-white rounded hover:bg-red-700 transition-colors"
+                                  className="inline-flex h-10 items-center justify-center rounded-lg border border-red-200 bg-[var(--bg-card)] px-3 text-sm font-semibold text-red-500 transition hover:bg-red-50"
                                 >
-                                  Remove
+                                  <X className="h-4 w-4" />
                                 </button>
                               </div>
                             ),
@@ -627,17 +662,19 @@ const Settings = ({ auctionId, isTrialType }) => {
                           <button
                             type="button"
                             onClick={() => handleAddOption(field.id)}
-                            className="px-3 py-1.5 rounded text-sm border border-gray-300 hover:bg-gray-50 shadow-md"
+                            className={outlineButtonClass}
                           >
-                            + Add Option
+                            <Plus className="h-4 w-4" />
+                            Add Option
                           </button>
                         </div>
                       )}
 
                       <button
                         onClick={() => handleDelete(field.id)}
-                        className="bg-red-600 text-white hover:bg-red-700 px-4 py-1 rounded-lg text-sm hover:underline sm:w-full md:w-1/4 items-center justify-center flex gap-1 transition-colors"
+                        className="inline-flex h-9 items-center justify-center gap-2 rounded-lg border border-red-200 bg-[var(--bg-card)] px-3 text-sm font-semibold text-red-500 transition hover:bg-red-50 sm:w-full md:w-auto"
                       >
+                        <Trash2 className="h-4 w-4" />
                         Delete Field
                       </button>
                     </div>
@@ -647,8 +684,9 @@ const Settings = ({ auctionId, isTrialType }) => {
                 { 
                   <button
                     onClick={handleUpdate}
-                    className="mt-4 px-4 py-2 bg-green-600 text-white rounded-lg text-sm hover:bg-green-700 transition-colors w-full sm:w-auto"
+                    className={`${secondaryButtonClass} mt-4 w-full sm:w-auto`}
                   >
+                    <Save className="h-4 w-4" />
                     Update Fields
                   </button>
                 }
@@ -656,10 +694,10 @@ const Settings = ({ auctionId, isTrialType }) => {
             </div>
 
             {/* Saved Fields Section - Improved for mobile */}
-            <div className="border rounded-lg bg-gray-50 border-gray-300 shadow-lg">
-              <div className="border-b px-4 py-3 bg-white rounded-t-lg">
-                <h3 className="font-semibold text-gray-800">Saved Fields</h3>
-                <p className="text-xs text-gray-500 mt-1">
+            <div className={panelClass}>
+              <div className={panelHeaderClass}>
+                <h3 className="text-sm font-semibold text-[var(--text-primary)]">Saved Fields</h3>
+                <p className="mt-0.5 text-xs text-[var(--text-secondary)]">
                   Manage existing rating fields
                 </p>
               </div>
@@ -667,6 +705,8 @@ const Settings = ({ auctionId, isTrialType }) => {
               <div className="p-4">
                 {/* Filters - Responsive grid */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 mb-4">
+                  <div className="relative">
+                    <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--text-secondary)]" />
                   <input
                     type="text"
                     value={ratingSearch}
@@ -675,8 +715,9 @@ const Settings = ({ auctionId, isTrialType }) => {
                       setRatingPage(1);
                     }}
                     placeholder="Search label"
-                    className="border p-2 rounded text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-md"
+                    className={`${fieldClass} pl-10`}
                   />
+                  </div>
 
                   <select
                     value={ratingFieldType}
@@ -684,7 +725,7 @@ const Settings = ({ auctionId, isTrialType }) => {
                       setRatingFieldType(e.target.value);
                       setRatingPage(1);
                     }}
-                    className="border p-2 rounded text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-md"
+                    className={selectClass}
                   >
                     <option value="">All Field Types</option>
                     <option value="input">Input</option>
@@ -699,7 +740,7 @@ const Settings = ({ auctionId, isTrialType }) => {
                       setRatingType(e.target.value);
                       setRatingPage(1);
                     }}
-                    className="border p-2 rounded text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-md"
+                    className={selectClass}
                   >
                     <option value="">All Value Types</option>
                     <option value="string">String</option>
@@ -712,7 +753,7 @@ const Settings = ({ auctionId, isTrialType }) => {
                       setRatingAppliesTo(e.target.value);
                       setRatingPage(1);
                     }}
-                    className="border p-2 rounded text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-md"
+                    className={selectClass}
                   >
                     <option value="">All Players</option>
                     <option value="all">All</option>
@@ -728,7 +769,7 @@ const Settings = ({ auctionId, isTrialType }) => {
                       setRatingHasOptions(e.target.value);
                       setRatingPage(1);
                     }}
-                    className="border p-2 rounded text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-md"
+                    className={selectClass}
                   >
                     <option value="">Has Options?</option>
                     <option value="true">Yes</option>
@@ -748,23 +789,24 @@ const Settings = ({ auctionId, isTrialType }) => {
                       setRatingHasOptions("");
                       setRatingPage(1);
                     }}
-                    className="px-3 py-1.5 rounded text-sm border border-gray-300 hover:bg-gray-50 shadow-md w-full sm:w-auto"
+                    className={`${outlineButtonClass} w-full sm:w-auto`}
                   >
+                    <RotateCcw className="h-4 w-4" />
                     Reset Filters
                   </button>
-                  <span className="text-xs text-gray-500">
+                  <span className="text-xs text-[var(--text-secondary)]">
                     Total: {filteredRatingFieldsTotal} fields
                   </span>
                 </div>
 
                 {/* Fields List */}
-                <div className="border rounded-md overflow-hidden">
+                <div className="overflow-hidden rounded-lg border border-[var(--border-card)] bg-[var(--bg-main)] p-3">
                   {isRatingFieldsLoading ? (
                     <div className="p-8 flex justify-center">
                       <Loader text="Loading fields..." />
                     </div>
                   ) : filteredRatingFields.length === 0 ? (
-                    <div className="p-8 text-center text-gray-400 text-sm">
+                    <div className="p-8 text-center text-[var(--text-muted)] text-sm">
                       No fields found
                     </div>
                   ) : (
@@ -772,20 +814,17 @@ const Settings = ({ auctionId, isTrialType }) => {
   {filteredRatingFields.map((item) => (
     <div
       key={item?._id || `${item?.label}-${item?.fieldType}`}
-      className="group relative overflow-hidden rounded-xl border border-gray-200 bg-white p-4 transition-all duration-200 hover:border-blue-300 hover:shadow-md"
+      className="group relative overflow-hidden rounded-lg border border-[var(--border-card)] bg-[var(--bg-card)] p-4 transition-all duration-200 hover:border-[var(--border-primary)] hover:shadow-sm"
     >
-      {/* Colored top accent bar */}
-      <div className="absolute left-0 top-0 h-1 w-full bg-gradient-to-r from-blue-500 to-indigo-500" />
-
       <div className="space-y-2">
         <div className="flex items-start justify-between">
-          <h3 className="font-semibold text-gray-900 line-clamp-1">{item?.label}</h3>
-          <span className="rounded-full bg-blue-100 px-2 py-0.5 text-[11px] font-medium text-blue-700">
+          <h3 className="font-semibold text-[var(--text-primary)] line-clamp-1">{item?.label}</h3>
+          <span className="rounded-full border border-[var(--border-primary)] bg-[var(--accent-light)] px-2 py-0.5 text-[11px] font-semibold text-[var(--primary)]">
             {item?.fieldType}
           </span>
         </div>
 
-        <div className="flex items-center gap-2 text-xs text-gray-500">
+        <div className="flex items-center gap-2 text-xs text-[var(--text-secondary)]">
           <span className="flex items-center gap-1">
             <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l5 5a2 2 0 01.586 1.414V19a2 2 0 01-2 2H7a2 2 0 01-2-2V5a2 2 0 012-2z" />
@@ -805,7 +844,7 @@ const Settings = ({ auctionId, isTrialType }) => {
           <div className="mt-2">
             <div className="flex flex-wrap gap-1">
               {item.options.map((option, idx) => (
-                <span key={idx} className="rounded bg-gray-100 px-1.5 py-0.5 text-[11px] text-gray-600">
+                <span key={idx} className="rounded bg-[var(--secondary-lighter)] px-1.5 py-0.5 text-[11px] text-[var(--text-secondary)]">
                   {option}
                 </span>
               ))}
@@ -828,12 +867,12 @@ const Settings = ({ auctionId, isTrialType }) => {
                     onClick={() =>
                       setRatingPage((prev) => Math.max(1, prev - 1))
                     }
-                    className="px-4 py-2 rounded text-sm border border-gray-300 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed w-full sm:w-auto"
+                    className={`${outlineButtonClass} w-full sm:w-auto`}
                   >
                     Previous
                   </button>
 
-                  <span className="text-sm text-gray-600">
+                  <span className="text-sm text-[var(--text-secondary)]">
                     Page {filteredRatingFieldsPage} of{" "}
                     {filteredRatingFieldsPages}
                   </span>
@@ -848,7 +887,7 @@ const Settings = ({ auctionId, isTrialType }) => {
                         prev < filteredRatingFieldsPages ? prev + 1 : prev,
                       )
                     }
-                    className="px-4 py-2 rounded text-sm border border-gray-300 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed w-full sm:w-auto"
+                    className={`${outlineButtonClass} w-full sm:w-auto`}
                   >
                     Next
                   </button>
@@ -864,20 +903,30 @@ const Settings = ({ auctionId, isTrialType }) => {
   };
 
   return (
-    <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 py-6">
+    <div className="mx-auto w-full max-w-7xl space-y-4 px-3 py-4 text-[var(--text-primary)] sm:px-4 lg:px-5">
       {/* Header Section */}
-      <div className="mb-6">
-        <h2 className="text-xl sm:text-2xl font-bold text-gray-800">
-          Trial Settings
-        </h2>
-        <p className="text-sm text-gray-500 mt-1">
-          Manage selectors and ratings
-        </p>
+      <div className="rounded-lg border border-[var(--border-card)] bg-[var(--bg-card)] p-4 shadow-[var(--shadow-card)]">
+        <div className="flex items-start gap-3">
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-[var(--accent-light)] text-[var(--primary)]">
+            <SettingsIcon className="h-5 w-5" />
+          </div>
+          <div className="min-w-0">
+            <p className="text-xs font-semibold uppercase tracking-wide text-[var(--text-secondary)]">
+              Trial Controls
+            </p>
+            <h2 className="mt-1 text-xl font-bold leading-7 text-[var(--text-primary)]">
+              Trial Settings
+            </h2>
+            <p className="mt-1 text-xs font-medium text-[var(--text-secondary)]">
+              Manage selectors, rating rules, and custom rating fields.
+            </p>
+          </div>
+        </div>
       </div>
 
       {/* Tabs - Made responsive with scroll on small screens */}
-      <div className="mb-6 overflow-x-auto scrollbar-hide">
-        <div className="flex items-center gap-3 min-w-max py-2">
+      <div className="overflow-x-auto scrollbar-hide">
+        <div className="flex min-w-max items-center gap-2 rounded-lg border border-[var(--border-card)] bg-[var(--bg-card)] p-1 shadow-[var(--shadow-card)]">
           {visibleTabs.map((tab) => {
             const Icon = tab.icon;
             const isActive = activeTab === tab.key;
@@ -886,34 +935,14 @@ const Settings = ({ auctionId, isTrialType }) => {
               <button
                 key={tab.key}
                 onClick={() => setActiveTab(tab.key)}
-                className={`group relative flex items-center gap-2 px-5 py-3 rounded-2xl text-sm font-medium transition-all duration-300 whitespace-nowrap backdrop-blur-md
-${
-  isActive
-    ? "bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow- scale-[1.02]"
-    : "bg-white/80 text-gray-600 border border-white shadow-md hover:shadow-xl hover:-translate-y-0.5 hover:text-purple-600"
-}`}
+                className={`inline-flex h-10 items-center gap-2 rounded-lg px-4 text-sm font-semibold transition ${
+                  isActive
+                    ? "bg-[var(--secondary)] text-[#102033] shadow-sm"
+                    : "text-[var(--text-secondary)] hover:bg-[var(--secondary-lighter)] hover:text-[var(--text-primary)]"
+                }`}
               >
-                {/* Glow Effect */}
-                {isActive && (
-                  <div className="absolute inset-0 rounded-2xl bg-purple-500/10 blur-xl" />
-                )}
-
-                {/* Icon */}
-                <div
-                  className={`relative z-10 transition-transform duration-300 ${
-                    isActive ? "scale-110" : "group-hover:scale-105"
-                  }`}
-                >
-                  <Icon className="w-4 h-4" />
-                </div>
-
-                {/* Text */}
-                <span className="relative z-10">{tab.label}</span>
-
-                {/* Bottom Dot */}
-                {isActive && (
-                  <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1.5 h-1.5 bg-white rounded-full" />
-                )}
+                <Icon className="h-4 w-4" />
+                <span>{tab.label}</span>
               </button>
             );
           })}
@@ -921,7 +950,7 @@ ${
       </div>
 
       {/* Content */}
-      <div className="bg-white rounded-lg">{renderContent()}</div>
+      <div>{renderContent()}</div>
     </div>
   );
 };

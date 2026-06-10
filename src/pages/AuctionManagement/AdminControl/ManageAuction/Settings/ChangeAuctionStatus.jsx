@@ -44,12 +44,12 @@ const ChangeAuctionStatus = ({ isOpen, onClose, auctionId, onSuccess,auctionStat
 
   return (
     <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-      <div className="bg-white  w-[400px] rounded-xl shadow-lg p-6 relative">
+      <div className="bg-[var(--bg-card)] w-[400px] rounded-xl shadow-lg p-6 relative">
         
         {/* Close Button */}
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 text-gray-500 hover:text-red-500"
+          className="absolute top-4 right-4 text-[var(--text-secondary)] hover:text-red-500"
         >
           <X size={20} />
         </button>
@@ -62,11 +62,11 @@ const ChangeAuctionStatus = ({ isOpen, onClose, auctionId, onSuccess,auctionStat
         <select
           value={status}
           onChange={(e) => setStatus(e.target.value)}
-          className="w-full border rounded-lg px-3 py-2 mb-4 text-black focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full border rounded-lg px-3 py-2 mb-4 text-[var(--text-primary)] focus:outline-none focus:ring-2 focus:ring-blue-500"
         >
-          <option value="" className="bg-white text-black">Select Status</option>
+          <option value="" className="bg-[var(--bg-card)] text-[var(--text-primary)]">Select Status</option>
           {STATUS_OPTIONS.map((option) => (
-            <option key={option} value={option} className=" text-black cursor-pointer">
+            <option key={option} value={option} className=" text-[var(--text-primary)] cursor-pointer">
               {option.toUpperCase()}
             </option>
           ))}
@@ -76,7 +76,7 @@ const ChangeAuctionStatus = ({ isOpen, onClose, auctionId, onSuccess,auctionStat
         <div className="flex justify-end gap-3">
           <button
             onClick={onClose}
-            className="px-4 py-2 rounded-lg border hover:bg-gray-500"
+            className="px-4 py-2 rounded-lg border hover:bg-[var(--bg-soft)]0"
           >
             Cancel
           </button>

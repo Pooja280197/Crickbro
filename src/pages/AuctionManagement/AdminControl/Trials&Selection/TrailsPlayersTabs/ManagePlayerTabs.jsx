@@ -12,15 +12,14 @@ import {
 } from "../../../../../redux/actions";
 import api from "../../../../../utils/api";
 // import SelectedAuctionManager from "./AuctionPlayersTabs/SelectedAuctionManager";
-
 import AssignedTrialsTab from "./AssignedTrialsTab";
 import UnassignedPlayersTab from "./UnassignedPlayersTab";
 
 const tabClass = (active) =>
-  `flex items-center gap-2 px-4 py-2 whitespace-nowrap rounded-lg font-semibold text-sm cursor-pointer transition-all duration-200 ${
+  `inline-flex h-9 items-center gap-2 whitespace-nowrap rounded-lg border px-3 text-xs font-semibold transition ${
     active
-      ? "bg-[var(--secondary)] text-white shadow-md"
-      : "bg-white text-gray-700 border border-gray-200 hover:bg-gray-50"
+      ? "border-[var(--border-primary)] bg-[var(--secondary)] text-[#102033] shadow-sm"
+      : "border-[var(--border-card)] bg-[var(--bg-main)] text-[var(--text-secondary)] hover:border-[var(--border-primary)] hover:bg-[var(--accent-light)] hover:text-[var(--primary)]"
   }`;
 
 const ManagePlayerTabs = () => {
@@ -272,20 +271,31 @@ const ManagePlayerTabs = () => {
   };
 
   return (
-    <div>
+    <div className="mx-auto w-full max-w-7xl px-3 py-4 sm:px-4 lg:px-5">
       <div className="space-y-4">
-        <div className="border-b bg-white sticky top-0 z-10 shadow-sm">
-          <div className="max-w-7xl mx-auto px-4">
-            <div className="relative">
-              <div className="overflow-x-auto scrollbar-hide">
-                <div className="flex gap-2 min-w-max py-3">
+        <div className="rounded-lg border border-[var(--border-card)] bg-[var(--bg-card)] p-4 shadow-[var(--shadow-card)]">
+          <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+            <div className="min-w-0">
+              <p className="text-xs font-semibold uppercase tracking-wide text-[var(--text-secondary)]">
+                Trials
+              </p>
+              <h1 className="mt-1 text-xl font-bold leading-7 text-[var(--text-primary)]">
+                Players for Trials
+              </h1>
+              <p className="mt-1 text-xs font-medium text-[var(--text-secondary)]">
+                Manage unassigned and assigned trial players.
+              </p>
+            </div>
+
+            <div className="overflow-x-auto scrollbar-hide">
+              <div className="flex min-w-max gap-2">
                   {auctionTypeTrial && (
                     <button
                       onClick={() => handlePlayerTabChange("unassigned")}
                       className={tabClass(activePlayerTab === "unassigned")}
                     >
-                      <Users className="w-4 h-4" />
-                      Unassigned
+                      <Users className="h-3.5 w-3.5" />
+                      Unassigned to Trials
                     </button>
                   )}
 
@@ -294,11 +304,10 @@ const ManagePlayerTabs = () => {
                       onClick={() => handlePlayerTabChange("assigned")}
                       className={tabClass(activePlayerTab === "assigned")}
                     >
-                      <UserCheck className="w-4 h-4" />
-                      Assigned Trials
+                      <UserCheck className="h-3.5 w-3.5" />
+                      Assigned to Trials
                     </button>
                   )}
-                </div>
               </div>
             </div>
           </div>

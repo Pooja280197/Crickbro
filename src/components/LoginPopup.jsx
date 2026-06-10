@@ -238,7 +238,7 @@ export default function LoginPopup() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full justify-center px-5 py-3 rounded-xl bg-gradient-to-r from-[var(--primary)] to-[var(--secondary)] text-white font-semibold shadow-sm shadow-[rgba(8,186,247,0.22)] hover:opacity-95 transition-colors"
+                className="w-full justify-center px-5 py-3 rounded-xl bg-gradient-to-r from-[var(--primary)] to-[var(--secondary)] text-[var(--text-dark)] font-semibold shadow-sm shadow-[rgba(8,186,247,0.22)] hover:opacity-95 transition-colors"
               >
                 {loading ? "Sending OTP..." : "Get OTP"}
               </button>
@@ -278,7 +278,7 @@ export default function LoginPopup() {
 
               <button
                 onClick={handleVerifyOtp}
-                className="w-full justify-center px-5 py-3 rounded-xl bg-gradient-to-r from-[var(--primary)] to-[var(--secondary)] text-white font-semibold shadow-sm shadow-[rgba(8,186,247,0.22)] hover:opacity-95 transition-colors"
+                className="w-full justify-center px-5 py-3 rounded-xl bg-gradient-to-r from-[var(--primary)] to-[var(--secondary)] text-[var(--text-dark)] font-semibold shadow-sm shadow-[rgba(8,186,247,0.22)] hover:opacity-95 transition-colors"
               >
                 Verify & Continue
               </button>

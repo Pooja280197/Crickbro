@@ -219,14 +219,14 @@ export default function PlayerDetailsPopup({
 
   return (
     <div className="fixed inset-0 z-[200000] bg-black/50 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4">
-      <div className="relative w-full max-w-lg bg-white rounded-2xl shadow-2xl overflow-hidden max-h-[92vh] flex flex-col">
+      <div className="relative w-full max-w-lg bg-[var(--bg-card)] rounded-2xl shadow-2xl overflow-hidden max-h-[92vh] flex flex-col">
         {/* Header */}
         <div className="relative bg-gradient-to-r from-violet-600 to-fuchsia-500 px-4 py-5 sm:px-5">
           <button
             onClick={onClose}
             className="absolute top-3 right-3 p-1.5 rounded-full bg-white/20 hover:bg-white/30 transition"
           >
-            <X className="w-4 h-4 text-white" />
+            <X className="w-4 h-4 text-[var(--text-dark)]" />
           </button>
 
           <div className="flex items-center gap-4">
@@ -237,7 +237,7 @@ export default function PlayerDetailsPopup({
               )} flex items-center justify-center shrink-0`}
             >
               {isDummyImage ? (
-                <span className="text-white text-xl sm:text-2xl font-bold">
+                <span className="text-[var(--text-dark)] text-xl sm:text-2xl font-bold">
                   {getInitials(playerDoc?.name)}
                 </span>
               ) : (
@@ -250,7 +250,7 @@ export default function PlayerDetailsPopup({
             </div>
 
             {/* Info */}
-            <div className="text-white min-w-0">
+            <div className="text-[var(--text-dark)] min-w-0">
               <h2 className="text-lg sm:text-xl font-bold truncate">
                 {playerDoc?.name}
               </h2>
@@ -289,7 +289,7 @@ export default function PlayerDetailsPopup({
             trialDate ||
             trialTime ||
             categoryName) && (
-            <div className="bg-slate-50 border rounded-2xl p-4">
+            <div className="bg-[var(--bg-soft)] border rounded-2xl p-4">
               <h3 className="font-semibold text-sm mb-3">Trial Details</h3>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -334,7 +334,7 @@ export default function PlayerDetailsPopup({
 
           {/* Ratings */}
           {allRatings.length > 0 && (
-            <div className="bg-slate-50 border rounded-2xl p-4">
+            <div className="bg-[var(--bg-soft)] border rounded-2xl p-4">
               <div className="flex items-center gap-2 mb-3">
                 <Trophy className="w-4 h-4 text-yellow-500" />
                 <h3 className="font-semibold text-sm">Ratings</h3>
@@ -342,14 +342,14 @@ export default function PlayerDetailsPopup({
 
               <div className="space-y-3">
                 {allRatings.map((r, idx) => (
-                  <div key={idx} className="bg-white border rounded-xl p-3">
+                  <div key={idx} className="bg-[var(--bg-card)] border rounded-xl p-3">
                     <div className="flex items-start justify-between mb-3 gap-3">
                       <div className="min-w-0">
                         <p className="font-semibold text-sm truncate">
                           {r.slotName}
                         </p>
 
-                        <p className="text-xs text-gray-500">{r.sessionName}</p>
+                        <p className="text-xs text-[var(--text-secondary)]">{r.sessionName}</p>
                       </div>
 
                       <span
@@ -379,10 +379,10 @@ export default function PlayerDetailsPopup({
 
           {/* About */}
           {playerDoc?.description && (
-            <div className="bg-slate-50 border rounded-2xl p-4">
+            <div className="bg-[var(--bg-soft)] border rounded-2xl p-4">
               <h3 className="font-semibold text-sm mb-2">About</h3>
 
-              <p className="text-sm text-gray-600 leading-relaxed">
+              <p className="text-sm text-[var(--text-secondary)] leading-relaxed">
                 {playerDoc.description}
               </p>
             </div>
@@ -390,7 +390,7 @@ export default function PlayerDetailsPopup({
         </div>
 
         {/* Footer */}
-        <div className="border-t bg-white p-4 flex gap-3">
+        <div className="border-t bg-[var(--bg-card)] p-4 flex gap-3">
           {activeSubTab === "auctionPlayers" && (
             <button
               onClick={onDelete}
@@ -402,7 +402,7 @@ export default function PlayerDetailsPopup({
 
           <button
             onClick={onClose}
-            className="flex-1 h-11 rounded-xl border border-gray-300 hover:bg-gray-100 font-medium transition"
+            className="flex-1 h-11 rounded-xl border border-[var(--border-primary)] hover:bg-[var(--secondary-lighter)] font-medium transition"
           >
             Close
           </button>
@@ -417,7 +417,7 @@ const CompactDetailCard = ({ icon, label, value, color }) => {
   const tone = COLOR_TONE[color] || COLOR_TONE.blue;
 
   return (
-    <div className="flex items-start gap-3 p-3 rounded-xl border bg-white">
+    <div className="flex items-start gap-3 p-3 rounded-xl border bg-[var(--bg-card)]">
       
       <div
         className={`w-9 h-9 rounded-lg shrink-0 flex items-center justify-center ${tone.bg} ${tone.text}`}
@@ -426,11 +426,11 @@ const CompactDetailCard = ({ icon, label, value, color }) => {
       </div>
 
       <div className="min-w-0">
-        <p className="text-[11px] text-gray-500">
+        <p className="text-[11px] text-[var(--text-secondary)]">
           {label}
         </p>
 
-        <p className="text-sm font-semibold text-gray-800 break-words">
+        <p className="text-sm font-semibold text-[var(--text-primary)] break-words">
           {value}
         </p>
       </div>
@@ -445,7 +445,7 @@ const renderMiniRating = (label, value, color) =>
         (COLOR_TONE[color] || COLOR_TONE.blue).bg
       }`}
     >
-      <p className="text-[10px] text-gray-600">
+      <p className="text-[10px] text-[var(--text-secondary)]">
         {label}
       </p>
 

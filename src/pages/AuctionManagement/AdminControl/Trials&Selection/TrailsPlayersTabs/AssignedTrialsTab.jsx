@@ -1,5 +1,5 @@
-import React from "react";
-import { ChevronDown, Download, Search } from "lucide-react";
+import React, { useState } from "react";
+import { ChevronDown, Download, Filter, Search } from "lucide-react";
 
 import PlayerCard from "../../../../../components/PlayerCard";
 import Pagination from "../../../../../components/Pagination";
@@ -46,36 +46,49 @@ const AssignedTrialsTab = ({
   auctionId,
 }) => {
   const players = getFilteredPlayers();
+  const [showFilters, setShowFilters] = useState(false);
+  const hasActiveFilters = Boolean(
+    slot || slotSession || statusSort || typeSort || slotSearch || selectedSlotLabel,
+  );
+  const handleResetFilters = () => {
+    setSlot("");
+    setSlotSession("");
+    setStatusSort("");
+    setTypeSort("");
+    setSlotSearch("");
+    setSelectedSlotLabel("");
+    setIsSlotOpen(false);
+  };
 
   return (
     <>
-      <div className="max-w-7xl mx-auto px-4 py-2 flex flex-col gap-3">
-        <div className="auction-toolbar">
-          <div className="relative w-full md:w-1/2 flex justify-between">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 " />
+      <div className="rounded-lg border border-[var(--border-card)] bg-[var(--bg-card)] p-4 shadow-[var(--shadow-card)]">
+        <div className="grid grid-cols-1 gap-3 xl:grid-cols-[minmax(0,1fr)_auto_auto_auto] xl:items-center">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--text-secondary)]" />
             <input
               type="text"
               placeholder="Search player..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="auction-input pl-10 pr-4"
+              className="h-10 w-full rounded-lg border border-[var(--border-card)] bg-[var(--bg-main)] pl-10 pr-4 text-sm font-medium text-[var(--text-primary)] outline-none transition placeholder:text-[var(--text-secondary)] focus:border-[var(--border-primary)] focus:bg-[var(--bg-card)]"
             />
           </div>
 
           <div className="relative">
             <button
               onClick={() => setIsItemsDropdownOpen(!isItemsDropdownOpen)}
-              className="auction-btn auction-btn-ghost"
+              className="inline-flex h-10 w-full items-center justify-center gap-2 rounded-lg border border-[var(--border-card)] bg-[var(--bg-main)] px-3 text-xs font-semibold text-[var(--text-primary)] transition hover:border-[var(--border-primary)] hover:bg-[var(--accent-light)] xl:w-auto"
             >
               <span>Showing {itemsPerPage}</span>
               <ChevronDown
-                className={`w-4 h-4 transition-transform duration-300 ${
+                className={`h-4 w-4 transition-transform duration-300 ${
                   isItemsDropdownOpen ? "rotate-180" : ""
                 }`}
               />
             </button>
             {isItemsDropdownOpen && (
-              <div className="auction-card absolute right-0 top-full z-10 mt-1 overflow-hidden">
+              <div className="absolute right-0 top-full z-20 mt-1 w-36 overflow-hidden rounded-lg border border-[var(--border-card)] bg-[var(--bg-card)] shadow-[var(--shadow-card)]">
                 {[16, 32, 64, 96].map((num) => (
                   <button
                     key={num}
@@ -84,10 +97,10 @@ const AssignedTrialsTab = ({
                       setCurrentPageState(1);
                       setIsItemsDropdownOpen(false);
                     }}
-                    className={`w-full text-left px-4 py-2 text-sm text-[var(--color-button-primary)] transition-colors ${
+                    className={`w-full px-3 py-2 text-left text-xs font-semibold transition ${
                       itemsPerPage === num
-                        ? "bg-white text-[var(--color-button-primary)]"
-                        : "hover:bg-[var(--color-button-primary)] hover:text-white"
+                        ? "bg-[var(--accent-light)] text-[var(--primary)]"
+                        : "text-[var(--text-secondary)] hover:bg-[var(--secondary-lighter)] hover:text-[var(--text-primary)]"
                     }`}
                   >
                     Showing {num}
@@ -98,15 +111,31 @@ const AssignedTrialsTab = ({
           </div>
 
           <button
-            onClick={handleDownloadExcel}
-            disabled={downloadLoading}
-            className="auction-btn auction-btn-primary"
+            type="button"
+            onClick={() => setShowFilters((prev) => !prev)}
+            className={`inline-flex h-10 items-center justify-center gap-2 rounded-lg border px-3 text-xs font-semibold transition ${
+              showFilters
+                ? "border-[var(--border-primary)] bg-[var(--accent-light)] text-[var(--primary)]"
+                : "border-[var(--border-card)] bg-[var(--bg-main)] text-[var(--text-primary)] hover:border-[var(--border-primary)] hover:bg-[var(--accent-light)]"
+            }`}
           >
-            <Download className="w-4 h-4" />
-            {downloadLoading ? "Downloading..." : "Download Trials Excel"}
+            <Filter className="h-4 w-4" />
+            Filters
           </button>
 
-          <div className="flex flex-col sm:flex-row w-full md:w-auto gap-3">
+          <button
+            onClick={handleDownloadExcel}
+            disabled={downloadLoading}
+            className="inline-flex h-10 items-center justify-center gap-2 rounded-lg border border-[var(--border-card)] bg-[var(--bg-main)] px-3 text-xs font-semibold text-[var(--text-primary)] transition hover:border-[var(--border-primary)] hover:bg-[var(--accent-light)] disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            <Download className="h-4 w-4 text-[var(--primary)]" />
+            {downloadLoading ? "Downloading..." : "Download Trials Excel"}
+          </button>
+        </div>
+
+        {showFilters && (
+          <div className="mt-3 rounded-lg border border-[var(--border-card)] bg-[var(--secondary-lighter)] p-3">
+          <div className="flex flex-col gap-3 xl:col-span-3 sm:flex-row sm:flex-wrap">
             <div ref={dropdownRef} className="relative w-full sm:w-40">
               <input
                 type="text"
@@ -118,7 +147,7 @@ const AssignedTrialsTab = ({
                   setSlot("");
                   setSelectedSlotLabel("");
                 }}
-                className="auction-input"
+                className="h-10 w-full rounded-lg border border-[var(--border-card)] bg-[var(--bg-main)] px-3 text-sm font-medium text-[var(--text-primary)] outline-none transition placeholder:text-[var(--text-secondary)] focus:border-[var(--border-primary)] focus:bg-[var(--bg-card)]"
               />
 
               <div
@@ -131,7 +160,7 @@ const AssignedTrialsTab = ({
                     setSlotPage((prev) => prev + 1);
                   }
                 }}
-                className={`auction-card absolute z-[9999] mt-1 max-h-48 w-full overflow-y-auto ${isSlotOpen ? "block" : "hidden"}`}
+                className={`absolute z-[9999] mt-1 max-h-48 w-full overflow-y-auto rounded-lg border border-[var(--border-card)] bg-[var(--bg-card)] shadow-[var(--shadow-card)] ${isSlotOpen ? "block" : "hidden"}`}
               >
                 {slotDetail?.map((s) => (
                   <div
@@ -143,7 +172,7 @@ const AssignedTrialsTab = ({
                       setSlotSearch("");
                       fetchSessionsForSlot(s._id);
                     }}
-                    className="px-3 py-2 cursor-pointer hover:bg-gray-100 text-sm"
+                    className="px-3 py-2 cursor-pointer hover:bg-[var(--secondary-lighter)] text-sm"
                   >
                     {s.slotName}
                   </div>
@@ -153,7 +182,7 @@ const AssignedTrialsTab = ({
 
             {slot && selectedSlotSessions.length > 0 && (
               <select
-                className="auction-select sm:w-40"
+                className="h-10 rounded-lg border border-[var(--border-card)] bg-[var(--bg-main)] px-3 text-sm font-medium text-[var(--text-primary)] outline-none transition focus:border-[var(--border-primary)] sm:w-40"
                 value={slotSession}
                 onChange={(e) => setSlotSession(e.target.value)}
               >
@@ -167,15 +196,15 @@ const AssignedTrialsTab = ({
             )}
 
             <select
-              className="auction-select sm:w-40"
+              className="h-10 rounded-lg border border-[var(--border-card)]  bg-[var(--bg-main)] px-3 text-sm font-medium text-[var(--text-primary)] outline-none transition focus:border-[var(--border-primary)] sm:w-40"
               value={statusSort}
               onChange={(e) => setStatusSort(e.target.value)}
             >
-              <option value="" disabled>
+              <option value="" disabled className="text-[var(--text-primary)]">
                 Sort By Status
               </option>
               {sortPlayers?.map((item) => (
-                <option key={item.value} value={item.value}>
+                <option key={item.value} value={item.value} className="text-[var(--text-primary)]">
                   {item.label}
                 </option>
               ))}
@@ -183,7 +212,7 @@ const AssignedTrialsTab = ({
 
             {(statusSort === "select" || statusSort === "not select") && (
               <select
-                className="auction-select sm:w-40"
+                className="h-10 rounded-lg border border-[var(--border-card)] bg-[var(--bg-main)] px-3 text-sm font-medium text-[var(--text-primary)] outline-none transition focus:border-[var(--border-primary)] sm:w-40"
                 value={typeSort}
                 onChange={(e) => setTypeSort(e.target.value)}
               >
@@ -196,11 +225,21 @@ const AssignedTrialsTab = ({
                 <option value="wicketkeeper">Wicket Keeper</option>
               </select>
             )}
+
+            <button
+              type="button"
+              onClick={handleResetFilters}
+              disabled={!hasActiveFilters}
+              className="inline-flex h-10 items-center justify-center rounded-lg border border-[var(--border-card)] bg-[var(--bg-main)] px-3 text-xs font-semibold text-[var(--text-primary)] transition hover:border-[var(--border-primary)] hover:bg-[var(--accent-light)] disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              Reset Filters
+            </button>
           </div>
-        </div>
+          </div>
+        )}
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 pb-6">
+      <div className="pb-6">
         {players.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
             {players.map((item) => {
@@ -236,14 +275,14 @@ const AssignedTrialsTab = ({
             })}
           </div>
         ) : (
-          <div className="text-center py-14">
-            <div className="inline-flex items-center justify-center w-14 h-14 bg-gray-100 rounded-full mb-3">
-              <Search className="w-6 h-6 text-gray-400" />
+          <div className="rounded-lg border border-[var(--border-card)] bg-[var(--bg-card)] py-14 text-center shadow-[var(--shadow-card)]">
+            <div className="inline-flex items-center justify-center w-14 h-14 bg-[var(--secondary-lighter)] rounded-full mb-3">
+              <Search className="w-6 h-6 text-[var(--text-muted)]" />
             </div>
-            <h3 className="text-md font-semibold text-gray-900">
+            <h3 className="text-md font-semibold text-[var(--text-primary)]">
               No players found
             </h3>
-            <p className="text-gray-500 text-sm">No assigned players found</p>
+            <p className="text-[var(--text-secondary)] text-sm">No assigned players found</p>
           </div>
         )}
       </div>

@@ -105,16 +105,16 @@ const CreateCategory = ({ isOpen, onClose, onSubmit, initialData }) => {
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-2 sm:p-4"
       onClick={(e) => e.target === e.currentTarget && onClose?.()}
     >
-      <div className="w-full max-w-lg bg-white text-gray-800 rounded-xl shadow-2xl border border-gray-200 overflow-hidden flex flex-col max-h-[90vh] sm:max-h-[85vh]">
+      <div className="w-full max-w-lg bg-[var(--bg-card)] text-[var(--text-primary)] rounded-xl shadow-2xl border border-[var(--border-card)] overflow-hidden flex flex-col max-h-[90vh] sm:max-h-[85vh]">
         
         {/* HEADER - Fixed at top */}
-        <div className="p-4 sm:p-6 border-b border-gray-200 flex items-center justify-between bg-white flex-shrink-0">
+        <div className="p-4 sm:p-6 border-b border-[var(--border-card)] flex items-center justify-between bg-[var(--bg-card)] flex-shrink-0">
           <h3 className="text-base sm:text-lg font-semibold">
             {initialData ? "Edit Category" : "Create Category"}
           </h3>
           <button
             onClick={onClose}
-            className="text-gray-500 hover:text-gray-800 text-xl sm:text-2xl transition-colors w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100"
+            className="text-[var(--text-secondary)] hover:text-[var(--text-primary)] text-xl sm:text-2xl transition-colors w-8 h-8 flex items-center justify-center rounded-full hover:bg-[var(--secondary-lighter)]"
             disabled={isSubmitting}
             aria-label="Close"
           >
@@ -127,7 +127,7 @@ const CreateCategory = ({ isOpen, onClose, onSubmit, initialData }) => {
           
           {/* CATEGORY NAME */}
           <div>
-            <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1.5 sm:mb-2">
+            <label className="block text-xs sm:text-sm font-medium text-[var(--text-primary)] mb-1.5 sm:mb-2">
               Category Name <span className="text-red-500">*</span>
             </label>
             <input
@@ -135,9 +135,9 @@ const CreateCategory = ({ isOpen, onClose, onSubmit, initialData }) => {
               name="name"
               value={form.name}
               onChange={handleChange}
-              className={`w-full p-2.5 sm:p-3 text-sm sm:text-base rounded-lg bg-white border ${
-                errors.name ? "border-red-500" : "border-gray-300"
-              } focus:border-[var(--color-primary)] focus:ring-1 focus:ring-[var(--color-primary)] outline-none transition disabled:bg-gray-50 disabled:cursor-not-allowed`}
+              className={`w-full p-2.5 sm:p-3 text-sm sm:text-base rounded-lg bg-[var(--bg-card)] border ${
+                errors.name ? "border-red-500" : "border-[var(--border-primary)]"
+              } focus:border-[var(--color-primary)] focus:ring-1 focus:ring-[var(--color-primary)] outline-none transition disabled:bg-[var(--bg-soft)] disabled:cursor-not-allowed`}
               placeholder="Enter category name"
               disabled={isSubmitting}
               aria-invalid={!!errors.name}
@@ -152,14 +152,14 @@ const CreateCategory = ({ isOpen, onClose, onSubmit, initialData }) => {
 
           {/* DESCRIPTION */}
           <div>
-            <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1.5 sm:mb-2">
+            <label className="block text-xs sm:text-sm font-medium text-[var(--text-primary)] mb-1.5 sm:mb-2">
               Description
             </label>
             <textarea
               name="description"
               value={form.description}
               onChange={handleChange}
-              className="w-full p-2.5 sm:p-3 text-sm sm:text-base rounded-lg bg-white border border-gray-300 focus:border-[var(--color-primary)] focus:ring-1 focus:ring-[var(--color-primary)] outline-none transition min-h-[80px] sm:min-h-[100px] disabled:bg-gray-50 disabled:cursor-not-allowed"
+              className="w-full p-2.5 sm:p-3 text-sm sm:text-base rounded-lg bg-[var(--bg-card)] border border-[var(--border-primary)] focus:border-[var(--color-primary)] focus:ring-1 focus:ring-[var(--color-primary)] outline-none transition min-h-[80px] sm:min-h-[100px] disabled:bg-[var(--bg-soft)] disabled:cursor-not-allowed"
               placeholder="Optional description"
               disabled={isSubmitting}
             />
@@ -170,11 +170,11 @@ const CreateCategory = ({ isOpen, onClose, onSubmit, initialData }) => {
             
             {/* Base Amount */}
             <div>
-              <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1.5 sm:mb-2">
+              <label className="block text-xs sm:text-sm font-medium text-[var(--text-primary)] mb-1.5 sm:mb-2">
                 Base Amount <span className="text-red-500">*</span>
               </label>
               <div className="relative">
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm sm:text-base">
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)] text-sm sm:text-base">
                   ₹
                 </span>
                 <input
@@ -183,9 +183,9 @@ const CreateCategory = ({ isOpen, onClose, onSubmit, initialData }) => {
                   inputMode="decimal"
                   value={form.baseAmount}
                   onChange={handleChange}
-                  className={`w-full p-2.5 sm:p-3 pl-7 sm:pl-8 text-sm sm:text-base rounded-lg bg-white border ${
-                    errors.baseAmount ? "border-red-500" : "border-gray-300"
-                  } focus:border-[var(--color-primary)] focus:ring-1 focus:ring-[var(--color-primary)] outline-none transition disabled:bg-gray-50 disabled:cursor-not-allowed`}
+                  className={`w-full p-2.5 sm:p-3 pl-7 sm:pl-8 text-sm sm:text-base rounded-lg bg-[var(--bg-card)] border ${
+                    errors.baseAmount ? "border-red-500" : "border-[var(--border-primary)]"
+                  } focus:border-[var(--color-primary)] focus:ring-1 focus:ring-[var(--color-primary)] outline-none transition disabled:bg-[var(--bg-soft)] disabled:cursor-not-allowed`}
                   placeholder="0.00"
                   disabled={isSubmitting}
                   aria-invalid={!!errors.baseAmount}
@@ -201,11 +201,11 @@ const CreateCategory = ({ isOpen, onClose, onSubmit, initialData }) => {
 
             {/* Bid Increment */}
             <div>
-              <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1.5 sm:mb-2">
+              <label className="block text-xs sm:text-sm font-medium text-[var(--text-primary)] mb-1.5 sm:mb-2">
                 Bid Increment <span className="text-red-500">*</span>
               </label>
               <div className="relative">
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm sm:text-base">
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)] text-sm sm:text-base">
                   ₹
                 </span>
                 <input
@@ -214,9 +214,9 @@ const CreateCategory = ({ isOpen, onClose, onSubmit, initialData }) => {
                   inputMode="decimal"
                   value={form.biddingIncrement}
                   onChange={handleChange}
-                  className={`w-full p-2.5 sm:p-3 pl-7 sm:pl-8 text-sm sm:text-base rounded-lg bg-white border ${
-                    errors.biddingIncrement ? "border-red-500" : "border-gray-300"
-                  } focus:border-[var(--color-primary)] focus:ring-1 focus:ring-[var(--color-primary)] outline-none transition disabled:bg-gray-50 disabled:cursor-not-allowed`}
+                  className={`w-full p-2.5 sm:p-3 pl-7 sm:pl-8 text-sm sm:text-base rounded-lg bg-[var(--bg-card)] border ${
+                    errors.biddingIncrement ? "border-red-500" : "border-[var(--border-primary)]"
+                  } focus:border-[var(--color-primary)] focus:ring-1 focus:ring-[var(--color-primary)] outline-none transition disabled:bg-[var(--bg-soft)] disabled:cursor-not-allowed`}
                   placeholder="0.00"
                   disabled={isSubmitting}
                   aria-invalid={!!errors.biddingIncrement}
@@ -232,11 +232,11 @@ const CreateCategory = ({ isOpen, onClose, onSubmit, initialData }) => {
 
             {/* Maximum Bid */}
             <div>
-              <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1.5 sm:mb-2">
+              <label className="block text-xs sm:text-sm font-medium text-[var(--text-primary)] mb-1.5 sm:mb-2">
                 Maximum Bid <span className="text-red-500">*</span>
               </label>
               <div className="relative">
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm sm:text-base">
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)] text-sm sm:text-base">
                   ₹
                 </span>
                 <input
@@ -245,9 +245,9 @@ const CreateCategory = ({ isOpen, onClose, onSubmit, initialData }) => {
                   inputMode="decimal"
                   value={form.maxBid}
                   onChange={handleChange}
-                  className={`w-full p-2.5 sm:p-3 pl-7 sm:pl-8 text-sm sm:text-base rounded-lg bg-white border ${
-                    errors.maxBid ? "border-red-500" : "border-gray-300"
-                  } focus:border-[var(--color-primary)] focus:ring-1 focus:ring-[var(--color-primary)] outline-none transition disabled:bg-gray-50 disabled:cursor-not-allowed`}
+                  className={`w-full p-2.5 sm:p-3 pl-7 sm:pl-8 text-sm sm:text-base rounded-lg bg-[var(--bg-card)] border ${
+                    errors.maxBid ? "border-red-500" : "border-[var(--border-primary)]"
+                  } focus:border-[var(--color-primary)] focus:ring-1 focus:ring-[var(--color-primary)] outline-none transition disabled:bg-[var(--bg-soft)] disabled:cursor-not-allowed`}
                   placeholder="0.00"
                   disabled={isSubmitting}
                   aria-invalid={!!errors.maxBid}
@@ -271,11 +271,11 @@ const CreateCategory = ({ isOpen, onClose, onSubmit, initialData }) => {
         </div>
 
         {/* ACTIONS - Fixed at bottom */}
-        <div className="p-4 sm:p-6 border-t border-gray-200 bg-white flex-shrink-0">
+        <div className="p-4 sm:p-6 border-t border-[var(--border-card)] bg-[var(--bg-card)] flex-shrink-0">
           <div className="flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-end gap-3">
             <button
               onClick={onClose}
-              className="px-4 py-2.5 sm:py-2 bg-gray-100 text-gray-700 rounded-lg border border-gray-300 hover:bg-gray-200 transition disabled:opacity-50 font-medium text-sm sm:text-base"
+              className="px-4 py-2.5 sm:py-2 bg-[var(--secondary-lighter)] text-[var(--text-primary)] rounded-lg border border-[var(--border-primary)] hover:bg-[var(--secondary-lighter)] transition disabled:opacity-50 font-medium text-sm sm:text-base"
               disabled={isSubmitting}
             >
               Cancel
@@ -284,7 +284,7 @@ const CreateCategory = ({ isOpen, onClose, onSubmit, initialData }) => {
             <button
               onClick={handleSubmit}
               disabled={isSubmitting}
-              className="px-4 py-2.5 sm:py-2 bg-[var(--color-button-primary)] text-white rounded-lg hover:opacity-90 transition disabled:opacity-50 flex items-center justify-center gap-2 font-medium text-sm sm:text-base"
+              className="px-4 py-2.5 sm:py-2 bg-[var(--color-button-primary)] text-[var(--text-dark)] rounded-lg hover:opacity-90 transition disabled:opacity-50 flex items-center justify-center gap-2 font-medium text-sm sm:text-base"
             >
               {isSubmitting ? (
                 <>

@@ -22,7 +22,7 @@ const DeleteConfirmModal = ({
         exit={{ opacity: 0 }}
       >
         <motion.div
-          className="bg-white rounded-2xl w-full max-w-md p-6 shadow-xl font-main"
+          className="bg-[var(--bg-card)] rounded-2xl w-full max-w-md p-6 shadow-xl font-main"
           initial={{ scale: 0.9, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           exit={{ scale: 0.9, opacity: 0 }}

@@ -1,5 +1,4 @@
 import React, { useRef, useState, useEffect } from "react";
-import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
 import QRCode from "qrcode";
 import { Download, QrCode, Copy, Check } from "lucide-react";
@@ -82,10 +81,7 @@ const EntryBarcode = ({
         };
 
         // Outer background
-        const bgGrad = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
-        bgGrad.addColorStop(0, "#f7f7ff");
-        bgGrad.addColorStop(1, "#eef2ff");
-        ctx.fillStyle = bgGrad;
+        ctx.fillStyle = "#f5f8fc";
         ctx.fillRect(0, 0, canvas.width, canvas.height);
 
         // Main card
@@ -96,16 +92,13 @@ const EntryBarcode = ({
         drawRoundedRect(cardX, cardY, cardW, cardH, 28);
         ctx.fillStyle = "#ffffff";
         ctx.fill();
-        ctx.strokeStyle = "#dbe2f7";
+        ctx.strokeStyle = "#d8e2ef";
         ctx.lineWidth = 2;
         ctx.stroke();
 
         // Header strip
-        const headerGrad = ctx.createLinearGradient(cardX, cardY, cardX + cardW, cardY + 140);
-        headerGrad.addColorStop(0, "#2d1b69");
-        headerGrad.addColorStop(1, "#3f2d86");
         drawRoundedRect(cardX, cardY, cardW, 140, 28);
-        ctx.fillStyle = headerGrad;
+        ctx.fillStyle = "#102033";
         ctx.fill();
 
         // Fit tournament title in a single line inside header
@@ -119,11 +112,11 @@ const EntryBarcode = ({
             }
             titleSize -= 1;
         }
-        ctx.fillStyle = "#e9ddff";
+        ctx.fillStyle = "#f4b400";
         ctx.fillText(titleText, canvas.width / 2, cardY + 84);
 
         // Lightweight accent line
-        ctx.strokeStyle = "#ded2ff";
+        ctx.strokeStyle = "#f4b400";
         ctx.lineWidth = 2;
         ctx.beginPath();
         ctx.moveTo(cardX + 38, cardY + 122);
@@ -149,9 +142,9 @@ const EntryBarcode = ({
         const qrPanelW = cardW - 72;
         const qrPanelH = 450;
         drawRoundedRect(qrPanelX, qrPanelY, qrPanelW, qrPanelH, 22);
-        ctx.fillStyle = "#f2f5ff";
+        ctx.fillStyle = "#f8fbff";
         ctx.fill();
-        ctx.strokeStyle = "#c7d2fe";
+        ctx.strokeStyle = "#d8e2ef";
         ctx.lineWidth = 2;
         ctx.stroke();
 
@@ -208,7 +201,7 @@ const EntryBarcode = ({
 
         // Bottom footer with icon visible below
         const footerY = cardY + cardH - 180;
-        ctx.fillStyle = "#8b5cf6";
+        ctx.fillStyle = "#1769e0";
         ctx.font = "12px Arial";
         ctx.fillText("Powered by", canvas.width / 2, footerY + 6);
 
@@ -281,102 +274,125 @@ const EntryBarcode = ({
     };
 
     return (
-        <div className="w-full z-60 bg-gradient-to-br from-indigo-50 to-purple-100 p-3 rounded-2xl shadow-xl border">
-
-            {/* HEADER */}
-            {/* <div className="flex items-center gap-2 mb-4">
-                <QrCode className="text-indigo-600" />
-                <h2 className="font-bold text-lg">Share Landing Page</h2>
-            </div> */}
-
+        <div className="grid w-full gap-4 lg:grid-cols-[minmax(0,1fr)_340px]">
             {/* TEMPLATE */}
-            <div
-                ref={templateRef}
-                className="bg-white rounded-2xl overflow-hidden shadow-2xl border"
-            >
-                {/* 🔥 TOP */}
-                <div className="bg-gradient-to-r from-indigo-900 via-purple-800 to-blue-900 text-white px-4 py-3">
-                    {/* <p className="text-xs uppercase tracking-widest text-indigo-300">
-            Official Entry Pass
-          </p> */}
-
-                    <h2 className="text-base text-white mt-1 leading-tight whitespace-nowrap overflow-hidden text-ellipsis">
-                        {tournamentName}
-                    </h2>
-
-                    {/* <p className="text-sm text-indigo-200 mt-2">
-            📍 {city || "Venue"}
-          </p> */}
+            <div className="overflow-hidden rounded-lg border border-[var(--border-card)] bg-[var(--bg-card)] shadow-[var(--shadow-card)]">
+                <div className="border-b border-[var(--border-card)] bg-[var(--bg-main)] px-4 py-3">
+                    <div className="flex items-center gap-3">
+                        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-[var(--border-primary)] bg-[var(--accent-light)] text-[var(--primary)]">
+                            <QrCode className="h-4 w-4" />
+                        </div>
+                        <div className="min-w-0">
+                            <h3 className="truncate text-sm font-semibold text-[var(--text-primary)]">
+                                Entry Barcode
+                            </h3>
+                            <p className="mt-0.5 text-xs text-[var(--text-secondary)]">
+                                Share this QR with players and visitors for entry pass access.
+                            </p>
+                        </div>
+                    </div>
                 </div>
 
-                {/* BODY */}
-                <div className="p-3 bg-gradient-to-br from-gray-50 to-white">
-
-                    {/* QR CARD */}
-                    <div className="relative bg-gradient-to-br from-indigo-100 via-purple-100 to-indigo-50 border border-indigo-200 rounded-2xl p-3 text-center shadow-inner">
-
-                        {/* QR */}
-                        <div className="bg-white p-2 rounded-xl shadow-md inline-block">
-                            {qrImageSrc ? (
-                                <img
-                                    src={qrImageSrc}
-                                    crossOrigin="anonymous"
-                                    alt="QR"
-                                    className="w-24 h-24 rounded-lg object-contain"
-                                />
-                            ) : (
-                                <div className="w-24 h-24 bg-gray-200 animate-pulse rounded-lg flex items-center justify-center text-xs text-gray-400">
-                                    Loading QR...
-                                </div>
+                <div className="p-4">
+                    <div
+                        ref={templateRef}
+                        className="mx-auto max-w-sm overflow-hidden rounded-xl border border-[var(--border-card)] bg-[var(--bg-card)] shadow-sm"
+                    >
+                        <div className="bg-[#102033] px-4 py-4 text-center">
+                            <p className="text-[10px] font-bold uppercase tracking-wide text-[var(--secondary)]">
+                                Official Entry Pass
+                            </p>
+                            <h2 className="mt-1 truncate text-base font-semibold text-white">
+                                {tournamentName || "Tournament"}
+                            </h2>
+                            {city && (
+                                <p className="mt-1 truncate text-xs text-white/70">
+                                    {city}
+                                </p>
                             )}
                         </div>
 
-                        {/* TEXT */}
-                        <p className="text-xs font-semibold text-gray-700 mt-2">
-                            Scan to download entry pass
-                        </p>
+                        <div className="bg-[var(--bg-main)] p-4">
+                            <div className="rounded-xl border border-[var(--border-card)] bg-[var(--bg-card)] p-4 text-center shadow-sm">
+                                <div className="inline-flex rounded-xl border border-[var(--border-card)] bg-white p-3 shadow-sm">
+                                    {qrImageSrc ? (
+                                        <img
+                                            src={qrImageSrc}
+                                            crossOrigin="anonymous"
+                                            alt="Entry pass QR code"
+                                            className="h-40 w-40 rounded-lg object-contain"
+                                        />
+                                    ) : (
+                                        <div className="flex h-40 w-40 animate-pulse items-center justify-center rounded-lg bg-[var(--secondary-lighter)] text-xs text-[var(--text-muted)]">
+                                            Loading QR...
+                                        </div>
+                                    )}
+                                </div>
 
-                        <p className="text-[9px] text-gray-500 break-all mt-0.5 px-2">
-                            {pageUrl}
-                        </p>
+                                <p className="mt-3 text-sm font-semibold text-[var(--text-primary)]">
+                                    Scan to download entry pass
+                                </p>
+                                <p className="mx-auto mt-1 max-w-xs break-all text-[11px] leading-4 text-[var(--text-secondary)]">
+                                    {pageUrl}
+                                </p>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            {/* BUTTONS */}
-            <div className="mt-2 grid grid-cols-1 md:grid-cols-3 gap-2">
-                <button
-                    onClick={downloadImage}
-                    disabled={downloading || !qrReady}
-                    className="w-full min-h-9 px-2 text-xs whitespace-nowrap bg-indigo-600 hover:bg-indigo-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-white py-1.5 rounded-lg flex items-center justify-center gap-1.5"
-                >
-                    <Download size={16} />
-                    Download Image
-                </button>
-
-                <button
-                    onClick={downloadPDF}
-                    disabled={downloading || !qrReady}
-                    className="w-full min-h-9 px-2 text-xs whitespace-nowrap bg-purple-600 hover:bg-purple-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-white py-1.5 rounded-lg flex items-center justify-center gap-1.5"
-                >
-                    <Download size={16} />
-                    Download PDF
-                </button>
-
-                <button
-                    onClick={copyLink}
-                    className="w-full min-h-9 px-2 text-xs whitespace-nowrap bg-blue-600 hover:bg-blue-700 text-white py-1.5 rounded-lg flex items-center justify-center gap-1.5"
-                >
-                    {copied ? <Check size={16} /> : <Copy size={16} />}
-                    {copied ? "Copied!" : "Copy Link"}
-                </button>
-            </div>
-
-            {downloading && (
-                <p className="text-center text-[11px] text-yellow-600 mt-1">
-                    Processing download...
+            {/* ACTIONS */}
+            <div className="rounded-lg border border-[var(--border-card)] bg-[var(--bg-card)] p-4 shadow-[var(--shadow-card)]">
+                <h3 className="text-sm font-semibold text-[var(--text-primary)]">
+                    Barcode Actions
+                </h3>
+                <p className="mt-1 text-xs text-[var(--text-secondary)]">
+                    Download a branded copy or share the entry-pass link directly.
                 </p>
-            )}
+
+                <div className="mt-4 space-y-2">
+                    <button
+                        onClick={downloadImage}
+                        disabled={downloading || !qrReady}
+                        className="inline-flex h-10 w-full items-center justify-center gap-2 rounded-lg bg-[var(--secondary)] px-4 text-sm font-semibold text-[#102033] shadow-sm transition hover:bg-[var(--secondary-strong)] disabled:cursor-not-allowed disabled:opacity-60"
+                    >
+                        <Download size={16} />
+                        Download Image
+                    </button>
+
+                    <button
+                        onClick={downloadPDF}
+                        disabled={downloading || !qrReady}
+                        className="inline-flex h-10 w-full items-center justify-center gap-2 rounded-lg border border-[var(--border-card)] bg-[var(--bg-main)] px-4 text-sm font-semibold text-[var(--text-primary)] transition hover:border-[var(--border-primary)] hover:bg-[var(--accent-light)] disabled:cursor-not-allowed disabled:opacity-60"
+                    >
+                        <Download size={16} />
+                        Download PDF
+                    </button>
+
+                    <button
+                        onClick={copyLink}
+                        className="inline-flex h-10 w-full items-center justify-center gap-2 rounded-lg border border-[var(--border-card)] bg-[var(--bg-main)] px-4 text-sm font-semibold text-[var(--text-primary)] transition hover:border-[var(--border-primary)] hover:bg-[var(--accent-light)]"
+                    >
+                        {copied ? <Check size={16} /> : <Copy size={16} />}
+                        {copied ? "Copied!" : "Copy Link"}
+                    </button>
+                </div>
+
+                <div className="mt-4 rounded-lg border border-[var(--border-card)] bg-[var(--bg-main)] p-3">
+                    <p className="text-[10px] font-bold uppercase tracking-wide text-[var(--text-muted)]">
+                        Entry URL
+                    </p>
+                    <p className="mt-1 break-all text-xs font-medium text-[var(--text-primary)]">
+                        {pageUrl || "-"}
+                    </p>
+                </div>
+
+                {downloading && (
+                    <p className="mt-3 text-center text-xs font-medium text-[var(--primary)]">
+                        Processing download...
+                    </p>
+                )}
+            </div>
         </div>
     );
 };

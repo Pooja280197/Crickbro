@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { Eye, MapPin, Clock, Calendar, X, Check, Star } from "lucide-react";
 import { toast } from "react-toastify";
 import api from "../utils/api";
@@ -275,23 +276,25 @@ const PlayerDetailsModal = ({
     setSessionShowDeleteConfirm(false);
   };
 
-  return (
-    <div className="fixed inset-0 z-[120000] flex items-start sm:items-center justify-center p-3 pt-24 mt-20 sm:p-4 sm:pt-4 bg-black/70 backdrop-blur-md overflow-y-auto">
-      <div className="relative z-[120001] bg-white rounded-2xl shadow-[0_20px_60px_rgba(0,0,0,0.25)] max-w-3xl w-full my-4 sm:my-0 max-h-[calc(100vh-8rem)] sm:max-h-[82vh] overflow-hidden flex flex-col">
+  if (typeof document === "undefined") return null;
+
+  return createPortal(
+    <div className="fixed inset-0 z-[120000] flex items-center justify-center overflow-y-auto bg-black/60 p-2 backdrop-blur-sm sm:p-4">
+      <div className="relative z-[120001] flex max-h-[calc(100vh-1rem)] w-full max-w-3xl flex-col overflow-hidden rounded-lg border border-[var(--border-card)] bg-[var(--bg-card)] shadow-[var(--shadow-card)] sm:max-h-[calc(100vh-2rem)]">
         {showDeleteConfirm && (
           <div className="absolute inset-0 z-20 bg-black/40 flex items-center justify-center p-4">
-            <div className="w-full max-w-sm rounded-2xl bg-white shadow-2xl border border-red-100 p-5">
-              <h3 className="text-lg font-semibold text-gray-900">
+            <div className="w-full max-w-sm rounded-2xl bg-[var(--bg-card)] shadow-2xl border border-red-100 p-5">
+              <h3 className="text-lg font-semibold text-[var(--text-primary)]">
                 Remove Player
               </h3>
-              <p className="mt-2 text-sm text-gray-600">
+              <p className="mt-2 text-sm text-[var(--text-secondary)]">
                 Are you sure you want to remove this player from the auction?
               </p>
               <div className="mt-4 flex justify-end gap-2">
                 <button
                   type="button"
                   onClick={() => setShowDeleteConfirm(false)}
-                  className="px-4 py-2 rounded-lg border border-gray-300 text-sm font-medium text-gray-700 hover:bg-gray-100"
+                  className="px-4 py-2 rounded-lg border border-[var(--border-primary)] text-sm font-medium text-[var(--text-primary)] hover:bg-[var(--secondary-lighter)]"
                 >
                   Cancel
                 </button>
@@ -310,18 +313,18 @@ const PlayerDetailsModal = ({
 
             {showSessionDeleteConfirm && (
           <div className="absolute inset-0 z-20 bg-black/40 flex items-center justify-center p-4">
-            <div className="w-full max-w-sm rounded-2xl bg-white shadow-2xl border border-red-100 p-5">
-              <h3 className="text-lg font-semibold text-gray-900">
+            <div className="w-full max-w-sm rounded-2xl bg-[var(--bg-card)] shadow-2xl border border-red-100 p-5">
+              <h3 className="text-lg font-semibold text-[var(--text-primary)]">
                 Remove Player From Session
               </h3>
-              <p className="mt-2 text-sm text-gray-600">
+              <p className="mt-2 text-sm text-[var(--text-secondary)]">
                 Are you sure you want to remove this player from the Slot/Session?
               </p>
               <div className="mt-4 flex justify-end gap-2">
                 <button
                   type="button"
                   onClick={() => setSessionShowDeleteConfirm(false)}
-                  className="px-4 py-2 rounded-lg border border-gray-300 text-sm font-medium text-gray-700 hover:bg-gray-100"
+                  className="px-4 py-2 rounded-lg border border-[var(--border-primary)] text-sm font-medium text-[var(--text-primary)] hover:bg-[var(--secondary-lighter)]"
                 >
                   Cancel
                 </button>
@@ -343,19 +346,21 @@ const PlayerDetailsModal = ({
         <button
           type="button"
           onClick={onClose}
-          className="absolute top-3 right-3 z-10 w-9 h-9 flex items-center justify-center bg-gray-100 hover:bg-gray-200 rounded-full transition"
+          className="absolute right-3 top-3 z-10 flex h-8 w-8 items-center justify-center rounded-lg border border-[var(--border-card)] bg-[var(--bg-main)] text-[var(--text-primary)] transition hover:border-[var(--border-primary)] hover:bg-[var(--accent-light)]"
         >
-          <X className="w-4 h-4 text-gray-700" />
+          <X className="w-4 h-4 text-[var(--text-primary)]" />
         </button>
 
         {/* Scrollable Body */}
-        <div className="p-4 sm:p-5 pt-12 overflow-y-auto">
+        <div className="professional-scrollbar max-h-[calc(100vh-1rem)] overflow-y-auto p-4 pt-12 sm:max-h-[calc(100vh-2rem)] sm:p-5 sm:pt-12">
 
           {/* Player Header */}
-          <div className="flex items-center gap-3 mb-4 border-b border-gray-100 pb-4">
-            <div className="w-16 h-16 rounded-full overflow-hidden bg-gray-200 shadow-sm">
+          <div className="mb-4 flex items-center gap-3 border-b border-[var(--border-card)] pb-4">
+            <div className="h-16 w-16 shrink-0 overflow-hidden rounded-lg border border-[var(--border-card)] bg-[var(--secondary-lighter)] shadow-sm">
               {playerImage && !isDummyImage(playerImage) ? (
                 <img
+                  loading="lazy"
+                  decoding="async"
                   src={playerImage}
                   alt={playerName}
                   className="w-full h-full object-cover"
@@ -364,7 +369,7 @@ const PlayerDetailsModal = ({
                 <div
                   className={`w-full h-full flex items-center justify-center bg-gradient-to-br ${getGradientByName(
                     playerName
-                  )} text-white text-lg font-bold`}
+                  )} text-[var(--text-dark)] text-lg font-bold`}
                 >
                   {initials}
                 </div>
@@ -372,33 +377,35 @@ const PlayerDetailsModal = ({
             </div>
 
             <div className="min-w-0">
-              <h2 className="text-lg sm:text-xl font-semibold text-gray-900 truncate">
+              <h2 className="truncate text-lg font-bold text-[var(--text-primary)] sm:text-xl">
                 {playerName}
               </h2>
 
               {role && (
-                <span className="inline-block mt-1 text-xs px-2.5 py-0.5 rounded-full bg-blue-100 text-blue-700 font-medium tracking-wide">
-                  {role.toUpperCase()}
+                <span className="mt-1 inline-flex rounded-full border border-[var(--border-primary)] bg-[var(--accent-light)] px-2.5 py-1 text-[11px] font-semibold text-[var(--primary)]">
+                  {role}
                 </span>
               )}
             </div>
           </div>
 
           {isEditing && (
-            <div className="mb-4 p-3 rounded-xl border border-blue-100 bg-blue-50/60">
-              <p className="text-xs font-semibold text-blue-700 uppercase tracking-wide mb-2">
+            <div className="mb-4 rounded-lg border border-[var(--border-card)] bg-[var(--secondary-lighter)] p-3">
+              <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-[var(--text-secondary)]">
                 Profile Picture
               </p>
               <div className="flex items-center gap-3">
-                <div className="w-14 h-14 rounded-full overflow-hidden bg-gray-200 border">
+                <div className="h-14 w-14 shrink-0 overflow-hidden rounded-lg border border-[var(--border-card)] bg-[var(--bg-card)]">
                   {profilePreview ? (
                     <img
+                      loading="lazy"
+                      decoding="async"
                       src={profilePreview}
                       alt="Profile Preview"
                       className="w-full h-full object-cover"
                     />
                   ) : (
-                    <div className="w-full h-full flex items-center justify-center text-xs text-gray-500">
+                    <div className="w-full h-full flex items-center justify-center text-xs text-[var(--text-secondary)]">
                       N/A
                     </div>
                   )}
@@ -415,7 +422,7 @@ const PlayerDetailsModal = ({
                     setProfileFile(file);
                     setProfilePreview(URL.createObjectURL(file));
                   }}
-                  className="block text-xs"
+                  className="block w-full text-xs font-medium text-[var(--text-secondary)] file:mr-3 file:rounded-lg file:border-0 file:bg-[var(--secondary)] file:px-3 file:py-2 file:text-xs file:font-semibold file:text-[#102033]"
                 />
               </div>
             </div>
@@ -423,22 +430,22 @@ const PlayerDetailsModal = ({
 
           {/* Personal Details */}
           <div className="mb-4">
-            <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">
+            <h3 className="text-xs font-semibold text-[var(--text-secondary)] uppercase tracking-wide mb-2">
               Personal Details
             </h3>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm">
+            <div className="grid grid-cols-1 gap-2 text-sm sm:grid-cols-2">
               {primaryDetails
                 .filter((detail) => detail.value !== "" && detail.value !== null && detail.value !== undefined)
                 .map((detail) => (
                   <div
                     key={detail.label}
-                    className="rounded-lg border border-gray-100 bg-gray-50/70 px-3 py-1.5"
+                    className="rounded-lg border border-[var(--border-card)] bg-[var(--secondary-lighter)] px-3 py-2"
                   >
-                    <p className="text-[11px] uppercase tracking-wide text-gray-500">
+                    <p className="text-[11px] font-semibold uppercase tracking-wide text-[var(--text-secondary)]">
                       {detail.label}
                     </p>
-                    <p className="font-semibold text-gray-900 break-words">
+                    <p className="mt-1 break-words text-xs font-semibold text-[var(--text-primary)]">
                       {detail.value}
                     </p>
                   </div>
@@ -450,12 +457,12 @@ const PlayerDetailsModal = ({
                   .map((detail) => (
                     <div
                       key={detail.label}
-                      className="rounded-lg border border-gray-100 bg-gray-50/70 px-3 py-1.5"
+                      className="rounded-lg border border-[var(--border-card)] bg-[var(--secondary-lighter)] px-3 py-2"
                     >
-                      <p className="text-[11px] uppercase tracking-wide text-gray-500">
+                      <p className="text-[11px] font-semibold uppercase tracking-wide text-[var(--text-secondary)]">
                         {detail.label}
                       </p>
-                      <p className="font-semibold text-gray-900 break-words">
+                      <p className="mt-1 break-words text-xs font-semibold text-[var(--text-primary)]">
                         {detail.value}
                       </p>
                     </div>
@@ -468,30 +475,30 @@ const PlayerDetailsModal = ({
               <button
                 type="button"
                 onClick={() => setShowMoreDetails((prev) => !prev)}
-                className="mt-2 text-xs font-semibold text-blue-600 hover:text-blue-700"
+                className="mt-2 text-xs font-semibold text-[var(--primary)] hover:text-[var(--secondary)]"
               >
                 {showMoreDetails ? "Show less details" : "Show more details"}
               </button>
             )}
 
             {isEditing && (
-              <div className="mt-3 border border-blue-100 bg-blue-50/60 rounded-xl p-3">
-                <h4 className="text-xs font-semibold text-blue-700 uppercase tracking-wide mb-2">
+              <div className="mt-3 rounded-lg border border-[var(--border-card)] bg-[var(--secondary-lighter)] p-3">
+                <h4 className="mb-3 text-xs font-semibold uppercase tracking-wide text-[var(--text-secondary)]">
                   Edit Details
                 </h4>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
                   <input
                     type="text"
                     value={editForm.name}
                     onChange={(e) => handleEditInputChange("name", e.target.value)}
                     placeholder="Name"
-                    className="px-3 py-2 text-sm border rounded-lg"
+                    className="h-10 rounded-lg border border-[var(--border-card)] bg-[var(--bg-card)] px-3 text-sm font-medium text-[var(--text-primary)] outline-none transition placeholder:text-[var(--text-secondary)] focus:border-[var(--border-primary)]"
                   />
                   <input
                     type="text"
                     value={editForm.mobile}
                     placeholder="Mobile"
-                    className="px-3 py-2 text-sm border rounded-lg bg-gray-100 text-gray-500 cursor-not-allowed"
+                    className="h-10 cursor-not-allowed rounded-lg border border-[var(--border-card)] bg-[var(--bg-main)] px-3 text-sm font-medium text-[var(--text-secondary)] outline-none"
                     maxLength={10}
                     readOnly
                     disabled
@@ -501,19 +508,19 @@ const PlayerDetailsModal = ({
                     value={editForm.email}
                     onChange={(e) => handleEditInputChange("email", e.target.value)}
                     placeholder="Email"
-                    className="px-3 py-2 text-sm border rounded-lg"
+                    className="h-10 rounded-lg border border-[var(--border-card)] bg-[var(--bg-card)] px-3 text-sm font-medium text-[var(--text-primary)] outline-none transition placeholder:text-[var(--text-secondary)] focus:border-[var(--border-primary)]"
                   />
                   <input
                     type="text"
                     value={editForm.location}
                     onChange={(e) => handleEditInputChange("location", e.target.value)}
                     placeholder="Location"
-                    className="px-3 py-2 text-sm border rounded-lg"
+                    className="h-10 rounded-lg border border-[var(--border-card)] bg-[var(--bg-card)] px-3 text-sm font-medium text-[var(--text-primary)] outline-none transition placeholder:text-[var(--text-secondary)] focus:border-[var(--border-primary)]"
                   />
                   <select
                     value={editForm.playerRole}
                     onChange={(e) => handleEditInputChange("playerRole", e.target.value)}
-                    className="px-3 py-2 text-sm border rounded-lg"
+                    className="h-10 rounded-lg border border-[var(--border-card)] bg-[var(--bg-card)] px-3 text-sm font-medium text-[var(--text-primary)] outline-none transition focus:border-[var(--border-primary)]"
                   >
                     {PLAYER_ROLES.map((option) => (
                       <option key={option.value} value={option.value}>
@@ -525,28 +532,28 @@ const PlayerDetailsModal = ({
                     type="date"
                     value={editForm.dob}
                     onChange={(e) => handleEditInputChange("dob", e.target.value)}
-                    className="px-3 py-2 text-sm border rounded-lg"
+                    className="h-10 rounded-lg border border-[var(--border-card)] bg-[var(--bg-card)] px-3 text-sm font-medium text-[var(--text-primary)] outline-none transition focus:border-[var(--border-primary)]"
                   />
                   <input
                     type="text"
                     value={editForm.jerseyNumber}
                     onChange={(e) => handleEditInputChange("jerseyNumber", e.target.value)}
                     placeholder="Jersey Number"
-                    className="px-3 py-2 text-sm border rounded-lg"
+                    className="h-10 rounded-lg border border-[var(--border-card)] bg-[var(--bg-card)] px-3 text-sm font-medium text-[var(--text-primary)] outline-none transition placeholder:text-[var(--text-secondary)] focus:border-[var(--border-primary)]"
                   />
                   <input
                     type="text"
                     value={editForm.jerseyName}
                     onChange={(e) => handleEditInputChange("jerseyName", e.target.value)}
                     placeholder="Jersey Name"
-                    className="px-3 py-2 text-sm border rounded-lg"
+                    className="h-10 rounded-lg border border-[var(--border-card)] bg-[var(--bg-card)] px-3 text-sm font-medium text-[var(--text-primary)] outline-none transition placeholder:text-[var(--text-secondary)] focus:border-[var(--border-primary)]"
                   />
                   <input
                     type="text"
                     value={editForm.jerseySize}
                     onChange={(e) => handleEditInputChange("jerseySize", e.target.value)}
                     placeholder="Jersey Size"
-                    className="px-3 py-2 text-sm border rounded-lg sm:col-span-2"
+                    className="h-10 rounded-lg border border-[var(--border-card)] bg-[var(--bg-card)] px-3 text-sm font-medium text-[var(--text-primary)] outline-none transition placeholder:text-[var(--text-secondary)] focus:border-[var(--border-primary)] sm:col-span-2"
                   />
                 </div>
               </div>
@@ -554,13 +561,13 @@ const PlayerDetailsModal = ({
           </div>
 
           {(slotName || sessionName || sessionDate || (sessionStart && sessionEnd)) && (
-            <div className="mb-4 bg-emerald-50 border border-emerald-100 rounded-xl p-3">
+            <div className="mb-4 rounded-lg border border-[var(--border-card)] bg-[var(--secondary-lighter)] p-3">
               <div className="flex items-center justify-between gap-3 mb-1">
-                <h3 className="text-xs font-semibold text-gray-700 uppercase tracking-wide">Trial Details</h3>
+                <h3 className="text-xs font-semibold text-[var(--text-primary)] uppercase tracking-wide">Trial Details</h3>
                 <button
                   type="button"
                   onClick={() => setShowTrialDetails((prev) => !prev)}
-                  className="text-xs font-semibold text-emerald-700 hover:text-emerald-800"
+                  className="text-xs font-semibold text-[var(--primary)] hover:text-[var(--secondary)]"
                 >
                   {showTrialDetails ? "Hide" : "Show"}
                 </button>
@@ -569,33 +576,33 @@ const PlayerDetailsModal = ({
               {showTrialDetails && (
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm">
                   {slotName && (
-                    <div className="rounded-lg border border-emerald-100 bg-white px-3 py-1.5">
-                      <p className="text-[11px] uppercase tracking-wide text-gray-500">Slot</p>
-                      <p className="font-semibold text-gray-900 break-words">
+                    <div className="rounded-lg border border-[var(--border-card)] bg-[var(--bg-card)] px-3 py-2">
+                      <p className="text-[11px] uppercase tracking-wide text-[var(--text-secondary)]">Slot</p>
+                      <p className="font-semibold text-[var(--text-primary)] break-words">
                         {slotName}
                       </p>
                     </div>
                   )}
                   {sessionName && (
-                    <div className="rounded-lg border border-emerald-100 bg-white px-3 py-1.5">
-                      <p className="text-[11px] uppercase tracking-wide text-gray-500">Session</p>
-                      <p className="font-semibold text-gray-900 break-words">
+                    <div className="rounded-lg border border-[var(--border-card)] bg-[var(--bg-card)] px-3 py-2">
+                      <p className="text-[11px] uppercase tracking-wide text-[var(--text-secondary)]">Session</p>
+                      <p className="font-semibold text-[var(--text-primary)] break-words">
                         {sessionName}
                       </p>
                     </div>
                   )}
                   {sessionDate && (
-                    <div className="rounded-lg border border-emerald-100 bg-white px-3 py-1.5">
-                      <p className="text-[11px] uppercase tracking-wide text-gray-500">Date</p>
-                      <p className="font-semibold text-gray-900 break-words">
+                    <div className="rounded-lg border border-[var(--border-card)] bg-[var(--bg-card)] px-3 py-2">
+                      <p className="text-[11px] uppercase tracking-wide text-[var(--text-secondary)]">Date</p>
+                      <p className="font-semibold text-[var(--text-primary)] break-words">
                         {formatDate(sessionDate)}
                       </p>
                     </div>
                   )}
                   {sessionStart && sessionEnd && (
-                    <div className="rounded-lg border border-emerald-100 bg-white px-3 py-1.5">
-                      <p className="text-[11px] uppercase tracking-wide text-gray-500">Time</p>
-                      <p className="font-semibold text-gray-900 break-words">
+                    <div className="rounded-lg border border-[var(--border-card)] bg-[var(--bg-card)] px-3 py-2">
+                      <p className="text-[11px] uppercase tracking-wide text-[var(--text-secondary)]">Time</p>
+                      <p className="font-semibold text-[var(--text-primary)] break-words">
                         {formatTime(sessionStart)} - {formatTime(sessionEnd)}
                       </p>
                     </div>
@@ -607,8 +614,8 @@ const PlayerDetailsModal = ({
 
           {/* Auction Details */}
           {(basePrice > 0 || currentBid > 0) && (
-            <div className="bg-blue-50 border border-blue-100 rounded-xl p-4 mb-6">
-              <h3 className="text-sm font-semibold text-gray-700 mb-3">
+            <div className="mb-4 rounded-lg border border-[var(--border-card)] bg-[var(--secondary-lighter)] p-3">
+              <h3 className="text-sm font-semibold text-[var(--text-primary)] mb-3">
                 Auction Details
               </h3>
 
@@ -616,8 +623,8 @@ const PlayerDetailsModal = ({
 
                 {basePrice > 0 && (
                   <div>
-                    <div className="text-gray-500 text-xs">Base Price</div>
-                    <div className="text-lg font-semibold text-gray-900">
+                    <div className="text-[var(--text-secondary)] text-xs">Base Price</div>
+                    <div className="text-lg font-semibold text-[var(--text-primary)]">
                       ₹{basePrice.toLocaleString()}
                     </div>
                   </div>
@@ -625,8 +632,8 @@ const PlayerDetailsModal = ({
 
                 {currentBid > 0 && (
                   <div>
-                    <div className="text-gray-500 text-xs">Current Bid</div>
-                    <div className="text-lg font-semibold text-green-600">
+                    <div className="text-[var(--text-secondary)] text-xs">Current Bid</div>
+                    <div className="text-lg font-semibold text-[var(--primary)]">
                       ₹{currentBid.toLocaleString()}
                     </div>
                   </div>
@@ -634,8 +641,8 @@ const PlayerDetailsModal = ({
 
                 {status && (
                   <div>
-                    <div className="text-gray-500 text-xs">Status</div>
-                    <div className="font-medium text-gray-900">
+                    <div className="text-[var(--text-secondary)] text-xs">Status</div>
+                    <div className="font-medium text-[var(--text-primary)]">
                       {status.charAt(0).toUpperCase() + status.slice(1)}
                     </div>
                   </div>
@@ -646,23 +653,23 @@ const PlayerDetailsModal = ({
 
           {/* Rating */}
           {rating?.avgRating > 0 && (
-            <div className="bg-yellow-50 border border-yellow-100 rounded-xl p-4">
-              <h3 className="text-sm font-semibold text-gray-700 mb-3">
+            <div className="rounded-lg border border-[var(--border-card)] bg-[var(--secondary-lighter)] p-3">
+              <h3 className="text-sm font-semibold text-[var(--text-primary)] mb-3">
                 Rating Details
               </h3>
 
               <div className="flex items-center justify-between mb-3">
-                <span className="text-gray-500 text-sm">Average Rating</span>
+                <span className="text-[var(--text-secondary)] text-sm">Average Rating</span>
 
-                <span className="text-2xl font-bold text-yellow-600">
+                <span className="text-2xl font-bold text-[var(--primary)]">
                   {rating.avgRating}
                 </span>
               </div>
 
               {rating.playerType && (
                 <div className="flex justify-between text-sm">
-                  <span className="text-gray-500">Player Type</span>
-                  <span className="font-medium text-gray-900">
+                  <span className="text-[var(--text-secondary)]">Player Type</span>
+                  <span className="font-medium text-[var(--text-primary)]">
                     {rating.playerType}
                   </span>
                 </div>
@@ -673,12 +680,12 @@ const PlayerDetailsModal = ({
 
         {/* Footer */}
         {(onEdit || onDelete) && (
-          <div className="border-t bg-white p-4 flex flex-wrap gap-2 justify-end">
+          <div className="flex flex-wrap justify-end gap-2 border-t border-[var(--border-card)] bg-[var(--bg-card)] p-4">
             {!isEditing && onEdit && (
               <button
                 type="button"
                 onClick={() => setIsEditing(true)}
-                className="px-4 py-2 rounded-lg font-semibold text-sm border border-blue-200 text-blue-700 hover:bg-blue-50"
+                className="rounded-lg border border-[var(--border-primary)] bg-[var(--accent-light)] px-4 py-2 text-sm font-semibold text-[var(--primary)] hover:bg-[var(--secondary)] hover:text-[#102033]"
               >
                 Edit
               </button>
@@ -689,7 +696,7 @@ const PlayerDetailsModal = ({
                 <button
                   type="button"
                   onClick={() => setIsEditing(false)}
-                  className="px-4 py-2 rounded-lg font-semibold text-sm border border-gray-300 text-gray-700 hover:bg-gray-100"
+                  className="rounded-lg border border-[var(--border-card)] px-4 py-2 text-sm font-semibold text-[var(--text-primary)] hover:border-[var(--border-primary)] hover:bg-[var(--secondary-lighter)]"
                 >
                   Cancel
                 </button>
@@ -697,7 +704,7 @@ const PlayerDetailsModal = ({
                   type="button"
                   onClick={handleSaveEdit}
                   disabled={isSaving}
-                  className="px-4 py-2 rounded-lg font-semibold text-sm bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-60"
+                  className="rounded-lg bg-[var(--secondary)] px-4 py-2 text-sm font-semibold text-[#102033] hover:bg-[var(--secondary-strong)] disabled:opacity-60"
                 >
                   {isSaving ? "Saving..." : "Save"}
                 </button>
@@ -728,7 +735,8 @@ const PlayerDetailsModal = ({
           </div>
         )}
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 };
 
@@ -772,7 +780,7 @@ const PlayerCard = ({
   const initials = getInitials(playerName);
   const role = formatRole(type || playerData?.playerRole);
 
-  console.log(player,"data")
+  console.log(playerData,"player")
 
   const handleViewDetails = (e) => {
     e?.stopPropagation();
@@ -922,39 +930,41 @@ const PlayerCard = ({
   if (mode === "select") {
     return (
       <>
-        <div className="flex flex-col items-center gap-2 w-full max-w-[140px]">
-          <div className="relative w-full flex justify-center">
+    <div className="group flex w-full flex-col items-center gap-1.5 rounded-lg border border-[var(--border-card)] bg-[var(--bg-card)] p-1.5 shadow-[var(--shadow-card)] transition hover:border-[var(--border-primary)]">
+          <div className="relative">
             {showActions && (
               <div
                 onClick={handleSelect}
-                className={`absolute -top-1 right-2 z-10 w-8 h-8 rounded-full flex items-center justify-center transition-all cursor-pointer border ${
+                className={`absolute right-1 top-1 z-10 flex h-7 w-7 cursor-pointer items-center justify-center rounded-lg border transition-all ${
                   isSelected
-                    ? "bg-green-500 border-white text-white shadow-md"
-                    : "bg-white border-gray-300 text-gray-400 hover:border-gray-400"
+                    ? "border-emerald-500 bg-emerald-500 text-white shadow-md"
+                    : "border-[var(--border-card)] bg-[var(--bg-card)] text-[var(--text-secondary)] hover:border-[var(--border-primary)]"
                 }`}
               >
-                <Check className="w-4 h-4" />
+                <Check className="h-3.5 w-3.5" />
               </div>
             )}
 
             <div
               onClick={handleViewDetails}
-              className={`w-20 h-20 rounded-full overflow-hidden shadow-lg transition-all cursor-pointer ${
+              className={`h-20 w-20 overflow-hidden rounded-lg border transition-all cursor-pointer sm:h-20 sm:w-20 ${
                 isSelected
-                  ? "ring-4 ring-green-400 shadow-green-200"
-                  : "ring-2 ring-gray-200 hover:ring-blue-400"
+                  ? "border-emerald-500 ring-2 ring-emerald-400"
+                  : "border-[var(--border-card)] group-hover:border-[var(--border-primary)]"
               }`}
             >
               {!imageError && playerImage && !isDummyImage(playerImage) ? (
                 <img
+                  loading="lazy"
+                  decoding="async"
                   src={playerImage}
                   alt={playerName}
-                  className="w-full h-full object-cover"
+                  className="h-full w-full object-cover"
                   onError={() => setImageError(true)}
                 />
               ) : (
                 <div
-                  className={`w-full h-full flex items-center justify-center text-white text-xl font-bold bg-gradient-to-br ${getGradientByName(
+                  className={`flex h-full w-full items-center justify-center bg-gradient-to-br text-xl font-bold text-white ${getGradientByName(
                     playerName,
                   )}`}
                 >
@@ -963,19 +973,30 @@ const PlayerCard = ({
               )}
             </div>
 
+            <button
+              type="button"
+              onClick={handleViewDetails}
+              className="absolute inset-0 flex items-center justify-center rounded-lg bg-black/45 opacity-0 transition group-hover:opacity-100"
+              title="View player details"
+            >
+              <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-[var(--bg-card)] text-[var(--primary)] shadow">
+                <Eye className="h-4 w-4" />
+              </span>
+            </button>
+
             {role && (
-              <span className="absolute -bottom-2 px-2 py-0.5 bg-purple-600 text-white text-[10px] font-semibold rounded-full shadow-lg">
+              <span className="absolute bottom-1 left-1 max-w-[calc(100%-0.5rem)] truncate rounded bg-[var(--secondary)] px-1.5 py-0.5 text-[9px] font-bold leading-3 text-[#102033] shadow">
                 {role}
               </span>
             )}
           </div>
 
-          <div className="text-center w-full px-1">
-            <p className="text-xs font-semibold text-[var(--text-secondary)] truncate">
+          <div className="min-w-0 max-w-full text-center">
+            <p className="w-full truncate text-[11px] font-semibold leading-4 text-[var(--text-primary)]">
               {playerName}
             </p>
             {playerBatchId && (
-              <p className="text-xs text-gray-500 truncate mt-1">
+              <p className="truncate text-[10px] leading-3 text-[var(--text-secondary)]">
                 {playerBatchId}
               </p>
             )}
@@ -1011,7 +1032,7 @@ const PlayerCard = ({
         <div
           onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={() => setIsHovered(false)}
-          className="relative bg-white rounded-xl shadow-md hover:shadow-lg transition-all duration-300 border border-gray-200 overflow-hidden flex w-full max-w-sm p-3 gap-3"
+          className="relative bg-[var(--bg-card)] rounded-xl shadow-md hover:shadow-lg transition-all duration-300 border border-[var(--border-card)] overflow-hidden flex w-full max-w-sm p-3 gap-3"
         >
           <div
             onClick={handleViewDetails}
@@ -1019,6 +1040,8 @@ const PlayerCard = ({
           >
             {!imageError && playerImage && !isDummyImage(playerImage) ? (
               <img
+                loading="lazy"
+                decoding="async"
                 src={playerImage}
                 alt={playerName}
                 className="w-full h-full object-cover"
@@ -1026,7 +1049,7 @@ const PlayerCard = ({
               />
             ) : (
               <div
-                className={`w-full h-full flex items-center justify-center text-white text-xl font-bold bg-gradient-to-br ${getGradientByName(
+                className={`w-full h-full flex items-center justify-center text-[var(--text-dark)] text-xl font-bold bg-gradient-to-br ${getGradientByName(
                   playerName,
                 )}`}
               >
@@ -1038,12 +1061,12 @@ const PlayerCard = ({
               <span
                 className={`absolute bottom-1 right-1 px-2 py-0.5 rounded-full text-[9px] font-semibold shadow ${
                   role?.toLowerCase() === "batsman"
-                    ? "bg-blue-600 text-white"
+                    ? "bg-blue-600 text-[var(--text-dark)]"
                     : role?.toLowerCase() === "bowler"
-                      ? "bg-red-600 text-white"
+                      ? "bg-red-600 text-[var(--text-dark)]"
                       : role?.toLowerCase() === "allrounder"
-                        ? "bg-orange-500 text-white"
-                        : "bg-purple-500 text-white"
+                        ? "bg-orange-500 text-[var(--text-dark)]"
+                        : "bg-purple-500 text-[var(--text-dark)]"
                 }`}
               >
                 {role}
@@ -1052,14 +1075,14 @@ const PlayerCard = ({
           </div>
 
           <div className="flex flex-col justify-center flex-grow">
-            <h3 className="font-semibold text-gray-900 text-sm leading-tight">
+            <h3 className="font-semibold text-[var(--text-primary)] text-sm leading-tight">
               {playerName}
             </h3>
 
             {location?.venue && (
               <div className="flex items-center gap-1 mt-1">
                 <MapPin className="w-3 h-3 text-pink-500" />
-                <span className="text-xs text-gray-700 truncate">
+                <span className="text-xs text-[var(--text-primary)] truncate">
                   {location.venue}
                 </span>
               </div>
@@ -1068,7 +1091,7 @@ const PlayerCard = ({
             {assign?.slotStartTime && (
               <div className="flex items-center gap-1 mt-1">
                 <Clock className="w-3 h-3 text-green-600" />
-                <span className="text-xs text-gray-600">
+                <span className="text-xs text-[var(--text-secondary)]">
                   {formatTime(assign.slotStartTime)}-
                   {formatTime(assign.slotEndTime)}
                 </span>
@@ -1078,7 +1101,7 @@ const PlayerCard = ({
             {rating?.avgRating > 0 && (
               <div className="flex items-center gap-1 mt-1">
                 <Star className="w-3 h-3 text-yellow-500" />
-                <span className="text-xs font-semibold text-gray-900">
+                <span className="text-xs font-semibold text-[var(--text-primary)]">
                   Rating: {rating}
                 </span>
               </div>
@@ -1090,10 +1113,10 @@ const PlayerCard = ({
               <button
                 type="button"
                 onClick={handleViewDetails}
-                className="bg-white px-4 py-2 rounded-lg shadow-lg flex items-center gap-2 hover:bg-gray-100"
+                className="bg-[var(--bg-card)] px-4 py-2 rounded-lg shadow-lg flex items-center gap-2 hover:bg-[var(--secondary-lighter)]"
               >
-                <Eye className="w-4 h-4 text-gray-700" />
-                <span className="text-sm font-medium text-gray-900">View</span>
+                <Eye className="w-4 h-4 text-[var(--text-primary)]" />
+                <span className="text-sm font-medium text-[var(--text-primary)]">View</span>
               </button>
             </div>
           )}
@@ -1107,19 +1130,19 @@ const PlayerCard = ({
                     e.stopPropagation();
                     setShowAssignSession(true);
                   }}
-                  className="w-full rounded-md bg-amber-500 text-white text-xs font-semibold px-2 py-1.5 hover:bg-amber-600"
+                  className="w-full rounded-md bg-amber-500 text-[var(--text-dark)] text-xs font-semibold px-2 py-1.5 hover:bg-amber-600"
                 >
                   Assign Session
                 </button>
               ) : (
                 <div
-                  className="bg-white rounded-lg border border-amber-200 shadow p-2 space-y-2"
+                  className="bg-[var(--bg-card)] rounded-lg border border-amber-200 shadow p-2 space-y-2"
                   onClick={(e) => e.stopPropagation()}
                 >
                   <select
                     value={assignSessionId}
                     onChange={(e) => setAssignSessionId(e.target.value)}
-                    className="w-full text-xs border border-gray-300 rounded-md px-2 py-1.5"
+                    className="w-full text-xs border border-[var(--border-primary)] rounded-md px-2 py-1.5"
                   >
                     <option value="">Select Session</option>
                     {availableSessions.map((session) => (
@@ -1136,7 +1159,7 @@ const PlayerCard = ({
                         setShowAssignSession(false);
                         setAssignSessionId("");
                       }}
-                      className="text-xs px-2 py-1 rounded border border-gray-300 text-gray-700 hover:bg-gray-100"
+                      className="text-xs px-2 py-1 rounded border border-[var(--border-primary)] text-[var(--text-primary)] hover:bg-[var(--secondary-lighter)]"
                     >
                       Cancel
                     </button>
@@ -1180,22 +1203,24 @@ const PlayerCard = ({
   // Default view mode
   return (
     <>
-      <div className="flex flex-col items-center gap-2 w-full max-w-[140px]">
-        <div className="relative w-full flex justify-center">
+    <div className="group flex w-full flex-col items-center gap-1.5 rounded-lg border border-[var(--border-card)] bg-[var(--bg-card)] p-1.5 shadow-[var(--shadow-card)] transition hover:border-[var(--border-primary)]">
+        <div className="relative">
           <div
             onClick={handleViewDetails}
-            className="w-20 h-20 rounded-full overflow-hidden shadow-lg transition-all ring-2 ring-gray-200 hover:ring-blue-400 cursor-pointer"
+            className="h-20 w-20 cursor-pointer overflow-hidden rounded-lg border border-[var(--border-card)] transition group-hover:border-[var(--border-primary)] sm:h-20 sm:w-20"
           >
             {!imageError && playerImage && !isDummyImage(playerImage) ? (
               <img
+                loading="lazy"
+                decoding="async"
                 src={playerImage}
                 alt={playerName}
-                className="w-full h-full object-cover"
+                className="h-full w-full object-cover"
                 onError={() => setImageError(true)}
               />
             ) : (
               <div
-                className={`w-full h-full flex items-center justify-center text-white text-xl font-bold bg-gradient-to-br ${getGradientByName(
+                className={`flex h-full w-full items-center justify-center bg-gradient-to-br text-xl font-bold text-white ${getGradientByName(
                   playerName,
                 )}`}
               >
@@ -1204,34 +1229,38 @@ const PlayerCard = ({
             )}
           </div>
 
+          <button
+            type="button"
+            onClick={handleViewDetails}
+            className="absolute inset-0 flex items-center justify-center rounded-lg bg-black/45 opacity-0 transition group-hover:opacity-100"
+            title="View player details"
+          >
+            <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-[var(--bg-card)] text-[var(--primary)] shadow">
+              <Eye className="h-4 w-4" />
+            </span>
+          </button>
+
           {role && (
-            <span className="absolute -bottom-2 px-2 py-0.5 bg-[var(--primary-light)] text-white text-[10px] font-semibold rounded-full shadow-lg">
+            <span className="absolute bottom-1 left-1 max-w-[calc(100%-0.5rem)] truncate rounded bg-[var(--secondary)] px-1.5 py-0.5 text-[9px] font-bold leading-3 text-[#102033] shadow">
               {role}
             </span>
           )}
         </div>
 
-        <p className="text-xs font-semibold text-[var(--text-secondary)] text-center truncate w-full px-1">
+        <p className="w-full truncate text-center text-[11px] font-semibold leading-4 text-[var(--text-primary)]">
           {playerName}
         </p>
         {playerBatchId && (
-          <p className="text-xs text-gray-500 truncate mt-1">{playerBatchId}</p>
+          <p className="w-full truncate text-center text-[10px] leading-3 text-[var(--text-secondary)]">{playerBatchId}</p>
         )}
 
         {showActions && (
-          <div className="flex gap-1 mt-1">
-            <button
-              type="button"
-              onClick={handleViewDetails}
-              className="px-2 py-1 bg-gray-500 text-white text-xs rounded hover:bg-gray-600 transition-colors"
-            >
-              View
-            </button>
+          <div className="mt-1 flex gap-1">
             {onAssign && (
               <button
                 type="button"
                 onClick={() => onAssign && onAssign(player)}
-                className="px-2 py-1 bg-green-500 text-white text-xs rounded hover:bg-green-600 transition-colors"
+                className="rounded-lg bg-emerald-600 px-2 py-1 text-xs font-semibold text-white transition hover:bg-emerald-700"
               >
                 Assign
               </button>

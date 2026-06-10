@@ -1,27 +1,30 @@
 import React, { useEffect } from "react";
-import TeamGallery from "./WebsiteSections/TeamGallery";
 import Header from "./WebsiteSections/Header";
 import Slider from "./WebsiteSections/Slider";
-import RegisterationForm from "./WebsiteSections/RegistrationForm";
-import TeamRegistrationForm from "./WebsiteSections/TeamRegistrationForm";
-import KeyFeatures from "./WebsiteSections/KeyFeatures";
-import Sponsors from "./WebsiteSections/Sponsors";
-import FAQ from "./WebsiteSections/FAQ";
-import GuestGallery from "./WebsiteSections/GuestGallery";
-import Rules from "./WebsiteSections/Rules";
 import Footer from "../../components/Footer";
-// import Header from "../../components/LandingHeader";
-import IndiaVenueMap from "../../components/IndiaVenueMap";
-// import axios from "axios";
 import { useParams } from "react-router-dom";
 import api from "../../utils/api";
-import IndiaMap from "./WebsiteSections/IndiaMap";
+
+const TeamGallery = React.lazy(() => import("./WebsiteSections/TeamGallery"));
+const RegisterationForm = React.lazy(
+  () => import("./WebsiteSections/RegistrationForm"),
+);
+const TeamRegistrationForm = React.lazy(
+  () => import("./WebsiteSections/TeamRegistrationForm"),
+);
+const KeyFeatures = React.lazy(() => import("./WebsiteSections/KeyFeatures"));
+const Sponsors = React.lazy(() => import("./WebsiteSections/Sponsors"));
+const FAQ = React.lazy(() => import("./WebsiteSections/FAQ"));
+const GuestGallery = React.lazy(() => import("./WebsiteSections/GuestGallery"));
+const Rules = React.lazy(() => import("./WebsiteSections/Rules"));
+const IndiaMap = React.lazy(() => import("./WebsiteSections/IndiaMap"));
 
 const RegWebsite = () => {
   const [pageData, setPageData] = React.useState(null);
   const [isPreviewMode, setIsPreviewMode] = React.useState(false);
   const [loading, setLoading] = React.useState(true);
   const [activeRegistrationForm, setActiveRegistrationForm] = React.useState("player");
+  const [websiteThemeMode, setWebsiteThemeMode] = React.useState("light");
   const { tournamentId, auctionId } = useParams();
 
   const showPlayerRegistration = !!pageData?.showRegistrationForm;
@@ -30,6 +33,27 @@ const RegWebsite = () => {
   const resolvedAuctionId = pageData?.auctionId?._id || auctionId;
   const resolvedTournamentId = pageData?.tournamentId?._id || tournamentId;
   const teamRegistrationConfig = pageData?.auctionId?.teamRegistration || {};
+  const activeTheme = {
+    primary: "#2563eb",
+    secondary: "#1d4ed8",
+    accent: "#f59e0b",
+    soft: "#eff6ff",
+    dark: "#0f172a",
+    hero: "linear-gradient(135deg, #0f172a 0%, #2563eb 100%)",
+  };
+  const themeStyle = {
+    "--reg-primary": activeTheme.primary,
+    "--reg-secondary": activeTheme.secondary,
+    "--reg-accent": activeTheme.accent,
+    "--reg-soft": activeTheme.soft,
+    "--reg-dark": activeTheme.dark,
+    "--reg-hero": activeTheme.hero,
+    "--primary": activeTheme.primary,
+    "--color-header-1": activeTheme.dark,
+    "--color-header-2": activeTheme.primary,
+    "--color-crickbroYellow": activeTheme.accent,
+    "--color-text": websiteThemeMode === "dark" ? "#f8fafc" : activeTheme.dark,
+  };
 
   console.log("page", pageData);
 
@@ -120,7 +144,7 @@ const RegWebsite = () => {
   // console.log(pageData, "page");
 
   return (
-    <div className="relative">
+    <div className="relative" data-theme={websiteThemeMode} style={themeStyle}>
       {isPreviewMode && (
         <div className="fixed top-0 left-0 right-0 z-50 bg-gradient-to-r from-amber-500 to-orange-500 text-white px-4 py-3 shadow-lg">
           <div className="max-w-7xl mx-auto flex items-center justify-between">
@@ -143,15 +167,29 @@ const RegWebsite = () => {
         </div>
       )}
       <div className={isPreviewMode ? "mt-20" : ""}>
-        <Header data={pageData} />
+        <Header
+          data={pageData}
+          theme={activeTheme}
+          themeMode={websiteThemeMode}
+          onThemeModeChange={setWebsiteThemeMode}
+        />
         {pageData?.sliderImages && <Slider pagedata={pageData} />}
+        <React.Suspense
+          fallback={
+            <div className="flex min-h-[220px] items-center justify-center">
+              <div className="h-9 w-9 animate-spin rounded-full border-4 border-blue-200 border-t-blue-600" />
+            </div>
+          }
+        >
         {activeRegistrationForm === "team" && showTeamRegistration ? (
-          <TeamRegistrationFormInline
+          <TeamRegistrationForm
             auctionId={resolvedAuctionId}
             tournamentId={resolvedTournamentId}
             teamRegistration={teamRegistrationConfig}
             auctionName={pageData?.auctionId?.auctionName}
             pagedata={pageData}
+            theme={activeTheme}
+            themeMode={websiteThemeMode}
             showSwitcher={showRegistrationSwitcher}
             activeTab={activeRegistrationForm}
             onSwitch={setActiveRegistrationForm}
@@ -160,6 +198,8 @@ const RegWebsite = () => {
           showPlayerRegistration && (
             <RegisterationForm
               pagedata={pageData}
+              theme={activeTheme}
+              themeMode={websiteThemeMode}
               showSwitcher={showRegistrationSwitcher}
               activeTab={activeRegistrationForm}
               onSwitch={setActiveRegistrationForm}
@@ -167,7 +207,13 @@ const RegWebsite = () => {
           )
         )}
         <Rules pagedata={pageData} />
-        {pageData?.keyFeatures?.features?.length > 0 && <KeyFeatures pagedata={pageData} />}
+        {pageData?.keyFeatures?.features?.length > 0 && (
+          <KeyFeatures
+            pagedata={pageData}
+            theme={activeTheme}
+            themeMode={websiteThemeMode}
+          />
+        )}
         {/* <Sponsors pagedata={pageData}/> */}
 
         <GuestGallery pagedata={pageData} />
@@ -179,6 +225,7 @@ const RegWebsite = () => {
         {pageData?.questionsAnswers && pageData?.questionsAnswers.length > 0 && <FAQ pagedata={pageData} />}
 
         <Footer />
+        </React.Suspense>
       </div>
     </div>
   );

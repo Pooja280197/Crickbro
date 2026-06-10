@@ -34,33 +34,33 @@ const UnassignedPlayersTab = ({
 
   return (
     <>
-      <div className="max-w-7xl mx-auto px-4 py-2 flex flex-col gap-3">
-        <div className="auction-toolbar">
-          <div className="relative w-full md:w-1/2 flex justify-between">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 " />
+      <div className="rounded-lg border border-[var(--border-card)] bg-[var(--bg-card)] p-4 shadow-[var(--shadow-card)]">
+        <div className="grid grid-cols-1 gap-3 lg:grid-cols-[minmax(0,1fr)_auto_auto_auto] lg:items-center">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--text-secondary)]" />
             <input
               type="text"
               placeholder="Search player..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="auction-input pl-10 pr-4"
+              className="h-10 w-full rounded-lg border border-[var(--border-card)] bg-[var(--bg-main)] pl-10 pr-4 text-sm font-medium text-[var(--text-primary)] outline-none transition placeholder:text-[var(--text-secondary)] focus:border-[var(--border-primary)] focus:bg-[var(--bg-card)]"
             />
           </div>
 
           <div className="relative">
             <button
               onClick={() => setIsItemsDropdownOpen(!isItemsDropdownOpen)}
-              className="auction-btn auction-btn-ghost"
+              className="inline-flex h-10 w-full items-center justify-center gap-2 rounded-lg border border-[var(--border-card)] bg-[var(--bg-main)] px-3 text-xs font-semibold text-[var(--text-primary)] transition hover:border-[var(--border-primary)] hover:bg-[var(--accent-light)] lg:w-auto"
             >
               <span>Showing {itemsPerPage}</span>
               <ChevronDown
-                className={`w-4 h-4 transition-transform duration-300 ${
+                className={`h-4 w-4 transition-transform duration-300 ${
                   isItemsDropdownOpen ? "rotate-180" : ""
                 }`}
               />
             </button>
             {isItemsDropdownOpen && (
-              <div className="auction-card absolute right-0 top-full z-10 mt-1 overflow-hidden">
+              <div className="absolute right-0 top-full z-20 mt-1 w-36 overflow-hidden rounded-lg border border-[var(--border-card)] bg-[var(--bg-card)] shadow-[var(--shadow-card)]">
                 {[16, 32, 64, 96].map((num) => (
                   <button
                     key={num}
@@ -69,10 +69,10 @@ const UnassignedPlayersTab = ({
                       setCurrentPageState(1);
                       setIsItemsDropdownOpen(false);
                     }}
-                    className={`w-full text-left px-4 py-2 text-sm text-[var(--color-button-primary)] transition-colors ${
+                    className={`w-full px-3 py-2 text-left text-xs font-semibold transition ${
                       itemsPerPage === num
-                        ? "bg-white text-[var(--color-button-primary)]"
-                        : "hover:bg-[var(--color-button-primary)] hover:text-white"
+                        ? "bg-[var(--accent-light)] text-[var(--primary)]"
+                        : "text-[var(--text-secondary)] hover:bg-[var(--secondary-lighter)] hover:text-[var(--text-primary)]"
                     }`}
                   >
                     Showing {num}
@@ -81,12 +81,10 @@ const UnassignedPlayersTab = ({
               </div>
             )}
           </div>
-        </div>
 
-        <div className="flex flex-row gap-2 w-full justify-end">
           <button
             onClick={handleSelectAll}
-            className="auction-btn auction-btn-ghost"
+            className="inline-flex h-10 items-center justify-center rounded-lg border border-[var(--border-card)] bg-[var(--bg-main)] px-3 text-xs font-semibold text-[var(--text-primary)] transition hover:border-[var(--border-primary)] hover:bg-[var(--accent-light)]"
           >
             {selectedPlayers.length === players.length
               ? "Deselect All"
@@ -96,10 +94,10 @@ const UnassignedPlayersTab = ({
           <button
             disabled={selectedPlayers.length === 0}
             onClick={handleAssignPlayers}
-            className={`auction-btn ${
+            className={`inline-flex h-10 items-center justify-center rounded-lg px-3 text-xs font-semibold transition disabled:cursor-not-allowed disabled:opacity-60 ${
               selectedPlayers.length > 0
-                ? "auction-btn-primary"
-                : "auction-btn-ghost"
+                ? "border border-[var(--border-primary)] bg-[var(--secondary)] text-[#102033] hover:bg-[var(--secondary-strong)]"
+                : "border border-[var(--border-card)] bg-[var(--bg-main)] text-[var(--text-secondary)]"
             }`}
           >
             Assign ({selectedPlayers.length})
@@ -116,9 +114,9 @@ const UnassignedPlayersTab = ({
         auctionId={auctionId}
       />
 
-      <div className="max-w-7xl mx-auto px-4 pb-6">
+      <div className="pb-6">
         {players.length > 0 ? (
-          <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-8 gap-4">
+          <div className="grid grid-cols-3 gap-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-8">
             {players.map((item) => {
               const playerRole = item?.player?.playerRole || item?.playerRole;
               const playerType = item?.playersRatings?.playerType;
@@ -152,14 +150,14 @@ const UnassignedPlayersTab = ({
             })}
           </div>
         ) : (
-          <div className="text-center py-14">
-            <div className="inline-flex items-center justify-center w-14 h-14 bg-gray-100 rounded-full mb-3">
-              <Search className="w-6 h-6 text-gray-400" />
+          <div className="rounded-lg border border-[var(--border-card)] bg-[var(--bg-card)] py-14 text-center shadow-[var(--shadow-card)]">
+            <div className="inline-flex items-center justify-center w-14 h-14 bg-[var(--secondary-lighter)] rounded-full mb-3">
+              <Search className="w-6 h-6 text-[var(--text-muted)]" />
             </div>
-            <h3 className="text-md font-semibold text-gray-900">
+            <h3 className="text-md font-semibold text-[var(--text-primary)]">
               No players found
             </h3>
-            <p className="text-gray-500 text-sm">Try adjusting your search</p>
+            <p className="text-[var(--text-secondary)] text-sm">Try adjusting your search</p>
           </div>
         )}
       </div>

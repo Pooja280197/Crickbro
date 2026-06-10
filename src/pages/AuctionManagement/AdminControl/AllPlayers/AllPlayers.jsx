@@ -53,7 +53,7 @@ import Pagination from "../../../../components/Pagination";
 
 
 const tabClass = (active) =>
-  `auction-tab ${active ? "auction-tab-active" : ""}`;
+  `inline-flex min-h-10 items-center gap-2 rounded-lg border border-[var(--border-soft)] bg-[var(--bg-card)] px-4 text-sm font-bold text-[var(--text-secondary)] transition hover:border-[var(--border-primary)] hover:bg-[var(--accent-light)] hover:text-[var(--text-primary)] ${active ? "bg-[var(--secondary)] text-[#102033] shadow-[0_8px_20px_rgba(244,180,0,0.16)]" : ""}`;
 
 const AllPlayers = () => {
   const { auctionId } = useParams();
@@ -360,82 +360,67 @@ const AllPlayers = () => {
   };
 
   return (
-    <div className="auction-page">
+    <div className="mx-auto w-full max-w-7xl px-3 py-4 sm:px-4 lg:px-5">
       <div className="space-y-4">
-        {/* Tabs */}
-        {/* Tabs */}
-        <div className="auction-panel sticky top-0 z-10">
-          <div className="max-w-7xl mx-auto px-4">
-            {/* TABS CONTAINER - Fixed overflow and spacing */}
-            <div className="relative">
-              {/* Scrollable tabs container */}
-              <div className="overflow-x-auto scrollbar-hide flex justify-between items-center">
-                <div className="flex gap-2 min-w-max py-3">
-                  {/* All Tab */}
-                  <button
-                    onClick={() => handlePlayerTabChange("all")}
-                    // className={tabClass(activePlayerTab === "all")}
-                    className={tabClass(activePlayerTab === "all")}
-                  >
-                    <Users className="w-4 h-4" />
-                    All Players
-                  </button>
-                </div>
-                {activePlayerTab === "all" && (
-                  <div className="flex gap-2 ">
-                    <ImportPlayers auctionId={auctionId} />
-                    <button
-                      className="auction-btn auction-btn-blue"
-                      onClick={() => setIsAddPlayerOpen(true)}
-                    >
-                      Add Player Manually
-                    </button>
-                  </div>
-                )}
-              </div>
-            </div>
-
-            {/* Action Buttons - Only for 'all' tab */}
-          </div>
-        </div>
-
-        {/* Search + Buttons Row - Only show for unassigned tab */}
         {(activePlayerTab === "all" ||
           (auctionTypeTrial &&
             (activePlayerTab === "unassigned" ||
               activePlayerTab === "assigned"))) && (
           <>
-            <div className="mx-auto flex max-w-7xl flex-col gap-3 py-2">
-              {/* TOP SECTION → Search + (Filters if assigned) */}
+            <div className="rounded-lg border border-[var(--border-card)] bg-[var(--bg-card)] p-4 shadow-[var(--shadow-card)]">
+              <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+                <div className="min-w-0">
+                  <p className="text-xs font-semibold uppercase tracking-wide text-[var(--text-secondary)]">
+                    Players
+                  </p>
+                  <h1 className="mt-1 text-xl font-bold leading-7 text-[var(--text-primary)]">
+                    Registered Players
+                  </h1>
+                  <p className="mt-1 text-xs font-medium text-[var(--text-secondary)]">
+                    Total {totalPlayers || 0} players registered in this auction.
+                  </p>
+                </div>
 
-                <div className="auction-toolbar">
-                {/* Search Bar */}
-                <div className="relative w-full md:w-1/2 flex justify-between">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 " />
+                {activePlayerTab === "all" && (
+                  <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+                    <ImportPlayers auctionId={auctionId} />
+                    <button
+                      className="inline-flex h-9 items-center justify-center gap-2 rounded-lg border border-[var(--border-primary)] bg-[var(--secondary)] px-3 text-xs font-semibold text-[#102033] shadow-sm transition hover:bg-[var(--secondary-strong)]"
+                      onClick={() => setIsAddPlayerOpen(true)}
+                    >
+                      <Plus className="h-3.5 w-3.5" />
+                      Add Player
+                    </button>
+                  </div>
+                )}
+              </div>
+
+              <div className="mt-4 grid grid-cols-1 gap-3 lg:grid-cols-[minmax(0,1fr)_auto_auto] lg:items-center">
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--text-secondary)]" />
                   <input
                     type="text"
                     placeholder="Search player..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="auction-input pl-10 pr-4"
+                    className="h-10 w-full rounded-lg border border-[var(--border-card)] bg-[var(--bg-main)] pl-10 pr-4 text-sm font-medium text-[var(--text-primary)] outline-none transition placeholder:text-[var(--text-secondary)] focus:border-[var(--border-primary)] focus:bg-[var(--bg-card)]"
                   />
                 </div>
 
-                {/* Items Per Page Dropdown */}
                 <div className="relative">
                   <button
                     onClick={() => setIsItemsDropdownOpen(!isItemsDropdownOpen)}
-                    className="auction-btn auction-btn-ghost"
+                    className="inline-flex h-10 w-full items-center justify-center gap-2 rounded-lg border border-[var(--border-card)] bg-[var(--bg-main)] px-3 text-xs font-semibold text-[var(--text-primary)] transition hover:border-[var(--border-primary)] hover:bg-[var(--accent-light)] lg:w-auto"
                   >
                     <span>Showing {itemsPerPage}</span>
                     <ChevronDown
-                      className={`w-4 h-4 transition-transform duration-300 ${
+                      className={`h-4 w-4 transition-transform duration-300 ${
                         isItemsDropdownOpen ? "rotate-180" : ""
                       }`}
                     />
                   </button>
                   {isItemsDropdownOpen && (
-                    <div className="auction-card absolute right-0 top-full z-10 mt-1 overflow-hidden">
+                    <div className="absolute right-0 top-full z-20 mt-1 w-36 overflow-hidden rounded-lg border border-[var(--border-card)] bg-[var(--bg-card)] shadow-[var(--shadow-card)]">
                       {[16, 32, 64, 96].map((num) => (
                         <button
                           key={num}
@@ -444,10 +429,10 @@ const AllPlayers = () => {
                             setCurrentPageState(1);
                             setIsItemsDropdownOpen(false);
                           }}
-                          className={`w-full text-left px-4 py-2 text-sm text-[var(--color-button-primary)] transition-colors ${
+                          className={`w-full px-3 py-2 text-left text-xs font-semibold transition ${
                             itemsPerPage === num
                               ? "bg-[var(--accent-light)] text-[var(--primary)]"
-                              : "hover:bg-[var(--color-button-primary)] hover:text-white"
+                              : "text-[var(--text-secondary)] hover:bg-[var(--secondary-lighter)] hover:text-[var(--text-primary)]"
                           }`}
                         >
                           Showing {num}
@@ -462,9 +447,9 @@ const AllPlayers = () => {
                   <button
                     onClick={handleDownloadExcel}
                     disabled={downloadLoading}
-                     className="auction-btn auction-btn-primary"
+                    className="inline-flex h-10 items-center justify-center gap-2 rounded-lg border border-[var(--border-card)] bg-[var(--bg-main)] px-3 text-xs font-semibold text-[var(--text-primary)] transition hover:border-[var(--border-primary)] hover:bg-[var(--accent-light)] disabled:cursor-not-allowed disabled:opacity-60"
                   >
-                    <Download className="w-4 h-4" />
+                    <Download className="h-4 w-4 text-[var(--primary)]" />
                     {downloadLoading
                       ? "Downloading..."
                       : activePlayerTab === "all"
@@ -477,7 +462,7 @@ const AllPlayers = () => {
                 {activePlayerTab === "assigned" && (
                   <div className="flex flex-col sm:flex-row w-full md:w-auto gap-3">
                     {/* <select
-                      className="w-full sm:w-40 px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-purple-500 bg-white text-gray-800"
+                      className="w-full sm:w-40 px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-purple-500 bg-[var(--bg-card)] text-[var(--text-primary)]"
                       value={slot}
                       onChange={(e) => {
                         const value = e.target.value;
@@ -509,7 +494,7 @@ const AllPlayers = () => {
                           setSlot(""); // reset selection
                           setSelectedSlotLabel("");
                         }}
-                         className="auction-input"
+                         className="ui-input"
                       />
 
                       <div
@@ -522,7 +507,7 @@ const AllPlayers = () => {
                             setSlotPage((prev) => prev + 1);
                           }
                         }}
-                        className={`auction-card absolute z-[9999] mt-1 max-h-48 w-full overflow-y-auto ${isSlotOpen ? "block" : "hidden"}`}
+                        className={`ui-card absolute z-[9999] mt-1 max-h-48 w-full overflow-y-auto ${isSlotOpen ? "block" : "hidden"}`}
                       >
                         {slotDetail?.map((s) => (
                           <div
@@ -534,7 +519,7 @@ const AllPlayers = () => {
                               setSlotSearch("");
                               fetchSessionsForSlot(s._id);
                             }}
-                            className="px-3 py-2 cursor-pointer hover:bg-gray-100 text-sm"
+                            className="px-3 py-2 cursor-pointer hover:bg-[var(--secondary-lighter)] text-sm"
                           >
                             {s.slotName}
                           </div>
@@ -545,7 +530,7 @@ const AllPlayers = () => {
                     {/* Session Filter - Only show when slot is selected and has sessions */}
                     {slot && selectedSlotSessions.length > 0 && (
                       <select
-                         className="auction-select sm:w-40"
+                         className="ui-input sm:w-40"
                         value={slotSession}
                         onChange={(e) => setSlotSession(e.target.value)}
                       >
@@ -560,7 +545,7 @@ const AllPlayers = () => {
 
                     {/* Sort By Status */}
                     <select
-                      className="auction-select sm:w-40"
+                      className="ui-input sm:w-40"
                       value={statusSort}
                       onChange={(e) => setStatusSort(e.target.value)}
                     >
@@ -578,7 +563,7 @@ const AllPlayers = () => {
                     {(statusSort === "select" ||
                       statusSort === "not select") && (
                       <select
-                         className="auction-select sm:w-40"
+                         className="ui-input sm:w-40"
                         value={typeSort}
                         onChange={(e) => setTypeSort(e.target.value)}
                       >
@@ -601,7 +586,7 @@ const AllPlayers = () => {
                   
                   <button
                     onClick={handleSelectAll}
-                    className="px-3 py-2 bg-[var(--background)] border rounded-lg text-sm font-semibold hover:bg-gray-500"
+                    className="px-3 py-2 bg-[var(--background)] border rounded-lg text-sm font-semibold hover:bg-[var(--bg-soft)]0"
                   >
                     {selectedPlayers.length === getFilteredPlayers().length
                       ? "Deselect All"
@@ -614,8 +599,8 @@ const AllPlayers = () => {
                     onClick={handleAssignPlayers}
                     className={`px-5 py-2 rounded-lg text-sm font-bold ${
                       selectedPlayers.length > 0
-                        ? "bg-emerald-600 text-white hover:bg-emerald-700"
-                        : "bg-gray-200 text-gray-500 cursor-not-allowed"
+                        ? "bg-emerald-600 text-[var(--text-dark)] hover:bg-emerald-700"
+                        : "bg-[var(--secondary-lighter)] text-[var(--text-secondary)] cursor-not-allowed"
                     }`}
                   >
                     Assign ({selectedPlayers.length})
@@ -640,7 +625,7 @@ const AllPlayers = () => {
                   className={
                     activePlayerTab === "assigned"
                       ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4"
-                      : "grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-8 gap-4"
+                      : "grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-8 gap-3"
                   }
                 >
                   {getFilteredPlayers().map((item) => {
@@ -690,14 +675,14 @@ const AllPlayers = () => {
                   })}
                 </div>
               ) : (
-                <div className="auction-card py-14 text-center">
-                  <div className="inline-flex items-center justify-center w-14 h-14 bg-gray-100 rounded-full mb-3">
-                    <Search className="w-6 h-6 text-gray-400" />
+                <div className="ui-card py-14 text-center">
+                  <div className="inline-flex items-center justify-center w-14 h-14 bg-[var(--secondary-lighter)] rounded-full mb-3">
+                    <Search className="w-6 h-6 text-[var(--text-muted)]" />
                   </div>
-                  <h3 className="text-md font-semibold text-gray-900">
+                  <h3 className="text-md font-semibold text-[var(--text-primary)]">
                     No players found
                   </h3>
-                  <p className="text-gray-500 text-sm">
+                  <p className="text-[var(--text-secondary)] text-sm">
                     {activePlayerTab === "all"
                       ? "No players available"
                       : activePlayerTab === "unassigned"

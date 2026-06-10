@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Users, UserCheck } from "lucide-react";
+import { UserCheck, Users } from "lucide-react";
 import { toast } from "react-toastify";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
@@ -15,7 +15,11 @@ import SelectedAuctionManager from "./AuctionPlayersTabs/SelectedAuctionManager"
 import AddPlayerManually from "../../AllPlayers/AddPlayerManually";
 
 const tabClass = (active) =>
-  `auction-tab ${active ? "auction-tab-active" : ""}`;
+  `inline-flex h-9 items-center gap-2 whitespace-nowrap rounded-lg border px-3 text-xs font-semibold transition ${
+    active
+      ? "border-[var(--border-primary)] bg-[var(--secondary)] text-[#102033] shadow-sm"
+      : "border-[var(--border-card)] bg-[var(--bg-main)] text-[var(--text-secondary)] hover:border-[var(--border-primary)] hover:bg-[var(--accent-light)] hover:text-[var(--primary)]"
+  }`;
 
 const AuctionPlayers = () => {
   const { auctionId } = useParams();
@@ -264,43 +268,51 @@ const AuctionPlayers = () => {
   };
 
   return (
-    <div className="auction-page">
+    <div className="mx-auto w-full max-w-7xl px-3 py-4 text-[var(--text-primary)] sm:px-4 lg:px-5">
       <div className="space-y-4">
-        <div className="auction-panel sticky top-0 z-10">
-          <div className="max-w-7xl mx-auto px-4">
-            <div className="relative">
-              <div className="overflow-x-auto scrollbar-hide">
-                <div className="flex gap-2 min-w-max py-3">
-                 
+        <div className="rounded-lg border border-[var(--border-card)] bg-[var(--bg-card)] p-4 shadow-[var(--shadow-card)]">
+          <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+            <div className="min-w-0">
+              <p className="text-xs font-semibold uppercase tracking-wide text-[var(--text-secondary)]">
+                Auction Players
+              </p>
+              <h1 className="mt-1 text-xl font-bold leading-7 text-[var(--text-primary)]">
+                Manage Players
+              </h1>
+              <p className="mt-1 text-xs font-medium text-[var(--text-secondary)]">
+                Assign selected players to categories and manage auction-ready players.
+              </p>
+            </div>
 
-                  <button
-                    onClick={() => {
-                      setActivePlayerTab("selected");
-                      setSelectedManagerTab("unassignedSelected");
-                    }}
-                    className={tabClass(
-                      activePlayerTab === "selected" &&
-                        selectedManagerTab === "unassignedSelected",
-                    )}
-                  >
-                    <Users className="w-4 h-4" />
-                    Assign to Category
-                  </button>
+            <div className="overflow-x-auto scrollbar-hide">
+              <div className="flex min-w-max gap-2">
+                <button
+                  onClick={() => {
+                    setActivePlayerTab("selected");
+                    setSelectedManagerTab("unassignedSelected");
+                  }}
+                  className={tabClass(
+                    activePlayerTab === "selected" &&
+                      selectedManagerTab === "unassignedSelected",
+                  )}
+                >
+                  <Users className="h-3.5 w-3.5" />
+                  Assign to Category
+                </button>
 
-                  <button
-                    onClick={() => {
-                      setActivePlayerTab("selected");
-                      setSelectedManagerTab("auctionPlayers");
-                    }}
-                    className={tabClass(
-                      activePlayerTab === "selected" &&
-                        selectedManagerTab === "auctionPlayers",
-                    )}
-                  >
-                    <Users className="w-4 h-4" />
-                    Players for Auction
-                  </button>
-                </div>
+                <button
+                  onClick={() => {
+                    setActivePlayerTab("selected");
+                    setSelectedManagerTab("auctionPlayers");
+                  }}
+                  className={tabClass(
+                    activePlayerTab === "selected" &&
+                      selectedManagerTab === "auctionPlayers",
+                  )}
+                >
+                  <UserCheck className="h-3.5 w-3.5" />
+                  Players for Auction
+                </button>
               </div>
             </div>
           </div>
@@ -313,7 +325,7 @@ const AuctionPlayers = () => {
         {activePlayerTab === "selected" &&
           (selectedManagerTab === "unassignedSelected" ||
             selectedManagerTab === "auctionPlayers") && (
-            <div className="max-w-7xl mx-auto px-4 pb-6 ">
+            <div>
               <SelectedAuctionManager
                 defaultTab={selectedManagerTab}
                 auctionId={auctionId}

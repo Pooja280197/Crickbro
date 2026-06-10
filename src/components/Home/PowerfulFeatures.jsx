@@ -24,10 +24,15 @@ const PowerfulFeatures = () => {
         />
         <div className="grid grid-cols-3 gap-[18px] max-md:grid-cols-1">
           {features.map(([title, text], index) => (
-            <article className="card-surface grid min-h-[106px] grid-cols-[42px_1fr] gap-4 rounded-lg p-5" key={title}>
-              <span className={`line-icon icon-${index % 6}`} />
+            <article
+              className="grid min-h-[106px] grid-cols-[42px_1fr] gap-4 rounded-lg border border-[var(--border-card)] bg-[var(--bg-card)] p-5 text-[var(--text-primary)] shadow-[var(--shadow-card)]"
+              key={title}
+            >
+              <span className="grid h-[34px] w-[34px] place-items-center rounded-md border border-[var(--border-primary)] bg-[var(--accent-light)] text-xs font-black text-[var(--primary)]">
+                {index + 1}
+              </span>
               <div>
-                <h3 className="mb-[7px] text-[15px] font-bold">{title}</h3>
+                <h3 className="mb-[7px] text-[15px] font-bold text-[var(--text-primary)]">{title}</h3>
                 <p className="m-0 text-xs leading-[1.45] text-[var(--text-secondary)]">{text}</p>
               </div>
             </article>

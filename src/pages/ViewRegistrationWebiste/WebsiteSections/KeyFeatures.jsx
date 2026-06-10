@@ -1,154 +1,141 @@
-import React, { useState, useEffect, useRef } from "react";
+import React from "react";
 import { CheckCircle } from "lucide-react";
 
-const Points = ({ pagedata }) => {
-  const [visibleCards, setVisibleCards] = useState({});
-  const sectionRef = useRef(null);
+const Points = ({ pagedata, theme, themeMode = "light" }) => {
   const keyFeatures = pagedata?.keyFeatures?.features || [];
-
-  const hardcodedPoints = [
-    {
-      id: 1,
-      title: "Create Your Player Identity",
-      description:
-        "Build a powerful profile with your role, skills, and stats to stand out in the auction.",
-      icon: "👤",
-    },
-    {
-      id: 2,
-      title: "Step Into the Live Auction",
-      description:
-        "Be part of a real-time bidding experience where teams compete to pick you.",
-      icon: "🔨",
-    },
-    {
-      id: 3,
-      title: "Get Valued for Your Skills",
-      description:
-        "Your performance and profile decide your demand and price in the auction.",
-      icon: "📈",
-    },
-    {
-      id: 4,
-      title: "Fair & Transparent Selection",
-      description:
-        "Experience a completely fair auction process where every player gets equal visibility and opportunity.",
-      icon: "⚖️",
-    },
-    {
-      id: 5,
-      title: "Stay Updated Instantly",
-      description:
-        "Know your auction status, bids, and selection updates without missing a moment.",
-      icon: "⚡",
-    },
-    {
-      id: 6,
-      title: "Secure Your Spot in a Team",
-      description:
-        "Get selected by teams and lock your place for the tournament.",
-      icon: "✅",
-    },
-    {
-      id: 7,
-      title: "Play & Win Exciting Prizes",
-      description:
-        "Participate in tournaments and compete for rewards, prizes, and recognition.",
-      icon: "🏆",
-    },
-    {
-      id: 8,
-      title: "Join Multiple Auctions",
-      description:
-        "Participate in different auctions and increase your chances of getting selected.",
-      icon: "🔁",
-    },
-  ];
-
   const keyFeaturesTitle =
     pagedata?.keyFeatures?.title || "THIS IS MORE THAN CRICKET.";
-
-  console.log("🚀 ~ file: Points.jsx:24 ~ Points ~ keyFeatures:", keyFeatures)
-
-  useEffect(() => {
-    const observers = new Map();
-
-    hardcodedPoints.forEach((point) => {
-      const pointId = point._id || point.id;
-      const observer = new IntersectionObserver(
-        ([entry]) => {
-          if (entry.isIntersecting) {
-            setVisibleCards((prev) => ({
-              ...prev,
-              [pointId]: true,
-            }));
-            observer.unobserve(entry.target);
-          }
-        },
-        { threshold: 0.2, rootMargin: "0px 0px -50px 0px" }
-      );
-
-      const element = document.getElementById(`point-${pointId}`);
-      if (element) {
-        observer.observe(element);
-        observers.set(pointId, observer);
-      }
-    });
-
-    return () => observers.forEach((observer) => observer.disconnect());
-  }, []);
-
-  console.log("🚀 ~ file: Points.jsx:24 ~ Points ~ keyFeatures:", keyFeatures)
+  const isDark = themeMode === "dark";
+  const featureStyle = {
+    "--feature-bg": isDark ? "#07111f" : "#f8fafc",
+    "--feature-soft": isDark
+      ? "rgba(37, 99, 235, 0.14)"
+      : theme?.soft || "var(--reg-soft)",
+    "--feature-card": isDark ? "rgba(15, 27, 45, 0.94)" : "#ffffff",
+    "--feature-border": isDark
+      ? "rgba(148, 163, 184, 0.2)"
+      : "#e2e8f0",
+    "--feature-title": isDark ? "#f8fafc" : "#0f172a",
+    "--feature-text": isDark ? "#cbd5e1" : "#475569",
+    "--feature-muted": isDark ? "#94a3b8" : "#64748b",
+    "--feature-primary": theme?.primary || "var(--reg-primary)",
+    "--feature-accent": theme?.accent || "var(--reg-accent)",
+    fontFamily:
+      '"Inter", "Manrope", "Nunito Sans", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
+  };
 
   return (
-    <div ref={sectionRef} className="relative py-12 md:py-20 bg-gray-50">
-      {/* Decorative Circles */}
-      <div className="absolute top-0 right-0 opacity-10 w-96 h-96 rounded-full bg-yellow-400" />
-      <div className="absolute bottom-0 left-0 opacity-10 w-80 h-80 rounded-full bg-purple-400" />
+    <section
+      className="relative overflow-hidden py-9 md:py-12"
+      style={{
+        ...featureStyle,
+        background:
+          "linear-gradient(180deg, var(--feature-bg) 0%, var(--feature-soft) 100%)",
+      }}
+    >
+      <div className="absolute -right-20 top-0 h-72 w-72 rounded-full bg-[var(--feature-primary)]/10 blur-3xl" />
+      <div className="absolute -left-24 bottom-0 h-72 w-72 rounded-full bg-[var(--feature-accent)]/10 blur-3xl" />
+      <div className="absolute inset-x-4 top-8 h-px bg-gradient-to-r from-transparent via-[var(--feature-primary)]/25 to-transparent" />
 
       <div className="relative max-w-7xl mx-auto px-4">
-        {/* Heading */}
-        <div className="text-center mb-12 md:mb-16">
-          <h2 className="text-3xl md:text-5xl font-extrabold text-blue-900">
-            Key Features of Our Player Auction
+        <div className="mx-auto mb-8 max-w-3xl text-center">
+          <span
+            className="inline-flex rounded-full border px-3 py-1 text-[11px] font-bold uppercase tracking-[0.18em]"
+            style={{
+              borderColor:
+                "color-mix(in srgb, var(--feature-primary) 28%, transparent)",
+              background:
+                "color-mix(in srgb, var(--feature-primary) 10%, transparent)",
+              color: "var(--feature-primary)",
+            }}
+          >
+            Key Features
+          </span>
+          <h2
+            className="mt-3 text-2xl font-black tracking-tight md:text-4xl"
+            style={{ color: "var(--feature-title)" }}
+          >
+            {keyFeaturesTitle}
           </h2>
+          <p
+            className="mx-auto mt-2 max-w-2xl text-sm leading-6 md:text-base"
+            style={{ color: "var(--feature-text)" }}
+          >
+            Everything players need for a smooth, transparent auction
+            registration experience.
+          </p>
         </div>
 
-        {/* Cards Grid */}
-        <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {keyFeatures?.map((point, idx) =>
-            (<div
+        <div className="mx-auto grid max-w-6xl grid-cols-1 justify-items-center gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          {keyFeatures?.map((point, idx) => (
+            <article
               key={point?._id}
-
-              className={`flex flex-col transform transition-all duration-700 ease-out 
-                 `}
-              style={{ transitionDelay: `${idx * 100}ms` }}
+              className="group relative flex min-h-[190px] w-full max-w-[285px] overflow-hidden rounded-3xl border p-5 text-center shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
+              style={{
+                background: "var(--feature-card)",
+                borderColor: "var(--feature-border)",
+                transitionDelay: `${idx * 100}ms`,
+              }}
             >
-              <div className="flex-1 bg-white rounded-xl p-4 border flex flex-col justify-between border-l-4 border-gray-400 hover:shadow-lg hover:scale-105 transition-all duration-300">
-                {/* Top Section */}
-                <div className="flex items-center mb-4">
-                  <div className="text-2xl mr-3">{point?.icon}</div>
-                  <h3 className="text-lg md:text-base font-semibold text-gray-900">
+              <div
+                className="absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+                style={{
+                  background:
+                    "linear-gradient(145deg, color-mix(in srgb, var(--feature-primary) 10%, transparent), transparent 62%)",
+                }}
+              />
+              <div
+                className="absolute inset-x-0 top-0 h-1"
+                style={{ background: "var(--feature-primary)" }}
+              />
+              <div
+                className="relative flex h-full w-full flex-col  items-center"
+              >
+                {/* <div
+                  className="mb-4 flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl text-2xl shadow-sm transition-transform duration-300 group-hover:scale-105"
+                  style={{
+                    background:
+                      "color-mix(in srgb, var(--feature-primary) 14%, var(--feature-card))",
+                    color: "var(--feature-primary)",
+                    border:
+                      "1px solid color-mix(in srgb, var(--feature-primary) 24%, transparent)",
+                  }}
+                >
+                  {point?.icon || idx + 1}
+                </div> */}
+                <div className="mb-3 min-w-0">
+                  <h3
+                    className="text-base font-extrabold leading-5 tracking-tight md:text-[17px]"
+                    style={{ color: "var(--feature-title)" }}
+                  >
                     {point?.title}
                   </h3>
+                  <div
+                    className="mx-auto mt-2 h-0.5 w-10 rounded-full transition-all group-hover:w-16"
+                    style={{
+                      background:
+                        "linear-gradient(90deg, var(--feature-primary), var(--feature-accent))",
+                    }}
+                  />
                 </div>
-
-                {/* Description */}
-                <p className="text-gray-600 text-sm md:text-sm leading-relaxed">
+                <p
+                  className="relative line-clamp-4 text-sm font-medium leading-6"
+                  style={{ color: "var(--feature-text)" }}
+                >
                   {point?.description}
                 </p>
-
-                {/* Checkmark Icon */}
-                <div className="flex justify-end mt-4 text-yellow-500">
-                  <CheckCircle size={20} />
+                <div className="mt-auto flex justify-center pt-4">
+                  <CheckCircle
+                    size={19}
+                    style={{ color: "var(--feature-primary)" }}
+                  />
                 </div>
               </div>
-            </div>)
-
-          )}
+            </article>
+          ))}
         </div>
       </div>
-    </div>
+    </section>
   );
 };
 

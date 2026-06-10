@@ -348,6 +348,7 @@ export const fetchAuctions = (tab, playerId) => {
         key: "auctionList",
         payload: response?.data?.data,
       });
+      return response?.data?.data;
     } catch (error) {
       dispatch({
         type: "API_ERROR",
@@ -355,6 +356,7 @@ export const fetchAuctions = (tab, playerId) => {
         payload:
           error?.response?.data?.message || "Something went wrong",
       });
+      return null;
     }
   };
 };

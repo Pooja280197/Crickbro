@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import { useParams } from "react-router-dom";
 import api from "../../../utils/api";
 import {
@@ -8,29 +9,37 @@ import {
   IndianRupee,
   User,
   CalendarDays,
+  Eye,
+  Filter,
   X,
   CreditCardIcon,
+  RotateCcw,
+  Search,
 } from "lucide-react";
 import { fetchSlotList } from "../../../redux/actions";
 import { useDispatch, useSelector } from "react-redux";
 
 const Field = ({ label, value, full }) => (
   <div className={full ? "md:col-span-2" : ""}>
-    <p className="text-[10px] text-gray-600">{label}</p>
-    <p className="font-medium text-[13px] text-[var(--secondary-dark)] break-words">
-      {value || "-"}
+    <p className="text-[10px] font-bold uppercase tracking-wide text-[var(--text-muted)]">
+      {label}
     </p>
+    <div className="mt-1.5 min-h-9 break-words rounded-lg border border-[var(--border-card)] bg-[var(--bg-main)] px-3 py-2 text-sm font-semibold text-[var(--text-primary)]">
+      {value || "-"}
+    </div>
   </div>
 );
 
 const Section = ({ title, icon, children }) => (
-  <div className="border rounded-lg p-3 bg-[var(--background)]">
-    <h4 className="flex items-center gap-1 text-xs font-semibold text-[var(--primary)] mb-2">
-      {icon}
-      {title}
+  <div className="rounded-xl border border-[var(--border-card)] bg-[var(--bg-card)] p-3 shadow-sm">
+    <h4 className="mb-3 flex items-center gap-2 text-sm font-semibold text-[var(--text-primary)]">
+      <span className="flex h-8 w-8 items-center justify-center rounded-lg border border-[var(--border-primary)] bg-[var(--accent-light)] text-[var(--primary)]">
+        {icon}
+      </span>
+      <span>{title}</span>
     </h4>
 
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-xs">
+    <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
       {children}
     </div>
   </div>
@@ -216,14 +225,24 @@ const RegistrationOverview = ({ auctionId: auctionIdProp }) => {
 
   if (initialLoading) {
     return (
-      <div className="p-6 text-sm text-[var(--secondary-dark)]">
-        Loading registration report...
+      <div className="flex min-h-[calc(100vh-108px)] items-center justify-center p-4">
+        <div className="rounded-lg border border-[var(--border-card)] bg-[var(--bg-card)] px-6 py-5 text-center shadow-[var(--shadow-card)]">
+          <p className="text-sm font-medium text-[var(--text-secondary)]">
+            Loading registration report...
+          </p>
+        </div>
       </div>
     );
   }
 
   if (error) {
-    return <div className="p-6 text-sm text-red-500">{error}</div>;
+    return (
+      <div className="p-4">
+        <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-600">
+          {error}
+        </div>
+      </div>
+    );
   }
 
   const summary = report?.summary || {};
@@ -274,17 +293,11 @@ const RegistrationOverview = ({ auctionId: auctionIdProp }) => {
         ? summary.totalRegistrations || 0
         : summary.totalFilteredPlayers || 0,
       icon: <Users size={18} />,
-      bg: "bg-blue-50",
-      border: "border-blue-400 ",
-      iconBg: "bg-white text-[var(--primary)]",
     },
     {
       title: "Paid",
       value: summary.totalPaidRegistrations || 0,
       icon: <CreditCard size={18} />,
-      bg: "bg-green-50",
-      border: "border-green-400",
-      iconBg: "bg-white text-[var(--primary)]",
     },
     ...(!isTeamMode
       ? [
@@ -292,9 +305,6 @@ const RegistrationOverview = ({ auctionId: auctionIdProp }) => {
             title: "Direct",
             value: summary.totalDirectRegistrations || 0,
             icon: <Zap size={18} />,
-            bg: "bg-purple-50",
-            border: "border-purple-400",
-            iconBg: "bg-white text-[var(--primary)]",
           },
         ]
       : []),
@@ -302,18 +312,12 @@ const RegistrationOverview = ({ auctionId: auctionIdProp }) => {
       title: "Total Revenue",
       value: formatCurrency(grossRevenue),
       icon: <IndianRupee size={18} />,
-      bg: "bg-yellow-50",
-      border: "border-yellow-400",
-      iconBg: "bg-white text-[var(--primary)]",
     },
     {
       title: "Net Revenue",
       value: formatCurrency(netRevenue),
       subtitle: `After 2.3% Transaction Fee + GST`,
       icon: <IndianRupee size={18} />,
-      bg: "bg-emerald-50",
-      border: "border-emerald-400",
-      iconBg: "bg-white text-emerald-600",
     },
     ...(gstData.enabled
       ? [
@@ -322,32 +326,36 @@ const RegistrationOverview = ({ auctionId: auctionIdProp }) => {
             value: formatCurrency(gstData.totalGST),
             subtitle: `GST @ ${gstData.gstPercentage}%`,
             icon: <IndianRupee size={18} />,
-            bg: "bg-red-50",
-            border: "border-red-400",
-            iconBg: "bg-white text-red-600",
           },
         ]
       : []),
   ];
 
   return (
-    <div className="p-4 lg:p-4 text-[var(--secondary-dark)] space-y-5">
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+    <div className="space-y-5 p-3 text-[var(--text-primary)] lg:p-5">
+      <div className="rounded-lg border border-[var(--border-card)] bg-[var(--bg-card)] p-4 shadow-[var(--shadow-card)]">
+      <div className=" flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h2 className="text-2xl font-semibold flex items-center gap-2">
+          <p className="text-xs font-semibold uppercase tracking-wide text-[var(--text-secondary)]">
+            Registration
+          </p>
+          <h2 className="mt-1 flex items-center gap-2 text-xl font-bold leading-7 text-[var(--text-primary)]">
             Registration Report
           </h2>
+          <p className="mt-1 text-xs font-medium text-[var(--text-secondary)]">
+            Track player and team registration payments in one place.
+          </p>
         </div>
 
         {showTeamReportSwitch && (
-          <div className="flex w-full items-center justify-end gap-2 rounded-xl border bg-white p-1 shadow-sm sm:w-auto">
+          <div className="flex w-full items-center gap-2 rounded-lg border border-[var(--border-card)] bg-[var(--bg-main)] p-1 sm:w-auto">
             <button
               type="button"
               onClick={() => setReportMode("player")}
-              className={`rounded-lg px-3 py-1.5 text-sm font-medium transition ${
+              className={`rounded-lg px-3 py-1.5 text-xs font-semibold transition ${
                 !isTeamMode
-                  ? "bg-[var(--primary)] text-white"
-                  : "text-[var(--secondary-dark)] hover:bg-gray-100"
+                  ? "bg-[var(--secondary)] text-[#102033]"
+                  : "text-[var(--text-secondary)] hover:bg-[var(--secondary-lighter)] hover:text-[var(--text-primary)]"
               }`}
             >
               Player Report
@@ -355,10 +363,10 @@ const RegistrationOverview = ({ auctionId: auctionIdProp }) => {
             <button
               type="button"
               onClick={() => setReportMode("team")}
-              className={`rounded-lg px-3 py-1.5 text-sm font-medium transition ${
+              className={`rounded-lg px-3 py-1.5 text-xs font-semibold transition ${
                 isTeamMode
-                  ? "bg-indigo-600 text-white"
-                  : "text-[var(--secondary-dark)] hover:bg-gray-100"
+                  ? "bg-[var(--secondary)] text-[#102033]"
+                  : "text-[var(--text-secondary)] hover:bg-[var(--secondary-lighter)] hover:text-[var(--text-primary)]"
               }`}
             >
               Team Report
@@ -366,58 +374,64 @@ const RegistrationOverview = ({ auctionId: auctionIdProp }) => {
           </div>
         )}
       </div>
+      </div>
 
       <div
-        className={`grid grid-cols-1 sm:grid-cols-2 gap-4 ${
+        className={`grid auto-rows-fr grid-cols-1 gap-3 sm:grid-cols-2 ${
           isTeamMode ? "lg:grid-cols-4" : gstData.enabled ?"lg:grid-cols-6": "lg:grid-cols-5"
         }`}
       >
         {cards.map((card, i) => (
           <div
             key={i}
-            className={`relative rounded-xl  p-4 shadow-lg ${card.bg}  border-l-4 ${card.border}`}
+            className="flex min-h-[104px] flex-col justify-between rounded-lg border border-[var(--border-card)] border-l-[5px] border-l-[var(--accent-light)] bg-[var(--bg-card)] p-3 shadow-[var(--shadow-card)] transition hover:border-[var(--border-primary)]"
           >
-            <div className="flex items-start justify-between">
-              <div>
-                <p className="text-xs text-[var(--secondary-dark)]">
+            <div className="flex items-start justify-between gap-3">
+              <div className="min-w-0">
+                <p className="truncate text-[11px] font-semibold uppercase tracking-wide text-[var(--text-secondary)]">
                   {card.title}
                 </p>
-                <p className="text-2xl font-bold mt-1">{card.value}</p>
+                <p className="mt-2 truncate text-lg font-bold leading-6 text-[var(--text-primary)]">
+                  {card.value}
+                </p>
                 {card.subtitle ? (
-                  <p className="mt-1 text-[11px] text-gray-600">
+                  <p className="mt-1 truncate text-[11px] font-medium text-[var(--text-secondary)]">
                     {card.subtitle}
                   </p>
                 ) : null}
               </div>
-              <div className={`p-2 rounded-lg shadow-md ${card.iconBg}`}>{card.icon}</div>
+              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-[var(--border-primary)] bg-[var(--accent-light)] text-[var(--primary)]">
+                {card.icon}
+              </div>
             </div>
           </div>
         ))}
       </div>
 
-      <div className="bg-[var(--background)] border rounded-xl shadow-lg p-4 space-y-4">
+      <div className="space-y-3 rounded-lg border border-[var(--border-card)] bg-[var(--bg-card)] p-4 shadow-[var(--shadow-card)]">
   {/* TOP BAR */}
-  <div className="flex flex-col md:flex-row gap-3 justify-between items-start md:items-center">
+  <div className="grid grid-cols-1 gap-3 lg:grid-cols-[minmax(0,1fr)_auto_auto_auto] lg:items-center">
     
     {/* SEARCH */}
-    <input
-      type="text"
-      value={search}
-      onChange={(e) => setSearch(e.target.value)}
-      placeholder={
-        isTeamMode ? "🔍 Search team..." : "🔍 Search player..."
-      }
-      className="w-full md:w-[400px] shadow-md rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-200 outline-none"
-    />
+    <div className="relative">
+      <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--text-secondary)]" />
+      <input
+        type="text"
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
+        placeholder={isTeamMode ? "Search team..." : "Search player..."}
+        className="h-10 w-full rounded-lg border border-[var(--border-card)] bg-[var(--bg-main)] pl-10 pr-4 text-sm font-medium text-[var(--text-primary)] outline-none transition placeholder:text-[var(--text-secondary)] focus:border-[var(--border-primary)] focus:bg-[var(--bg-card)]"
+      />
+    </div>
 
     {/* ACTIONS */}
-    <div className="flex items-center gap-2 w-full md:w-auto">
+    <div className="contents">
       
       {/* LIMIT */}
       <select
         value={limit}
         onChange={(e) => setLimit(Number(e.target.value))}
-        className="border shadow-md rounded-lg px-3 py-2 text-sm bg-white"
+        className="h-10 rounded-lg border border-[var(--border-card)] bg-[var(--bg-main)] px-3 text-xs font-semibold text-[var(--text-primary)] outline-none transition focus:border-[var(--border-primary)]"
       >
         <option value={10}>10</option>
         <option value={20}>20</option>
@@ -427,25 +441,31 @@ const RegistrationOverview = ({ auctionId: auctionIdProp }) => {
       {/* FILTER BUTTON */}
       <button
         onClick={() => setShowFilters((prev) => !prev)}
-        className="px-4 py-2 rounded-lg shadow-md border bg-white hover:bg-gray-100 text-sm"
+        className={`inline-flex h-10 items-center justify-center gap-2 rounded-lg border px-3 text-xs font-semibold transition ${
+          showFilters
+            ? "border-[var(--border-primary)] bg-[var(--accent-light)] text-[var(--primary)]"
+            : "border-[var(--border-card)] bg-[var(--bg-main)] text-[var(--text-primary)] hover:border-[var(--border-primary)] hover:bg-[var(--accent-light)]"
+        }`}
       >
-        ⚙️ Filters
+        <Filter className="h-4 w-4" />
+        Filters
       </button>
 
       {/* RESET */}
       <button
         onClick={resetFilters}
-        className="p-2 shadow-md rounded-lg border border-[var(--secondary-light)] bg-white hover:bg-gray-100"
+        className="inline-flex h-10 items-center justify-center gap-2 rounded-lg border border-[var(--border-card)] bg-[var(--bg-main)] px-3 text-xs font-semibold text-[var(--text-primary)] transition hover:border-[var(--border-primary)] hover:bg-[var(--accent-light)]"
         title="Reset Filters"
       >
-        🔄
+        <RotateCcw className="h-4 w-4 text-[var(--primary)]" />
+        Reset
       </button>
     </div>
   </div>
 
   {/* FILTER SECTION */}
   {showFilters && (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-3 pt-2 border-t">
+    <div className="grid grid-cols-1 gap-3 border-t border-[var(--border-card)] pt-3 md:grid-cols-2 lg:grid-cols-5">
       
       {/* REGISTRATION TYPE */}
       <select
@@ -454,7 +474,7 @@ const RegistrationOverview = ({ auctionId: auctionIdProp }) => {
           setRegistrationType(e.target.value);
           setPage(1);
         }}
-        className="border shadow-md rounded-lg px-3 py-2 text-sm bg-white"
+        className="h-10 rounded-lg border border-[var(--border-card)] bg-[var(--bg-main)] px-3 text-sm font-medium text-[var(--text-primary)] outline-none transition focus:border-[var(--border-primary)]"
       >
         <option value="all">All Types</option>
         <option value="paid">Paid</option>
@@ -465,7 +485,7 @@ const RegistrationOverview = ({ auctionId: auctionIdProp }) => {
       {!isTeamMode && (
         <div className="relative">
           <div
-            className="border shadow-md rounded-lg px-3 py-2 text-sm cursor-pointer bg-white"
+            className="h-10 cursor-pointer rounded-lg border border-[var(--border-card)] bg-[var(--bg-main)] px-3 py-2 text-sm font-medium text-[var(--text-primary)]"
             onClick={() => setOpenSlotDropdown((prev) => !prev)}
           >
             {selectedSlot?.slotName || "All Slots"}
@@ -473,7 +493,7 @@ const RegistrationOverview = ({ auctionId: auctionIdProp }) => {
 
           {openSlotDropdown && (
             <div
-              className="absolute z-50 mt-1 w-full bg-white border rounded-lg shadow-lg max-h-60 overflow-y-auto"
+              className="absolute z-50 mt-1 max-h-60 w-full overflow-y-auto rounded-lg border border-[var(--border-card)] bg-[var(--bg-card)] shadow-[var(--shadow-card)]"
               onScroll={handleScroll}
             >
               <input
@@ -481,7 +501,7 @@ const RegistrationOverview = ({ auctionId: auctionIdProp }) => {
                 placeholder="Search slot..."
                 value={searchSlot}
                 onChange={(e) => setSearchSlot(e.target.value)}
-                className="w-full px-3 py-2 border-b outline-none text-sm"
+                className="w-full border-b border-[var(--border-card)] bg-[var(--bg-main)] px-3 py-2 text-sm font-medium outline-none"
               />
 
               <div
@@ -491,7 +511,7 @@ const RegistrationOverview = ({ auctionId: auctionIdProp }) => {
                   setPage(1);
                   setOpenSlotDropdown(false);
                 }}
-                className="px-3 py-2 hover:bg-gray-100 cursor-pointer text-sm"
+                className="px-3 py-2 hover:bg-[var(--secondary-lighter)] cursor-pointer text-sm"
               >
                 All Slots
               </div>
@@ -505,14 +525,14 @@ const RegistrationOverview = ({ auctionId: auctionIdProp }) => {
                     setPage(1);
                     setOpenSlotDropdown(false);
                   }}
-                  className="px-3 py-2 hover:bg-gray-100 cursor-pointer text-sm"
+                  className="px-3 py-2 hover:bg-[var(--secondary-lighter)] cursor-pointer text-sm"
                 >
                   {s.slotName}
                 </div>
               ))}
 
               {hasMoreSlots && (
-                <div className="text-center py-2 text-xs text-gray-400">
+                <div className="text-center py-2 text-xs text-[var(--text-muted)]">
                   Loading more...
                 </div>
               )}
@@ -529,7 +549,7 @@ const RegistrationOverview = ({ auctionId: auctionIdProp }) => {
             setSessionId(e.target.value);
             setPage(1);
           }}
-          className="border shadow-md rounded-lg px-3 py-2 text-sm"
+          className="h-10 rounded-lg border border-[var(--border-card)] bg-[var(--bg-main)] px-3 text-sm font-medium text-[var(--text-primary)] outline-none transition focus:border-[var(--border-primary)] disabled:opacity-60"
           disabled={!slotId}
         >
           <option value="">All Sessions</option>
@@ -546,7 +566,7 @@ const RegistrationOverview = ({ auctionId: auctionIdProp }) => {
         type="date"
         value={dateFrom}
         onChange={(e) => setDateFrom(e.target.value)}
-        className="border shadow-md rounded-lg px-3 py-2 text-sm"
+        className="h-10 rounded-lg border border-[var(--border-card)] bg-[var(--bg-main)] px-3 text-sm font-medium text-[var(--text-primary)] outline-none transition focus:border-[var(--border-primary)]"
       />
 
       {/* DATE TO */}
@@ -554,17 +574,17 @@ const RegistrationOverview = ({ auctionId: auctionIdProp }) => {
         type="date"
         value={dateTo}
         onChange={(e) => setDateTo(e.target.value)}
-        className="border shadow-md rounded-lg px-3 py-2 text-sm"
+        className="h-10 rounded-lg border border-[var(--border-card)] bg-[var(--bg-main)] px-3 text-sm font-medium text-[var(--text-primary)] outline-none transition focus:border-[var(--border-primary)]"
       />
     </div>
   )}
 </div>
 
-      <div className="shadow-lg border rounded-xl overflow-x-auto">
+      <div className="overflow-x-auto rounded-lg border border-[var(--border-card)] bg-[var(--bg-card)] shadow-[var(--shadow-card)]">
         <table className="w-full min-w-[900px] text-sm">
           {/* HEADER */}
-          <thead className="bg-[var(--background)] font-semibold">
-            <tr className="border-b border-[var(--secondary-light)]">
+          <thead className="bg-[var(--secondary-lighter)] font-semibold">
+            <tr className="border-b border-[var(--border-card)]">
               {[
                 "#",
                 isTeamMode ? "Team" : "Player",
@@ -578,7 +598,7 @@ const RegistrationOverview = ({ auctionId: auctionIdProp }) => {
               ].map((h) => (
                 <th
                   key={h}
-                  className="text-left px-4 py-3 text-md text-black font-semibold tracking-wide uppercase"
+                  className="px-3 py-3 text-left text-xs font-semibold uppercase tracking-wide text-[var(--text-secondary)]"
                 >
                   {h}
                 </th>
@@ -592,7 +612,7 @@ const RegistrationOverview = ({ auctionId: auctionIdProp }) => {
               <tr>
                 <td
                   colSpan={tableColSpan}
-                  className="text-center py-6 text-gray-400"
+                  className="py-6 text-center text-sm text-[var(--text-secondary)]"
                 >
                   Loading...
                 </td>
@@ -602,7 +622,7 @@ const RegistrationOverview = ({ auctionId: auctionIdProp }) => {
               <tr>
                 <td
                   colSpan={tableColSpan}
-                  className="text-center py-10 text-gray-400 bg-white"
+                  className="bg-[var(--bg-card)] py-10 text-center text-sm text-[var(--text-secondary)]"
                 >
                   No registration data found
                 </td>
@@ -612,15 +632,15 @@ const RegistrationOverview = ({ auctionId: auctionIdProp }) => {
             {registrations.map((item, i) => (
               <tr
                 key={item.auctionPlayerId || item.registrationId}
-                className="border-b border-[var(--secondary-light)] last:border-0 hover:bg-white/60 transition duration-150 bg-gray-50 text-sm "
+                className="border-b border-[var(--border-card)] bg-[var(--bg-card)] text-xs transition last:border-0 hover:bg-[var(--secondary-lighter)]"
               >
                 {/* INDEX */}
-                <td className="px-4 py-3 text-gray-500">
+                <td className="px-3 py-1 text-[var(--text-secondary)]">
                   {(page - 1) * limit + i + 1}
                 </td>
 
                 {/* PLAYER / TEAM */}
-                <td className="px-4 py-3 font-medium text-[var(--secondary-dark)]">
+                <td className="px-3 py-1 font-semibold text-[var(--text-primary)]">
                   {isTeamMode
                     ? item?.teamName || "-"
                     : item?.player?.name || "-"}
@@ -628,34 +648,34 @@ const RegistrationOverview = ({ auctionId: auctionIdProp }) => {
 
                 {/* SLOT */}
                 {isTrailAuction && (
-                  <td className="px-4 py-3">{item?.slot?.slotName || "-"}</td>
+                  <td className="px-3 py-1 text-[var(--text-secondary)]">{item?.slot?.slotName || "-"}</td>
                 )}
 
                 {/* SESSION */}
                 {isTrailAuction && (
-                  <td className="px-4 py-3">{item?.session?.name || "-"}</td>
+                  <td className="px-3 py-1 text-[var(--text-secondary)]">{item?.session?.name || "-"}</td>
                 )}
 
                 {isTeamMode && (
-                  <td className="px-4 py-3 text-gray-600">
+                  <td className="px-3 py-1 text-[var(--text-secondary)]">
                     {item?.teamOwner || "-"}
                   </td>
                 )}
 
                 {/* MOBILE */}
-                <td className="px-4 py-3 text-gray-600">
+                <td className="px-3 py-1 text-[var(--text-secondary)]">
                   {isTeamMode
                     ? item?.mobileNumber || "-"
                     : item?.player?.mobile || "-"}
                 </td>
 
                 {/* TYPE BADGE */}
-                <td className="px-4 py-3">
+                <td className="px-3 py-1">
                   <span
-                    className={`px-2.5 py-1 text-xs rounded-full font-medium ${
+                    className={`rounded-full px-2.5 py-1 text-[11px] font-semibold capitalize ${
                       item.registrationType === "paid"
-                        ? "bg-green-100 text-green-700"
-                        : "bg-blue-100 text-blue-700"
+                        ? "bg-[var(--accent-light)] text-[var(--primary)]"
+                        : "bg-[var(--secondary-lighter)] text-[var(--text-secondary)]"
                     }`}
                   >
                     {item.registrationType}
@@ -663,23 +683,24 @@ const RegistrationOverview = ({ auctionId: auctionIdProp }) => {
                 </td>
 
                 {/* FEE */}
-                <td className="px-4 py-3 font-semibold text-[var(--secondary-dark)]">
+                <td className="px-3 py-1 font-semibold text-[var(--text-primary)]">
                   ₹{item?.paymentDetails?.registrationFee || 0}
                 </td>
 
                 {/* DATE */}
-                <td className="px-4 py-3 text-gray-500 text-xs">
+                <td className="px-3 py-1 text-xs text-[var(--text-secondary)]">
                   {item?.registrationDate
                     ? new Date(item.registrationDate).toLocaleDateString()
                     : "-"}
                 </td>
 
                 {/* ACTION */}
-                <td className="px-4 py-3">
+                <td className="px-3 py-1">
                   <button
                     onClick={() => setSelectedRegistration(item)}
-                    className="px-3 py-1.5 text-xs font-medium rounded-lg border border-[var(--secondary-light)] hover:bg-white transition"
+                    className="inline-flex items-center gap-1.5 rounded-lg border border-[var(--border-card)] px-3 py-1.5 text-xs font-semibold text-[var(--text-primary)] transition hover:border-[var(--border-primary)] hover:bg-[var(--accent-light)]"
                   >
+                    <Eye className="h-3.5 w-3.5 text-[var(--primary)]" />
                     View
                   </button>
                 </td>
@@ -689,8 +710,8 @@ const RegistrationOverview = ({ auctionId: auctionIdProp }) => {
         </table>
       </div>
 
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
-        <p className="text-sm text-gray-600">
+      <div className="flex flex-col gap-3 rounded-lg border border-[var(--border-card)] bg-[var(--bg-card)] p-3 shadow-[var(--shadow-card)] md:flex-row md:items-center md:justify-between">
+        <p className="text-xs font-medium text-[var(--text-secondary)]">
           Showing {registrations.length} of {pagination.total || 0} records
         </p>
 
@@ -699,49 +720,101 @@ const RegistrationOverview = ({ auctionId: auctionIdProp }) => {
             type="button"
             onClick={() => setPage((prev) => Math.max(1, prev - 1))}
             disabled={page <= 1}
-            className="border rounded-md px-3 py-1.5 text-sm disabled:opacity-50"
+            className="rounded-lg border border-[var(--border-card)] px-3 py-1.5 text-xs font-semibold text-[var(--text-primary)] transition hover:border-[var(--border-primary)] hover:bg-[var(--accent-light)] disabled:opacity-50"
           >
             Prev
           </button>
-          <span className="text-sm min-w-[90px] text-center">
+          <span className="min-w-[90px] text-center text-xs font-semibold text-[var(--text-secondary)]">
             Page {page} / {totalPages}
           </span>
           <button
             type="button"
             onClick={() => setPage((prev) => Math.min(totalPages, prev + 1))}
             disabled={page >= totalPages}
-            className="border rounded-md px-3 py-1.5 text-sm disabled:opacity-50"
+            className="rounded-lg border border-[var(--border-card)] px-3 py-1.5 text-xs font-semibold text-[var(--text-primary)] transition hover:border-[var(--border-primary)] hover:bg-[var(--accent-light)] disabled:opacity-50"
           >
             Next
           </button>
         </div>
       </div>
 
-      {selectedRegistration && (
-        <div className="fixed top-20 inset-0 z-50 bg-black/30 backdrop-blur-sm flex items-center justify-center p-3">
-          <div className="w-full max-w-2xl bg-white rounded-xl shadow-xl overflow-hidden">
+      {selectedRegistration &&
+        createPortal(
+        <div className="fixed inset-0 z-[2147483647] flex items-start justify-center overflow-y-auto bg-black/70 p-3 pt-5 backdrop-blur-sm sm:p-5">
+          <div className="w-full max-w-3xl overflow-hidden rounded-2xl border border-[var(--border-card)] bg-[var(--bg-card)] shadow-[0_28px_80px_rgba(0,0,0,0.35)]">
             {/* HEADER */}
-            <div className="flex items-center justify-between px-4 py-3 border-b bg-[var(--background)]">
-              <div className="flex items-center gap-2">
-                <div className="p-1.5 rounded-md bg-[var(--primary)]/10 text-[var(--primary)]">
-                  {isTeamMode ? <Users size={16} /> : <User size={16} />}
+            <div className="border-b border-[var(--border-card)] bg-[var(--bg-main)] px-4 py-4 sm:px-5">
+              <div className="flex items-start justify-between gap-3">
+                <div className="flex min-w-0 items-start gap-3">
+                  <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-[var(--border-primary)] bg-[var(--accent-light)] text-[var(--primary)]">
+                    {isTeamMode ? <Users size={18} /> : <User size={18} />}
+                  </div>
+
+                  <div className="min-w-0">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <h3 className="text-base font-semibold text-[var(--text-primary)]">
+                        Registration Details
+                      </h3>
+                      <span className="rounded-full border border-[var(--border-primary)] bg-[var(--bg-card)] px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-[var(--primary)]">
+                        {isTeamMode ? "Team" : "Player"}
+                      </span>
+                    </div>
+                    <p className="mt-1 truncate text-sm font-medium text-[var(--text-secondary)]">
+                      {isTeamMode
+                        ? selectedRegistration?.teamName || "Team registration"
+                        : selectedRegistration?.player?.name ||
+                          "Player registration"}
+                    </p>
+                  </div>
                 </div>
 
-                <h3 className="text-sm font-semibold text-[var(--primary)]">
-                  Registration Details
-                </h3>
+                <button
+                  onClick={() => setSelectedRegistration(null)}
+                  className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-[var(--border-card)] bg-[var(--bg-card)] text-[var(--text-secondary)] transition hover:border-[var(--border-primary)] hover:bg-[var(--accent-light)] hover:text-[var(--text-primary)]"
+                  aria-label="Close registration details"
+                >
+                  <X size={17} />
+                </button>
               </div>
 
-              <button
-                onClick={() => setSelectedRegistration(null)}
-                className="p-1.5 rounded-md hover:bg-gray-100 text-gray-500 hover:text-black"
-              >
-                <X size={16} />
-              </button>
+              <div className="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-4">
+                <div className="rounded-lg border border-[var(--border-card)] bg-[var(--bg-card)] px-3 py-2">
+                  <p className="text-[10px] font-bold uppercase tracking-wide text-[var(--text-muted)]">
+                    Type
+                  </p>
+                  <p className="mt-1 text-sm font-semibold capitalize text-[var(--text-primary)]">
+                    {selectedRegistration?.registrationType || "-"}
+                  </p>
+                </div>
+                <div className="rounded-lg border border-[var(--border-card)] bg-[var(--bg-card)] px-3 py-2">
+                  <p className="text-[10px] font-bold uppercase tracking-wide text-[var(--text-muted)]">
+                    Status
+                  </p>
+                  <p className="mt-1 text-sm font-semibold capitalize text-[var(--text-primary)]">
+                    {selectedRegistration?.paymentDetails?.status || "direct"}
+                  </p>
+                </div>
+                <div className="rounded-lg border border-[var(--border-card)] bg-[var(--bg-card)] px-3 py-2">
+                  <p className="text-[10px] font-bold uppercase tracking-wide text-[var(--text-muted)]">
+                    Total
+                  </p>
+                  <p className="mt-1 text-sm font-semibold text-[var(--primary)]">
+                    ₹{selectedRegistration?.paymentDetails?.amount || 0}
+                  </p>
+                </div>
+                <div className="rounded-lg border border-[var(--border-card)] bg-[var(--bg-card)] px-3 py-2">
+                  <p className="text-[10px] font-bold uppercase tracking-wide text-[var(--text-muted)]">
+                    Mode
+                  </p>
+                  <p className="mt-1 text-sm font-semibold text-[var(--text-primary)]">
+                    {isTeamMode ? "Team" : "Individual"}
+                  </p>
+                </div>
+              </div>
             </div>
 
             {/* CONTENT */}
-            <div className="p-4 max-h-[70vh] overflow-y-auto space-y-3">
+            <div className="max-h-[calc(100vh-13rem)] space-y-3 overflow-y-auto bg-[var(--bg-main)] p-3 [scrollbar-color:var(--border-primary)_transparent] [scrollbar-width:thin] sm:p-5">
               {isTeamMode ? (
                 <>
                   <Section title="Team Info" icon={<Users size={14} />}>
@@ -773,7 +846,7 @@ const RegistrationOverview = ({ auctionId: auctionIdProp }) => {
                           <img
                             src={selectedRegistration.logo}
                             alt={selectedRegistration?.teamName || "Team logo"}
-                            className="h-20 w-20 rounded-lg border object-cover"
+                            className="h-20 w-20 rounded-lg border border-[var(--border-card)] object-cover"
                           />
                         ) : (
                           "-"
@@ -825,9 +898,9 @@ const RegistrationOverview = ({ auctionId: auctionIdProp }) => {
                             <img
                               src={selectedRegistration.player.adharCard}
                               alt="Aadhar card"
-                              className="max-h-52 w-full rounded-lg border object-contain"
+                              className="max-h-52 w-full rounded-lg border border-[var(--border-card)] object-contain"
                             />
-                            <span className="text-xs text-blue-600 underline">
+                            <span className="text-xs font-semibold text-[var(--primary)] underline">
                               Open full image
                             </span>
                           </a>
@@ -850,9 +923,9 @@ const RegistrationOverview = ({ auctionId: auctionIdProp }) => {
                             <img
                               src={selectedRegistration.player.voterId}
                               alt="Voter ID"
-                              className="max-h-52 w-full rounded-lg border object-contain"
+                              className="max-h-52 w-full rounded-lg border border-[var(--border-card)] object-contain"
                             />
-                            <span className="text-xs text-blue-600 underline">
+                            <span className="text-xs font-semibold text-[var(--primary)] underline">
                               Open full image
                             </span>
                           </a>
@@ -913,10 +986,10 @@ const RegistrationOverview = ({ auctionId: auctionIdProp }) => {
                   label="Type"
                   value={
                     <span
-                      className={`px-2 py-0.5 rounded-full text-[10px] font-medium ${
+                    className={`rounded-full px-2 py-0.5 text-[10px] font-semibold ${
                         selectedRegistration?.registrationType === "paid"
-                          ? "bg-green-100 text-green-700"
-                          : "bg-blue-100 text-blue-700"
+                          ? "bg-[var(--accent-light)] text-[var(--primary)]"
+                          : "bg-[var(--secondary-lighter)] text-[var(--text-secondary)]"
                       }`}
                     >
                       {selectedRegistration?.registrationType || "-"}
@@ -984,9 +1057,9 @@ const RegistrationOverview = ({ auctionId: auctionIdProp }) => {
                         <img
                           src={selectedRegistration.paymentScreenshot}
                           alt="Payment screenshot"
-                          className="max-h-52 w-full rounded-lg border object-contain"
+                          className="max-h-52 w-full rounded-lg border border-[var(--border-card)] object-contain"
                         />
-                        <span className="text-xs text-blue-600 underline">
+                        <span className="text-xs font-semibold text-[var(--primary)] underline">
                           Open full screenshot
                         </span>
                       </a>
@@ -1008,8 +1081,9 @@ const RegistrationOverview = ({ auctionId: auctionIdProp }) => {
               </Section>
             </div>
           </div>
-        </div>
-      )}
+        </div>,
+          document.body,
+        )}
     </div>
   );
 };

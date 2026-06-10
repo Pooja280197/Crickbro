@@ -3,102 +3,116 @@ import { useDispatch, useSelector } from "react-redux";
 import { AuctionOverviewDetails } from "../../../redux/actions";
 import { useParams } from "react-router-dom";
 import {
-  TrendingUp,
-  Users,
-  DollarSign,
-  Calendar,
-  Clock,
   Activity,
   Award,
-  Target,
-  PieChart,
   Briefcase,
-  ChevronRight,
+  Calendar,
+  Clock,
+  DollarSign,
   Loader2,
+  PieChart,
+  Target,
+  TrendingUp,
+  Users,
 } from "lucide-react";
 import Pagination from "../../../components/Pagination";
 
-const StatCard = ({
-  title,
-  value,
-  icon: Icon,
-  trend,
-}) => {
-  return (
-    <div className="relative group">
-      <div className="relative rounded-3xl border border-[var(--border-card)] bg-[var(--bg-card)] p-5 shadow-[var(--shadow-card)] transition-all duration-300 hover:shadow-[0_26px_72px_rgba(0,0,0,0.18)]">
-        <div className="flex items-start justify-between gap-4">
-          <div>
-            <p className="text-xs font-main uppercase tracking-[0.18em] text-[var(--text-secondary)] mb-2">
-              {title}
-            </p>
-            <p className="text-2xl font-heading font-bold text-[var(--text-primary)]">
-              {value}
-            </p>
-            {trend && (
-              <div className="mt-3 flex items-center gap-2 text-xs text-[var(--text-secondary)] font-main">
-                <TrendingUp className="w-3 h-3 text-[var(--secondary)]" />
-                <span>{trend}</span>
-              </div>
-            )}
-          </div>
-          <div className="flex h-12 w-12 items-center justify-center rounded-3xl bg-[var(--secondary)]/15 text-[var(--secondary)] shadow-sm">
-            <Icon className="w-6 h-6" />
-          </div>
-        </div>
-      </div>
-    </div>
-  );
+const formatCurrency = (value) => `₹${Number(value || 0).toLocaleString()}`;
+
+const formatDate = (date) => {
+  if (!date) return "N/A";
+  return new Date(date).toLocaleDateString("en-IN", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  });
 };
 
-const Card = ({ title, children, icon: Icon, action }) => (
-  <div className="relative group">
-    <div className="relative rounded-3xl border border-[var(--border-card)] bg-[var(--bg-card)] p-5 shadow-[var(--shadow-card)] transition-all duration-300 hover:shadow-[0_28px_80px_rgba(0,0,0,0.16)]">
-      <div className="flex items-center justify-between mb-4 gap-4">
-        <div className="flex items-center space-x-3">
-          {Icon && (
-            <div className="grid h-11 w-11 place-items-center rounded-2xl bg-[var(--secondary)]/15 text-[var(--secondary)] shadow-sm">
-              <Icon className="w-5 h-5" />
-            </div>
-          )}
-          <h2 className="text-base font-heading font-semibold text-[var(--text-primary)]">
-            {title}
-          </h2>
-        </div>
-        {action && action}
+const getPercentage = (value, max) => {
+  const safeMax = Number(max || 0);
+  if (!safeMax) return 0;
+  return Math.min(100, Math.round((Number(value || 0) / safeMax) * 100));
+};
+
+const StatCard = ({ title, value, icon: Icon, helper }) => (
+  <div className="flex min-h-[132px] flex-col justify-between rounded-lg border border-[var(--border-card)] bg-[var(--bg-card)] p-4 shadow-[var(--shadow-card)] transition hover:border-[var(--border-primary)]">
+    <div className="flex items-start justify-between gap-3">
+      <div className="min-w-0">
+        <p className="truncate text-xs font-semibold uppercase tracking-wide text-[var(--text-secondary)]">
+          {title}
+        </p>
+        <p className="mt-1 truncate text-xl font-bold leading-8 text-[var(--text-primary)]">
+          {value}
+        </p>
       </div>
-      {children}
+      <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-[var(--border-primary)] bg-[var(--accent-light)] text-[var(--primary)]">
+        <Icon className="h-4 w-4" />
+      </div>
     </div>
+    <p className=" line-clamp-1 text-xs font-medium text-[var(--text-secondary)]">
+      {helper || "Updated auction summary"}
+    </p>
   </div>
 );
 
-const StatItem = ({ label, value, icon: Icon }) => (
-  <div className="flex items-center justify-between py-3">
-    <div className="flex items-center gap-2">
+const SectionCard = ({ title, icon: Icon, children, className = "" }) => (
+  <section
+    className={`rounded-lg border border-[var(--border-card)] bg-[var(--bg-card)] p-4 shadow-[var(--shadow-card)] ${className}`}
+  >
+    <div className="mb-4 flex items-center gap-3">
       {Icon && (
-        <Icon className="w-4 h-4 text-[var(--secondary)]" />
+        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[var(--accent-light)] text-[var(--primary)]">
+          <Icon className="h-4 w-4" />
+        </div>
       )}
-      <span className="text-sm text-[var(--text-secondary)] font-main">
+      <h2 className="truncate text-sm font-semibold text-[var(--text-primary)]">
+        {title}
+      </h2>
+    </div>
+    {children}
+  </section>
+);
+
+const InfoRow = ({ label, value, icon: Icon }) => (
+  <div className="flex items-center justify-between gap-4 border-b border-[var(--border-card)] py-2.5 last:border-b-0">
+    <div className="flex min-w-0 items-center gap-2">
+      {Icon && <Icon className="h-3.5 w-3.5 shrink-0 text-[var(--primary)]" />}
+      <span className="truncate text-xs font-medium text-[var(--text-secondary)]">
         {label}
       </span>
     </div>
-    <span className="text-sm font-semibold text-[var(--text-primary)]">
+    <span className="shrink-0 text-right text-xs font-semibold text-[var(--text-primary)]">
       {value}
     </span>
   </div>
 );
 
-const ProgressBar = ({ value, max }) => {
-  const percentage = (value / max) * 100;
-  return (
-    <div className="w-full bg-[var(--background)] border border-[var(--secondary-light)] rounded-full h-2">
-      <div
-        className="bg-[var(--secondary)] rounded-full h-2 transition-all duration-500"
-        style={{ width: `${percentage}%` }}
-      />
-    </div>
-  );
-};
+const ProgressBar = ({ value, max }) => (
+  <div className="h-2 w-full overflow-hidden rounded-full border border-[var(--border-card)] bg-[var(--secondary-lighter)]">
+    <div
+      className="h-full rounded-full bg-[var(--secondary)] transition-all duration-500"
+      style={{ width: `${getPercentage(value, max)}%` }}
+    />
+  </div>
+);
+
+const SmallMetric = ({ label, value, helper }) => (
+  <div className="rounded-lg border border-[var(--border-card)] bg-[var(--secondary-lighter)] p-3">
+    <p className="text-xs font-medium text-[var(--text-secondary)]">{label}</p>
+    <p className="mt-2 text-xl font-bold text-[var(--text-primary)]">{value}</p>
+    {helper && (
+      <p className="mt-1 truncate text-[11px] font-medium text-[var(--text-secondary)]">
+        {helper}
+      </p>
+    )}
+  </div>
+);
+
+const StatusBadge = ({ status }) => (
+  <span className="inline-flex items-center rounded-full border border-[var(--border-primary)] bg-[var(--accent-light)] px-2.5 py-1 text-[11px] font-semibold capitalize text-[var(--primary)]">
+    {status || "Unknown"}
+  </span>
+);
 
 const Dashboard = () => {
   const { auctionId } = useParams();
@@ -117,12 +131,11 @@ const Dashboard = () => {
   } = DashboardDetails || {};
 
   const itemsPerPage = 5;
-
-  const totalTeams = teamStatistics?.teams?.length || 0;
-
+  const teams = teamStatistics?.teams || [];
+  const categories = categoryStatistics?.categories || [];
+  const totalTeams = teams.length;
   const totalPages = Math.ceil(totalTeams / itemsPerPage);
-
-  const paginatedTeams = teamStatistics?.teams?.slice(
+  const paginatedTeams = teams.slice(
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage,
   );
@@ -133,10 +146,10 @@ const Dashboard = () => {
 
   if (Loading) {
     return (
-      <div className="min-h-screen  flex items-center justify-center">
-        <div className="text-center">
-          <Loader2 className="w-12 h-12 text-[var(--secondary)] animate-spin mx-auto mb-4" />
-          <p className="text-[var(--text-secondary)] animate-pulse">
+      <div className="flex min-h-[calc(100vh-108px)] items-center justify-center">
+        <div className="rounded-lg border border-[var(--border-card)] bg-[var(--bg-card)] px-6 py-5 text-center shadow-[var(--shadow-card)]">
+          <Loader2 className="mx-auto mb-3 h-8 w-8 animate-spin text-[var(--secondary)]" />
+          <p className="text-sm font-medium text-[var(--text-secondary)]">
             Loading auction dashboard...
           </p>
         </div>
@@ -145,382 +158,236 @@ const Dashboard = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[var(--bg-main)] text-[var(--text-primary)] font-main">
-      <div className="relative z-10 p-4 lg:p-8 space-y-8">
-        {/* Header Section */}
-        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-          <div className="space-y-2">
-            <div className="flex items-center space-x-3">
-              <div className="p-3 rounded-2xl bg-[var(--bg-card)] shadow-[var(--shadow-card)]">
-                <Briefcase className="w-6 h-6 text-[var(--secondary)]" />
+    <div className="min-h-[calc(100vh-108px)] bg-[var(--bg-main)] text-[var(--text-primary)]">
+      <div className="space-y-5 p-4 lg:p-6">
+        <header className="rounded-lg border border-[var(--border-card)] bg-[var(--bg-card)] p-4 shadow-[var(--shadow-card)]">
+          <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+            <div className="min-w-0">
+              <div className="flex items-center gap-3">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-[var(--accent-light)] text-[var(--primary)]">
+                  <Briefcase className="h-5 w-5" />
+                </div>
+                <div className="min-w-0">
+                  <p className="text-xs font-semibold uppercase tracking-wide text-[var(--text-secondary)]">
+                    Dashboard
+                  </p>
+                  <h1 className="truncate text-xl font-bold leading-7 text-[var(--text-primary)] lg:text-2xl">
+                    {auctionInfo?.auctionName || "Auction Dashboard"}
+                  </h1>
+                </div>
               </div>
-              <h1 className="text-3xl lg:text-4xl font-heading font-bold text-[var(--text-primary)]">
-                {auctionInfo?.auctionName || "Auction Dashboard"}
-              </h1>
             </div>
-            <div className="flex flex-col gap-2 text-sm text-[var(--text-secondary)] sm:flex-row sm:flex-wrap sm:gap-4">
-              <span className="flex items-center gap-2 text-[var(--text-secondary)]">
-                <Calendar className="w-4 h-4 text-[var(--secondary)]" />
-                Started:{" "}
-                {auctionInfo?.auctionStartedAt
-                  ? new Date(auctionInfo.auctionStartedAt).toLocaleDateString(
-                      "en-IN",
-                      {
-                        day: "numeric",
-                        month: "short",
-                        year: "numeric",
-                      },
-                    )
-                  : "N/A"}
+
+            <div className="flex flex-col gap-2 text-xs font-medium text-[var(--text-secondary)] sm:flex-row sm:flex-wrap sm:items-center">
+              <span className="inline-flex items-center gap-2 rounded-lg border border-[var(--border-card)] px-3 py-2">
+                <Calendar className="h-3.5 w-3.5 text-[var(--primary)]" />
+                Started: {formatDate(auctionInfo?.auctionStartedAt)}
               </span>
-              <span className="flex items-center gap-2 text-[var(--text-secondary)]">
-                <Clock className="w-4 h-4 text-[var(--secondary)]" />
-                Ends:{" "}
-                {auctionInfo?.auctionEndedAt
-                  ? new Date(auctionInfo.auctionEndedAt).toLocaleDateString(
-                      "en-IN",
-                      {
-                        day: "numeric",
-                        month: "short",
-                        year: "numeric",
-                      },
-                    )
-                  : "N/A"}
+              <span className="inline-flex items-center gap-2 rounded-lg border border-[var(--border-card)] px-3 py-2">
+                <Clock className="h-3.5 w-3.5 text-[var(--primary)]" />
+                Ends: {formatDate(auctionInfo?.auctionEndedAt)}
               </span>
+              <StatusBadge status={auctionInfo?.auctionStatus} />
             </div>
           </div>
+        </header>
 
-          <div className="flex items-center space-x-3">
-            <span
-              className={`px-4 py-2 rounded-full text-sm font-medium border transition-colors duration-200 ${
-                auctionInfo?.isBiddingActive
-                  ? "bg-[var(--secondary)]/15 text-[var(--secondary)] border-[var(--secondary)]/25"
-                  : "bg-[var(--secondary)]/15 text-[var(--secondary)] border-[var(--secondary)]/25"
-              }`}
-            >
-              <span className="flex items-center gap-2 text-[var(--text-primary)]">
-                <Activity className="w-4 h-4 text-[var(--secondary)]" />
-                {auctionInfo?.auctionStatus || "Unknown"}
-              </span>
-            </span>
-          </div>
-        </div>
-
-        {/* Key Metrics */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid auto-rows-fr grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
           <StatCard
             title="Total Revenue"
-            value={`₹${paymentStatistics?.auctionSales?.totalSaleAmount?.toLocaleString() || 0}`}
+            value={formatCurrency(paymentStatistics?.auctionSales?.totalSaleAmount)}
             icon={DollarSign}
+            helper="Auction sale amount"
           />
           <StatCard
             title="Total Players"
             value={playerStatistics?.totalPlayers || 0}
             icon={Users}
-            trend={`${playerStatistics?.soldPlayers || 0} sold, ${playerStatistics?.unsoldPlayers || 0} unsold`}
+            helper={`${playerStatistics?.soldPlayers || 0} sold, ${playerStatistics?.unsoldPlayers || 0} unsold`}
           />
           <StatCard
             title="Highest Sale"
-            value={`₹${paymentStatistics?.auctionSales?.highestSale?.toLocaleString() || 0}`}
+            value={formatCurrency(paymentStatistics?.auctionSales?.highestSale)}
             icon={TrendingUp}
-            trend={`Average: ₹${paymentStatistics?.auctionSales?.averageSalePrice?.toLocaleString() || 0}`}
+            helper={`Average ${formatCurrency(paymentStatistics?.auctionSales?.averageSalePrice)}`}
           />
           <StatCard
             title="Teams"
-            value={teamStatistics?.teams?.length || 0}
+            value={totalTeams}
             icon={Award}
-            trend="Active participants"
+            helper="Active participants"
           />
         </div>
 
-        {/* Main Content Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Left Column - Auction Info & Player Stats */}
-          <div className="lg:col-span-1 space-y-6">
-            <Card title="Auction Information" icon={Briefcase}>
-              <div className="space-y-3">
-                <StatItem
+        <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
+            <SectionCard title="Auction Information" icon={Briefcase}>
+              <div>
+                <InfoRow
                   label="Auction Type"
-                  value={auctionInfo?.auctionType || "N/A"}
+                  value={auctionInfo?.auctionType?.charAt(0)?.toUpperCase() + auctionInfo?.auctionType?.slice(1) || "N/A"}
                   icon={Target}
                 />
-                <StatItem
+                <InfoRow
                   label="Platform Fee"
-                  value={`₹${auctionInfo?.platformFee?.toLocaleString() || 0}`}
+                  value={formatCurrency(auctionInfo?.platformFee)}
                   icon={DollarSign}
                 />
-                <StatItem
+                <InfoRow
                   label="Registration Fee"
-                  value={`₹${auctionInfo?.registrationFee?.toLocaleString() || 0}`}
+                  value={formatCurrency(auctionInfo?.registrationFee)}
                   icon={DollarSign}
                 />
-                {auctionInfo?.trailTypeAuction && (
-                  <div className="pt-3 mt-3 border-t border-[var(--border-card)]">
-                    <StatItem
-                      label="Total Slots"
-                      value={slotAndSessionStatistics?.totalSlots || 0}
-                      icon={Activity}
-                      highlight
-                    />
-                    <StatItem
-                      label="Active Slots"
-                      value={slotAndSessionStatistics?.activeSlots || 0}
-                      icon={Activity}
-                    />
-                    <ProgressBar
-                      value={slotAndSessionStatistics?.activeSlots || 0}
-                      max={slotAndSessionStatistics?.totalSlots || 1}
-                      color="emerald"
-                    />
-                  </div>
-                )}
               </div>
-            </Card>
 
-            <Card title="Player Breakdown" icon={Users}>
-              <div className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="rounded-3xl border border-[var(--border-card)] bg-[var(--bg-section)] p-4 shadow-sm">
-                    <p className="text-xs text-[var(--text-secondary)] mb-1">Sold</p>
-                    <p className="text-2xl font-heading font-bold text-[var(--secondary)]">
-                      {playerStatistics?.soldPlayers || 0}
-                    </p>
-                    <p className="text-xs text-[var(--text-secondary)] mt-1">
-                      of {playerStatistics?.totalPlayers || 0}
-                    </p>
+              {auctionInfo?.trailTypeAuction && (
+                <div className="mt-4 rounded-lg border border-[var(--border-card)] bg-[var(--secondary-lighter)] p-3">
+                  <div className="mb-2 flex items-center justify-between">
+                    <span className="text-xs font-semibold text-[var(--text-primary)]">
+                      Trial Slots
+                    </span>
+                    <span className="text-xs font-medium text-[var(--text-secondary)]">
+                      {slotAndSessionStatistics?.activeSlots || 0}/
+                      {slotAndSessionStatistics?.totalSlots || 0} active
+                    </span>
                   </div>
-                  <div className="rounded-3xl border border-[var(--border-card)] bg-[var(--bg-section)] p-4 shadow-sm">
-                    <p className="text-xs text-[var(--text-secondary)] mb-1">Unsold</p>
-                    <p className="text-2xl font-heading font-bold text-[var(--secondary)]">
-                      {playerStatistics?.unsoldPlayers || 0}
-                    </p>
-                    <p className="text-xs text-[var(--text-secondary)] mt-1">remaining</p>
-                  </div>
-                </div>
-                <div className="space-y-2">
-                  <StatItem
-                    label="Foreign Players"
-                    value={playerStatistics?.foreignPlayers || 0}
-                  />
-                  <StatItem
-                    label="Reentry Players"
-                    value={playerStatistics?.reentryPlayers || 0}
-                  />
-                  <StatItem
-                    label="Available Players"
-                    value={playerStatistics?.availablePlayers || 0}
+                  <ProgressBar
+                    value={slotAndSessionStatistics?.activeSlots}
+                    max={slotAndSessionStatistics?.totalSlots}
                   />
                 </div>
-              </div>
-            </Card>
-          </div>
+              )}
+            </SectionCard>
 
-          {/* Right Column - Tables and Stats */}
-          <div className="lg:col-span-2 space-y-6">
-            {/* Categories Table */}
-            {/* Categories Table / Cards */}
-            <Card title="Category Overview" icon={PieChart}>
-              {/* Desktop Table */}
-              <div className="hidden lg:block overflow-x-auto custom-scrollbar">
-                <table className="w-full">
+            <SectionCard title="Player Breakdown" icon={Users}>
+              <div className="grid grid-cols-2 gap-3">
+                <SmallMetric
+                  label="Sold"
+                  value={playerStatistics?.soldPlayers || 0}
+                  helper={`of ${playerStatistics?.totalPlayers || 0}`}
+                />
+                <SmallMetric
+                  label="Unsold"
+                  value={playerStatistics?.unsoldPlayers || 0}
+                  helper="remaining"
+                />
+              </div>
+              <div className="mt-3">
+                <InfoRow
+                  label="Foreign Players"
+                  value={playerStatistics?.foreignPlayers || 0}
+                />
+                <InfoRow
+                  label="Reentry Players"
+                  value={playerStatistics?.reentryPlayers || 0}
+                />
+                <InfoRow
+                  label="Available Players"
+                  value={playerStatistics?.availablePlayers || 0}
+                />
+              </div>
+            </SectionCard>
+        </div>
+
+        <div className="grid grid-cols-1 gap-5 ">
+            <SectionCard title="Category Overview" icon={PieChart}>
+              <div className="overflow-x-auto">
+                <table className="w-full min-w-[620px] text-left sm:min-w-[720px]">
                   <thead>
-                    <tr className="text-left text-xs font-medium text-[var(--text-secondary)] uppercase tracking-wider">
-                      <th className="pb-3">Category</th>
-                      <th className="pb-3">Base Amount</th>
-                      <th className="pb-3">Max Bid</th>
-                      <th className="pb-3">Total</th>
-                      <th className="pb-3">Sold</th>
-                      <th className="pb-3">Status</th>
+                    <tr className="border-b border-[var(--border-card)] text-xs font-semibold uppercase tracking-wide text-[var(--text-secondary)]">
+                      <th className="px-3 py-3">Category</th>
+                      <th className="px-3 py-3">Base</th>
+                      <th className="px-3 py-3">Max Bid</th>
+                      <th className="px-3 py-3">Total</th>
+                      <th className="px-3 py-3">Sold</th>
+                      <th className="px-3 py-3">Status</th>
                     </tr>
                   </thead>
-
-                  <tbody className="text-sm">
-                    {categoryStatistics?.categories?.map((cat, idx) => (
-                      <tr
-                        key={cat.categoryId || idx}
-                        className="group/row text-[var(--text-primary)]"
-                      >
-                        <td className="py-3 font-medium">{cat.categoryName}</td>
-
-                        <td className="py-3">
-                          ₹{cat.baseAmount?.toLocaleString()}
-                        </td>
-
-                        <td className="py-3">
-                          ₹{cat.maxBid?.toLocaleString()}
-                        </td>
-
-                        <td className="py-3">{cat.totalPlayers}</td>
-
-                        <td className="py-3">
-                          <span className="text-[var(--secondary)] font-medium">
-                            {cat.soldPlayers}
-                          </span>
-
-                          <span className="text-[var(--text-secondary)] text-xs ml-1">
-                            (
-                            {Math.round(
-                              (cat.soldPlayers / cat.totalPlayers) * 100,
-                            )}
-                            %)
-                          </span>
-                        </td>
-
-                        <td className="py-3">
-                          <span
-                            className={`px-2 py-1 rounded-full text-xs font-medium ${
-                              cat.status === "active"
-                                ? "bg-[var(--secondary)]/15 text-[var(--secondary)]"
-                                : "bg-[var(--text-secondary)]/15 text-[var(--text-secondary)]"
-                            }`}
-                          >
-                            {cat.status}
-                          </span>
-                        </td>
-                      </tr>
-                    ))}
+                  <tbody className="divide-y divide-[var(--border-card)] text-xs">
+                    {categories.map((cat, idx) => {
+                      const soldPercentage = getPercentage(
+                        cat.soldPlayers,
+                        cat.totalPlayers,
+                      );
+                      return (
+                        <tr
+                          key={cat.categoryId || idx}
+                          className="transition hover:bg-[var(--secondary-lighter)]"
+                        >
+                          <td className="px-3 py-3 font-semibold text-[var(--text-primary)]">
+                            {cat.categoryName}
+                          </td>
+                          <td className="px-3 py-3 text-[var(--text-secondary)]">
+                            {formatCurrency(cat.baseAmount)}
+                          </td>
+                          <td className="px-3 py-3 font-medium text-[var(--text-primary)]">
+                            {formatCurrency(cat.maxBid)}
+                          </td>
+                          <td className="px-3 py-3 text-[var(--text-secondary)]">
+                            {cat.totalPlayers || 0}
+                          </td>
+                          <td className="px-3 py-3">
+                            <span className="font-semibold text-[var(--primary)]">
+                              {cat.soldPlayers || 0}
+                            </span>
+                            <span className="ml-1 text-[11px] text-[var(--text-secondary)]">
+                              ({soldPercentage}%)
+                            </span>
+                          </td>
+                          <td className="px-3 py-3">
+                            <StatusBadge status={cat.status} />
+                          </td>
+                        </tr>
+                      );
+                    })}
                   </tbody>
                 </table>
               </div>
+            </SectionCard>
 
-              {/* Mobile / Tablet Cards */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 lg:hidden">
-                {categoryStatistics?.categories?.map((cat, idx) => {
-                  const soldPercentage = Math.round(
-                    (cat.soldPlayers / cat.totalPlayers) * 100,
-                  );
-
-                  return (
-                    <div
-                      key={cat.categoryId || idx}
-                      className="rounded-3xl border border-[var(--border-card)] bg-[var(--bg-card)] shadow-[var(--shadow-card)] p-4 space-y-4"
-                    >
-                      {/* Header */}
-                      <div className="flex items-start justify-between gap-3">
-                        <div>
-                          <h3 className="font-semibold text-sm text-[var(--text-primary)]">
-                            {cat.categoryName}
-                          </h3>
-
-                          <p className="text-xs text-[var(--text-secondary)] mt-1">
-                            {cat.soldPlayers} sold of {cat.totalPlayers}
-                          </p>
-                        </div>
-
-                        <span
-                          className={`px-2 py-1 rounded-full text-xs font-medium whitespace-nowrap ${
-                            cat.status === "active"
-                              ? "bg-[var(--secondary)]/15 text-[var(--secondary)]"
-                              : "bg-[var(--bg-section)] text-[var(--text-secondary)]"
-                          }`}
-                        >
-                          {cat.status}
-                        </span>
-                      </div>
-
-                      {/* Amounts */}
-                      <div className="space-y-3 text-sm">
-                        <div className="flex justify-between">
-                          <span className="text-[var(--text-secondary)]">Base Amount</span>
-
-                          <span className="font-medium">
-                            ₹{cat.baseAmount?.toLocaleString()}
-                          </span>
-                        </div>
-
-                        <div className="flex justify-between">
-                          <span className="text-[var(--text-secondary)]">Max Bid</span>
-
-                          <span className="font-medium text-[var(--primary)]">
-                            ₹{cat.maxBid?.toLocaleString()}
-                          </span>
-                        </div>
-
-                        <div className="flex justify-between">
-                          <span className="text-[var(--text-secondary)]">Total Players</span>
-
-                          <span className="font-medium">
-                            {cat.totalPlayers}
-                          </span>
-                        </div>
-
-                        <div className="flex justify-between">
-                          <span className="text-[var(--text-secondary)]">Sold Players</span>
-
-                          <span className="font-medium text-emerald-500">
-                            {cat.soldPlayers}
-                          </span>
-                        </div>
-                      </div>
-
-                      {/* Progress */}
-                      <div className="space-y-2">
-                        <div className="flex justify-between text-xs text-[var(--text-secondary)]">
-                          <span>Sold Ratio</span>
-                          <span>{soldPercentage}%</span>
-                        </div>
-
-                        <ProgressBar
-                          value={cat.soldPlayers}
-                          max={cat.totalPlayers}
-                        />
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </Card>
-            {/* Teams Table */}
-            {/* Teams Table / Cards */}
-            <Card title="Team Performance" icon={Award}>
-              {/* Desktop Table */}
-              <div className="hidden lg:block overflow-x-auto custom-scrollbar">
-                <table className="w-full">
+            <SectionCard title="Team Performance" icon={Award}>
+              <div className="overflow-x-auto">
+                <table className="w-full min-w-[680px] text-left sm:min-w-[760px]">
                   <thead>
-                    <tr className="text-left text-xs font-medium text-[var(--text-secondary)] uppercase tracking-wider">
-                      <th className="pb-3">Team</th>
-                      <th className="pb-3">Initial Budget</th>
-                      <th className="pb-3">Spent</th>
-                      <th className="pb-3">Remaining</th>
-                      <th className="pb-3">Squad</th>
-                      <th className="pb-3">Utilization</th>
+                    <tr className="border-b border-[var(--border-card)] text-xs font-semibold uppercase tracking-wide text-[var(--text-secondary)]">
+                      <th className="px-3 py-3">Team</th>
+                      <th className="px-3 py-3">Initial Budget</th>
+                      <th className="px-3 py-3">Spent</th>
+                      <th className="px-3 py-3">Remaining</th>
+                      <th className="px-3 py-3">Squad</th>
+                      <th className="px-3 py-3">Utilization</th>
                     </tr>
                   </thead>
-
-                  <tbody className="text-sm">
-                    {paginatedTeams?.map((team, idx) => {
-                      const utilization =
-                        (team.purseSpent / team.initialBudget) * 100;
-
+                  <tbody className="divide-y divide-[var(--border-card)] text-xs">
+                    {paginatedTeams.map((team, idx) => {
+                      const utilization = getPercentage(
+                        team.purseSpent,
+                        team.initialBudget,
+                      );
                       return (
                         <tr
                           key={team.teamId || idx}
-                          className="group/row text-[var(--secondary)]"
+                          className="transition hover:bg-[var(--secondary-lighter)]"
                         >
-                          <td className="py-3 font-medium">{team.teamName}</td>
-
-                          <td className="py-3">
-                            ₹{team.initialBudget?.toLocaleString()}
+                          <td className="px-3 py-3 font-semibold text-[var(--text-primary)]">
+                            {team.teamName}
                           </td>
-
-                          <td className="py-3">
-                            ₹{team.purseSpent?.toLocaleString()}
+                          <td className="px-3 py-3 text-[var(--text-secondary)]">
+                            {formatCurrency(team.initialBudget)}
                           </td>
-
-                          <td className="py-3">
-                            <span className="text-[var(--secondary)] font-medium">
-                              ₹{team.remainingBudget?.toLocaleString()}
-                            </span>
+                          <td className="px-3 py-3 text-[var(--text-secondary)]">
+                            {formatCurrency(team.purseSpent)}
                           </td>
-
-                          <td className="py-3">{team.currentSquadSize}</td>
-
-                          <td className="py-3 w-[180px]">
+                          <td className="px-3 py-3 font-semibold text-[var(--primary)]">
+                            {formatCurrency(team.remainingBudget)}
+                          </td>
+                          <td className="px-3 py-3 text-[var(--text-secondary)]">
+                            {team.currentSquadSize || 0}
+                          </td>
+                          <td className="px-3 py-3">
                             <div className="flex items-center gap-2">
-                              <span className="text-xs text-[var(--text-secondary)] w-10">
-                                {Math.round(utilization)}%
+                              <span className="w-9 text-[11px] font-semibold text-[var(--text-secondary)]">
+                                {utilization}%
                               </span>
-
                               <ProgressBar
                                 value={team.purseSpent}
                                 max={team.initialBudget}
@@ -534,141 +401,34 @@ const Dashboard = () => {
                 </table>
               </div>
 
-              {/* Mobile / Tablet Cards */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 lg:hidden">
-                {paginatedTeams?.map((team, idx) => {
-                  const utilization =
-                    (team.purseSpent / team.initialBudget) * 100;
-
-                  return (
-                    <div
-                      key={team.teamId || idx}
-                      className="rounded-3xl border border-[var(--border-card)] bg-[var(--bg-card)] shadow-[var(--shadow-card)] p-4 space-y-4"
-                    >
-                      {/* Header */}
-                      <div className="flex items-center justify-between">
-                        <h3 className="font-semibold text-sm text-[var(--text-primary)]">
-                          {team.teamName}
-                        </h3>
-
-                        <span className="text-xs bg-[var(--secondary)]/15 text-[var(--secondary)] px-2 py-1 rounded-full">
-                          {Math.round(utilization)}%
-                        </span>
-                      </div>
-
-                      {/* Budget Details */}
-                      <div className="space-y-3 text-sm">
-                        <div className="flex justify-between">
-                          <span className="text-[var(--text-secondary)]">Initial Budget</span>
-
-                          <span className="font-medium">
-                            ₹{team.initialBudget?.toLocaleString()}
-                          </span>
-                        </div>
-
-                        <div className="flex justify-between">
-                          <span className="text-[var(--text-secondary)]">Spent</span>
-
-                          <span className="font-medium text-red-500">
-                            ₹{team.purseSpent?.toLocaleString()}
-                          </span>
-                        </div>
-
-                        <div className="flex justify-between">
-                          <span className="text-[var(--text-secondary)]">Remaining</span>
-
-                          <span className="font-medium text-emerald-500">
-                            ₹{team.remainingBudget?.toLocaleString()}
-                          </span>
-                        </div>
-
-                        <div className="flex justify-between">
-                          <span className="text-[var(--text-secondary)]">Squad Size</span>
-
-                          <span className="font-medium">
-                            {team.currentSquadSize}
-                          </span>
-                        </div>
-                      </div>
-
-                      {/* Progress */}
-                      <div className="space-y-2">
-                        <div className="flex justify-between text-xs text-[var(--text-secondary)]">
-                          <span>Budget Usage</span>
-                          <span>{Math.round(utilization)}%</span>
-                        </div>
-
-                        <ProgressBar
-                          value={team.purseSpent}
-                          max={team.initialBudget}
-                        />
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-              {/* Pagination */}
-              {/* Pagination */}
-              <div className="mt-6 border-t pt-4">
-                <div className="text-xs sm:text-sm text-[var(--text-secondary)] text-center sm:text-left">
-                  Showing{" "}
-                  <span className="font-semibold text-[var(--text-primary)]">
-                    {(currentPage - 1) * itemsPerPage + 1}
-                  </span>
-                  {" - "}
-                  <span className="font-semibold text-[var(--text-primary)]">
-                    {Math.min(currentPage * itemsPerPage, totalTeams)}
-                  </span>{" "}
-                  of{" "}
-                  <span className="font-semibold text-[var(--text-primary)]">
-                    {totalTeams}
-                  </span>
+              {totalTeams > 0 && (
+                <div className="mt-4 border-t border-[var(--border-card)] pt-4">
+                  <div className="text-center text-xs text-[var(--text-secondary)] sm:text-left">
+                    Showing{" "}
+                    <span className="font-semibold text-[var(--text-primary)]">
+                      {(currentPage - 1) * itemsPerPage + 1}
+                    </span>
+                    {" - "}
+                    <span className="font-semibold text-[var(--text-primary)]">
+                      {Math.min(currentPage * itemsPerPage, totalTeams)}
+                    </span>{" "}
+                    of{" "}
+                    <span className="font-semibold text-[var(--text-primary)]">
+                      {totalTeams}
+                    </span>
+                  </div>
+                  <Pagination
+                    currentPage={currentPage}
+                    totalPages={totalPages}
+                    onPageChange={setCurrentPage}
+                    showSummary={false}
+                    className="mt-4"
+                  />
                 </div>
-                <Pagination
-                  currentPage={currentPage}
-                  totalPages={totalPages}
-                  onPageChange={setCurrentPage}
-                  showSummary={false}
-                  className="mt-4"
-                />
-              </div>
-            </Card>
-          </div>
+              )}
+            </SectionCard>
         </div>
       </div>
-
-      <style>{`
-        @keyframes blob {
-          0% { transform: translate(0px, 0px) scale(1); }
-          33% { transform: translate(30px, -50px) scale(1.1); }
-          66% { transform: translate(-20px, 20px) scale(0.9); }
-          100% { transform: translate(0px, 0px) scale(1); }
-        }
-        .animate-blob {
-          animation: blob 7s infinite;
-        }
-        .animation-delay-2000 {
-          animation-delay: 2s;
-        }
-        .animation-delay-4000 {
-          animation-delay: 4s;
-        }
-        .custom-scrollbar::-webkit-scrollbar {
-          width: 6px;
-          height: 6px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-track {
-          background: rgba(255, 255, 255, 0.05);
-          border-radius: 10px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-          background: rgba(255, 255, 255, 0.1);
-          border-radius: 10px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-          background: rgba(255, 255, 255, 0.2);
-        }
-      `}</style>
     </div>
   );
 };

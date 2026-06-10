@@ -123,21 +123,21 @@ const PlayerDetailsModal = ({
 
       <div className="relative h-full w-full overflow-y-auto mt-10 mb-10">
         <div className="min-h-full flex justify-center items-start p-4 pt-16 pb-10">
-          <div className="relative w-full max-w-2xl bg-white rounded-2xl shadow-2xl">
+          <div className="relative w-full max-w-2xl bg-[var(--bg-card)] rounded-2xl shadow-2xl">
             {showRemoveConfirm && (
               <div className="absolute inset-0 z-30 bg-black/40 flex items-center justify-center p-4 rounded-2xl">
-                <div className="w-full max-w-sm rounded-xl bg-white p-4 shadow-2xl border border-red-100">
-                  <h4 className="text-base font-semibold text-gray-900">
+                <div className="w-full max-w-sm rounded-xl bg-[var(--bg-card)] p-4 shadow-2xl border border-red-100">
+                  <h4 className="text-base font-semibold text-[var(--text-primary)]">
                     Confirm Remove Rating
                   </h4>
-                  <p className="text-sm text-gray-600 mt-2">
+                  <p className="text-sm text-[var(--text-secondary)] mt-2">
                     Are you sure? This player's rating will be removed.
                   </p>
                   <div className="mt-4 flex justify-end gap-2">
                     <button
                       type="button"
                       onClick={() => setShowRemoveConfirm(false)}
-                      className="px-3 py-2 rounded-lg border border-gray-300 text-sm font-medium text-gray-700 hover:bg-gray-100"
+                      className="px-3 py-2 rounded-lg border border-[var(--border-primary)] text-sm font-medium text-[var(--text-primary)] hover:bg-[var(--secondary-lighter)]"
                     >
                       Cancel
                     </button>
@@ -156,14 +156,14 @@ const PlayerDetailsModal = ({
             <button
               type="button"
               onClick={onClose}
-              className="absolute top-4 right-4 z-20 w-8 h-8 flex items-center justify-center bg-gray-100 hover:bg-gray-200 rounded-full"
+              className="absolute top-4 right-4 z-20 w-8 h-8 flex items-center justify-center bg-[var(--secondary-lighter)] hover:bg-[var(--secondary-lighter)] rounded-full"
             >
-              <X className="w-4 h-4 text-gray-700" />
+              <X className="w-4 h-4 text-[var(--text-primary)]" />
             </button>
 
             <div className="p-6 max-h-[85vh] overflow-y-auto">
               <div className="flex items-center gap-4 mb-6">
-                <div className="w-20 h-20 rounded-full bg-gray-200 overflow-hidden">
+                <div className="w-20 h-20 rounded-full bg-[var(--secondary-lighter)] overflow-hidden">
                   {player?.player?.logo && !isDummyImage(player?.player?.logo) ? (
                     <img
                       src={player?.player?.logo}
@@ -174,7 +174,7 @@ const PlayerDetailsModal = ({
                     <div
                       className={`w-full h-full flex items-center justify-center bg-gradient-to-br ${getGradientByName(
                         player?.player?.name
-                      )} text-white font-bold`}
+                      )} text-[var(--text-dark)] font-bold`}
                     >
                       {getInitials(player?.player?.name)}
                     </div>
@@ -182,7 +182,7 @@ const PlayerDetailsModal = ({
                 </div>
 
                 <div className="flex-1">
-                  <h2 className="text-xl font-bold text-gray-900">
+                  <h2 className="text-xl font-bold text-[var(--text-primary)]">
                     {player?.player?.batchId}
                   </h2>
                   <div className="flex flex-wrap gap-2 mt-2">
@@ -190,7 +190,7 @@ const PlayerDetailsModal = ({
                       {formatRole(player?.rating?.playerType || player?.player?.playerType)}
                     </span>
                     {grade && (
-                      <span className="inline-block px-3 py-1 bg-slate-100 text-slate-900 rounded-full text-sm font-semibold">
+                      <span className="inline-block px-3 py-1 bg-[var(--secondary-lighter)] text-[var(--text-primary)] rounded-full text-sm font-semibold">
                         Grade: {grade}
                       </span>
                     )}
@@ -204,12 +204,12 @@ const PlayerDetailsModal = ({
               </div>
 
               <div className="mb-6 bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl p-4">
-                <h3 className="font-semibold text-gray-900 mb-3 text-lg">
+                <h3 className="font-semibold text-[var(--text-primary)] mb-3 text-lg">
                   Trial Session Details
                 </h3>
 
-                <div className="space-y-3 text-sm text-gray-700">
-                  <div className="bg-white rounded-lg p-3 shadow-sm">
+                <div className="space-y-3 text-sm text-[var(--text-primary)]">
+                  <div className="bg-[var(--bg-card)] rounded-lg p-3 shadow-sm">
                     <p className="font-medium">Session: {session?.name || "-"}</p>
                     <p>Slot: {session?.slot?.slotName || "-"}</p>
                     <p>
@@ -221,15 +221,15 @@ const PlayerDetailsModal = ({
 
               {hasSelectorRated && showRatings && !hideRatingFeatures && (
                 <div className="mb-6 bg-gradient-to-r from-amber-50 to-yellow-50 rounded-xl p-4 border border-yellow-100">
-                  <h3 className="font-semibold text-gray-900 mb-3 text-lg">
+                  <h3 className="font-semibold text-[var(--text-primary)] mb-3 text-lg">
                     Your Rating Details
                   </h3>
 
                   <div className="space-y-3">
                     {player.rating.ratings.map((ratingItem, idx) => (
-                      <div key={idx} className="bg-white rounded-lg p-3 shadow-sm border border-yellow-100">
+                      <div key={idx} className="bg-[var(--bg-card)] rounded-lg p-3 shadow-sm border border-yellow-100">
                         <div className="flex items-center justify-between">
-                          <p className="text-sm font-medium text-gray-700">
+                          <p className="text-sm font-medium text-[var(--text-primary)]">
                             Rating #{idx + 1}
                           </p>
                           <div className="inline-flex items-center gap-1 text-sm font-semibold text-amber-700 bg-amber-100 px-2 py-1 rounded-full">
@@ -239,7 +239,7 @@ const PlayerDetailsModal = ({
                         </div>
 
                         {ratingItem?.comments && (
-                          <p className="mt-2 text-sm text-gray-700 bg-gray-50 border border-gray-200 rounded-md px-2 py-2">
+                          <p className="mt-2 text-sm text-[var(--text-primary)] bg-[var(--bg-soft)] border border-[var(--border-card)] rounded-md px-2 py-2">
                             {ratingItem.comments}
                           </p>
                         )}
@@ -262,11 +262,11 @@ const PlayerDetailsModal = ({
                 </div>
               )}
 
-              <div className="flex gap-3 pt-2 border-t border-gray-200">
+              <div className="flex gap-3 pt-2 border-t border-[var(--border-card)]">
                 <button
                   type="button"
                   onClick={onClose}
-                  className="flex-1 px-4 py-2 rounded-lg font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 border border-gray-300 transition-all shadow-sm"
+                  className="flex-1 px-4 py-2 rounded-lg font-medium text-[var(--text-primary)] bg-[var(--secondary-lighter)] hover:bg-[var(--secondary-lighter)] border border-[var(--border-primary)] transition-all shadow-sm"
                 >
                   Close
                 </button>
@@ -275,7 +275,7 @@ const PlayerDetailsModal = ({
                   <button
                     type="button"
                     onClick={() => setShowRatings((prev) => !prev)}
-                    className="px-4 py-2 rounded-lg font-medium text-gray-800 bg-amber-100 hover:bg-amber-200 transition-all shadow-sm"
+                    className="px-4 py-2 rounded-lg font-medium text-[var(--text-primary)] bg-amber-100 hover:bg-amber-200 transition-all shadow-sm"
                   >
                     {showRatings ? "Hide Rating" : "View Rating"}
                   </button>
@@ -297,7 +297,7 @@ const PlayerDetailsModal = ({
                   <button
                     type="button"
                     onClick={openBallByBall}
-                    className="flex-1 px-4 py-2 rounded-lg font-medium text-white bg-yellow-500 hover:bg-yellow-600 transition-all shadow-sm flex items-center justify-center gap-2"
+                    className="flex-1 px-4 py-2 rounded-lg font-medium text-[var(--text-dark)] bg-yellow-500 hover:bg-yellow-600 transition-all shadow-sm flex items-center justify-center gap-2"
                   >
                     <Star className="w-4 h-4" />
                     Rating
@@ -375,10 +375,10 @@ const SelectorPlayerCard = ({
 
   const getRoleColor = () => {
     const roleLower = player?.rating?.playerType?.toLowerCase();
-    if (roleLower === "batsman") return "bg-blue-600 text-white";
-    if (roleLower === "bowler") return "bg-red-600 text-white";
-    if (roleLower?.includes("wicket")) return "bg-amber-600 text-white";
-    return "bg-orange-500 text-white";
+    if (roleLower === "batsman") return "bg-blue-600 text-[var(--text-dark)]";
+    if (roleLower === "bowler") return "bg-red-600 text-[var(--text-dark)]";
+    if (roleLower?.includes("wicket")) return "bg-amber-600 text-[var(--text-dark)]";
+    return "bg-orange-500 text-[var(--text-dark)]";
   };
 
   return (
@@ -386,12 +386,11 @@ const SelectorPlayerCard = ({
       <div
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
-        className="relative bg-[var(--color-primary)] rounded-xl shadow-md hover:shadow-lg transition-all duration-300 
-        border border-gray-200 overflow-hidden flex w-full max-w-sm p-3 gap-3"
+        className="relative bg-[var(--color-primary)] rounded-xl shadow-md hover:shadow-lg transition-all duration-300 border border-[var(--border-card)] overflow-hidden flex w-full max-w-sm p-3 gap-3"
       >
         {hasSelectorRated && !hideRatingFeatures && (
           <div
-            className="absolute top-1 left-1 z-30 px-1.5 py-1 rounded-full shadow bg-yellow-400 text-gray-900 flex items-center justify-center"
+            className="absolute top-1 left-1 z-30 px-1.5 py-1 rounded-full shadow bg-yellow-400 text-[var(--text-primary)] flex items-center justify-center"
             title="Rated by selector"
           >
             <Star className="w-3 h-3 fill-current" />
@@ -445,7 +444,7 @@ const SelectorPlayerCard = ({
             <div
               className={`w-full h-full flex items-center justify-center bg-gradient-to-br ${getGradientByName(
                 player?.player?.name
-              )} text-white text-xl font-bold`}
+              )} text-[var(--text-dark)] text-xl font-bold`}
             >
               {initials}
             </div>
@@ -463,11 +462,11 @@ const SelectorPlayerCard = ({
           className="flex flex-col justify-center flex-grow cursor-pointer"
         >
           <div className="flex justify-between items-start gap-2">
-            <h3 className="font-semibold text-gray-800 text-sm">
+            <h3 className="font-semibold text-[var(--text-primary)] text-sm">
               {player?.player?.batchId}
             </h3>
             {/* {grade && (
-              <span className="inline-flex mr-4 text-md items-center px-2 py-0.5 bg-slate-100 text-slate-900 rounded-full text-[10px] font-semibold">
+              <span className="inline-flex mr-4 text-md items-center px-2 py-0.5 bg-[var(--secondary-lighter)] text-[var(--text-primary)] rounded-full text-[10px] font-semibold">
                 {grade}
               </span>
             )} */}
@@ -476,7 +475,7 @@ const SelectorPlayerCard = ({
           {session?.slot?.location && (
             <div className="flex items-center gap-1 mt-1">
               <MapPin className="w-3 h-3 text-blue-600" />
-              <span className="text-xs text-gray-600 truncate">
+              <span className="text-xs text-[var(--text-secondary)] truncate">
                 {session?.slot?.slotName}
               </span>
             </div>
@@ -485,7 +484,7 @@ const SelectorPlayerCard = ({
           {session?.name && (
             <div className="flex items-center gap-1 mt-1">
               <CalendarCheck className="w-3 h-3 text-pink-600" />
-              <span className="text-xs text-gray-600 truncate">
+              <span className="text-xs text-[var(--text-secondary)] truncate">
                 Session -{session?.name}
               </span>
             </div>
@@ -494,7 +493,7 @@ const SelectorPlayerCard = ({
           {session && (
             <div className="flex items-center gap-1 mt-1">
               <Clock className="w-3 h-3 text-green-600" />
-              <span className="text-xs text-gray-600">
+              <span className="text-xs text-[var(--text-secondary)]">
                 {formatTime(session.slotStartTime)} - {formatTime(session.slotEndTime)}
               </span>
             </div>
@@ -506,10 +505,10 @@ const SelectorPlayerCard = ({
             <button
               type="button"
               onClick={handleViewDetails}
-              className="bg-white px-4 py-2 rounded-lg shadow-lg flex items-center gap-2 hover:bg-gray-100"
+              className="bg-[var(--bg-card)] px-4 py-2 rounded-lg shadow-lg flex items-center gap-2 hover:bg-[var(--secondary-lighter)]"
             >
-              <Eye className="w-4 h-4 text-gray-700" />
-              <span className="text-sm font-medium text-gray-900">View</span>
+              <Eye className="w-4 h-4 text-[var(--text-primary)]" />
+              <span className="text-sm font-medium text-[var(--text-primary)]">View</span>
             </button>
           </div>
         )}

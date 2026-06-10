@@ -57,24 +57,24 @@ export default function AssignCategoryModal({
 
   return (
     <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-[200000] animate-fadeIn">
-      <div className="relative bg-white p-6 rounded-2xl shadow-xl w-[380px] animate-scaleIn border border-gray-200">
+      <div className="relative bg-[var(--bg-card)] p-6 rounded-2xl shadow-xl w-[380px] animate-scaleIn border border-[var(--border-card)]">
 
         {/* Header */}
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl font-semibold text-gray-800">
+          <h2 className="text-xl font-semibold text-[var(--text-primary)]">
             Assign <span className="text-green-600">{count}</span> Players
           </h2>
 
           <button
             onClick={onClose}
-            className="text-gray-500 hover:text-red-500 transition"
+            className="text-[var(--text-secondary)] hover:text-red-500 transition"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
         {/* Category Label */}
-        <label className="text-gray-600 text-sm mb-1 block font-medium">
+        <label className="text-[var(--text-secondary)] text-sm mb-1 block font-medium">
           Category
         </label>
 
@@ -83,19 +83,9 @@ export default function AssignCategoryModal({
           <select
             value={cat}
             onChange={(e) => setCat(e.target.value)}
-            className="
-              w-full border border-gray-300 
-              rounded-xl px-4 py-3 
-              text-gray-800 font-medium
-              bg-white shadow-sm 
-              focus:ring-2 focus:ring-green-500 
-              focus:border-green-500 
-              transition-all duration-300
-              hover:border-gray-400
-              cursor-pointer
-            "
+            className=" w-full border border-[var(--border-primary)] rounded-xl px-4 py-3 text-[var(--text-primary)] font-medium bg-[var(--bg-card)] shadow-sm focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all duration-300 hover:border-gray-400 cursor-pointer "
           >
-            <option value="" className="text-gray-500">
+            <option value="" className="text-[var(--text-secondary)]">
               Select a category…
             </option>
 
@@ -107,7 +97,7 @@ export default function AssignCategoryModal({
           </select>
 
           {/* Custom arrow */}
-          <span className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-gray-500">
+          <span className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-[var(--text-secondary)]">
             ▼
           </span>
         </div>
@@ -116,13 +106,7 @@ export default function AssignCategoryModal({
         <div className="flex justify-end gap-3 mt-6">
           <button
             onClick={onClose}
-            className="
-              px-4 py-2 rounded-lg 
-              border border-gray-300 
-              text-gray-700 
-              hover:bg-gray-100 
-              transition shadow-sm
-            "
+            className=" px-4 py-2 rounded-lg border border-[var(--border-primary)] text-[var(--text-primary)] hover:bg-[var(--secondary-lighter)] transition shadow-sm "
           >
             Cancel
           </button>
@@ -131,7 +115,7 @@ export default function AssignCategoryModal({
             disabled={!cat}
             onClick={assignPlayerToCategory}
             className={`
-              px-4 py-2 rounded-lg text-white transition shadow-sm
+              px-4 py-2 rounded-lg text-[var(--text-dark)] transition shadow-sm
               ${cat
                 ? "bg-green-600 hover:bg-green-700"
                 : "bg-gray-400 cursor-not-allowed"}

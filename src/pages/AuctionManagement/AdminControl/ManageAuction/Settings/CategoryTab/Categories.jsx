@@ -104,11 +104,11 @@ const Categories = ({ auctionId }) => {
       {categories?.map((category) => (
         <div
           key={category.id}
-          className="bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-shadow duration-200 overflow-hidden"
+          className="bg-[var(--bg-card)] rounded-xl border border-[var(--border-card)] shadow-sm hover:shadow-md transition-shadow duration-200 overflow-hidden"
         >
           <div className="p-4 md:p-5">
             <div className="flex justify-between items-start mb-3">
-              <h3 className="text-base md:text-lg font-semibold text-gray-800 break-words flex-1">
+              <h3 className="text-base md:text-lg font-semibold text-[var(--text-primary)] break-words flex-1">
                 {category.name}
               </h3>
               <div className="flex gap-1 ml-2">
@@ -126,7 +126,7 @@ const Categories = ({ auctionId }) => {
                     setDeletePopup(true);
                     setDeleteId(category._id);
                   }}
-                  className="p-1.5 text-red-600 hover:bg-red-50 rounded-lg transition"
+                  className="flex h-8 w-8 items-center justify-center rounded-lg border border-red-200 bg-[var(--bg-card)] text-red-500 transition hover:bg-red-50 hover:text-red-600"
                   title="Delete"
                 >
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -138,16 +138,16 @@ const Categories = ({ auctionId }) => {
             
             <div className="space-y-2.5 mb-4">
               <div className="flex justify-between items-center text-sm">
-                <span className="text-gray-500">Base Amount:</span>
-                <span className="font-semibold text-gray-800">₹{category.baseAmount}</span>
+                <span className="text-[var(--text-secondary)]">Base Amount:</span>
+                <span className="font-semibold text-[var(--text-primary)]">₹{category.baseAmount}</span>
               </div>
               <div className="flex justify-between items-center text-sm">
-                <span className="text-gray-500">Bid Increment:</span>
-                <span className="font-semibold text-gray-800">₹{category.biddingIncrement}</span>
+                <span className="text-[var(--text-secondary)]">Bid Increment:</span>
+                <span className="font-semibold text-[var(--text-primary)]">₹{category.biddingIncrement}</span>
               </div>
               <div className="flex justify-between items-center text-sm">
-                <span className="text-gray-500">Max Bid:</span>
-                <span className="font-semibold text-gray-800">₹{category.maxBid}</span>
+                <span className="text-[var(--text-secondary)]">Max Bid:</span>
+                <span className="font-semibold text-[var(--text-primary)]">₹{category.maxBid}</span>
               </div>
             </div>
             
@@ -156,7 +156,7 @@ const Categories = ({ auctionId }) => {
                 setPlayersPopup(true);
                 setCategoryId(category._id);
               }}
-              className="w-full px-3 py-2 text-sm bg-gradient-to-r from-green-50 to-emerald-50 text-green-700 rounded-lg hover:from-green-100 hover:to-emerald-100 transition font-medium"
+              className="inline-flex h-10 w-full items-center justify-center rounded-lg border border-[var(--border-primary)] bg-[var(--accent-light)] px-3 text-sm font-semibold text-[var(--primary)] transition hover:bg-[var(--secondary-lighter)]"
             >
               View Players
             </button>
@@ -168,31 +168,31 @@ const Categories = ({ auctionId }) => {
 
   // Table View Component (for laptops & desktops)
   const TableView = () => (
-    <div className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
+    <div className="overflow-hidden rounded-xl border border-[var(--border-card)] bg-[var(--bg-card)] shadow-sm">
       <div className="overflow-x-auto">
         <table className="min-w-full">
-          <thead className="bg-gray-50">
+          <thead className="bg-[var(--bg-soft)]">
             <tr>
-              <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border-b border-gray-200">
+              <th className="px-6 py-4 text-left text-xs font-semibold text-[var(--text-secondary)] uppercase tracking-wider border-b border-[var(--border-card)]">
                 Name
               </th>
-              <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border-b border-gray-200">
+              <th className="px-6 py-4 text-left text-xs font-semibold text-[var(--text-secondary)] uppercase tracking-wider border-b border-[var(--border-card)]">
                 Base Amount
               </th>
-              <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border-b border-gray-200">
+              <th className="px-6 py-4 text-left text-xs font-semibold text-[var(--text-secondary)] uppercase tracking-wider border-b border-[var(--border-card)]">
                 Bid Increment
               </th>
-              <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border-b border-gray-200">
+              <th className="px-6 py-4 text-left text-xs font-semibold text-[var(--text-secondary)] uppercase tracking-wider border-b border-[var(--border-card)]">
                 Max Bid
               </th>
-              <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border-b border-gray-200">
+              <th className="px-6 py-4 text-left text-xs font-semibold text-[var(--text-secondary)] uppercase tracking-wider border-b border-[var(--border-card)]">
                 Actions
               </th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-200">
             {categories?.map((category) => (
-              <tr key={category.id} className="hover:bg-gray-50 transition">
+              <tr key={category.id} className="hover:bg-[var(--bg-soft)] transition">
                 <td className="px-6 py-4 text-sm">
                   {category.name}
                 </td>
@@ -218,7 +218,7 @@ const Categories = ({ auctionId }) => {
                         setDeletePopup(true);
                         setDeleteId(category._id);
                       }}
-                      className="px-3 py-1 text-xs bg-red-50 text-red-600 rounded hover:bg-red-100 transition"
+                      className="inline-flex h-8 items-center justify-center rounded-lg border border-red-200 bg-[var(--bg-card)] px-3 text-xs font-semibold text-red-500 transition hover:bg-red-50 hover:text-red-600"
                     >
                       Delete
                     </button>
@@ -227,7 +227,7 @@ const Categories = ({ auctionId }) => {
                         setPlayersPopup(true);
                         setCategoryId(category._id);
                       }}
-                      className="px-3 py-1 text-xs bg-green-50 text-green-600 rounded hover:bg-green-100 transition"
+                      className="inline-flex h-8 items-center justify-center rounded-lg border border-[var(--border-primary)] bg-[var(--accent-light)] px-3 text-xs font-semibold text-[var(--primary)] transition hover:bg-[var(--secondary-lighter)]"
                     >
                       View Players
                     </button>
@@ -242,11 +242,11 @@ const Categories = ({ auctionId }) => {
   );
 
   return (
-    <div className="min-h-screen p-4 sm:p-6 bg-gray-50 text-gray-800">
+    <div className="min-h-screen p-4 sm:p-6 bg-[var(--bg-soft)] text-[var(--text-primary)]">
       <div className="max-w-7xl mx-auto">
         {/* Header Section */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
-          <h4 className="text-xl md:text-2xl font-semibold text-gray-800">
+          <h4 className="text-xl md:text-2xl font-semibold text-[var(--text-primary)]">
             Categories
           </h4>
           
@@ -255,7 +255,7 @@ const Categories = ({ auctionId }) => {
               setEditingCategory(null);
               setCategoryPopup(true);
             }}
-            className="px-4 py-2 bg-[var(--color-button-primary)] text-white border border-gray-400/20 rounded-lg font-medium hover:opacity-90 transition shadow-sm whitespace-nowrap"
+            className="px-4 py-2 bg-[var(--color-button-primary)] text-[var(--text-dark)] border border-gray-400/20 rounded-lg font-medium hover:opacity-90 transition shadow-sm whitespace-nowrap"
           >
             + Create Category
           </button>
@@ -263,9 +263,9 @@ const Categories = ({ auctionId }) => {
 
         {/* Content Section - Automatic view switching based on screen size */}
         {categories?.length === 0 ? (
-          <div className="text-center py-12 px-4 bg-white rounded-xl border border-gray-200 shadow-sm">
-            <div className="text-gray-600 mb-2">No categories available</div>
-            <div className="text-sm text-gray-400">
+          <div className="text-center py-12 px-4 bg-[var(--bg-card)] rounded-xl border border-[var(--border-card)] shadow-sm">
+            <div className="text-[var(--text-secondary)] mb-2">No categories available</div>
+            <div className="text-sm text-[var(--text-muted)]">
               Create your first category to get started
             </div>
           </div>

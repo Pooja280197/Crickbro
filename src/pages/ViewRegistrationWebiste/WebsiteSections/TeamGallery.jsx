@@ -39,6 +39,8 @@ export default function TeamGallery({ pagedata }) {
           <div className="flex flex-row gap-4 md:hidden overflow-x-auto scrollbar-hide">
             {galleryImages.map((img, i) => (
               <img
+                loading="lazy"
+                decoding="async"
                 key={i}
                 src={img.imageUrl || img}
                 alt={`Gallery image ${i + 1}`}
@@ -60,6 +62,8 @@ export default function TeamGallery({ pagedata }) {
               >
                 {[...columnImages, ...columnImages].map((img, i) => (
                   <img
+                    loading="lazy"
+                    decoding="async"
                     key={i}
                     src={img.imageUrl || img}
                     alt={`Gallery image ${i + 1}`}

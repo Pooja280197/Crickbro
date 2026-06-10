@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { User, X, Clock, AlertCircle } from "lucide-react";
 import api from "../../../../utils/api";
 import { useDispatch, useSelector } from "react-redux";
@@ -371,29 +372,36 @@ const AddPlayerManually = ({ isOpen, onClose, auctionId, auctionTypeTrial }) => 
   };
 
   if (!isOpen) return null;
+  if (typeof document === "undefined") return null;
 
-  return (
-    <>
-      <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 transition-opacity duration-300" />
-
-      <div className="fixed inset-0 flex items-center justify-center z-50 p-4 top-20">
-        <div className="bg-white rounded-2xl shadow-xl border border-[var(--secondary-lighter)] w-full max-w-lg max-h-[90vh] overflow-y-auto ">
+  return createPortal(
+      <div className="fixed inset-0 z-[120000] flex items-start justify-center overflow-y-auto bg-black/60 p-2 backdrop-blur-sm sm:p-4">
+        <div className="flex max-h-[calc(100vh-1rem)] w-full max-w-2xl flex-col overflow-hidden rounded-lg border border-[var(--border-card)] bg-[var(--bg-card)] shadow-[var(--shadow-card)] sm:max-h-[calc(100vh-2rem)]">
           {/* Header */}
-          <div className="sticky  top-0 z-10 bg-white p-5 rounded-t-2xl border-b border-[var(--secondary-lighter)] flex justify-between items-center">
-            <h2 className="text-xl font-bold flex items-center gap-2">
-              <User className="w-5 h-5 text-blue-600" />
-              Add Player
-            </h2>
+          <div className="flex items-center justify-between border-b border-[var(--border-card)] bg-[var(--bg-card)] px-4 py-3">
+            <div className="flex items-center gap-3">
+              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-[var(--accent-light)] text-[var(--primary)]">
+                <User className="h-4 w-4" />
+              </div>
+              <div>
+                <h2 className="text-sm font-semibold text-[var(--text-primary)]">
+                  Add Player
+                </h2>
+                <p className="text-xs font-medium text-[var(--text-secondary)]">
+                  Add a new player or select an existing profile.
+                </p>
+              </div>
+            </div>
             <button
               onClick={onClose}
-              className="p-2 hover:bg-gray-100 rounded-lg"
+              className="flex h-8 w-8 items-center justify-center rounded-lg border border-[var(--border-card)] text-[var(--text-secondary)] transition hover:border-[var(--border-primary)] hover:bg-[var(--accent-light)] hover:text-[var(--text-primary)]"
             >
-              <X className="w-5 h-5" />
+              <X className="h-4 w-4" />
             </button>
           </div>
 
           {/* Form Content */}
-          <div className="p-5 space-y-5">
+          <div className="space-y-5 overflow-y-auto p-4 [scrollbar-color:var(--secondary)_transparent] [scrollbar-width:thin] [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-[var(--secondary)] [&_input]:rounded-lg [&_input]:border [&_input]:border-[var(--border-card)] [&_input]:bg-[var(--bg-main)] [&_input]:text-[var(--text-primary)] [&_input]:outline-none [&_input]:transition [&_input]:focus:border-[var(--border-primary)] [&_select]:rounded-lg [&_select]:border [&_select]:border-[var(--border-card)] [&_select]:bg-[var(--bg-main)] [&_select]:text-[var(--text-primary)] [&_select]:outline-none [&_select]:transition [&_select]:focus:border-[var(--border-primary)]">
             {/* Search */}
             <div className="relative">
               <input
@@ -401,14 +409,14 @@ const AddPlayerManually = ({ isOpen, onClose, auctionId, auctionTypeTrial }) => 
                 placeholder="Search by Mobile / Name / Batch ID"
                 value={searchTerm}
                 onChange={handleSearchChange}
-                className="w-full px-4 py-2.5 rounded-lg border focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                className="h-10 w-full px-3 text-sm font-medium placeholder:text-[var(--text-secondary)]"
               />
               {searchResults.length > 0 && (
-                <ul className="absolute z-10 bg-white border w-full mt-1 max-h-40 overflow-y-auto rounded shadow">
+                <ul className="absolute z-20 mt-1 max-h-40 w-full overflow-y-auto rounded-lg border border-[var(--border-card)] bg-[var(--bg-card)] shadow-[var(--shadow-card)]">
                   {searchResults.map((p) => (
                     <li
                       key={p._id}
-                      className="p-2 hover:bg-gray-100 cursor-pointer"
+                      className="cursor-pointer px-3 py-2 text-sm font-medium text-[var(--text-primary)] hover:bg-[var(--secondary-lighter)]"
                       onClick={() => handleSelectPlayer(p)}
                     >
                       {p.name} - {p.mobile}
@@ -421,7 +429,7 @@ const AddPlayerManually = ({ isOpen, onClose, auctionId, auctionTypeTrial }) => 
             {/* Profile Picture */}
             <div className="flex flex-col items-center gap-2">
               <div
-                className="w-24 h-24 rounded-full border-2 border-dashed border-blue-400 overflow-hidden cursor-pointer flex items-center justify-center bg-gray-50 hover:bg-gray-100 transition-colors"
+                className="flex h-24 w-24 cursor-pointer items-center justify-center overflow-hidden rounded-lg border border-dashed border-[var(--border-primary)] bg-[var(--secondary-lighter)] transition-colors hover:bg-[var(--accent-light)]"
                 onClick={() => profilePicInputRef.current?.click()}
               >
                 {profilePicPreview ? (
@@ -431,7 +439,7 @@ const AddPlayerManually = ({ isOpen, onClose, auctionId, auctionTypeTrial }) => 
                     className="w-full h-full object-cover"
                   />
                 ) : (
-                  <div className="flex flex-col items-center text-gray-400">
+                  <div className="flex flex-col items-center text-[var(--text-secondary)]">
                     <User className="w-8 h-8" />
                     <span className="text-xs mt-1">Add Photo</span>
                   </div>
@@ -444,11 +452,11 @@ const AddPlayerManually = ({ isOpen, onClose, auctionId, auctionTypeTrial }) => 
                 className="hidden"
                 onChange={handleProfilePicChange}
               />
-              <span className="text-xs text-gray-400">
+              <span className="text-xs font-medium text-[var(--text-secondary)]">
                 {profilePicPreview ? (
                   <button
                     type="button"
-                    className="text-red-500 hover:underline"
+                    className="font-semibold text-red-500 hover:underline"
                     onClick={() => {
                       if (profilePicPreview.startsWith("blob:"))
                         URL.revokeObjectURL(profilePicPreview);
@@ -465,7 +473,7 @@ const AddPlayerManually = ({ isOpen, onClose, auctionId, auctionTypeTrial }) => 
             </div>
 
             {/* Fields Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 ">
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2 [&_label]:mb-1.5 [&_label]:block [&_label]:text-xs [&_label]:font-semibold [&_label]:text-[var(--text-secondary)]">
               <div>
                 <label className="text-sm font-medium">Full Name *</label>
                 <input
@@ -636,7 +644,7 @@ const AddPlayerManually = ({ isOpen, onClose, auctionId, auctionTypeTrial }) => 
                   className="w-full px-4 py-2.5 border rounded-lg"
                 />
                 {typeof form.adharCard === "string" && form.adharCard && !adharCardFile ? (
-                  <p className="text-xs text-gray-500 mt-1">Aadhaar already uploaded</p>
+                  <p className="text-xs text-[var(--text-secondary)] mt-1">Aadhaar already uploaded</p>
                 ) : null}
               </div>
               <div>
@@ -653,7 +661,7 @@ const AddPlayerManually = ({ isOpen, onClose, auctionId, auctionTypeTrial }) => 
                   className="w-full px-4 py-2.5 border rounded-lg"
                 />
                 {typeof form.voterId === "string" && form.voterId && !voterIdFile ? (
-                  <p className="text-xs text-gray-500 mt-1">Voter ID already uploaded</p>
+                  <p className="text-xs text-[var(--text-secondary)] mt-1">Voter ID already uploaded</p>
                 ) : null}
               </div>
               {auctionTypeTrial && (
@@ -666,7 +674,7 @@ const AddPlayerManually = ({ isOpen, onClose, auctionId, auctionTypeTrial }) => 
                   {/* Selected */}
                   <div
                     onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                    className="w-full px-4 py-2.5 border rounded-lg cursor-pointer bg-white"
+                    className="h-10 w-full cursor-pointer rounded-lg border border-[var(--border-card)] bg-[var(--bg-main)] px-3 py-2 text-sm font-medium text-[var(--text-primary)]"
                   >
                     {selectedSlot
                       ? allSlots.find((s) => s._id === selectedSlot)?.slotName
@@ -675,7 +683,7 @@ const AddPlayerManually = ({ isOpen, onClose, auctionId, auctionTypeTrial }) => 
 
                   {/* Dropdown */}
                   {isDropdownOpen && (
-                    <div className="absolute z-50 w-full bg-white border rounded-lg mt-2 shadow-lg">
+                    <div className="absolute z-50 mt-2 w-full rounded-lg border border-[var(--border-card)] bg-[var(--bg-card)] shadow-[var(--shadow-card)]">
                       {/* Search */}
                       <input
                         type="text"
@@ -686,12 +694,12 @@ const AddPlayerManually = ({ isOpen, onClose, auctionId, auctionTypeTrial }) => 
                           setSlotPage(1);
                           setHasMoreSlots(true);
                         }}
-                        className="w-full p-2 border-b outline-none"
+                        className="w-full rounded-none border-0 border-b border-[var(--border-card)] bg-[var(--bg-main)] p-2 text-sm font-medium outline-none"
                       />
 
                       {/* List */}
                       <div
-                        className="max-h-28 min-h-[80px] overflow-y-auto"
+                        className="max-h-32 min-h-[80px] overflow-y-auto [scrollbar-color:var(--secondary)_transparent] [scrollbar-width:thin] [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-[var(--secondary)]"
                         onScroll={handleScroll}
                       >
                         {allSlots.map((slot) => (
@@ -701,26 +709,26 @@ const AddPlayerManually = ({ isOpen, onClose, auctionId, auctionTypeTrial }) => 
                               handleSlotChange(slot._id);
                               setIsDropdownOpen(false);
                             }}
-                            className="p-2 hover:bg-gray-100 cursor-pointer"
+                            className="cursor-pointer p-2 text-sm font-medium text-[var(--text-primary)] hover:bg-[var(--secondary-lighter)]"
                           >
                             {slot.slotName}
                           </div>
                         ))}
 
                         {slotLoading && (
-                          <div className="p-2 text-center text-sm text-gray-400">
+                          <div className="p-2 text-center text-sm text-[var(--text-muted)]">
                             Loading...
                           </div>
                         )}
 
                         {!slotLoading && allSlots.length === 0 && (
-                          <div className="p-2 text-center text-sm text-gray-400">
+                          <div className="p-2 text-center text-sm text-[var(--text-muted)]">
                             No results found
                           </div>
                         )}
 
                         {!hasMoreSlots && (
-                          <div className="p-2 text-center text-xs text-gray-400">
+                          <div className="p-2 text-center text-xs text-[var(--text-muted)]">
                             No more locations
                           </div>
                         )}
@@ -744,7 +752,7 @@ const AddPlayerManually = ({ isOpen, onClose, auctionId, auctionTypeTrial }) => 
                   value={selectedSession}
                   onChange={(e) => handleSessionChange(e.target.value)}
                   disabled={!selectedSlot || sessionLoading}
-                  className="w-full px-4 py-2.5 rounded-lg border border-[var(--secondary-lighter)] bg-white text-[var(--text)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/20 focus:border-[var(--primary)] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="h-10 w-full rounded-lg border border-[var(--border-card)] bg-[var(--bg-main)] px-3 text-sm font-medium text-[var(--text-primary)] outline-none transition focus:border-[var(--border-primary)] disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   <option value="">
                     {!selectedSlot
@@ -783,7 +791,7 @@ const AddPlayerManually = ({ isOpen, onClose, auctionId, auctionTypeTrial }) => 
                 )}
 
                 {selectedSlot && !sessionLoading && sessions?.length === 0 && (
-                  <div className="flex items-center gap-2 mt-3 p-3 bg-red-50 border border-red-200 rounded-lg">
+                  <div className="mt-3 flex items-center gap-2 rounded-lg border border-red-200 bg-red-50 p-3">
                     <AlertCircle className="w-4 h-4 text-red-500 flex-shrink-0" />
                     <p className="text-sm text-red-600">
                       No shift times available for this location
@@ -797,26 +805,28 @@ const AddPlayerManually = ({ isOpen, onClose, auctionId, auctionTypeTrial }) => 
           </div>
 
           {/* Footer */}
-          <div className="sticky bottom-0 bg-white p-5 border-t flex gap-3">
+          <div className="flex gap-2 border-t border-[var(--border-card)] bg-[var(--bg-card)] px-4 py-3">
             <button
               onClick={onClose}
-              className="flex-1 px-4 py-2.5 border rounded-lg hover:bg-gray-100"
+              className="flex-1 rounded-lg border border-[var(--border-card)] px-4 py-2.5 text-xs font-semibold text-[var(--text-primary)] transition hover:border-[var(--border-primary)] hover:bg-[var(--secondary-lighter)]"
             >
               Cancel
             </button>
             <button
               onClick={handleSubmit}
               disabled={loading}
-              className={`flex-1 px-4 py-2.5 rounded-lg text-white ${
-                loading ? "bg-gray-400" : "bg-blue-600 hover:bg-blue-700"
+              className={`flex-1 rounded-lg px-4 py-2.5 text-xs font-semibold transition disabled:cursor-not-allowed disabled:opacity-60 ${
+                loading
+                  ? "bg-[var(--secondary-lighter)] text-[var(--text-secondary)]"
+                  : "bg-[var(--secondary)] text-[#102033] hover:bg-[var(--secondary-strong)]"
               }`}
             >
               {loading ? "Adding..." : "Add Player"}
             </button>
           </div>
         </div>
-      </div>
-    </>
+      </div>,
+      document.body,
   );
 };
 

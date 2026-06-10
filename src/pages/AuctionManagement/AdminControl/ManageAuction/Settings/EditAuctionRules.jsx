@@ -55,7 +55,7 @@ const EditAuctionRules = ({ currentRules, auctionId }) => {
 
   return (
     <div className="min-h-screen bg-[var(--color-primary)] flex justify-center px-2 py-3">
-      <div className="w-full  card-glass flex flex-col">
+      <div className="w-full card-glass flex flex-col">
         {/* HEADER */}
         <div className="py-3 text-center border-b border-gray-500/80">
           <h1 className="text-base font-oswald tracking-wide text-crickbroYellow">
@@ -93,7 +93,7 @@ const EditAuctionRules = ({ currentRules, auctionId }) => {
                 key={item.key}
                 className="px-3 py-2 rounded-lg bg-white/5 border border-gray-500/40 focus-within:border-crickbroPurple transition"
               >
-                <label className="block text-[11px] text-gray-800 mb-1">
+                <label className="block text-[11px] text-[var(--text-primary)] mb-1">
                   {item.label}
                 </label>
 
@@ -102,7 +102,7 @@ const EditAuctionRules = ({ currentRules, auctionId }) => {
                   inputMode="numeric"
                   pattern="[0-9]*"
                   placeholder="Enter value"
-                  className="w-full bg-transparent outline-none text-sm text-gray-600 placeholder-white/30"
+                  className="w-full bg-transparent outline-none text-sm text-[var(--text-secondary)] placeholder-white/30"
                   value={form[item.key] ?? ""}
                   onChange={(e) =>
                     handleInput(item.key, e.target.value.replace(/\D/g, ""))
@@ -116,7 +116,7 @@ const EditAuctionRules = ({ currentRules, auctionId }) => {
           <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-3">
             {/* RTM */}
             <div className="flex items-center justify-between px-3 py-2 rounded-lg bg-white/5 border border-white/10">
-              <span className="text-sm text-gray-800">RTM Enabled</span>
+              <span className="text-sm text-[var(--text-primary)]">RTM Enabled</span>
               <input
                 type="checkbox"
                 className="accent-crickbroPurple"
@@ -127,7 +127,7 @@ const EditAuctionRules = ({ currentRules, auctionId }) => {
 
             {/* Unsold */}
             <div className="flex items-center justify-between px-3 py-2 rounded-lg bg-white/5 border border-white/10">
-              <span className="text-sm text-gray-800">
+              <span className="text-sm text-[var(--text-primary)]">
                 Unsold Re-entry Allowed
               </span>
               <input
@@ -146,7 +146,7 @@ const EditAuctionRules = ({ currentRules, auctionId }) => {
         <div className="p-3 border-t border-white/10">
           <button
             onClick={handleSubmit}
-            className="w-full btn-primary py-2 text-sm"
+            className="w-full ui-btn-secondary py-2 text-sm"
           >
             Save Auction Rules
           </button>

@@ -125,12 +125,12 @@ function DirectSelectModal({ selectedPlayers, selectorPlayers, onClose, auctionI
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-2 sm:p-4">
-    <div className="bg-white rounded-lg p-4 sm:p-6 max-w-full sm:max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+    <div className="bg-[var(--bg-card)] rounded-lg p-4 sm:p-6 max-w-full sm:max-w-4xl w-full max-h-[90vh] overflow-y-auto">
         <div className="flex justify-between items-center mb-4 gap-2">
           <h2 className="text-lg sm:text-xl font-bold flex-1 truncate">Players Direct Selection</h2>
           <button
             onClick={onClose}
-            className="p-2 hover:bg-gray-100 rounded-full flex-shrink-0"
+            className="p-2 hover:bg-[var(--secondary-lighter)] rounded-full flex-shrink-0"
           >
             <X className="w-5 h-5" />
           </button>
@@ -141,7 +141,7 @@ function DirectSelectModal({ selectedPlayers, selectorPlayers, onClose, auctionI
             <div key={player.player._id} className="border rounded-lg p-3 sm:p-4">
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
                 <div className="flex items-center gap-3 sm:gap-4 min-w-0">
-                  <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-gray-200 overflow-hidden flex-shrink-0">
+                  <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-[var(--secondary-lighter)] overflow-hidden flex-shrink-0">
                     {player?.player?.logo && !isDummyImage(player?.player?.logo) ? (
                       <img
                         src={player?.player?.logo}
@@ -152,7 +152,7 @@ function DirectSelectModal({ selectedPlayers, selectorPlayers, onClose, auctionI
                       <div
                         className={`w-full h-full flex items-center justify-center bg-gradient-to-br ${getGradientByName(
                           player?.player?.batchId
-                        )} text-white font-bold text-xs sm:text-sm`}
+                        )} text-[var(--text-dark)] font-bold text-xs sm:text-sm`}
                       >
                         {getInitials(player?.player?.batchId)}
                       </div>
@@ -197,7 +197,7 @@ function DirectSelectModal({ selectedPlayers, selectorPlayers, onClose, auctionI
                   <select
                     value={playerGrades[player.player._id] || ""}
                     onChange={(e) => handleGradeChange(player.player._id, e.target.value === "" ? null : e.target.value)}
-                    className="w-full sm:w-auto px-2 py-1 border border-gray-300 rounded text-xs sm:text-sm min-w-[72px]"
+                    className="w-full sm:w-auto px-2 py-1 border border-[var(--border-primary)] rounded text-xs sm:text-sm min-w-[72px]"
                     title="Select grade"
                   >
                     <option value="">Grade</option>
@@ -224,7 +224,7 @@ function DirectSelectModal({ selectedPlayers, selectorPlayers, onClose, auctionI
         <div className="flex flex-col-reverse sm:flex-row justify-end gap-2 sm:gap-4 mt-6">
           <button
             onClick={onClose}
-            className="w-full sm:w-auto px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 text-sm sm:text-base"
+            className="w-full sm:w-auto px-4 py-2 border border-[var(--border-primary)] rounded-lg hover:bg-[var(--bg-soft)] text-sm sm:text-base"
           >
             Cancel
           </button>

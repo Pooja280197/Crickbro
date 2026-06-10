@@ -28,6 +28,15 @@ import DeleteConfirmModal from "../../../../../../components/DeleteConfirmModal"
 import Pagination from "../../../../../../components/Pagination";
 // import axios from "axios";
 
+const inputClass =
+  "h-9 rounded-lg border border-[var(--border-card)] bg-[var(--bg-main)] px-3 text-xs font-medium text-[var(--text-primary)] outline-none transition focus:border-[var(--border-primary)] focus:ring-2 focus:ring-[var(--primary)]/15 [&>option]:bg-[var(--bg-card)] [&>option]:text-[var(--text-primary)]";
+
+const labelClass =
+  "mb-1 text-[11px] font-semibold text-[var(--text-secondary)]";
+
+const controlButtonClass =
+  "inline-flex h-9 items-center justify-center gap-2 rounded-lg border border-[var(--border-card)] bg-[var(--bg-main)] px-3 text-xs font-semibold text-[var(--text-primary)] shadow-sm transition hover:border-[var(--border-primary)] hover:bg-[var(--accent-light)]";
+
 const SelectedAuctionManager = ({
   auctionId,
   auctionTypeTrial,
@@ -618,7 +627,7 @@ const SelectedAuctionManager = ({
     const setSlot = isUnassigned ? setSlotFilter : setSlotFilterA;
     const setSlotSession = isUnassigned
       ? setSlotSessionFilter
-      : setSlotSessionFilter;
+      : setSlotSessionFilterA;
     const setDirectSelectedCB = isUnassigned
       ? setDirectSelectedCheckbox
       : setDirectSelectedCheckboxA;
@@ -635,30 +644,36 @@ const SelectedAuctionManager = ({
     const showReset = isUnassigned
       ? showResetUnassigned ||
         searchUnassign !== "" ||
-        slotFilter !== "" ||
-        slotSessionFilter !== "" ||
-        directSelectedCheckbox !== false ||
-        directSelectedGradeFilter !== ""
+        from !== "" ||
+        to !== "" ||
+        type !== "" ||
+        slot !== "" ||
+        slotSession !== "" ||
+        directSelectedChecked !== false ||
+        directSelectedGradeVal !== ""
       : showResetAuction ||
         searchAssign !== "" ||
+        from !== "" ||
+        to !== "" ||
+        type !== "" ||
         categorySearchId !== "" ||
-        slotFilterA !== "" ||
-        slotSessionFilterA !== "" ||
-        directSelectedCheckboxA !== false ||
-        directSelectedGradeFilterA !== "";
+        slot !== "" ||
+        slotSession !== "" ||
+        directSelectedChecked !== false ||
+        directSelectedGradeVal !== "";
 
     const count = isUnassigned ? unassignedTotal : auctionTotal;
 
     return (
-      <div className="w-full  space-y-4">
+      <div className="w-full space-y-3">
         {/* Top row: Search + Filters button */}
-        <div className="flex items-center gap-4 relative z-[9999]">
-          <div className="flex-1 relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
+        <div className="relative z-[30] flex flex-col gap-3 lg:flex-row lg:items-center">
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[var(--text-secondary)]" />
             <input
               type="text"
               placeholder="Search by player name or batch ID..."
-              className="w-full pl-10 pr-4 py-2.5  border border-gray-700 rounded-xl text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 transition-all"
+              className={`${inputClass} w-full pl-10`}
               value={isUnassigned ? searchUnassign : searchAssign}
               onChange={(e) =>
                 isUnassigned
@@ -669,10 +684,10 @@ const SelectedAuctionManager = ({
           </div>
 
           {/* Items Per Page Dropdown */}
-          <div className="relative z-[100000]">
+          <div className="relative z-[40]">
             <button
               onClick={() => setIsItemsDropdownOpen(!isItemsDropdownOpen)}
-              className="text-[var(--secondary)] border border-[var(--secondary)] px-3 py-2 rounded-lg text-sm flex items-center gap-1"
+              className={controlButtonClass}
             >
               <span>Showing {itemsPerPage}</span>
               <ChevronDown
@@ -682,7 +697,7 @@ const SelectedAuctionManager = ({
               />
             </button>
             {isItemsDropdownOpen && (
-              <div className="absolute top-full mt-1 right-0 bg-white border border-gray-700 shadow-lg w-40 z-[100001]">
+              <div className="absolute right-0 top-full z-[50] mt-1 w-40 overflow-hidden rounded-lg border border-[var(--border-card)] bg-[var(--bg-card)] shadow-[var(--shadow-card)]">
                 {[8, 16, 32, 64, 96].map((num) => (
                   <button
                     key={num}
@@ -690,10 +705,10 @@ const SelectedAuctionManager = ({
                       setItemsPerPage(num);
                       setIsItemsDropdownOpen(false);
                     }}
-                    className={`w-full text-left px-4 py-2 text-sm text-[var(--color-button-primary)]  transition-colors ${
+                    className={`w-full px-4 py-2 text-left text-sm font-medium transition-colors ${
                       itemsPerPage === num
-                        ? "text-white bg-[var(--secondary)]"
-                        : "hover:bg-[var(--secondary-light)] hover:text-white text-[var(--secondary)]"
+                        ? "text-[var(--text-dark)] bg-[var(--secondary)]"
+                        : "text-[var(--text-primary)] hover:bg-[var(--accent-light)]"
                     }`}
                   >
                     Showing {num}
@@ -703,10 +718,14 @@ const SelectedAuctionManager = ({
             )}
           </div>
 
-          {/* Filter button - isko clickable banao */}
+          {/* Filter button */}
           <button
             onClick={() => setShowFilters(!showFilters)}
-            className="text-[var(--secondary)] border border-[var(--secondary)] px-3 py-2 rounded-lg text-sm flex items-center gap-1"
+            className={`${controlButtonClass} ${
+              showFilters
+                ? "border-[var(--border-primary)] bg-[var(--accent-light)] text-[var(--primary)]"
+                : ""
+            }`}
           >
             <Filter
               className={`h-4 w-4 transition-transform duration-300 ${showFilters ? "rotate-180" : ""}`}
@@ -716,16 +735,52 @@ const SelectedAuctionManager = ({
               className={`w-4 h-4 transition-transform duration-300 ${showFilters ? "rotate-180" : ""}`}
             />
           </button>
+
+          {isUnassigned && (
+            <>
+              <button
+                onClick={handleSelectAllVisible}
+                className="inline-flex h-9 items-center justify-center gap-2 rounded-lg border border-[var(--border-primary)] bg-[var(--accent-light)] px-3 text-xs font-semibold text-[var(--primary)] transition hover:bg-[var(--secondary-lighter)]"
+              >
+                {selectPlayersList.every((p) =>
+                  selectedIds.includes(p.player?._id),
+                ) && selectPlayersList.length > 0 ? (
+                  <>
+                    <CheckSquare className="h-4 w-4" />
+                    Deselect All
+                  </>
+                ) : (
+                  <>
+                    <Square className="h-4 w-4" />
+                    Select All
+                  </>
+                )}
+              </button>
+              <button
+                disabled={selectedIds.length === 0}
+                onClick={() => handleAssignClick(selectedIds)}
+                className={`inline-flex h-9 items-center justify-center gap-2 rounded-lg px-3 text-xs font-semibold shadow-sm transition disabled:cursor-not-allowed disabled:opacity-50 ${
+                  selectedIds.length > 0
+                    ? "bg-[var(--secondary)] text-[#102033] hover:bg-[var(--secondary-strong)]"
+                    : "border border-[var(--border-card)] bg-[var(--bg-main)] text-[var(--text-secondary)]"
+                }`}
+              >
+                <Users className="h-4 w-4" />
+                Assign to Auction ({selectedIds.length})
+              </button>
+            </>
+          )}
         </div>
 
         {/* Filter controls */}
         {showFilters && (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-9 gap-3">
+          <div className="flex flex-col gap-2 rounded-lg border border-[var(--border-card)] bg-[var(--bg-main)] p-2.5 xl:flex-row xl:items-end">
+            <div className="grid min-w-0 flex-1 grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-6">
             {/* Rating filters */}
             {isTrialType && (
               <>
                 <div className="flex flex-col">
-                  <label className="text-xs font-medium text-gray-500 mb-1.5">
+                  <label className={labelClass}>
                     Rating From
                   </label>
                   <select
@@ -738,17 +793,13 @@ const SelectedAuctionManager = ({
                         setTo("");
                       }
                     }}
-                    className=" border border-gray-700 rounded-lg px-3 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500"
+                    className={inputClass}
                   >
                     <option value="" disabled>
                       Select rating
                     </option>
                     {ratingOptions.map((r) => (
-                      <option
-                        key={r}
-                        value={r}
-                        className="text-[var(--secondary)]"
-                      >
+                      <option key={r} value={r}>
                         {r}
                       </option>
                     ))}
@@ -756,7 +807,7 @@ const SelectedAuctionManager = ({
                 </div>
 
                 <div className="flex flex-col">
-                  <label className="text-xs font-medium text-gray-500 mb-1.5">
+                  <label className={labelClass}>
                     Rating To
                   </label>
                   <select
@@ -765,7 +816,7 @@ const SelectedAuctionManager = ({
                     onChange={(e) =>
                       setTo(e.target.value === "" ? "" : Number(e.target.value))
                     }
-                    className={` border border-gray-700 rounded-lg px-3 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 transition-all ${
+                    className={`${inputClass} ${
                       from === "" ? "opacity-50 cursor-not-allowed" : ""
                     }`}
                   >
@@ -784,53 +835,32 @@ const SelectedAuctionManager = ({
 
             {/* Player Type */}
             <div className="flex flex-col">
-              <label className="text-xs font-medium text-gray-500 mb-1.5">
+              <label className={labelClass}>
                 Player Type
               </label>
               <select
                 value={type}
                 onChange={(e) => setType(e.target.value)}
-                className="border border-gray-700 rounded-lg px-3 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500"
+                className={inputClass}
               >
                 <option value="">All Types</option>
                 {playerTypes.map((t) => (
-                  <option
-                    value={t.value}
-                    key={t.label}
-                    className="text-[var(--secondary)]"
-                  >
+                  <option value={t.value} key={t.label}>
                     {t.label}
                   </option>
                 ))}
               </select>
             </div>
 
-            {/* Direct Selected Checkbox */}
-            <div className="flex items-center pt-6">
-              <input
-                type="checkbox"
-                id="directSelectedCheckbox"
-                checked={directSelectedChecked}
-                onChange={(e) => setDirectSelectedCB(e.target.checked)}
-                className="w-4 h-4 cursor-pointer"
-              />
-              <label
-                htmlFor="directSelectedCheckbox"
-                className="text-xs font-medium text-gray-500 ml-2 cursor-pointer"
-              >
-                Only Direct Selected
-              </label>
-            </div>
-
             {/* Direct Selected Grade Filter */}
             <div className="flex flex-col">
-              <label className="text-xs font-medium text-gray-500 mb-1.5">
+              <label className={labelClass}>
                 Direct Grade
               </label>
               <select
                 value={directSelectedGradeVal}
                 onChange={(e) => setDirectSelectedGradeVal(e.target.value)}
-                className="border border-gray-700 rounded-lg px-3 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500"
+                className={inputClass}
               >
                 <option value="">All Grades</option>
                 <option value="A+">A+</option>
@@ -844,7 +874,7 @@ const SelectedAuctionManager = ({
             {/* Slot filter */}
             {isUnassigned && isTrialType && (
               <div className="flex flex-col">
-                <label className="text-xs font-medium text-gray-500 mb-1.5">
+                <label className={labelClass}>
                   Slot
                 </label>
                 <select
@@ -859,15 +889,11 @@ const SelectedAuctionManager = ({
                       setSlotSession("");
                     }
                   }}
-                  className="border border-gray-700 rounded-lg px-3 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500"
+                  className={inputClass}
                 >
                   <option value="">All Slots</option>
                   {slotDetail.map((slot) => (
-                    <option
-                      key={slot._id}
-                      value={slot._id}
-                      className="text-[var(--secondary)]"
-                    >
+                    <option key={slot._id} value={slot._id}>
                       {slot.slotName}
                     </option>
                   ))}
@@ -878,21 +904,17 @@ const SelectedAuctionManager = ({
             {/* Session Filter */}
             {slot && selectedSlotSessions.length > 0 && (
               <div className="flex flex-col">
-                <label className="text-xs font-medium text-gray-500 mb-1.5">
+                <label className={labelClass}>
                   Session
                 </label>
                 <select
                   value={slotSession}
                   onChange={(e) => setSlotSession(e.target.value)}
-                  className=" border border-gray-700 rounded-lg px-3 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500"
+                  className={inputClass}
                 >
                   <option value="">All Sessions</option>
                   {selectedSlotSessions.map((session) => (
-                    <option
-                      key={session._id}
-                      value={session._id}
-                      className="text-[var(--secondary)]"
-                    >
+                    <option key={session._id} value={session._id}>
                       {session.name}
                     </option>
                   ))}
@@ -903,7 +925,7 @@ const SelectedAuctionManager = ({
             {/* Category filter - Only for Auction Tab */}
             {!isUnassigned && (
               <div className="flex flex-col">
-                <label className="text-xs font-medium text-gray-500 mb-1.5">
+                <label className={labelClass}>
                   Category
                 </label>
                 <select
@@ -914,7 +936,7 @@ const SelectedAuctionManager = ({
                     setCategorySearchId(value);
                     setCategorySearchName(found?.name || "");
                   }}
-                  className=" border border-gray-700 rounded-lg px-3 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500"
+                  className={inputClass}
                 >
                   <option value="">All Categories</option>
                   {allCategories.map((cat) => (
@@ -926,12 +948,31 @@ const SelectedAuctionManager = ({
               </div>
             )}
 
+            {/* Standalone checkbox stays after dropdown filters */}
+            <div className="flex items-center pt-6">
+              <input
+                type="checkbox"
+                id={`directSelectedCheckbox-${tab}`}
+                checked={directSelectedChecked}
+                onChange={(e) => setDirectSelectedCB(e.target.checked)}
+                className="h-4 w-4 cursor-pointer"
+              />
+              <label
+                htmlFor={`directSelectedCheckbox-${tab}`}
+                className="ml-2 cursor-pointer text-xs font-semibold text-[var(--text-secondary)]"
+              >
+                Only Direct Selected
+              </label>
+            </div>
+
+            </div>
+
             {/* Action buttons and results */}
-            <div className="flex items-center justify-between pt-2">
-              <div className="flex items-center gap-3">
+            <div className="flex shrink-0 flex-wrap items-center gap-2 border-t border-[var(--border-card)] pt-2 xl:border-l xl:border-t-0 xl:pl-2 xl:pt-0">
+              <div className="flex flex-wrap items-center gap-2">
                 <button
                   onClick={handleSearch}
-                  className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[var(--color-button-primary)] text-white text-sm font-semibold hover:from-cyan-600 hover:to-blue-700 active:scale-[0.98] shadow-lg shadow-cyan-500/20 transition-all"
+                  className="inline-flex h-9 items-center justify-center gap-2 rounded-lg bg-[var(--secondary)] px-3 text-xs font-semibold text-[#102033] shadow-sm transition hover:bg-[var(--secondary-strong)]"
                 >
                   <Search className="w-4 h-4" />
                   Apply Filters
@@ -940,18 +981,18 @@ const SelectedAuctionManager = ({
                 {showReset && (
                   <button
                     onClick={handleReset}
-                    className="px-4 py-2.5 rounded-xl border border-gray-600 text-sm font-medium text-gray-700 hover:bg-gray-800/50 hover:border-gray-500 active:scale-[0.98] transition-all"
+                    className={controlButtonClass}
                   >
                     Clear Filters
                   </button>
                 )}
               </div>
 
-              <div className="flex items-center gap-2">
-                <Users className="h-4 w-4 text-gray-500" />
-                <span className="text-sm text-gray-500">
+              <div className="flex h-9 items-center gap-2 rounded-lg border border-[var(--border-card)] bg-[var(--bg-card)] px-3">
+                <Users className="h-4 w-4 text-[var(--text-secondary)]" />
+                <span className="text-xs text-[var(--text-secondary)]">
                   Found:{" "}
-                  <span className="font-semibold text-cyan-400">{count}</span>{" "}
+                  <span className="font-semibold text-[var(--primary)]">{count}</span>{" "}
                   players
                 </span>
               </div>
@@ -963,7 +1004,7 @@ const SelectedAuctionManager = ({
   };
 
   return (
-    <div className="auction-panel w-full overflow-hidden">
+    <div className="w-full overflow-visible">
       {/* Header Tabs */}
       {/* <div className="border-b border-gray-800">
         <div className="flex gap-3 px-6 py-4">
@@ -972,7 +1013,7 @@ const SelectedAuctionManager = ({
             className={`px-6 py-3 rounded-xl text-sm font-semibold flex items-center gap-3 transition-all ${
               activeSubTab === "unassignedSelected"
                 ? "bg-gradient-to-r from-cyan-900/30 to-blue-900/30 text-cyan-300 border border-cyan-800/50 shadow-lg shadow-cyan-900/20"
-                : "bg-gray-800/50 text-gray-400 hover:bg-gray-800 hover:text-gray-300 border border-gray-700"
+                : "bg-gray-800/50 text-[var(--text-muted)] hover:bg-gray-800 hover:text-gray-300 border border-gray-700"
             }`}
           >
             <div
@@ -991,7 +1032,7 @@ const SelectedAuctionManager = ({
             className={`px-6 py-3 rounded-xl text-sm font-semibold flex items-center gap-3 transition-all ${
               activeSubTab === "auctionPlayers"
                 ? "bg-gradient-to-r from-emerald-900/30 to-green-900/30 text-emerald-300 border border-emerald-800/50 shadow-lg shadow-emerald-900/20"
-                : "bg-gray-800/50 text-gray-400 hover:bg-gray-800 hover:text-gray-300 border border-gray-700"
+                : "bg-gray-800/50 text-[var(--text-muted)] hover:bg-gray-800 hover:text-gray-300 border border-gray-700"
             }`}
           >
             <div
@@ -1008,68 +1049,28 @@ const SelectedAuctionManager = ({
       </div> */}
 
       {/* Main Content */}
-      <div className=" space-y-3">
+      <div className="space-y-4">
         {activeSubTab === "unassignedSelected" ? (
           <>
             {/* Unassigned Section */}
-            <div className="auction-card relative z-[60] space-y-3 p-4 backdrop-blur-sm">
+            <div className="relative z-[20] space-y-3 rounded-lg border border-[var(--border-card)] bg-[var(--bg-card)] p-3 shadow-[var(--shadow-card)] sm:p-4">
               {renderFilterRow("unassigned")}
-
-              <div className="flex flex-wrap items-center justify-between gap-4 pt-4 border-t border-gray-800">
-                <div className="flex items-center gap-3">
-                  <button
-                    onClick={handleSelectAllVisible}
-                    className="auction-btn auction-btn-blue"
-                  >
-                    {selectPlayersList.every((p) =>
-                      selectedIds.includes(p.player?._id),
-                    ) && selectPlayersList.length > 0 ? (
-                      <>
-                        <CheckSquare className="h-4 w-4" />
-                        Deselect All
-                      </>
-                    ) : (
-                      <>
-                        <Square className="h-4 w-4" />
-                        Select All (Visible)
-                      </>
-                    )}
-                  </button>
-
-                  <span className="text-sm text-gray-500">
-                    {selectedIds.length} selected
-                  </span>
-                </div>
-
-                <button
-                  disabled={selectedIds.length === 0}
-                  onClick={() => handleAssignClick(selectedIds)}
-                  className={`auction-btn ${
-                    selectedIds.length > 0
-                      ? "auction-btn-primary"
-                      : "auction-btn-ghost"
-                  }`}
-                >
-                  <Users className="h-4 w-4" />
-                  Assign to Auction ({selectedIds.length})
-                </button>
-              </div>
             </div>
 
             {/* Players Grid */}
-            <div className="max-h-[65vh] relative z-[10] overflow-y-auto pt-3 pr-2 scrollbar-thin scrollbar-thumb-gray-700 scrollbar-track-gray-900">
+            <div className="professional-scrollbar relative z-[10] max-h-[65vh] overflow-y-auto pr-1">
               {selectPlayersList?.length === 0 ? (
-                <div className="flex flex-col items-center justify-center py-16 text-sm text-gray-500 rounded-2xl border-2 border-dashed border-gray-800 bg-gray-900/30">
-                  <Search className="w-12 h-12 mb-4 text-gray-600" />
-                  <p className="text-lg font-medium text-gray-500 mb-1">
+                <div className="flex flex-col items-center justify-center rounded-lg border border-dashed border-[var(--border-primary)] bg-[var(--bg-card)] px-4 py-14 text-center text-sm text-[var(--text-secondary)] shadow-[var(--shadow-card)]">
+                  <Search className="mb-3 h-10 w-10 text-[var(--primary)]" />
+                  <p className="mb-1 text-base font-semibold text-[var(--text-primary)]">
                     No players found
                   </p>
-                  <p className="text-gray-600">
+                  <p className="text-[var(--text-secondary)]">
                     Try adjusting your filters or search terms
                   </p>
                 </div>
               ) : (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+                <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7">
                   {selectPlayersList.map((player) => (
                     <PlayerCard
                       key={player?.player?._id}
@@ -1109,16 +1110,16 @@ const SelectedAuctionManager = ({
         ) : (
           <>
             {/* Auction Players Section */}
-            <div className="auction-card relative z-[60] space-y-3 p-4 backdrop-blur-sm">
+            <div className="relative z-[20] space-y-3 rounded-lg border border-[var(--border-card)] bg-[var(--bg-card)] p-3 shadow-[var(--shadow-card)] sm:p-4">
               {renderFilterRow("auction")}
 
-              <div className="flex flex-wrap items-center justify-between gap-4 pt-4 border-t border-gray-800">
+              <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-[var(--border-card)] bg-[var(--bg-main)] px-3 py-2">
                 <div className="flex items-center gap-3">
                   {enableBulkMode && (
                     <>
                       <button
                         onClick={handleSelectAllAuctionVisible}
-                        className="auction-btn auction-btn-blue"
+                        className="inline-flex h-9 items-center justify-center gap-2 rounded-lg border border-[var(--border-primary)] bg-[var(--accent-light)] px-3 text-sm font-semibold text-[var(--primary)] transition hover:bg-[var(--secondary-lighter)]"
                       >
                         {auctionPlayers.every((p) =>
                           selectedAuctionIds.includes(p.player._id),
@@ -1141,11 +1142,11 @@ const SelectedAuctionManager = ({
                           categorySearchId === ""
                         }
                         onClick={() => setBulkDeleteConfirmOpen(true)}
-                        className={`auction-btn ${
+                        className={`inline-flex h-9 items-center justify-center gap-2 rounded-lg px-4 text-sm font-semibold shadow-sm transition disabled:cursor-not-allowed disabled:opacity-50 ${
                           selectedAuctionIds.length > 0 &&
                           categorySearchId !== ""
                             ? "bg-red-500 text-white hover:bg-red-600"
-                            : "auction-btn-ghost"
+                            : "border border-[var(--border-card)] bg-[var(--bg-main)] text-[var(--text-secondary)]"
                         }`}
                       >
                         <Trash2 className="h-4 w-4" />
@@ -1157,23 +1158,23 @@ const SelectedAuctionManager = ({
 
                 <div className="flex flex-col items-end gap-2">
                   {categorySearchName && (
-                    <div className="text-sm text-gray-500">
+                    <div className="text-sm text-[var(--text-secondary)]">
                       Viewing:{" "}
-                      <span className="font-semibold text-emerald-400">
+                      <span className="font-semibold text-[var(--primary)]">
                         {categorySearchName}
                       </span>
                     </div>
                   )}
 
                   {!enableBulkMode && (
-                    <div className="text-xs text-[var(--secondary)] bg-[var(--background)] px-3 py-1.5 rounded-lg border border-amber-800/30">
-                      💡 Select a category to enable bulk actions
+                    <div className="rounded-lg border border-[var(--border-card)] bg-[var(--bg-main)] px-3 py-1.5 text-xs font-medium text-[var(--text-secondary)]">
+                      Select a category to enable bulk actions
                     </div>
                   )}
 
                   {enableBulkMode && categorySearchId === "" && (
-                    <div className="text-xs text-yellow-400 bg-yellow-900/20 px-3 py-1.5 rounded-lg border border-yellow-800/30">
-                      ⚠️ Single selection only in "All Categories"
+                    <div className="rounded-lg border border-[var(--border-card)] bg-[var(--bg-main)] px-3 py-1.5 text-xs font-medium text-[var(--text-secondary)]">
+                      Single selection only in "All Categories"
                     </div>
                   )}
                 </div>
@@ -1181,19 +1182,19 @@ const SelectedAuctionManager = ({
             </div>
 
             {/* Auction Players Grid */}
-            <div className="max-h-[65vh] relative z-[10] overflow-y-auto pt-3 pr-2 scrollbar-thin scrollbar-thumb-gray-700 scrollbar-track-gray-900">
+            <div className="professional-scrollbar relative z-[10] max-h-[65vh] overflow-y-auto pr-1">
               {auctionPlayers.length === 0 ? (
-                <div className="flex flex-col items-center justify-center py-16 text-sm text-gray-500 rounded-2xl border-2 border-dashed border-gray-800 bg-gray-900/30">
-                  <Users className="w-12 h-12 mb-4 text-gray-600" />
-                  <p className="text-lg font-medium text-gray-500 mb-1">
+                <div className="flex flex-col items-center justify-center rounded-lg border border-dashed border-[var(--border-primary)] bg-[var(--bg-card)] px-4 py-14 text-center text-sm text-[var(--text-secondary)] shadow-[var(--shadow-card)]">
+                  <Users className="mb-3 h-10 w-10 text-[var(--primary)]" />
+                  <p className="mb-1 text-base font-semibold text-[var(--text-primary)]">
                     No auction players
                   </p>
-                  <p className="text-gray-600">
+                  <p className="text-[var(--text-secondary)]">
                     Select a category or adjust filters
                   </p>
                 </div>
               ) : (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+                <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7">
                   {auctionPlayers.map((player) => (
                     <PlayerCard
                       key={player.player._id}
@@ -1246,7 +1247,7 @@ const SelectedAuctionManager = ({
       {/* Delete Confirmation Modal */}
       {deleteCandidate && (
         <div className="fixed inset-0 z-[200000] flex items-center justify-center bg-black/70 backdrop-blur-md">
-          <div className="bg-white border border-gray-800 rounded-2xl shadow-2xl p-4 w-full max-w-md space-y-5">
+          <div className="bg-[var(--bg-card)] border border-gray-800 rounded-2xl shadow-2xl p-4 w-full max-w-md space-y-5">
             <div className="flex items-center justify-between">
               <h2 className="text-xl font-bold text-red-400 flex items-center gap-2">
                 <Trash2 className="h-5 w-5" />
@@ -1256,14 +1257,14 @@ const SelectedAuctionManager = ({
                 onClick={() => setDeleteCandidate(null)}
                 className="w-9 h-9 flex items-center justify-center rounded-full hover:bg-gray-800 transition-colors"
               >
-                <X className="w-5 h-5 text-gray-500" />
+                <X className="w-5 h-5 text-[var(--text-secondary)]" />
               </button>
             </div>
 
             <div className="bg-[var(--background)] rounded-xl p-4 border border-gray-700">
-              <p className="text-sm text-gray-700 leading-relaxed">
+              <p className="text-sm text-[var(--text-primary)] leading-relaxed">
                 Remove{" "}
-                <span className="font-semibold text-gray-900">
+                <span className="font-semibold text-[var(--text-primary)]">
                   {deleteCandidate?.player?.name}
                 </span>{" "}
                 from{" "}
@@ -1272,7 +1273,7 @@ const SelectedAuctionManager = ({
                 </span>
                 ?
               </p>
-              <p className="text-xs text-gray-500 mt-2">
+              <p className="text-xs text-[var(--text-secondary)] mt-2">
                 Player will be moved back to{" "}
                 <span className="text-[var(--secondary)]">
                   Selected (Not Assigned)
@@ -1283,7 +1284,7 @@ const SelectedAuctionManager = ({
             <div className="flex justify-end gap-3 pt-2">
               <button
                 onClick={() => setDeleteCandidate(null)}
-                className="px-5 py-2.5 text-sm font-medium rounded-xl border border-gray-700 text-gray-500 hover:bg-gray-800 hover:text-white transition-all"
+                className="px-5 py-2.5 text-sm font-medium rounded-xl border border-gray-700 text-[var(--text-secondary)] hover:bg-gray-800 hover:text-[var(--text-dark)] transition-all"
               >
                 Cancel
               </button>
@@ -1308,9 +1309,9 @@ const SelectedAuctionManager = ({
             </h2>
 
             <div className="bg-gray-800/50 rounded-xl p-4 border border-gray-700">
-              <p className="text-sm text-gray-700">
+              <p className="text-sm text-[var(--text-primary)]">
                 Are you sure you want to remove{" "}
-                <span className="font-bold text-gray-900">
+                <span className="font-bold text-[var(--text-primary)]">
                   {selectedAuctionIds.length}
                 </span>{" "}
                 players from auction?
@@ -1323,13 +1324,13 @@ const SelectedAuctionManager = ({
             <div className="flex justify-end gap-3 pt-2">
               <button
                 onClick={() => setBulkDeleteConfirmOpen(false)}
-                className="px-5 py-2.5 text-sm font-medium rounded-xl border border-gray-700 text-gray-500 hover:bg-gray-800 hover:text-gray-700 transition-all"
+                className="px-5 py-2.5 text-sm font-medium rounded-xl border border-gray-700 text-[var(--text-secondary)] hover:bg-gray-800 hover:text-[var(--text-primary)] transition-all"
               >
                 Cancel
               </button>
               <button
                 onClick={handleBulkDeleteConfirm}
-                className="px-6 py-2.5 text-sm font-bold rounded-xl bg-gradient-to-r from-red-600 to-pink-700 text-gray-900 hover:from-red-700 hover:to-pink-800 shadow-lg shadow-red-500/20 transition-all"
+                className="px-6 py-2.5 text-sm font-bold rounded-xl bg-gradient-to-r from-red-600 to-pink-700 text-[var(--text-primary)] hover:from-red-700 hover:to-pink-800 shadow-lg shadow-red-500/20 transition-all"
               >
                 Remove All
               </button>

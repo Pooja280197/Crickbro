@@ -118,30 +118,33 @@ const CategoryPlayers = ({ open, onClose, categoryId, auctionId }) => {
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4 top-20">
-      <div className="bg-white w-full max-w-6xl h-[85vh] rounded-2xl shadow-2xl flex flex-col overflow-hidden">
+    <div className="fixed inset-0 z-[2147483647] flex items-center justify-center overflow-y-auto bg-black/70 p-3 pt-5 backdrop-blur-sm sm:p-5">
+      <div className="flex max-h-[calc(100vh-2.5rem)] w-full max-w-6xl flex-col overflow-hidden rounded-2xl border border-[var(--border-card)] bg-[var(--bg-card)] shadow-[0_28px_80px_rgba(0,0,0,0.35)]">
         {/* Header */}
-        <div className="sticky top-0 z-20 bg-gradient-to-r from-gray-900 to-gray-800 text-white border-b border-gray-700 px-6 py-4 flex justify-between items-center">
-          <div className="flex items-center gap-3">
-            <div className="p-2 bg-blue-600 rounded-lg">
-              <Users size={20} />
-            </div>
-            <div>
-              <h2 className="text-xl text-gray-200 font-bold">Category Players</h2>
-              <div className="flex items-center gap-3 mt-1">
-                <span className="text-sm text-gray-300">
-                  {localPlayers.length} players
-                </span>
-                <span className="text-xs bg-blue-500/20 text-blue-300 px-2 py-1 rounded-full">
-                  Page {page} of {totalPages}
-                </span>
+        <div className="border-b border-[var(--border-card)] bg-[var(--bg-main)] px-4 py-4 sm:px-5">
+          <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+            <div className="flex items-start gap-3">
+              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-[var(--border-primary)] bg-[var(--accent-light)] text-[var(--primary)]">
+                <Users size={18} />
+              </div>
+              <div>
+                <h2 className="text-base font-semibold text-[var(--text-primary)] sm:text-lg">
+                  Category Players
+                </h2>
+                <div className="mt-1 flex flex-wrap items-center gap-2">
+                  <span className="rounded-full border border-[var(--border-card)] bg-[var(--bg-card)] px-2.5 py-1 text-xs font-semibold text-[var(--text-secondary)]">
+                    {totalRecords || localPlayers.length} players
+                  </span>
+                  <span className="rounded-full border border-[var(--border-primary)] bg-[var(--accent-light)] px-2.5 py-1 text-xs font-semibold text-[var(--primary)]">
+                    Page {page} of {totalPages}
+                  </span>
+                </div>
               </div>
             </div>
-          </div>
 
-          <div className="flex items-center gap-4">
-            <div className="relative">
-              <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+            <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+            <div className="relative sm:w-64">
+              <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)]" />
               <input
                 type="text"
                 value={searchTerm}
@@ -150,40 +153,40 @@ const CategoryPlayers = ({ open, onClose, categoryId, auctionId }) => {
                   setSearchTerm(e.target.value);
                 }}
                 placeholder="Search player..."
-                className="pl-9 pr-3 py-2 rounded-lg bg-gray-800/70 border border-gray-600 text-white text-sm w-56 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="h-10 w-full rounded-lg border border-[var(--border-card)] bg-[var(--bg-card)] pl-9 pr-3 text-sm font-medium text-[var(--text-primary)] outline-none transition placeholder:text-[var(--text-secondary)] focus:border-[var(--border-primary)]"
               />
             </div>
 
-            <div className="flex items-center gap-2 bg-gray-800/50 rounded-lg px-3 py-2">
-              <Filter size={16} className="text-gray-400" />
+            <div className="flex h-10 items-center gap-2 rounded-lg border border-[var(--border-card)] bg-[var(--bg-card)] px-3">
+              <Filter size={16} className="text-[var(--primary)]" />
               <select
                 value={limit}
                 onChange={(e) => {
                   setPage(1);
                   setLimit(Number(e.target.value));
                 }}
-                className="bg-transparent text-white text-sm focus:outline-none"
+                className="bg-transparent text-sm font-medium text-[var(--text-primary)] outline-none"
               >
-                <option value={20} className="bg-gray-800">20 per page</option>
-                <option value={50} className="bg-gray-800">50 per page</option>
-                <option value={100} className="bg-gray-800">100 per page</option>
+                <option value={20}>20 per page</option>
+                <option value={50}>50 per page</option>
+                <option value={100}>100 per page</option>
               </select>
             </div>
 
             <button
               onClick={onClose}
-              className="p-2 hover:bg-gray-700 rounded-lg transition-colors"
+              className="flex h-10 w-10 items-center justify-center rounded-lg border border-[var(--border-card)] bg-[var(--bg-card)] text-[var(--text-secondary)] transition hover:border-[var(--border-primary)] hover:bg-[var(--accent-light)] hover:text-[var(--text-primary)]"
               aria-label="Close"
             >
               <X size={20} />
             </button>
           </div>
         </div>
+        </div>
 
         {/* Error Banner */}
         {error && (
-          <div className="bg-red-500/10 border-l-4 border-red-500 text-red-700 px-6 py-3 flex items-center">
-            <div className="mr-3">⚠️</div>
+          <div className="flex items-center border-b border-red-200 bg-red-50 px-5 py-3 text-sm text-red-700">
             <div className="flex-1">{error}</div>
             <button onClick={() => setError("")} className="text-red-500 hover:text-red-700">
               <X size={16} />
@@ -191,74 +194,83 @@ const CategoryPlayers = ({ open, onClose, categoryId, auctionId }) => {
           </div>
         )}
 
-        {/* Players Grid */}
-        <div className="flex-1 overflow-y-auto p-6 bg-gradient-to-b from-gray-50 to-white">
-          <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 xl:grid-cols-10 gap-4">
-            {localPlayers
-              .sort((a, b) => a.orderInCategory - b.orderInCategory)
-              .map((player) => (
-                <div
-                  key={player.playerId}
-                  onClick={() => {
-                    if (isSaving) return;
-                    setSelectedPlayer(player);
-                    setNewOrder(player.orderInCategory.toString());
-                    setError("");
-                    setInputError("");
-                  }}
-                  className={`relative border rounded-xl p-3 text-center transition-all duration-200 cursor-pointer group
-                    ${isSaving
-                      ? "opacity-60 cursor-not-allowed"
-                      : "hover:scale-[1.02] hover:shadow-lg hover:border-blue-400"
-                    }
-                    ${selectedPlayer?.playerId === player.playerId
-                      ? "ring-2 ring-blue-500 border-blue-300 bg-blue-50"
-                      : "border-gray-200 bg-white"
-                    }`}
-                >
-                  {/* Order Badge */}
-                  <div className={`absolute -top-2 -right-2 w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold
-                    ${selectedPlayer?.playerId === player.playerId
-                      ? "bg-blue-600 text-white"
-                      : "bg-gray-800 text-white"
-                    }`}
-                  >
-                    #{player.orderInCategory}
-                  </div>
+        {/* Players List */}
+        <div className="professional-scrollbar flex-1 overflow-y-auto bg-[var(--bg-main)] p-4 sm:p-5">
+          {localPlayers.length === 0 ? (
+            <div className="flex min-h-72 flex-col items-center justify-center rounded-lg border border-dashed border-[var(--border-primary)] bg-[var(--bg-card)] p-6 text-center shadow-sm">
+              <Users className="mb-3 h-10 w-10 text-[var(--primary)]" />
+              <p className="text-sm font-semibold text-[var(--text-primary)]">
+                No players found
+              </p>
+              <p className="mt-1 text-sm text-[var(--text-secondary)]">
+                Try changing the search term.
+              </p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8">
+              {localPlayers
+                .sort((a, b) => a.orderInCategory - b.orderInCategory)
+                .map((player) => {
+                  const isSelected = selectedPlayer?.playerId === player.playerId;
 
-                  {/* Player Content */}
-                  <div className="mb-2 h-12 flex items-center justify-center">
-                    <p className="text-sm font-semibold text-gray-900 line-clamp-2 group-hover:text-blue-700">
-                      {player.name}
-                    </p>
-                  </div>
+                  return (
+                    <button
+                      type="button"
+                      key={player.playerId}
+                      onClick={() => {
+                        if (isSaving) return;
+                        setSelectedPlayer(player);
+                        setNewOrder(player.orderInCategory.toString());
+                        setError("");
+                        setInputError("");
+                      }}
+                      className={`group relative min-h-[92px] rounded-lg border p-2.5 text-left shadow-sm transition ${
+                        isSaving
+                          ? "cursor-not-allowed opacity-60"
+                          : "hover:border-[var(--border-primary)] hover:bg-[var(--bg-card)]"
+                      } ${
+                        isSelected
+                          ? "border-[var(--primary)] bg-[var(--accent-light)] ring-2 ring-[var(--primary)]/20"
+                          : "border-[var(--border-card)] bg-[var(--bg-card)]"
+                      }`}
+                    >
+                      <span
+                        className={`mb-2 inline-flex h-7 min-w-7 items-center justify-center rounded-lg px-2 text-[11px] font-bold shadow-sm ${
+                          isSelected
+                            ? "bg-[var(--primary)] text-white"
+                            : "bg-[var(--secondary)] text-[#102033]"
+                        }`}
+                      >
+                        #{player.orderInCategory}
+                      </span>
 
-                  <div className="mt-2 pt-2 border-t border-gray-100">
-                    <p className="text-xs text-gray-600 bg-gray-100 rounded-full px-2 py-1 inline-block">
-                      Batch: {player.batchId}
-                    </p>
-                  </div>
+                      <p className="line-clamp-2 min-h-8 text-xs font-semibold leading-4 text-[var(--text-primary)] group-hover:text-[var(--primary)]">
+                        {player.name}
+                      </p>
 
-                  {/* Hover Indicator */}
-                  <div className="absolute inset-0 border-2 border-transparent group-hover:border-blue-300 rounded-xl pointer-events-none" />
-                </div>
-              ))}
-          </div>
+                      <p className="mt-1 truncate text-[10px] font-medium text-[var(--text-secondary)]">
+                        Batch: {player.batchId || "-"}
+                      </p>
+                    </button>
+                  );
+                })}
+            </div>
+          )}
         </div>
 
         {/* Pagination */}
-        <div className="border-t border-gray-200 bg-gray-800/90 px-6 py-4">
-          <div className="flex items-center justify-between">
-            <div className="text-sm text-white-600">
-              Showing {Math.min((page - 1) * limit + 1, localPlayers.length)}-
-              {Math.min(page * limit, localPlayers.length)} of {localPlayers.length} players
+        <div className="border-t border-[var(--border-card)] bg-[var(--bg-card)] px-4 py-3 sm:px-5">
+          <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+            <div className="text-sm text-[var(--text-secondary)]">
+              Showing {localPlayers.length ? Math.min((page - 1) * limit + 1, totalRecords || localPlayers.length) : 0}-
+              {Math.min(page * limit, totalRecords || localPlayers.length)} of {totalRecords || localPlayers.length} players
             </div>
             
             <div className="flex items-center gap-2">
               <button
                 disabled={page === 1}
                 onClick={() => setPage((p) => p - 1)}
-                className="flex items-center gap-2 px-4 py-2 border text-gray-100 border-gray-300 rounded-lg hover:bg-gray-900 hover:text-white disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                className="inline-flex h-9 items-center gap-2 rounded-lg border border-[var(--border-card)] bg-[var(--bg-main)] px-3 text-sm font-semibold text-[var(--text-primary)] transition hover:border-[var(--border-primary)] hover:bg-[var(--accent-light)] disabled:cursor-not-allowed disabled:opacity-40"
               >
                 <ChevronLeft size={16} />
                 <span>Previous</span>
@@ -275,10 +287,10 @@ const CategoryPlayers = ({ open, onClose, categoryId, auctionId }) => {
                     <button
                       key={idx}
                       onClick={() => setPage(pageNum)}
-                      className={`w-10 h-10 rounded-lg text-sm font-medium transition-colors
+                      className={`h-9 w-9 rounded-lg text-sm font-semibold transition
                         ${page === pageNum
-                          ? "bg-blue-600 text-white"
-                          : "hover:bg-gray-900 text-white"
+                          ? "bg-[var(--secondary)] text-[#102033]"
+                          : "border border-[var(--border-card)] bg-[var(--bg-main)] text-[var(--text-primary)] hover:bg-[var(--accent-light)]"
                         }`}
                     >
                       {pageNum}
@@ -290,7 +302,7 @@ const CategoryPlayers = ({ open, onClose, categoryId, auctionId }) => {
               <button
                 disabled={page === totalPages}
                 onClick={() => setPage((p) => p + 1)}
-                className="flex items-center gap-2 px-4 py-2 text-gray-100 border border-gray-300 rounded-lg hover:bg-gray-900 hover:text-white disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                className="inline-flex h-9 items-center gap-2 rounded-lg border border-[var(--border-card)] bg-[var(--bg-main)] px-3 text-sm font-semibold text-[var(--text-primary)] transition hover:border-[var(--border-primary)] hover:bg-[var(--accent-light)] disabled:cursor-not-allowed disabled:opacity-40"
               >
                 <span>Next</span>
                 <ChevronRight size={16} />
@@ -300,26 +312,26 @@ const CategoryPlayers = ({ open, onClose, categoryId, auctionId }) => {
         </div>
 
         {/* Instructions */}
-        <div className="border-t border-gray-200 bg-gray-50 px-6 py-3">
-          <div className="text-sm text-gray-600 text-center flex items-center justify-center gap-2">
-            <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-            Click on a player to change their display order
+        <div className="border-t border-[var(--border-card)] bg-[var(--bg-main)] px-5 py-3">
+          <div className="flex items-center justify-center gap-2 text-center text-sm text-[var(--text-secondary)]">
+            <div className="h-2 w-2 rounded-full bg-[var(--primary)]"></div>
+            Select a player card to change its display order.
           </div>
         </div>
       </div>
 
       {/* -------- Order Change Modal -------- */}
       {selectedPlayer && (
-        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-[60] p-4">
-          <div className="bg-white rounded-2xl w-full max-w-md overflow-hidden shadow-2xl">
+        <div className="fixed inset-0 z-[2147483647] flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm">
+          <div className="w-full max-w-md overflow-hidden rounded-2xl border border-[var(--border-card)] bg-[var(--bg-card)] shadow-[0_28px_80px_rgba(0,0,0,0.35)]">
             {/* Modal Header */}
-            <div className="bg-gradient-to-r from-blue-600 to-blue-700 px-6 py-4">
+            <div className="border-b border-[var(--border-card)] bg-[var(--bg-main)] px-5 py-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <div className="p-2 bg-white/20 rounded-lg">
-                    <Hash size={20} className="text-white" />
+                  <div className="flex h-9 w-9 items-center justify-center rounded-lg border border-[var(--border-primary)] bg-[var(--accent-light)] text-[var(--primary)]">
+                    <Hash size={18} />
                   </div>
-                  <h3 className="text-lg font-bold text-white">Change Player Order</h3>
+                  <h3 className="text-base font-semibold text-[var(--text-primary)]">Change Player Order</h3>
                 </div>
                 <button
                   onClick={() => {
@@ -327,9 +339,9 @@ const CategoryPlayers = ({ open, onClose, categoryId, auctionId }) => {
                     setNewOrder("");
                     setInputError("");
                   }}
-                  className="p-1 hover:bg-white/20 rounded-lg transition-colors"
+                  className="flex h-8 w-8 items-center justify-center rounded-lg border border-[var(--border-card)] bg-[var(--bg-card)] text-[var(--text-secondary)] transition hover:bg-[var(--accent-light)]"
                 >
-                  <X size={20} className="text-white" />
+                  <X size={16} />
                 </button>
               </div>
             </div>
@@ -338,14 +350,14 @@ const CategoryPlayers = ({ open, onClose, categoryId, auctionId }) => {
             <div className="p-6 space-y-6">
               {/* Player Info */}
               <div className="space-y-4">
-                <div className="flex items-center justify-between p-4 bg-blue-50 rounded-xl border border-blue-100">
+                <div className="flex items-center justify-between rounded-xl border border-[var(--border-card)] bg-[var(--bg-main)] p-4">
                   <div>
-                    <p className="font-semibold text-gray-900">{selectedPlayer.name}</p>
-                    <p className="text-sm text-gray-600 mt-1">Batch: {selectedPlayer.batchId}</p>
+                    <p className="font-semibold text-[var(--text-primary)]">{selectedPlayer.name}</p>
+                    <p className="text-sm text-[var(--text-secondary)] mt-1">Batch: {selectedPlayer.batchId}</p>
                   </div>
                   <div className="text-right">
-                    <div className="text-sm text-gray-500">Current Order</div>
-                    <div className="text-2xl font-bold text-blue-600">
+                    <div className="text-sm text-[var(--text-secondary)]">Current Order</div>
+                    <div className="text-2xl font-bold text-[var(--primary)]">
                       #{selectedPlayer.orderInCategory}
                     </div>
                   </div>
@@ -353,9 +365,9 @@ const CategoryPlayers = ({ open, onClose, categoryId, auctionId }) => {
 
                 {/* New Order Input */}
                 <div className="space-y-2">
-                  <label className="text-sm font-medium text-gray-700 flex items-center gap-2">
+                  <label className="text-sm font-medium text-[var(--text-primary)] flex items-center gap-2">
                     <span>New Order Position</span>
-                    <span className="text-xs text-gray-500">
+                    <span className="text-xs text-[var(--text-secondary)]">
                       (1 - {totalRecords})
                     </span>
                   </label>
@@ -367,19 +379,19 @@ const CategoryPlayers = ({ open, onClose, categoryId, auctionId }) => {
                       pattern="[0-9]*"
                       value={newOrder}
                       onChange={(e) => handleOrderChange(e.target.value)}
-                      className={`w-full px-4 py-3 text-lg border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent
-                        ${inputError ? "border-red-500" : "border-gray-300"}`}
+                      className={`w-full rounded-xl border bg-[var(--bg-main)] px-4 py-3 text-lg text-[var(--text-primary)] outline-none transition focus:border-[var(--border-primary)]
+                        ${inputError ? "border-red-500" : "border-[var(--border-primary)]"}`}
                       placeholder={`Enter position 1-${totalRecords}`}
                       autoFocus
                     />
-                    <div className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400">
+                    <div className="absolute right-3 top-1/2 transform -translate-y-1/2 text-[var(--text-muted)]">
                       of {totalRecords}
                     </div>
                   </div>
                   
                   {inputError && (
-                    <p className="text-sm text-red-600 flex items-center gap-2">
-                      ⚠️ {inputError}
+                    <p className="flex items-center gap-2 text-sm text-red-600">
+                      {inputError}
                     </p>
                   )}
                 </div>
@@ -393,7 +405,7 @@ const CategoryPlayers = ({ open, onClose, categoryId, auctionId }) => {
                     setNewOrder("");
                     setInputError("");
                   }}
-                  className="flex-1 px-4 py-3 border border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 transition-colors font-medium"
+                  className="flex-1 rounded-lg border border-[var(--border-card)] bg-[var(--bg-main)] px-4 py-3 text-sm font-semibold text-[var(--text-primary)] transition hover:border-[var(--border-primary)] hover:bg-[var(--accent-light)]"
                   disabled={isSaving}
                 >
                   Cancel
@@ -401,7 +413,7 @@ const CategoryPlayers = ({ open, onClose, categoryId, auctionId }) => {
                 <button
                   onClick={handleOrderSubmit}
                   disabled={isSaving || !newOrder.trim() || !!inputError}
-                  className="flex-1 px-4 py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-xl hover:from-blue-700 hover:to-blue-800 disabled:opacity-50 disabled:cursor-not-allowed transition-all font-medium shadow-md hover:shadow-lg"
+                  className="flex-1 rounded-lg bg-[var(--secondary)] px-4 py-3 text-sm font-semibold text-[#102033] shadow-sm transition hover:bg-[var(--secondary-strong)] disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   {isSaving ? (
                     <span className="flex items-center justify-center gap-2">

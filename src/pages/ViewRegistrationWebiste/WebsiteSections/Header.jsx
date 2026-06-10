@@ -2,28 +2,37 @@ import React, { useEffect, useState } from "react";
 import {
   Mail,
   Phone,
-  Facebook,
-  Linkedin,
-  Youtube,
-  Instagram,
-  Twitter,
+  LogIn,
   LogOut,
+  Menu,
+  X,
+  ChevronDown,
+  Share2,
 } from "lucide-react";
 import { BsTelephoneFill } from "react-icons/bs";
 import { Link } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { isValidMongoObjectId } from "../../../redux/actions";
+import { FaFacebook, FaInstagram, FaLinkedin, FaTwitter, FaYoutube } from "react-icons/fa";
+import { useLoginPopup } from "../../../context/LoginPopupContext";
 
 const Header = ({ data }) => {
   const headerData = data;
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const [showMoreDropdown, setShowMoreDropdown] = useState(false);
   const isPreviewMode = location.pathname === "/preview-Page";
   const dispatch = useDispatch();
+  const { openLoginPopup } = useLoginPopup();
   const tournamentLogo =
     headerData?.tournamentId?.logo || headerData?.logo || headerData?.image;
   const tournamentName =
     headerData?.tournamentId?.name || "Tournament";
+  
+  // Dark theme colors (fixed)
+  const headerBackground = isScrolled
+    ? "rgba(15, 23, 42, 0.96)"
+    : "rgba(15, 23, 42, 0.92)";
 
   const readSession = () => {
     const token = localStorage.getItem("token");
@@ -59,21 +68,38 @@ const Header = ({ data }) => {
     };
   }, []);
 
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (showMoreDropdown && !event.target.closest('.more-dropdown')) {
+        setShowMoreDropdown(false);
+      }
+    };
+    document.addEventListener('click', handleClickOutside);
+    return () => document.removeEventListener('click', handleClickOutside);
+  }, [showMoreDropdown]);
+
   const platformIcons = {
-    facebook: Facebook,
-    linkedin: Linkedin,
-    youtube: Youtube,
-    instagram: Instagram,
-    twitter: Twitter,
+    facebook: FaFacebook,
+    linkedin: FaLinkedin,
+    youtube: FaYoutube,
+    instagram: FaInstagram,
+    twitter: FaTwitter,
   };
 
   const handleLogout = () => {
     dispatch({ type: "LOGOUT" });
     localStorage.clear();
-    // Remove sensitive query params like playerId/playertoken from URL.
     const cleanPath = `${window.location.pathname}${window.location.hash}`;
     window.history.replaceState({}, document.title, cleanPath);
-    window.location.reload(); // refresh page after logout
+    window.location.reload();
+  };
+
+  const handleLogin = () => {
+    openLoginPopup(() => {
+      window.dispatchEvent(new Event("crickbro-auth-change"));
+    });
+    setMobileMenuOpen(false);
   };
 
   const getAbbreviatedName = (name, maxLength = 12) => {
@@ -82,211 +108,352 @@ const Header = ({ data }) => {
     return trimmedName.substring(0, maxLength) + "..";
   };
 
+  // Collect all contact info
+  const contactItems = [
+    headerData?.contactInfo?.mobileNumber && {
+      type: 'mobile',
+      icon: Phone,
+      value: headerData.contactInfo.mobileNumber,
+      href: `tel:${headerData.contactInfo.mobileNumber}`,
+      label: 'Mobile Number'
+    },
+    headerData?.contactInfo?.phoneNumber && {
+      type: 'phone',
+      icon: BsTelephoneFill,
+      value: headerData.contactInfo.phoneNumber,
+      href: `tel:${headerData.contactInfo.phoneNumber}`,
+      label: 'Phone Number'
+    },
+    headerData?.contactInfo?.email && {
+      type: 'email',
+      icon: Mail,
+      value: headerData.contactInfo.email,
+      href: `mailto:${headerData.contactInfo.email}`,
+      label: 'Email Address'
+    }
+  ].filter(Boolean);
+
+  // Social items
+  const socialItems = headerData?.socialAccounts
+    ?.sort((a, b) => a.order - b.order)
+    .map((social) => {
+      const Icon = platformIcons[social.platform?.toLowerCase()];
+      if (!Icon) return null;
+      return {
+        platform: social.platform,
+        icon: Icon,
+        url: social.url,
+        label: social.platform
+      };
+    })
+    .filter(Boolean) || [];
+
+  // Only show first 1 contact and first 2 social items in header
+  const visibleContactItems = contactItems.slice(0, 1);
+  const visibleSocialItems = socialItems.slice(0, 2);
+  
+  // Rest go to more dropdown
+  const hiddenContactItems = contactItems.slice(1);
+  const hiddenSocialItems = socialItems.slice(2);
+  
+  const hasMoreItems = hiddenContactItems.length > 0 || hiddenSocialItems.length > 0;
+
   return (
     <header
-      className={`sticky z-50 w-full ${isPreviewMode ? "top-16" : "top-0"
-        } ${isScrolled ? "bg-white/60" : "bg-white/90"} backdrop-blur-md shadow-sm transition-all duration-300`}
+      className={`sticky z-50 w-full ${isPreviewMode ? "top-16" : "top-0"} border-b backdrop-blur-xl transition-all duration-300`}
+      style={{
+        background: headerBackground,
+        borderColor: "rgba(255, 255, 255, 0.14)",
+        boxShadow: isScrolled
+          ? "0 14px 34px rgba(15, 23, 42, 0.28)"
+          : "0 2px 0 rgba(255, 255, 255, 0.08)",
+        color: "#f8fafc",
+      }}
     >
       {/* Top Bar (desktop only) */}
-      <div className="hidden md:flex max-w-7xl mx-auto px-4 py-1 justify-between items-center text-xs font-light text-gray-700">
+      <div className="hidden lg:flex max-w-7xl mx-auto px-6 py-2.5 items-center justify-between gap-6 text-xs font-medium">
         {/* Left: Logo */}
-        <div className="flex items-center gap-4">
+        <div className="flex min-w-0 flex-1 items-center gap-4">
           <Link
             to="/"
-            className="flex items-center gap-3 transition hover:opacity-80"
+            className="flex min-w-0 items-center gap-3 transition hover:opacity-90"
           >
             {tournamentLogo ? (
               <img
                 src={tournamentLogo}
                 alt={tournamentName}
-                className="h-10 w-10 rounded-full object-cover border border-gray-200"
+                className="h-12 w-12 rounded-2xl object-cover border border-white/60 shadow-sm"
               />
             ) : (
-              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-r from-orange-400 via-pink-500 to-purple-600 text-sm font-bold text-white">
+              <div
+                className="flex h-12 w-12 items-center justify-center rounded-2xl text-base font-bold text-white shadow-sm"
+                style={{ background: "#1e293b" }}
+              >
                 {String(tournamentName).trim().charAt(0).toUpperCase() || "A"}
               </div>
             )}
-            <span className="font-bold text-lg text-gray-800 max-w-[280px] truncate hidden lg:block">
+            <span className="text-lg font-bold tracking-tight truncate max-w-[300px]" style={{ color: "#f8fafc" }}>
               {tournamentName}
-            </span>
-            <span
-              className="font-bold text-lg text-gray-800 max-w-[180px] truncate block lg:hidden"
-              title={tournamentName}
-            >
-              {getAbbreviatedName(tournamentName, 18)}
             </span>
           </Link>
         </div>
 
-        {/* Center: Contact Info */}
-        <div className="flex items-center gap-4 text-gray-500">
-          {headerData?.contactInfo?.mobileNumber && (
+        {/* Center: Contact & Social Info - Organized */}
+        <div className="flex items-center gap-3">
+          {/* Visible Contact Items */}
+          {visibleContactItems.map((contact, index) => (
             <a
-              href={`tel:${headerData.contactInfo.mobileNumber}`}
-              className="flex items-center gap-1 hover:text-gray-900 text-gray-500 transition"
+              key={`contact-${index}`}
+              href={contact.href}
+              className="flex items-center gap-2 px-3 py-2 rounded-lg transition-all hover:bg-white/10 group"
+              style={{ color: "#cbd5e1" }}
             >
-              <Phone size={14} />
-              {headerData.contactInfo.mobileNumber}
+              <contact.icon size={15} className="group-hover:text-[#3b82f6] transition-colors" />
+              <span className="text-sm font-medium truncate max-w-[180px]">
+                {contact.value}
+              </span>
             </a>
+          ))}
+          
+          {/* Separator between contacts and social */}
+          {visibleContactItems.length > 0 && visibleSocialItems.length > 0 && (
+            <div className="w-px h-5 bg-white/12"></div>
           )}
-          {headerData?.contactInfo?.phoneNumber && (
+          
+          {/* Visible Social Items */}
+          {visibleSocialItems.map((social, index) => (
             <a
-              href={`tel:${headerData.contactInfo.phoneNumber}`}
-              className="flex items-center gap-1 hover:text-gray-900 text-gray-500 transition"
+              key={`social-${index}`}
+              href={social.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-2 px-3 py-2 rounded-lg transition-all hover:bg-white/10 group"
+              style={{ color: "#cbd5e1" }}
             >
-              <BsTelephoneFill size={14} />
-              {headerData.contactInfo.phoneNumber}
+              <social.icon size={15} className="group-hover:text-[#3b82f6] transition-colors" />
+              <span className="text-sm font-medium capitalize">
+                {social.platform}
+              </span>
             </a>
-          )}
-          {headerData?.contactInfo?.email && (
-            <a
-              href={`mailto:${headerData.contactInfo.email}`}
-              className="flex items-center gap-1 hover:text-gray-900 text-gray-500 transition"
-            >
-              <Mail size={14} />
-              {headerData.contactInfo.email}
-            </a>
+          ))}
+          
+          {/* More Dropdown Button */}
+          {hasMoreItems && (
+            <div className="relative more-dropdown">
+              <button
+                onClick={() => setShowMoreDropdown(!showMoreDropdown)}
+                className="flex items-center gap-1.5 px-3 py-2 rounded-lg transition-all hover:bg-white/10"
+                style={{ color: "#cbd5e1" }}
+              >
+                <span className="text-sm font-medium">More</span>
+                <ChevronDown size={14} className={`transition-transform duration-200 ${showMoreDropdown ? 'rotate-180' : ''}`} />
+              </button>
+              
+              {showMoreDropdown && (
+                <div 
+                  className="absolute top-full right-0 mt-2 w-80 rounded-xl shadow-xl border overflow-hidden z-50 animate-in fade-in slide-in-from-top-2 duration-200"
+                  style={{
+                    background: "rgba(30, 41, 59, 0.96)",
+                    borderColor: "rgba(255, 255, 255, 0.12)",
+                    backdropFilter: "blur(12px)"
+                  }}
+                >
+                  {/* Contact Section in Dropdown */}
+                  {hiddenContactItems.length > 0 && (
+                    <div className="p-2">
+                      <div className="px-3 py-2 text-xs font-semibold uppercase tracking-wider" style={{ color: "#cbd5e1" }}>
+                        Contact Information
+                      </div>
+                      {hiddenContactItems.map((contact, index) => (
+                        <a
+                          key={`dropdown-contact-${index}`}
+                          href={contact.href}
+                          className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/10 transition-colors group"
+                          onClick={() => setShowMoreDropdown(false)}
+                        >
+                          <div className="p-2 rounded-lg bg-white/10 group-hover:bg-[#3b82f6] transition-colors">
+                            <contact.icon size={16} className="group-hover:text-white transition-colors" style={{ color: "#3b82f6" }} />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <div className="text-xs font-medium" style={{ color: "#cbd5e1" }}>
+                              {contact.label}
+                            </div>
+                            <div className="text-sm font-medium truncate" style={{ color: "#f8fafc" }}>
+                              {contact.value}
+                            </div>
+                          </div>
+                        </a>
+                      ))}
+                    </div>
+                  )}
+                  
+                  {/* Separator */}
+                  {hiddenContactItems.length > 0 && hiddenSocialItems.length > 0 && (
+                    <div className="h-px bg-white/12 my-1"></div>
+                  )}
+                  
+                  {/* Social Section in Dropdown */}
+                  {hiddenSocialItems.length > 0 && (
+                    <div className="p-2">
+                      <div className="px-3 py-2 text-xs font-semibold uppercase tracking-wider" style={{ color: "#cbd5e1" }}>
+                        Social Media
+                      </div>
+                      {hiddenSocialItems.map((social, index) => (
+                        <a
+                          key={`dropdown-social-${index}`}
+                          href={social.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/10 transition-colors group"
+                          onClick={() => setShowMoreDropdown(false)}
+                        >
+                          <div className="p-2 rounded-lg bg-white/10 group-hover:bg-[#3b82f6] transition-colors">
+                            <social.icon size={16} className="group-hover:text-white transition-colors" style={{ color: "#3b82f6" }} />
+                          </div>
+                          <div className="flex-1">
+                            <div className="text-sm font-medium capitalize" style={{ color: "#f8fafc" }}>
+                              {social.platform}
+                            </div>
+                          </div>
+                        </a>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
           )}
         </div>
 
-        {/* Right: Social Icons */}
-        <div className="flex items-center gap-1">
-          <span className="font-light text-gray-500">Follow Us:</span>
-          <div className="flex gap-1">
-            {headerData?.socialAccounts
-              ?.sort((a, b) => a.order - b.order)
-              .map((social) => {
-                const Icon = platformIcons[social.platform?.toLowerCase()];
-                if (!Icon) return null;
-                return (
-                  <a
-                    key={social._id}
-                    href={social.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="p-1 rounded-full hover:bg-gray-200 transition"
-                    title={social.platform}
-                  >
-                    <Icon size={16} className="text-gray-700" />
-                  </a>
-                );
-              })}
-          </div>
-          {isLoggedIn && (
+        {/* Right: Actions - Login/Logout only */}
+        <div className="flex shrink-0 items-center gap-3">
+          {isLoggedIn ? (
             <button
               type="button"
               onClick={handleLogout}
-              className="ml-4 flex items-center gap-1 text-gray-700 font-medium hover:text-gray-900 transition"
+              className="flex items-center gap-2 px-4 py-2 rounded-lg font-semibold transition-all hover:bg-white/10"
+              style={{ color: "#f8fafc" }}
             >
-              <LogOut size={16} aria-hidden />
-              Logout
+              <LogOut size={16} />
+              <span>Logout</span>
+            </button>
+          ) : (
+            <button
+              type="button"
+              onClick={handleLogin}
+              className="flex items-center gap-2 px-5 py-2 rounded-lg font-semibold text-white shadow-sm transition-all hover:opacity-90 hover:shadow-md"
+              style={{ background: "#3b82f6" }}
+            >
+              <LogIn size={15} />
+              <span>Login</span>
             </button>
           )}
         </div>
       </div>
 
       {/* Mobile Header */}
-      <div className="flex md:hidden justify-between items-center max-w-7xl mx-auto px-4 py-2 gap-2">
-        {/* Logo */}
-        <Link
-          to="/"
-          className="flex items-center gap-2 min-w-0 transition hover:opacity-80"
-        >
+      <div className="flex lg:hidden justify-between items-center px-4 py-3 gap-2">
+        <Link to="/" className="flex min-w-0 flex-1 items-center gap-2">
           {tournamentLogo ? (
-            <img
-              src={tournamentLogo}
-              alt={tournamentName}
-              className="h-9 w-9 rounded-full object-cover border border-gray-200 flex-shrink-0"
-            />
+            <img src={tournamentLogo} alt={tournamentName} className="h-10 w-10 rounded-xl object-cover shadow-sm flex-shrink-0" />
           ) : (
-            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-r from-orange-400 via-pink-500 to-purple-600 text-xs font-bold text-white flex-shrink-0">
-              {String(tournamentName).trim().charAt(0).toUpperCase() || "A"}
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl text-sm font-bold text-white shadow-sm flex-shrink-0"
+              style={{ background: "#1e293b" }}>
+              {String(tournamentName).trim().charAt(0).toUpperCase()}
             </div>
           )}
-          <span
-            className="font-bold text-base text-gray-800 truncate max-w-[140px]"
-            title={tournamentName}
-          >
-            {getAbbreviatedName(tournamentName, 10)}
+          <span className="text-sm font-bold truncate max-w-[180px]" style={{ color: "#f8fafc" }}>
+            {tournamentName}
           </span>
         </Link>
 
-        <div className="flex items-center gap-2">
-          {isLoggedIn && (
-            <button
-              type="button"
-              onClick={handleLogout}
-              className="text-sm font-medium text-gray-700 hover:text-gray-900 px-2 py-1 rounded-md hover:bg-gray-100"
-              aria-label="Logout"
-            >
-              <LogOut size={18} className="inline" />
+        <div className="flex items-center gap-1.5">
+          {isLoggedIn ? (
+            <button onClick={handleLogout} className="p-2 rounded-lg hover:bg-white/10"
+              style={{ color: "#f8fafc" }}>
+              <LogOut size={18} />
+            </button>
+          ) : (
+            <button onClick={handleLogin} className="p-2 rounded-lg text-white shadow-sm hover:opacity-90"
+              style={{ background: "#3b82f6" }}>
+              <LogIn size={17} />
             </button>
           )}
-          <button
-            type="button"
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="text-2xl font-bold"
-            aria-label="Toggle menu"
-          >
-            {mobileMenuOpen ? "✕" : "☰"}
+          <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            className="p-2 rounded-lg border transition hover:bg-white/10"
+            style={{ borderColor: "rgba(255, 255, 255, 0.12)", color: "#f8fafc", background: "rgba(30, 41, 59, 0.86)" }}>
+            {mobileMenuOpen ? <X size={18} /> : <Menu size={18} />}
           </button>
         </div>
       </div>
 
-      {/* Mobile Menu */}
+      {/* Mobile Menu - All items organized */}
       {mobileMenuOpen && (
-        <div className="md:hidden bg-white border-t border-gray-200 shadow-md">
-          <div className="flex flex-col px-4 py-2 gap-2">
+        <div className="lg:hidden border-t shadow-lg max-h-[80vh] overflow-y-auto"
+          style={{ background: headerBackground, borderColor: "rgba(255, 255, 255, 0.12)" }}>
+          <div className="flex flex-col p-4 gap-4">
+            {/* Contact Section */}
+            {contactItems.length > 0 && (
+              <div className="space-y-2">
+                <h3 className="text-xs font-semibold uppercase tracking-wider px-2 flex items-center gap-2" style={{ color: "#cbd5e1" }}>
+                  <Phone size={12} />
+                  Contact Information
+                </h3>
+                <div className="space-y-1">
+                  {contactItems.map((contact, idx) => (
+                    <a key={idx} href={contact.href}
+                      className="flex items-center gap-3 p-3 rounded-xl transition-all hover:bg-white/10 group">
+                      <div className="p-2 rounded-lg bg-white/10 group-hover:bg-[#3b82f6] transition-colors">
+                        <contact.icon size={16} className="group-hover:text-white" style={{ color: "#3b82f6" }} />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="text-xs font-medium" style={{ color: "#cbd5e1" }}>{contact.label}</div>
+                        <div className="text-sm font-medium break-all" style={{ color: "#f8fafc" }}>{contact.value}</div>
+                      </div>
+                    </a>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Social Section */}
+            {socialItems.length > 0 && (
+              <>
+                {contactItems.length > 0 && <div className="h-px bg-white/12"></div>}
+                <div className="space-y-2">
+                  <h3 className="text-xs font-semibold uppercase tracking-wider px-2 flex items-center gap-2" style={{ color: "#cbd5e1" }}>
+                    <Share2 size={12} />
+                    Follow Us
+                  </h3>
+                  <div className="grid grid-cols-2 gap-2">
+                    {socialItems.map((social, idx) => (
+                      <a key={idx} href={social.url} target="_blank" rel="noopener noreferrer"
+                        className="flex items-center gap-3 p-3 rounded-xl transition-all hover:bg-white/10 group">
+                        <div className="p-2 rounded-lg bg-white/10 group-hover:bg-[#3b82f6] transition-colors">
+                          <social.icon size={16} className="group-hover:text-white" style={{ color: "#3b82f6" }} />
+                        </div>
+                        <span className="text-sm font-medium capitalize" style={{ color: "#f8fafc" }}>
+                          {social.platform}
+                        </span>
+                      </a>
+                    ))}
+                  </div>
+                </div>
+              </>
+            )}
+
+            {/* Auth Section for Mobile */}
             {isLoggedIn && (
-              <button
-                type="button"
-                onClick={handleLogout}
-                className="hover:text-gray-900 transition text-left font-medium flex items-center gap-2"
-              >
-                <LogOut size={16} />
-                Logout
-              </button>
+              <>
+                <div className="h-px bg-white/12"></div>
+                <button onClick={handleLogout}
+                  className="flex items-center justify-center gap-2 p-3 rounded-xl font-semibold transition-all hover:bg-white/10"
+                  style={{ color: "#f8fafc" }}>
+                  <LogOut size={18} />
+                  <span>Logout</span>
+                </button>
+              </>
             )}
-
-            {headerData?.contactInfo?.mobileNumber && (
-              <a
-                href={`tel:${headerData.contactInfo.mobileNumber}`}
-                className="flex items-center gap-1 text-gray-500 hover:text-gray-900 transition"
-              >
-                <Phone size={16} />
-                {headerData.contactInfo.mobileNumber}
-              </a>
-            )}
-            {headerData?.contactInfo?.email && (
-              <a
-                href={`mailto:${headerData.contactInfo.email}`}
-                className="flex items-center gap-1 text-gray-500 hover:text-gray-900 transition"
-              >
-                <Mail size={16} />
-                {headerData.contactInfo.email}
-              </a>
-            )}
-
-            {/* Social Icons */}
-            <div className="flex items-center gap-2 mt-2">
-              <span className="font-light text-gray-500">Follow Us:</span>
-              {headerData?.socialAccounts?.map((social) => {
-                const Icon = platformIcons[social.platform?.toLowerCase()];
-                if (!Icon) return null;
-                return (
-                  <a
-                    key={social._id}
-                    href={social.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="p-2 rounded-full hover:bg-gray-200 transition"
-                    title={social.platform}
-                  >
-                    <Icon size={18} className="text-gray-700" />
-                  </a>
-                );
-              })}
-            </div>
           </div>
         </div>
       )}

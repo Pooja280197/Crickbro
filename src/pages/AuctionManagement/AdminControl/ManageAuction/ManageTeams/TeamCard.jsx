@@ -1,69 +1,47 @@
-import React, { useState } from "react";
-import {
-  Check,
-  Eye,
-  MapPin,
-  Clock,
-  Trophy,
-  Target,
-  Zap,
-  X,
-} from "lucide-react";
+import { Eye, ShieldCheck } from "lucide-react";
 
-export default function TeamCard({
-  team,
-  isSelected = false,
-  onSelect,
-  showActions = true,
-}) {
-  const [imageError, setImageError] = useState(false);
-  const handleSelect = (e) => {
-    e.stopPropagation();
-    if (onSelect) {
-      onSelect(team.id);
-    }
-  };
+export default function TeamCard({ player, onView, showActions }) {
+  const initials = player?.name
+    ?.split(" ")
+    .map((part) => part[0])
+    .join("")
+    .slice(0, 2)
+    .toUpperCase();
 
   return (
-    <>
-      <div
-        className="flex flex-col items-center gap-2 w-full max-w-[140px] font-main">
-        <div className="relative w-full flex justify-center">
-          {showActions && (
-            <div
-              onClick={handleSelect}
-              className={`absolute -top-1 right-2 z-10 w-8 h-8 rounded-full flex items-center justify-center transition-all cursor-pointer border-2 ${
-                isSelected
-                  ? "bg-[var(--primary)] border-white text-white shadow-md"
-                  : "bg-white border-[var(--secondary-light)] text-[var(--secondary)] hover:border-[var(--secondary)]"
-              }`}
-            >
-              <Check className="w-4 h-4" />
-            </div>
+    <div className="group relative w-full">
+      <div className="min-h-[132px] rounded-lg border border-[var(--border-card)] bg-[var(--bg-card)] p-3 text-center shadow-[0_8px_22px_rgba(16,32,51,0.08)] transition duration-200 group-hover:-translate-y-0.5 group-hover:border-[var(--border-primary)] group-hover:shadow-[0_16px_34px_rgba(16,32,51,0.14)]">
+        <div className="mx-auto flex h-14 w-14 items-center justify-center overflow-hidden rounded-lg border border-[var(--border-primary)] bg-[var(--accent-light)] text-sm font-bold text-[var(--primary)]">
+          {player.image ? (
+            <img
+              src={player.image}
+              alt={player.name}
+              className="h-full w-full object-contain p-1"
+            />
+          ) : (
+            initials || <ShieldCheck size={18} />
           )}
-          <div
-            className={`w-20 h-20 rounded-full overflow-hidden shadow-lg cursor-pointer transition-all ${
-              isSelected
-                ? "ring-4 ring-[var(--primary)] shadow-[var(--primary-light)]"
-                : "ring-2 ring-[var(--secondary-light)] hover:ring-[var(--secondary)]"
-            }`}
-          >
-            {!imageError && team?.image ? (
-              <img
-                src={team?.image}
-                alt={team?.name}
-                className="w-20 h-20 object-cover"
-                onError={() => setImageError(true)}
-              />
-            ) : (
-              <div className="w-full h-full flex items-center justify-center bg-[var(--secondary)] text-white text-xl font-bold"></div>
-            )}
-          </div>
         </div>
-        <p className="text-xs font-semibold text-[var(--secondary-dark)] text-center w-full px-1">
-          {team.name}
+
+        <p className="mt-2 truncate text-sm font-semibold text-[var(--text-primary)]">
+          {player.name}
+        </p>
+        <p className="mt-1 text-[11px] font-medium text-[var(--text-secondary)]">
+          Auction team
         </p>
       </div>
-    </>
+
+      {showActions && (
+        <div className="absolute inset-0 flex items-center justify-center rounded-lg bg-[rgba(16,32,51,0.46)] opacity-0 backdrop-blur-[1px] transition group-hover:opacity-100">
+          <button
+            onClick={() => onView(player)}
+            className="inline-flex h-9 items-center gap-2 rounded-lg bg-[var(--secondary)] px-3 text-xs font-semibold text-[#102033] shadow-sm transition hover:bg-[var(--secondary-strong)]"
+          >
+            <Eye size={14} />
+            View
+          </button>
+        </div>
+      )}
+    </div>
   );
 }

@@ -172,7 +172,7 @@ const BarcodeScanner = ({ onScan, onClose }) => {
   }, [onScan, onClose]);
 
   return (
-    <div className="fixed inset-0  bg-black/70 flex items-center justify-center z-[60] p-4">
+    <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-[60] p-4">
       <div className="relative w-full max-w-md bg-black rounded-lg overflow-hidden shadow-2xl">
         {/* Close + Switch Buttons */}
         <div className="absolute top-4 right-4 z-10 flex items-center gap-2">
@@ -190,24 +190,24 @@ const BarcodeScanner = ({ onScan, onClose }) => {
                   console.error("Switch camera error:", switchError);
                 }
               }}
-              className="bg-white/90 rounded-full p-2 hover:bg-white transition"
+              className="bg-[color-mix(in_srgb,var(--bg-card)_90%,transparent)] rounded-full p-2 hover:bg-[var(--bg-card)] transition"
               aria-label="Switch camera"
             >
-              <RotateCcw size={20} className="text-black" />
+              <RotateCcw size={20} className="text-[var(--text-primary)]" />
             </button>
           )}
           <button
             onClick={onClose}
-            className="bg-white/90 rounded-full p-2 hover:bg-white transition"
+            className="bg-[color-mix(in_srgb,var(--bg-card)_90%,transparent)] rounded-full p-2 hover:bg-[var(--bg-card)] transition"
             aria-label="Close"
           >
-            <X size={20} className="text-black" />
+            <X size={20} className="text-[var(--text-primary)]" />
           </button>
         </div>
 
         {/* Header */}
         <div className="bg-gray-900 p-4 text-center border-b border-gray-700">
-          <h2 className="text-white font-semibold flex items-center justify-center gap-2">
+          <h2 className="text-[var(--text-dark)] font-semibold flex items-center justify-center gap-2">
             <Camera size={18} />
             Scan Player Barcode
           </h2>
@@ -221,7 +221,7 @@ const BarcodeScanner = ({ onScan, onClose }) => {
               <div>
                 <p className="text-red-500 mb-2 text-sm font-semibold">{error}</p>
                 {errorDetails?.userAction && (
-                  <p className="text-gray-400 text-xs whitespace-pre-wrap">{errorDetails.userAction}</p>
+                  <p className="text-[var(--text-muted)] text-xs whitespace-pre-wrap">{errorDetails.userAction}</p>
                 )}
               </div>
               <div className="flex gap-2 justify-center flex-wrap">
@@ -265,7 +265,7 @@ const BarcodeScanner = ({ onScan, onClose }) => {
 
         {/* Instructions */}
         <div className="bg-gray-900 p-4 text-center border-t border-gray-700">
-          <p className="text-gray-400 text-sm">
+          <p className="text-[var(--text-muted)] text-sm">
             {scanning ? "📷 Point camera at barcode / QR code to scan" : "Starting camera..."}
           </p>
         </div>

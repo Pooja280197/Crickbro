@@ -10,6 +10,48 @@ import api from "../../../../utils/api";
 import { toast } from "react-toastify";
 import BarcodeShareAdmin from "./BarcodeShareAdmin";
 
+const LockedState = ({ onGoToBasicInfo }) => (
+  <div className="flex flex-col items-center justify-center py-16 px-8 text-center">
+    <div className="w-16 h-16 bg-[var(--secondary-lighter)] rounded-2xl flex items-center justify-center mb-4">
+      <FiLock size={28} className="text-[var(--text-muted)]" />
+    </div>
+    <h3 className="text-lg font-semibold text-[var(--text-primary)] mb-2">Tab Locked</h3>
+    <p className="text-sm text-[var(--text-secondary)] max-w-sm mb-5 leading-relaxed">
+      Complete the Basic Info section first. Fill in the tournament title, name, and description, then click "Save Basic Info" to unlock all tabs.
+    </p>
+    <button onClick={onGoToBasicInfo} className="lp-ui-btn-secondary text-sm px-5 py-2">
+      Go to Basic Info →
+    </button>
+  </div>
+);
+
+const Field = ({ label, hint, children }) => (
+  <div className="lp-field">
+    <label className="lp-label">{label}</label>
+    {hint && <p className="lp-hint">{hint}</p>}
+    {children}
+  </div>
+);
+
+const SectionHeader = ({ title, description, action }) => (
+  <div className="lp-section-header">
+    <div>
+      <h2 className="lp-section-title">{title}</h2>
+      {description && <p className="lp-section-desc">{description}</p>}
+    </div>
+    {action}
+  </div>
+);
+
+const EmptyState = ({ message }) => (
+  <div className="lp-empty">
+    <div className="lp-empty-icon">+</div>
+    <p>{message}</p>
+  </div>
+);
+
+const digitsOnly = (value) => value.replace(/\D/g, "");
+
 const TournamentAdminForm = ({ tournamentId, auctionId, TrialType }) => {
   const [activeStep, setActiveStep] = useState(0);
   const [pageData, setPageData] = useState(null);
@@ -332,48 +374,6 @@ const TournamentAdminForm = ({ tournamentId, auctionId, TrialType }) => {
   const currentStepId = currentStep.id;
   const isCurrentStepLocked = isStepLocked(currentStepId);
 
-  // Reusable locked state component
-  const LockedState = () => (
-    <div className="flex flex-col items-center justify-center py-16 px-8 text-center">
-      <div className="w-16 h-16 bg-slate-100 rounded-2xl flex items-center justify-center mb-4">
-        <FiLock size={28} className="text-slate-400" />
-      </div>
-      <h3 className="text-lg font-semibold text-slate-700 mb-2">Tab Locked</h3>
-      <p className="text-sm text-slate-500 max-w-sm mb-5 leading-relaxed">
-        Complete the Basic Info section first. Fill in the tournament title, name, and description, then click "Save Basic Info" to unlock all tabs.
-      </p>
-      <button onClick={() => setActiveStep(0)} className="lp-btn-primary text-sm px-5 py-2">
-        Go to Basic Info →
-      </button>
-    </div>
-  );
-
-  // Reusable field components
-  const Field = ({ label, hint, children }) => (
-    <div className="lp-field">
-      <label className="lp-label">{label}</label>
-      {hint && <p className="lp-hint">{hint}</p>}
-      {children}
-    </div>
-  );
-
-  const SectionHeader = ({ title, description, action }) => (
-    <div className="lp-section-header">
-      <div>
-        <h2 className="lp-section-title">{title}</h2>
-        {description && <p className="lp-section-desc">{description}</p>}
-      </div>
-      {action}
-    </div>
-  );
-
-  const EmptyState = ({ message }) => (
-    <div className="lp-empty">
-      <div className="lp-empty-icon">+</div>
-      <p>{message}</p>
-    </div>
-  );
-
   return (
     <div className="lp-root">
       {loading && (
@@ -543,22 +543,22 @@ const TournamentAdminForm = ({ tournamentId, auctionId, TrialType }) => {
 
           {/* ─ Contact ─ */}
           {currentStepId === "header" && (
-            isCurrentStepLocked ? <LockedState /> : (
+            isCurrentStepLocked ? <LockedState onGoToBasicInfo={() => setActiveStep(0)} /> : (
               <div className="lp-section-fade">
                 <SectionHeader
                   title="Contact Information"
                   description="This information appears in the contact section of the landing page and helps visitors reach you."
                 />
                 <div className="lp-grid-2">
-                  <Field label="Mobile Number" hint="Primary contact number for visitors.">
-                    <input type="tel" value={formData.contactInfo?.mobileNumber} onChange={(e) => handleInputChange("contactInfo", "mobileNumber", e.target.value)} className="lp-input" placeholder="+91 98765 43210" />
-                  </Field>
+              <Field label="Mobile Number" hint="Primary contact number for visitors.">
+                <input type="tel" inputMode="numeric" pattern="[0-9]*" value={formData.contactInfo?.mobileNumber} onChange={(e) => handleInputChange("contactInfo", "mobileNumber", digitsOnly(e.target.value))} className="lp-input" placeholder="919876543210" />
+              </Field>
                   <Field label="Email Address" hint="Enquiry or support email address.">
                     <input type="email" value={formData.contactInfo?.email} onChange={(e) => handleInputChange("contactInfo", "email", e.target.value)} className="lp-input" placeholder="contact@tournament.com" />
                   </Field>
-                  <Field label="Phone Number" hint="Alternate landline or office number.">
-                    <input type="tel" value={formData.contactInfo?.phoneNumber} onChange={(e) => handleInputChange("contactInfo", "phoneNumber", e.target.value)} className="lp-input" placeholder="022-12345678" />
-                  </Field>
+              <Field label="Phone Number" hint="Alternate landline or office number.">
+                <input type="tel" inputMode="numeric" pattern="[0-9]*" value={formData.contactInfo?.phoneNumber} onChange={(e) => handleInputChange("contactInfo", "phoneNumber", digitsOnly(e.target.value))} className="lp-input" placeholder="02212345678" />
+              </Field>
                   <Field label="Website" hint="Official tournament or organization website.">
                     <input type="text" value={formData.contactInfo?.website} onChange={(e) => handleInputChange("contactInfo", "website", e.target.value)} className="lp-input" placeholder="https://tournament.com" />
                   </Field>
@@ -591,13 +591,13 @@ const TournamentAdminForm = ({ tournamentId, auctionId, TrialType }) => {
 
           {/* ─ Slider ─ */}
           {currentStepId === "slider" && (
-            isCurrentStepLocked ? <LockedState /> : (
+            isCurrentStepLocked ? <LockedState onGoToBasicInfo={() => setActiveStep(0)} /> : (
               <div className="lp-section-fade">
                 <SectionHeader
                   title="Slider Images"
                   description="These images rotate as a hero banner at the top of the landing page. Use high-quality landscape images (recommended: 1920×600px)."
                   action={
-                    <button onClick={() => handleArrayAdd(null, "sliderImages")} className="lp-btn-primary">
+                    <button onClick={() => handleArrayAdd(null, "sliderImages")} className="lp-ui-btn-secondary">
                       <FiPlus size={14} /> Add Slide
                     </button>
                   }
@@ -630,13 +630,13 @@ const TournamentAdminForm = ({ tournamentId, auctionId, TrialType }) => {
 
           {/* ─ Key Features ─ */}
           {currentStepId === "keyFeatures" && (
-            isCurrentStepLocked ? <LockedState /> : (
+            isCurrentStepLocked ? <LockedState onGoToBasicInfo={() => setActiveStep(0)} /> : (
               <div className="lp-section-fade">
                 <SectionHeader
                   title="Key Features"
                   description="Highlight the most compelling aspects of this tournament. Each feature card shows an icon, title, and short description."
                   action={
-                    <button onClick={() => handleArrayAdd("keyFeatures", "features")} className="lp-btn-primary">
+                    <button onClick={() => handleArrayAdd("keyFeatures", "features")} className="lp-ui-btn-secondary">
                       <FiPlus size={14} /> Add Feature
                     </button>
                   }
@@ -667,13 +667,13 @@ const TournamentAdminForm = ({ tournamentId, auctionId, TrialType }) => {
 
           {/* ─ Rules ─ */}
           {currentStepId === "rules" && (
-            isCurrentStepLocked ? <LockedState /> : (
+            isCurrentStepLocked ? <LockedState onGoToBasicInfo={() => setActiveStep(0)} /> : (
               <div className="lp-section-fade">
                 <SectionHeader
                   title="Rules & Guidelines"
                   description="Define the rules that participants must follow. These appear in a structured list on the landing page."
                   action={
-                    <button onClick={() => handleArrayAdd("rules", "items")} className="lp-btn-primary">
+                    <button onClick={() => handleArrayAdd("rules", "items")} className="lp-ui-btn-secondary">
                       <FiPlus size={14} /> Add Rule
                     </button>
                   }
@@ -712,13 +712,13 @@ const TournamentAdminForm = ({ tournamentId, auctionId, TrialType }) => {
 
           {/* ─ Sponsors ─ */}
           {currentStepId === "sponsors" && (
-            isCurrentStepLocked ? <LockedState /> : (
+            isCurrentStepLocked ? <LockedState onGoToBasicInfo={() => setActiveStep(0)} /> : (
               <div className="lp-section-fade">
                 <SectionHeader
                   title="Sponsors & Partners"
                   description="Showcase tournament sponsors with their logo, tier, and website link. Logos appear in a grid grouped by tier."
                   action={
-                    <button onClick={() => handleArrayAdd(null, "sponsors")} className="lp-btn-primary">
+                    <button onClick={() => handleArrayAdd(null, "sponsors")} className="lp-ui-btn-secondary">
                       <FiPlus size={14} /> Add Sponsor
                     </button>
                   }
@@ -754,7 +754,7 @@ const TournamentAdminForm = ({ tournamentId, auctionId, TrialType }) => {
                           </Field>
                           <Field label="Tier" hint="Sponsorship level for display grouping.">
                             <select value={sponsor.tier} onChange={(e) => handleInputChange(null, "sponsors", e.target.value, index, "tier")} className="lp-input lp-select">
-                              <option value="platinum">Platinum</option>
+                              <option value="platinum" >Platinum</option>
                               <option value="gold">Gold</option>
                               <option value="silver">Silver</option>
                               <option value="bronze">Bronze</option>
@@ -775,13 +775,13 @@ const TournamentAdminForm = ({ tournamentId, auctionId, TrialType }) => {
 
           {/* ─ Gallery ─ */}
           {currentStepId === "gallery" && (
-            isCurrentStepLocked ? <LockedState /> : (
+            isCurrentStepLocked ? <LockedState onGoToBasicInfo={() => setActiveStep(0)} /> : (
               <div className="lp-section-fade">
                 <SectionHeader
                   title="Photo Gallery"
                   description="Upload photos from past events or promotional images. These appear in a grid gallery section on the page."
                   action={
-                    <button onClick={() => handleArrayAdd(null, "galleryImages")} className="lp-btn-primary">
+                    <button onClick={() => handleArrayAdd(null, "galleryImages")} className="lp-ui-btn-secondary">
                       <FiPlus size={14} /> Add Photo
                     </button>
                   }
@@ -814,13 +814,13 @@ const TournamentAdminForm = ({ tournamentId, auctionId, TrialType }) => {
 
           {/* ─ Card Images ─ */}
           {currentStepId === "cardImages" && (
-            isCurrentStepLocked ? <LockedState /> : (
+            isCurrentStepLocked ? <LockedState onGoToBasicInfo={() => setActiveStep(0)} /> : (
               <div className="lp-section-fade">
                 <SectionHeader
                   title="Guest Gallery"
                   description="Featured image cards displayed in a prominent section. Ideal for highlighting VIPs, celebrities, or key participants."
                   action={
-                    <button onClick={() => handleArrayAdd("cardImages", "Images")} className="lp-btn-primary">
+                    <button onClick={() => handleArrayAdd("cardImages", "Images")} className="lp-ui-btn-secondary">
                       <FiPlus size={14} /> Add Card
                     </button>
                   }
@@ -853,13 +853,13 @@ const TournamentAdminForm = ({ tournamentId, auctionId, TrialType }) => {
 
           {/* ─ FAQ ─ */}
           {currentStepId === "faqs" && (
-            isCurrentStepLocked ? <LockedState /> : (
+            isCurrentStepLocked ? <LockedState onGoToBasicInfo={() => setActiveStep(0)} /> : (
               <div className="lp-section-fade">
                 <SectionHeader
                   title="Frequently Asked Questions"
                   description="Address common participant queries upfront. FAQs reduce support load and build confidence in registering."
                   action={
-                    <button onClick={() => handleArrayAdd(null, "questionsAnswers")} className="lp-btn-primary">
+                    <button onClick={() => handleArrayAdd(null, "questionsAnswers")} className="lp-ui-btn-secondary">
                       <FiPlus size={14} /> Add FAQ
                     </button>
                   }
@@ -895,7 +895,7 @@ const TournamentAdminForm = ({ tournamentId, auctionId, TrialType }) => {
 
           {/* ─ SEO ─ */}
           {currentStepId === "meta" && (
-            isCurrentStepLocked ? <LockedState /> : (
+            isCurrentStepLocked ? <LockedState onGoToBasicInfo={() => setActiveStep(0)} /> : (
               <div className="lp-section-fade">
                 <SectionHeader
                   title="SEO & Visibility"
@@ -1143,7 +1143,8 @@ const TournamentAdminForm = ({ tournamentId, auctionId, TrialType }) => {
           width: 100%; padding: 9px 13px;
           border: 1.5px solid #e5e7eb; border-radius: 10px;
           font-family: 'DM Sans', sans-serif;
-          font-size: 14px; color: #1f2937;
+          font-size: 14px; 
+          color: #edeff2;
           background: #fafafa;
           transition: border-color 0.15s, box-shadow 0.15s;
           outline: none; box-sizing: border-box;
@@ -1156,6 +1157,14 @@ const TournamentAdminForm = ({ tournamentId, auctionId, TrialType }) => {
         .lp-textarea { resize: vertical; min-height: 80px; }
         .lp-input-sm { font-size: 13px; padding: 7px 11px; }
         .lp-select { appearance: none; cursor: pointer; }
+        .lp-root .lp-select option {
+          color: #102033 !important;
+          background-color: #ffffff !important;
+        }
+        [data-theme="dark"] .lp-root .lp-select option {
+          color: #eef5ff !important;
+          background-color: #16243a !important;
+        }
         .lp-char-count { font-size: 11px; color: #9ca3af; display: block; margin-top: 4px; }
         .lp-char-warn { color: #f59e0b !important; }
 
@@ -1264,14 +1273,14 @@ const TournamentAdminForm = ({ tournamentId, auctionId, TrialType }) => {
         .lp-row-input { flex: 1; }
 
         /* Buttons */
-        .lp-btn-primary {
+        .lp-ui-btn-secondary {
           display: inline-flex; align-items: center; gap: 6px;
           padding: 8px 16px; background: #4f46e5; color: #fff;
           border: none; border-radius: 9px; font-family: 'DM Sans', sans-serif;
           font-size: 13.5px; font-weight: 500; cursor: pointer;
           transition: background 0.15s; white-space: nowrap;
         }
-        .lp-btn-primary:hover { background: #4338ca; }
+        .lp-ui-btn-secondary:hover { background: #4338ca; }
         .lp-btn-outline {
           display: inline-flex; align-items: center; gap: 6px;
           padding: 7px 14px; background: #fff; color: #4f46e5;
@@ -1415,6 +1424,330 @@ const TournamentAdminForm = ({ tournamentId, auctionId, TrialType }) => {
           .lp-btn-nav, .lp-btn-save, .lp-btn-view, .lp-btn-setup, .lp-btn-barcode {
             padding: 7px 11px; font-size: 12px;
           }
+        }
+
+        /* ── Admin Theme Overrides ─────────────────── */
+        .lp-root {
+          font-family: inherit;
+          min-height: calc(100vh - 108px);
+          background: var(--bg-main);
+          color: var(--text-primary);
+          font-size: 13px;
+        }
+        .lp-root * {
+          letter-spacing: 0;
+        }
+        .lp-sticky-header {
+          position: relative;
+          top: auto;
+          z-index: 1;
+          border: 1px solid var(--border-card);
+          border-radius: 8px;
+          background: var(--bg-card);
+          box-shadow: var(--shadow-card);
+          overflow: hidden;
+        }
+        .lp-header-inner {
+          max-width: none;
+          padding: 14px 16px 0;
+        }
+        .lp-title-row {
+          margin-bottom: 12px;
+        }
+        .lp-main-title {
+          color: var(--text-primary);
+          font-size: 20px;
+          line-height: 1.35;
+          font-weight: 700;
+        }
+        .lp-main-subtitle,
+        .lp-step-desc,
+        .lp-section-desc,
+        .lp-sub-desc,
+        .lp-hint {
+          color: var(--text-secondary);
+        }
+        .lp-badge {
+          border: 1px solid var(--border-primary);
+          border-radius: 999px;
+          background: var(--accent-light);
+          color: var(--primary);
+          font-size: 11px;
+          font-weight: 700;
+        }
+        .lp-badge-success,
+        .lp-badge-warning {
+          background: var(--accent-light);
+          color: var(--primary);
+        }
+        .lp-tabs {
+          gap: 6px;
+          padding-bottom: 12px;
+        }
+        .lp-tab {
+          min-height: 36px;
+          border: 1px solid var(--border-card);
+          border-radius: 8px;
+          background: var(--bg-main);
+          color: var(--text-secondary);
+          font-size: 12px;
+          font-weight: 700;
+          padding: 8px 12px;
+        }
+        .lp-tab:hover:not(.lp-tab-locked):not(.lp-tab-active) {
+          border-color: var(--border-primary);
+          background: var(--accent-light);
+          color: var(--primary);
+        }
+        .lp-tab-active {
+          border-color: var(--border-primary);
+          background: var(--secondary);
+          color: #102033;
+          box-shadow: 0 8px 20px rgba(244, 180, 0, 0.16);
+        }
+        .lp-tab-locked {
+          opacity: 0.55;
+          background: var(--secondary-lighter);
+          color: var(--text-secondary);
+        }
+        .lp-tab-dot {
+          background: #ef4444;
+        }
+        .lp-step-meta {
+          border-top: 1px solid var(--border-card);
+          padding: 10px 0 12px;
+        }
+        .lp-step-badge {
+          background: var(--accent-light);
+          color: var(--primary);
+          font-family: inherit;
+          font-size: 11px;
+        }
+        .lp-body {
+          max-width: none;
+          padding: 14px 0 86px;
+        }
+        .lp-content-card {
+          min-height: 360px;
+          border: 1px solid var(--border-card);
+          border-radius: 8px;
+          background: var(--bg-card);
+          box-shadow: var(--shadow-card);
+          padding: 18px;
+        }
+        .lp-section-header {
+          margin-bottom: 16px;
+          gap: 12px;
+        }
+        .lp-section-title {
+          color: var(--text-primary);
+          font-size: 16px;
+          font-weight: 700;
+        }
+        .lp-sub-title {
+          color: var(--text-primary);
+          font-size: 14px;
+        }
+        .lp-field {
+          margin-bottom: 14px;
+        }
+        .lp-label {
+          color: var(--text-secondary);
+          font-size: 12px;
+          font-weight: 700;
+          margin-bottom: 6px;
+        }
+        .lp-input {
+          min-height: 40px;
+          border: 1px solid var(--border-card);
+          border-radius: 8px;
+          background: var(--bg-main);
+          color: var(--text-primary);
+          font-family: inherit;
+          font-size: 13px;
+          padding: 9px 12px;
+          box-shadow: none;
+        }
+        .lp-input:focus {
+          border-color: var(--border-primary);
+          background: var(--bg-card);
+          box-shadow: none;
+        }
+        .lp-input::placeholder {
+          color: var(--text-secondary);
+        }
+        .lp-textarea {
+          min-height: 84px;
+        }
+        .lp-char-count {
+          color: var(--text-secondary);
+        }
+        .lp-char-warn {
+          color: var(--secondary-strong) !important;
+        }
+        .lp-toggle-card,
+        .lp-list-card,
+        .lp-image-card,
+        .lp-row-card {
+          border: 1px solid var(--border-card);
+          border-radius: 8px;
+          background: var(--secondary-lighter);
+          box-shadow: none;
+        }
+        .lp-toggle-card {
+          padding: 12px 14px;
+        }
+        .lp-toggle-card:hover,
+        .lp-list-card:hover,
+        .lp-image-card:hover {
+          border-color: var(--border-primary);
+        }
+        .lp-toggle-name {
+          color: var(--text-primary);
+          font-size: 13px;
+          font-weight: 700;
+        }
+        .lp-toggle-hint {
+          color: var(--text-secondary);
+          font-size: 11px;
+        }
+        .lp-checkbox {
+          accent-color: var(--secondary);
+        }
+        .lp-list-card {
+          padding: 14px;
+          margin-bottom: 12px;
+        }
+        .lp-list-card-num,
+        .lp-image-card-num {
+          border-radius: 6px;
+          background: var(--accent-light);
+          color: var(--primary);
+          font-size: 11px;
+        }
+        .lp-image-grid {
+          grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+          gap: 12px;
+        }
+        .lp-image-preview,
+        .lp-image-placeholder,
+        .lp-sponsor-img {
+          border-color: var(--border-card);
+          border-radius: 8px;
+          background: var(--bg-main);
+        }
+        .lp-upload-zone {
+          border-color: var(--border-card);
+          border-radius: 8px;
+          background: var(--bg-main);
+          color: var(--primary);
+          font-size: 12px;
+          font-weight: 700;
+        }
+        .lp-upload-zone:hover {
+          border-color: var(--border-primary);
+          background: var(--accent-light);
+        }
+        .lp-empty {
+          border-color: var(--border-card);
+          border-radius: 8px;
+          background: var(--secondary-lighter);
+          color: var(--text-secondary);
+          padding: 28px;
+        }
+        .lp-empty-icon {
+          background: var(--accent-light);
+          color: var(--primary);
+        }
+        .lp-ui-btn-secondary,
+        .lp-btn-setup,
+        .lp-btn-save {
+          border: 1px solid var(--border-primary);
+          border-radius: 8px;
+          background: var(--secondary);
+          color: #102033;
+          font-family: inherit;
+          font-size: 12px;
+          font-weight: 800;
+          box-shadow: none;
+        }
+        .lp-ui-btn-secondary:hover,
+        .lp-btn-setup:hover,
+        .lp-btn-save:hover {
+          background: var(--secondary-strong);
+        }
+        .lp-btn-outline,
+        .lp-btn-nav,
+        .lp-btn-view,
+        .lp-btn-barcode {
+          border: 1px solid var(--border-card);
+          border-radius: 8px;
+          background: var(--bg-main);
+          color: var(--text-primary);
+          font-family: inherit;
+          font-size: 12px;
+          font-weight: 700;
+          box-shadow: none;
+        }
+        .lp-btn-outline:hover,
+        .lp-btn-nav:hover:not(.lp-btn-nav-disabled),
+        .lp-btn-view:hover,
+        .lp-btn-barcode:hover {
+          border-color: var(--border-primary);
+          background: var(--accent-light);
+          color: var(--primary);
+        }
+        .lp-btn-nav-next {
+          border-color: var(--border-primary);
+          background: var(--accent-light);
+          color: var(--primary);
+        }
+        .lp-icon-btn {
+          border-radius: 8px;
+        }
+        .lp-action-bar {
+          position: sticky;
+          bottom: 0;
+          border: 1px solid var(--border-card);
+          border-radius: 8px;
+          background: var(--bg-card);
+          box-shadow: var(--shadow-card);
+          margin-top: 14px;
+        }
+        .lp-action-inner {
+          max-width: none;
+          padding: 10px 12px;
+        }
+        .lp-modal-overlay {
+          z-index: 120000;
+          background: rgba(0, 0, 0, 0.6);
+        }
+        .lp-modal {
+          border: 1px solid var(--border-card);
+          border-radius: 8px;
+          background: var(--bg-card);
+          box-shadow: var(--shadow-card);
+        }
+        .lp-modal-close {
+          border: 1px solid var(--border-card);
+          border-radius: 8px;
+          background: var(--bg-main);
+          color: var(--text-primary);
+        }
+        .lp-modal-close:hover {
+          border-color: var(--border-primary);
+          background: var(--accent-light);
+          color: var(--primary);
+        }
+        .lp-overlay-card {
+          border: 1px solid var(--border-card);
+          border-radius: 8px;
+          background: var(--bg-card);
+          color: var(--text-primary);
+          box-shadow: var(--shadow-card);
+        }
+        .lp-spinner {
+          color: var(--secondary);
         }
       `}</style>
     </div>

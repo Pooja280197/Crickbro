@@ -233,17 +233,17 @@ function SelectDirect({ auctionId }) {
       <div className="flex flex-col gap-y-4 px-2 sm:p-6">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3">
           <div className="sm:col-span-1 relative w-full">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 sm:w-4 sm:h-4 text-gray-400" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 sm:w-4 sm:h-4 text-[var(--text-muted)]" />
             <input
               type="text"
               placeholder="Search Player"
               value={searchAssignedPlayer}
               onChange={(e) => setSearchAssignedPlayer(e.target.value)}
-              className="w-full pl-10 pr-10 py-2 border border-gray-300 rounded-lg text-xs sm:text-sm bg-white text-gray-900 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none transition"
+              className="w-full pl-10 pr-10 py-2 border border-[var(--border-primary)] rounded-lg text-xs sm:text-sm bg-[var(--bg-card)] text-[var(--text-primary)] focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none transition"
             />
             <button
               onClick={() => setShowBarcodeScanner(true)}
-              className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-md transition"
+              className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--secondary-lighter)] rounded-md transition"
               title="Scan barcode"
               aria-label="Scan barcode"
             >
@@ -257,7 +257,7 @@ function SelectDirect({ auctionId }) {
               setSelectedSlotId(e.target.value);
               setSelectedSessionId("");
             }}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-xs sm:text-sm bg-white text-gray-900 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none transition"
+            className="w-full px-3 py-2 border border-[var(--border-primary)] rounded-lg text-xs sm:text-sm bg-[var(--bg-card)] text-[var(--text-primary)] focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none transition"
           >
             <option value="">All Slots</option>
             {slotDetail.map((slot) => (
@@ -271,7 +271,7 @@ function SelectDirect({ auctionId }) {
             value={selectedSessionId}
             disabled={!selectedSlotId}
             onChange={(e) => setSelectedSessionId(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-xs sm:text-sm bg-white text-gray-900 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none transition disabled:bg-gray-100 disabled:text-gray-500"
+            className="w-full px-3 py-2 border border-[var(--border-primary)] rounded-lg text-xs sm:text-sm bg-[var(--bg-card)] text-[var(--text-primary)] focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none transition disabled:bg-[var(--secondary-lighter)] disabled:text-[var(--text-secondary)]"
           >
             <option value="">All Sessions</option>
             {selectedSlotSessions.map((session) => (
@@ -284,7 +284,7 @@ function SelectDirect({ auctionId }) {
           <select
             value={directSelectFilter}
             onChange={(e) => setDirectSelectFilter(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-xs sm:text-sm bg-white text-gray-900 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none transition"
+            className="w-full px-3 py-2 border border-[var(--border-primary)] rounded-lg text-xs sm:text-sm bg-[var(--bg-card)] text-[var(--text-primary)] focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none transition"
           >
             <option value="">All Players</option>
             <option value="selected">Selected</option>
@@ -308,7 +308,7 @@ function SelectDirect({ auctionId }) {
         )}
 
         {selectorPlayers?.length === 0 ? (
-          <div className="text-center text-gray-500 py-6 text-sm">
+          <div className="text-center text-[var(--text-secondary)] py-6 text-sm">
             No players found.
           </div>
         ) : (
@@ -324,7 +324,7 @@ function SelectDirect({ auctionId }) {
                         checked={selectedPlayers.includes(item.player._id)}
                         onChange={(e) => handlePlayerSelect(item.player._id, e.target.checked)}
                         disabled={playerLocked}
-                        className={`w-5 h-5 mt-1 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 ${playerLocked ? "opacity-50 cursor-not-allowed" : "cursor-pointer"
+                        className={`w-5 h-5 mt-1 text-blue-600 bg-[var(--secondary-lighter)] border-[var(--border-primary)] rounded focus:ring-blue-500 ${playerLocked ? "opacity-50 cursor-not-allowed" : "cursor-pointer"
                           }`}
                         title={playerLocked ? "Session locked - cannot select" : ""}
                       />
@@ -342,15 +342,15 @@ function SelectDirect({ auctionId }) {
               })}
             </div>
 
-            <div className="auction-toolbar mt-6">
+            <div className="ui-card-soft mt-6">
               <div className="flex items-center gap-2 sm:gap-3">
-                <label className="text-xs sm:text-sm font-medium text-gray-600 whitespace-nowrap">
+                <label className="text-xs sm:text-sm font-medium text-[var(--text-secondary)] whitespace-nowrap">
                   Per page:
                 </label>
                 <select
                   value={itemsPerPage}
                   onChange={(e) => setItemsPerPage(Number(e.target.value))}
-                  className="auction-select w-auto"
+                  className="ui-input w-auto"
                 >
                   <option value="16">16</option>
                   <option value="32">32</option>

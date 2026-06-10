@@ -277,13 +277,13 @@ const BarcodeShareAdmin = ({
             {/* TEMPLATE */}
             <div
                 ref={templateRef}
-                className="bg-white rounded-2xl overflow-hidden shadow-2xl border"
+                className="bg-[var(--bg-card)] rounded-2xl overflow-hidden shadow-2xl border"
             >
                 {/* 🔥 TOP */}
                 <div className="bg-gradient-to-r from-indigo-900 via-purple-800 to-blue-900 text-white px-4 py-3">
 
 
-                    <h2 className="text-base text-white mt-1 leading-tight whitespace-nowrap overflow-hidden text-ellipsis">
+                    <h2 className="text-base text-[var(--text-dark)] mt-1 leading-tight whitespace-nowrap overflow-hidden text-ellipsis">
                         {tournamentName}
                     </h2>
                 </div>
@@ -295,7 +295,7 @@ const BarcodeShareAdmin = ({
                     <div className="relative bg-gradient-to-br from-indigo-100 via-purple-100 to-indigo-50 border border-indigo-200 rounded-2xl p-3 text-center shadow-inner">
 
                         {/* QR */}
-                        <div className="bg-white p-2 rounded-xl shadow-md inline-block">
+                        <div className="bg-[var(--bg-card)] p-2 rounded-xl shadow-md inline-block">
                             {qrImageSrc ? (
                                 <img
                                     src={qrImageSrc}
@@ -304,18 +304,18 @@ const BarcodeShareAdmin = ({
                                     className="w-24 h-24 rounded-lg object-contain"
                                 />
                             ) : (
-                                <div className="w-24 h-24 bg-gray-200 animate-pulse rounded-lg flex items-center justify-center text-xs text-gray-400">
+                                <div className="w-24 h-24 bg-[var(--secondary-lighter)] animate-pulse rounded-lg flex items-center justify-center text-xs text-[var(--text-muted)]">
                                     Loading QR...
                                 </div>
                             )}
                         </div>
 
                         {/* TEXT */}
-                        <p className="text-xs font-semibold text-gray-700 mt-2">
+                        <p className="text-xs font-semibold text-[var(--text-primary)] mt-2">
                             Scan to Join Auction
                         </p>
 
-                        <p className="text-[9px] text-gray-500 break-all mt-0.5 px-2">
+                        <p className="text-[9px] text-[var(--text-secondary)] break-all mt-0.5 px-2">
                             {pageUrl}
                         </p>
                     </div>

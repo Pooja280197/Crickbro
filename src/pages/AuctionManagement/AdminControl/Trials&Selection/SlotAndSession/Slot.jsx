@@ -16,7 +16,18 @@ import CreateSlot from "./CreateSlot";
 import CreateSession from "./CreateSession";
 import { toast } from "react-toastify";
 import DeleteConfirmModal from "../../../../../components/DeleteConfirmModal";
-import { Search } from "lucide-react";
+import {
+  CalendarDays,
+  ChevronDown,
+  ChevronUp,
+  Clock,
+  Edit3,
+  Layers,
+  MapPin,
+  Plus,
+  Search,
+  Trash2,
+} from "lucide-react";
 
 const Slot = ({ auctionId }) => {
   const [slotPopup, setSlotPopup] = useState(false);
@@ -328,61 +339,86 @@ const Slot = ({ auctionId }) => {
   };
 
   return (
-    <div className="text-gray-800 p-6">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 gap-3 max-w-6xl">
-        <div className="flex flex-col sm:flex-row sm:items-center gap-3 w-full sm:w-auto">
-          <h4 className="text-xl font-semibold text-gray-800">Slots</h4>
-          <div className="relative w-full sm:min-w-[280px]">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-            <input
-              type="text"
-              placeholder="Search slot by name"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg text-sm text-gray-800 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
-              autoComplete="off"
-            />
+    <div className="space-y-4 p-3 text-[var(--text-primary)] sm:p-4 lg:p-5">
+      <div className="relative overflow-hidden rounded-lg border border-[var(--border-card)] bg-[var(--bg-card)] p-4 shadow-[var(--shadow-card)]">
+        <div className="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
+          <div className="flex items-start gap-3">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-[var(--border-primary)] bg-[var(--accent-light)] text-[var(--primary)] shadow-sm">
+              <Layers className="h-5 w-5" />
+            </div>
+            <div>
+              <h4 className="text-lg font-semibold tracking-normal text-[var(--text-primary)]">
+                Slots & Sessions
+              </h4>
+              <p className="mt-1 text-sm text-[var(--text-secondary)]">
+                Manage trial venues, slot codes, and session schedules.
+              </p>
+            </div>
+          </div>
+
+          <div className="flex w-full flex-col gap-3 sm:flex-row xl:w-auto xl:items-center">
+            <div className="relative w-full sm:min-w-[300px] xl:w-[340px]">
+              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--text-muted)]" />
+              <input
+                type="text"
+                placeholder="Search slot by name"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="h-10 w-full rounded-lg border border-[var(--border-primary)] bg-[var(--bg-main)] pl-10 pr-4 text-sm text-[var(--text-primary)] outline-none transition focus:border-[var(--primary)] focus:ring-2 focus:ring-[var(--primary)]/15"
+                autoComplete="off"
+              />
+            </div>
+
+            <button
+              onClick={() => setSlotPopup(true)}
+              className="inline-flex h-10 w-full items-center justify-center gap-2 rounded-lg bg-[var(--secondary)] px-4 text-sm font-semibold text-[#102033] shadow-sm transition hover:bg-[var(--secondary-strong)] sm:w-auto"
+            >
+              <Plus className="h-4 w-4" />
+              Create Slot
+            </button>
           </div>
         </div>
-
-        <button
-          onClick={() => setSlotPopup(true)}
-          className="w-full sm:w-auto px-4 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition"
-        >
-          Create Slot
-        </button>
       </div>
 
       {/* Slots Table */}
       {slotLocalList.length === 0 ? (
-        <div className="text-center py-12 bg-white rounded-xl border border-gray-200 shadow-sm">
-          <div className="text-gray-500 mb-2">No slots available</div>
-          <div className="text-sm text-gray-400">
+        <div className="rounded-lg border border-dashed border-[var(--border-primary)] bg-[var(--bg-card)] px-4 py-12 text-center shadow-[var(--shadow-card)]">
+          <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-lg border border-[var(--border-primary)] bg-[var(--accent-light)] text-[var(--primary)]">
+            <Layers className="h-6 w-6" />
+          </div>
+          <div className="text-sm font-semibold text-[var(--text-primary)]">
+            No slots available
+          </div>
+          <div className="mt-1 text-sm text-[var(--text-muted)]">
             Create your first slot to get started
           </div>
         </div>
       ) : (
-        <div className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
+        <div className="overflow-hidden rounded-lg border border-[var(--border-card)] bg-[var(--bg-card)] shadow-[var(--shadow-card)]">
           {/* Mobile View (up to tablet portrait) */}
-          <div className="lg:hidden p-3 space-y-3 bg-gray-50">
+          <div className="space-y-3 bg-[var(--bg-main)] p-3 lg:hidden">
             {slotLocalList.map((slot) => (
               <div
                 key={slot._id}
-                className="border border-gray-200 rounded-lg p-3 bg-white shadow-sm"
+                className="relative overflow-hidden rounded-lg border border-[var(--border-card)] bg-[var(--bg-card)] p-3 shadow-sm"
               >
                 <div className="flex items-start justify-between gap-3">
-                  <div>
-                    <div className="text-sm font-semibold text-gray-800">
+                  <div className="min-w-0">
+                    <div className="truncate text-sm font-semibold text-[var(--text-primary)]">
                       {slot.slotName}
                     </div>
-                    <div className="text-xs text-gray-500 mt-1">
+                    <div className="mt-1 line-clamp-2 text-xs text-[var(--text-secondary)]">
                       {slot.description}
                     </div>
-                    <div className="text-xs text-gray-600 mt-1">
-                      {slot.location?.venue},{slot.location?.city}
+                    <div className="mt-2 flex items-center gap-1.5 text-xs text-[var(--text-secondary)]">
+                      <MapPin className="h-3.5 w-3.5 text-[var(--primary)]" />
+                      <span className="truncate">
+                        {slot.location?.venue || "-"}
+                        {slot.location?.city ? `, ${slot.location.city}` : ""}
+                      </span>
                     </div>
                   </div>
-                  <span className="px-2 py-1 rounded-full text-[11px] font-medium border border-emerald-600 text-emerald-600 bg-white">
+                  <span className="shrink-0 rounded-full border border-[var(--border-primary)] bg-[var(--accent-light)] px-2 py-1 text-[11px] font-semibold text-[var(--primary)]">
                     {(slot.sessions || []).length} Sessions
                   </span>
                 </div>
@@ -390,8 +426,9 @@ const Slot = ({ auctionId }) => {
                 <div className="mt-3 flex flex-wrap gap-2">
                   <button
                     onClick={() => handleEditSlot(slot)}
-                    className="px-3 py-1.5 text-xs bg-white text-gray-700 rounded-lg border border-gray-300 hover:bg-gray-50"
+                    className="inline-flex items-center gap-1.5 rounded-lg border border-[var(--border-primary)] bg-[var(--bg-main)] px-3 py-1.5 text-xs font-medium text-[var(--text-primary)] transition hover:bg-[var(--secondary-lighter)]"
                   >
+                    <Edit3 className="h-3.5 w-3.5" />
                     Edit
                   </button>
                   <button
@@ -403,14 +440,20 @@ const Slot = ({ auctionId }) => {
                       });
                       setOpenDelete(true);
                     }}
-                    className="px-3 py-1.5 text-xs bg-white text-red-600 rounded-lg border border-red-300 hover:bg-red-50"
+                    title="Delete slot"
+                    className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-red-200 bg-[var(--bg-card)] text-red-500 transition hover:border-red-300 hover:bg-red-50 hover:text-red-600"
                   >
-                    Delete
+                    <Trash2 className="h-3.5 w-3.5" />
                   </button>
                   <button
                     onClick={() => toggleSlotSessions(slot._id)}
-                    className="px-3 py-1.5 text-xs bg-blue-50 text-blue-700 rounded-lg border border-blue-300 hover:bg-blue-100"
+                    className="inline-flex items-center gap-1.5 rounded-lg border border-[var(--border-primary)] bg-[var(--accent-light)] px-3 py-1.5 text-xs font-semibold text-[var(--primary)] transition hover:bg-[var(--secondary-lighter)]"
                   >
+                    {expandedSlots.includes(slot._id) ? (
+                      <ChevronUp className="h-3.5 w-3.5" />
+                    ) : (
+                      <ChevronDown className="h-3.5 w-3.5" />
+                    )}
                     {expandedSlots.includes(slot._id)
                       ? "Hide Sessions"
                       : "View Sessions"}
@@ -418,41 +461,47 @@ const Slot = ({ auctionId }) => {
                 </div>
 
                 {expandedSlots.includes(slot._id) && (
-                  <div className="mt-3 border-t border-gray-200 pt-3">
+                  <div className="mt-3 border-t border-[var(--border-card)] pt-3">
                     <button
                       onClick={() => openCreateSession(slot._id)}
-                      className="w-full mb-3 px-3 py-2 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                      className="mb-3 inline-flex w-full items-center justify-center gap-2 rounded-lg border border-[var(--border-primary)] bg-[var(--bg-card)] px-3 py-2 text-sm font-semibold text-[var(--primary)] shadow-sm transition hover:bg-[var(--accent-light)]"
                     >
-                      + Create Session
+                      <Plus className="h-4 w-4" />
+                      Create Session
                     </button>
                     {slot.sessions?.length ? (
                       <div className="space-y-2">
                         {slot.sessions.map((sess) => (
                           <div
                             key={sess._id}
-                            className="rounded-lg border border-gray-200 p-2 bg-gray-200"
+                            className="rounded-lg border border-[var(--border-card)] bg-[var(--secondary-lighter)] p-2.5"
                           >
-                            <div className="text-sm font-medium text-gray-800">
+                            <div className="text-sm font-semibold text-[var(--text-primary)]">
                               {sess.name}
                             </div>
-                            <div className="text-xs text-gray-500 mt-1">
-                              {sess.slotDate
-                                ? new Date(sess.slotDate).toLocaleDateString(
-                                    "en-US",
-                                  )
-                                : "-"}
-                            </div>
-                            <div className="text-xs text-gray-500">
-                              {(sess.slotStartTime || "") +
-                                (sess.slotEndTime
-                                  ? ` - ${sess.slotEndTime}`
-                                  : "") || "-"}
+                            <div className="mt-2 grid grid-cols-1 gap-1 text-xs text-[var(--text-secondary)]">
+                              <span className="inline-flex items-center gap-1.5">
+                                <CalendarDays className="h-3.5 w-3.5 text-[var(--primary)]" />
+                                {sess.slotDate
+                                  ? new Date(sess.slotDate).toLocaleDateString(
+                                      "en-US",
+                                    )
+                                  : "-"}
+                              </span>
+                              <span className="inline-flex items-center gap-1.5">
+                                <Clock className="h-3.5 w-3.5 text-[var(--primary)]" />
+                                {(sess.slotStartTime || "") +
+                                  (sess.slotEndTime
+                                    ? ` - ${sess.slotEndTime}`
+                                    : "") || "-"}
+                              </span>
                             </div>
                             <div className="mt-2 flex gap-2">
                               <button
                                 onClick={() => openEditSession(slot._id, sess)}
-                                className="px-2 py-1 text-xs bg-white text-gray-700 rounded border border-gray-300 hover:bg-gray-50"
+                                className="inline-flex items-center gap-1 rounded-md border border-[var(--border-primary)] bg-[var(--bg-card)] px-2 py-1 text-xs text-[var(--text-primary)] transition hover:bg-[var(--bg-main)]"
                               >
+                                <Edit3 className="h-3 w-3" />
                                 Edit
                               </button>
                               <button
@@ -464,16 +513,17 @@ const Slot = ({ auctionId }) => {
                                   });
                                   setOpenDelete(true);
                                 }}
-                                className="px-2 py-1 text-xs bg-white text-red-600 rounded border border-red-300 hover:bg-red-50"
+                                title="Delete session"
+                                className="inline-flex h-7 w-7 items-center justify-center rounded-md border border-red-200 bg-[var(--bg-card)] text-red-500 transition hover:bg-red-50 hover:text-red-600"
                               >
-                                Delete
+                                <Trash2 className="h-3 w-3" />
                               </button>
                             </div>
                           </div>
                         ))}
                       </div>
                     ) : (
-                      <div className="text-xs text-gray-500">
+                      <div className="rounded-lg border border-dashed border-[var(--border-card)] bg-[var(--bg-main)] py-4 text-center text-xs text-[var(--text-secondary)]">
                         No sessions available
                       </div>
                     )}
@@ -484,66 +534,65 @@ const Slot = ({ auctionId }) => {
           </div>
 
           {/* Desktop/Tablet Landscape View - Responsive Table */}
-          <div className="hidden lg:block overflow-x-auto">
+          <div className="hidden overflow-x-auto lg:block">
             <div className="min-w-full">
               <table className="min-w-full">
-                <thead className="bg-gray-200 border-b border-gray-500">
+                <thead className="border-b border-[var(--border-card)] bg-[var(--secondary-lighter)]">
                   <tr>
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                    <th className="px-4 py-3 text-left text-[11px] font-semibold uppercase text-[var(--text-secondary)]">
                       Name
                     </th>
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                    <th className="px-4 py-3 text-left text-[11px] font-semibold uppercase text-[var(--text-secondary)]">
                       Code
                     </th>
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                    <th className="px-4 py-3 text-left text-[11px] font-semibold uppercase text-[var(--text-secondary)]">
                       Venue / City
                     </th>
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                    <th className="px-4 py-3 text-left text-[11px] font-semibold uppercase text-[var(--text-secondary)]">
                       Sessions
                     </th>
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                    <th className="px-4 py-3 text-left text-[11px] font-semibold uppercase text-[var(--text-secondary)]">
                       Created
                     </th>
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                    <th className="px-4 py-3 text-left text-[11px] font-semibold uppercase text-[var(--text-secondary)]">
                       Actions
                     </th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-200">
-                  {slotLocalList.map((slot, idx) => (
+                <tbody className="divide-y divide-[var(--border-card)]">
+                  {slotLocalList.map((slot) => (
                     <React.Fragment key={slot._id}>
                       <tr
-                        className={`transition-colors duration-150 ${
-                          idx % 2 === 0 ? "bg-white" : "bg-gray-50"
-                        }`}
+                        className="bg-[var(--bg-card)] transition-colors duration-150 hover:bg-[var(--secondary-lighter)]"
                       >
                         <td className="px-4 py-3">
-                          <div className="text-sm font-medium text-gray-900">
+                          <div className="text-sm font-semibold text-[var(--text-primary)]">
                             {slot.slotName}
                           </div>
-                          <div className="text-xs text-gray-500 mt-1">
+                          <div className="mt-1 max-w-[320px] truncate text-xs text-[var(--text-secondary)]">
                             {slot.description}
                           </div>
                         </td>
                         <td className="px-4 py-3">
-                          <div className="text-sm font-mono text-gray-700 bg-gray-100 px-2 py-1 rounded inline-block">
+                          <div className="inline-block rounded-md border border-[var(--border-card)] bg-[var(--bg-main)] px-2 py-1 font-mono text-xs text-[var(--text-primary)]">
                             {slot.slotCode}
                           </div>
                         </td>
                         <td className="px-4 py-3">
-                          <div className="text-sm text-gray-900">
+                          <div className="flex items-center gap-1.5 text-sm font-medium text-[var(--text-primary)]">
+                            <MapPin className="h-3.5 w-3.5 text-[var(--primary)]" />
                             {slot.location?.venue}
                           </div>
-                          <div className="text-xs text-gray-500">
+                          <div className="mt-1 text-xs text-[var(--text-secondary)]">
                             {slot.location?.city}
                           </div>
                         </td>
                         <td className="px-4 py-3">
-                          <span className="px-3 py-1 rounded-full text-xs font-medium bg-white text-emerald-600 border border-emerald-300">
+                          <span className="rounded-full border border-[var(--border-primary)] bg-[var(--accent-light)] px-3 py-1 text-xs font-semibold text-[var(--primary)]">
                             {slot.sessions ? slot.sessions.length : 0} Sessions
                           </span>
                         </td>
-                        <td className="px-4 py-3 text-sm text-gray-600">
+                        <td className="px-4 py-3 text-sm text-[var(--text-secondary)]">
                           {new Date(slot.createdAt).toLocaleDateString("en-US", {
                             month: "short",
                             day: "numeric",
@@ -554,8 +603,9 @@ const Slot = ({ auctionId }) => {
                           <div className="flex items-center gap-2">
                             <button
                               onClick={() => handleEditSlot(slot)}
-                              className="px-3 py-1.5 text-xs bg-white text-gray-700 rounded-lg border border-gray-300 hover:bg-gray-50 transition-colors"
+                              className="inline-flex items-center gap-1.5 rounded-lg border border-[var(--border-primary)] bg-[var(--bg-main)] px-3 py-1.5 text-xs font-medium text-[var(--text-primary)] transition-colors hover:bg-[var(--bg-card)]"
                             >
+                              <Edit3 className="h-3.5 w-3.5" />
                               Edit
                             </button>
                             <button
@@ -567,14 +617,20 @@ const Slot = ({ auctionId }) => {
                                 });
                                 setOpenDelete(true);
                               }}
-                              className="px-3 py-1.5 text-xs bg-white text-red-600 rounded-lg border border-red-300 hover:bg-red-50 transition-colors"
+                              title="Delete slot"
+                              className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-red-200 bg-[var(--bg-card)] text-red-500 transition-colors hover:border-red-300 hover:bg-red-50 hover:text-red-600"
                             >
-                              Delete
+                              <Trash2 className="h-3.5 w-3.5" />
                             </button>
                             <button
                               onClick={() => toggleSlotSessions(slot._id)}
-                              className="px-3 py-1.5 text-xs bg-blue-50 text-blue-700 rounded-lg border border-blue-300 hover:bg-blue-100 transition-colors"
+                              className="inline-flex items-center gap-1.5 rounded-lg border border-[var(--border-primary)] bg-[var(--accent-light)] px-3 py-1.5 text-xs font-semibold text-[var(--primary)] transition-colors hover:bg-[var(--secondary-lighter)]"
                             >
+                              {expandedSlots.includes(slot._id) ? (
+                                <ChevronUp className="h-3.5 w-3.5" />
+                              ) : (
+                                <ChevronDown className="h-3.5 w-3.5" />
+                              )}
                               {expandedSlots.includes(slot._id)
                                 ? "Hide Sessions"
                                 : "View Sessions"}
@@ -585,14 +641,17 @@ const Slot = ({ auctionId }) => {
 
                       {expandedSlots.includes(slot._id) && (
                         <tr>
-                          <td colSpan={6} className="bg-gray-200 border-t border-gray-200">
+                          <td
+                            colSpan={6}
+                            className="border-t border-[var(--border-card)] bg-[var(--secondary-lighter)]"
+                          >
                             <div className="p-4">
                               <div className="flex items-center justify-between mb-4">
                                 <div>
-                                  <h5 className="text-base font-semibold text-gray-800 mb-1">
+                                  <h5 className="mb-1 text-base font-semibold text-[var(--text-primary)]">
                                     Sessions
                                   </h5>
-                                  <div className="text-xs text-gray-500">
+                                  <div className="text-xs text-[var(--text-secondary)]">
                                     Total: {(slot.sessions || []).length}{" "}
                                     sessions
                                   </div>
@@ -600,53 +659,51 @@ const Slot = ({ auctionId }) => {
                                 <div className="flex items-center gap-3">
                                   <button
                                     onClick={() => openCreateSession(slot._id)}
-                                    className="px-3 py-1.5 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 transition-all duration-200"
+                                    className="inline-flex items-center gap-2 rounded-lg border border-[var(--border-primary)] bg-[var(--bg-card)] px-3 py-1.5 text-sm font-semibold text-[var(--primary)] shadow-sm transition-all duration-200 hover:bg-[var(--accent-light)]"
                                   >
-                                    + Create Session
+                                    <Plus className="h-4 w-4" />
+                                    Create Session
                                   </button>
                                 </div>
                               </div>
 
                               {slot.sessions && slot.sessions.length > 0 ? (
-                                <div className="overflow-hidden rounded-lg border border-gray-200 bg-white">
+                                <div className="overflow-hidden rounded-lg border border-[var(--border-card)] bg-[var(--bg-card)] shadow-sm">
                                   <div className="overflow-x-auto">
                                     <table className="min-w-full">
-                                      <thead className="bg-gray-50">
+                                      <thead className="border-b border-[var(--border-card)] bg-[var(--bg-main)]">
                                         <tr>
-                                          <th className="px-3 py-2 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                          <th className="px-3 py-2 text-left text-[11px] font-semibold uppercase text-[var(--text-secondary)]">
                                             Name
                                           </th>
-                                          <th className="px-3 py-2 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                          <th className="px-3 py-2 text-left text-[11px] font-semibold uppercase text-[var(--text-secondary)]">
                                             Date
                                           </th>
-                                          <th className="px-3 py-2 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                          <th className="px-3 py-2 text-left text-[11px] font-semibold uppercase text-[var(--text-secondary)]">
                                             Time
                                           </th>
-                                          <th className="px-3 py-2 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                          <th className="px-3 py-2 text-left text-[11px] font-semibold uppercase text-[var(--text-secondary)]">
                                             Players
                                           </th>
-                                          <th className="px-3 py-2 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                          <th className="px-3 py-2 text-left text-[11px] font-semibold uppercase text-[var(--text-secondary)]">
                                             Actions
                                           </th>
                                         </tr>
                                       </thead>
-                                      <tbody className="divide-y divide-gray-200">
-                                        {slot.sessions.map((sess, sidx) => (
+                                      <tbody className="divide-y divide-[var(--border-card)]">
+                                        {slot.sessions.map((sess) => (
                                           <tr
                                             key={sess._id}
-                                            className={`hover:bg-gray-50 transition-colors ${
-                                              sidx % 2 === 0
-                                                ? "bg-white"
-                                                : "bg-gray-50/50"
-                                            }`}
+                                            className="bg-[var(--bg-card)] transition-colors hover:bg-[var(--secondary-lighter)]"
                                           >
                                             <td className="px-3 py-2">
-                                              <div className="text-sm font-medium text-gray-900">
+                                              <div className="text-sm font-semibold text-[var(--text-primary)]">
                                                 {sess.name}
                                               </div>
                                             </td>
                                             <td className="px-3 py-2">
-                                              <div className="text-sm text-gray-600">
+                                              <div className="inline-flex items-center gap-1.5 text-sm text-[var(--text-secondary)]">
+                                                <CalendarDays className="h-3.5 w-3.5 text-[var(--primary)]" />
                                                 {sess.slotDate
                                                   ? new Date(
                                                       sess.slotDate,
@@ -659,7 +716,8 @@ const Slot = ({ auctionId }) => {
                                               </div>
                                             </td>
                                             <td className="px-3 py-2">
-                                              <div className="text-sm text-gray-700">
+                                              <div className="inline-flex items-center gap-1.5 text-sm text-[var(--text-primary)]">
+                                                <Clock className="h-3.5 w-3.5 text-[var(--primary)]" />
                                                 {(sess.slotStartTime || "") +
                                                   (sess.slotEndTime
                                                     ? ` - ${sess.slotEndTime}`
@@ -667,7 +725,7 @@ const Slot = ({ auctionId }) => {
                                               </div>
                                             </td>
                                             <td className="px-3 py-2">
-                                              <div className="text-sm font-medium text-blue-600">
+                                              <div className="text-sm font-semibold text-[var(--primary)]">
                                                 {(sess.players || []).length ||
                                                   sess.playerCount ||
                                                   0}
@@ -679,8 +737,9 @@ const Slot = ({ auctionId }) => {
                                                   onClick={() =>
                                                     openEditSession(slot._id, sess)
                                                   }
-                                                  className="px-2 py-1 text-xs bg-white text-gray-700 rounded border border-gray-300 hover:bg-gray-50 transition-colors"
+                                                  className="inline-flex items-center gap-1 rounded-md border border-[var(--border-primary)] bg-[var(--bg-main)] px-2 py-1 text-xs text-[var(--text-primary)] transition-colors hover:bg-[var(--bg-card)]"
                                                 >
+                                                  <Edit3 className="h-3 w-3" />
                                                   Edit
                                                 </button>
                                                 <button
@@ -692,9 +751,10 @@ const Slot = ({ auctionId }) => {
                                                     });
                                                     setOpenDelete(true);
                                                   }}
-                                                  className="px-2 py-1 text-xs bg-white text-red-600 rounded border border-red-300 hover:bg-red-50 transition-colors"
+                                                  title="Delete session"
+                                                  className="inline-flex h-7 w-7 items-center justify-center rounded-md border border-red-200 bg-[var(--bg-card)] text-red-500 transition-colors hover:bg-red-50 hover:text-red-600"
                                                 >
-                                                  Delete
+                                                  <Trash2 className="h-3 w-3" />
                                                 </button>
                                               </div>
                                             </td>
@@ -705,11 +765,11 @@ const Slot = ({ auctionId }) => {
                                   </div>
                                 </div>
                               ) : (
-                                <div className="text-center py-6 bg-gray-50 rounded-lg border border-gray-200">
-                                  <div className="text-gray-500 mb-1">
+                                <div className="rounded-lg border border-dashed border-[var(--border-card)] bg-[var(--bg-card)] py-6 text-center">
+                                  <div className="mb-1 text-sm font-semibold text-[var(--text-primary)]">
                                     No sessions available
                                   </div>
-                                  <div className="text-sm text-gray-400">
+                                  <div className="text-sm text-[var(--text-muted)]">
                                     Create a session to get started
                                   </div>
                                 </div>
@@ -725,8 +785,8 @@ const Slot = ({ auctionId }) => {
             </div>
             
             {/* Pagination */}
-            <div className="flex items-center justify-between mt-4 px-4 py-3 border-t border-gray-200">
-              <div className="text-sm text-gray-600">
+            <div className="flex items-center justify-between border-t border-[var(--border-card)] bg-[var(--bg-main)] px-4 py-3">
+              <div className="text-sm text-[var(--text-secondary)]">
                 Page {currentPage} of {totalPages}
               </div>
 
@@ -734,7 +794,7 @@ const Slot = ({ auctionId }) => {
                 <button
                   disabled={page === 1}
                   onClick={() => setPage((prev) => prev - 1)}
-                  className="px-3 py-1 rounded border border-gray-300 bg-white text-gray-700 disabled:opacity-50 hover:bg-gray-50 text-sm"
+                  className="rounded-lg border border-[var(--border-primary)] bg-[var(--bg-card)] px-3 py-1.5 text-sm font-medium text-[var(--text-primary)] transition hover:bg-[var(--secondary-lighter)] disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   Prev
                 </button>
@@ -742,7 +802,7 @@ const Slot = ({ auctionId }) => {
                 <button
                   disabled={page === totalPages}
                   onClick={() => setPage((prev) => prev + 1)}
-                  className="px-3 py-1 rounded border border-gray-300 bg-white text-gray-700 disabled:opacity-50 hover:bg-gray-50 text-sm"
+                  className="rounded-lg border border-[var(--border-primary)] bg-[var(--bg-card)] px-3 py-1.5 text-sm font-medium text-[var(--text-primary)] transition hover:bg-[var(--secondary-lighter)] disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   Next
                 </button>
@@ -771,7 +831,7 @@ const Slot = ({ auctionId }) => {
 
       {slotPopup &&
         createPortal(
-          <div className="fixed inset-0 z-[9999] flex items-center justify-center">
+          <div className="fixed inset-0 z-[120000] flex items-start justify-center overflow-y-auto p-3 sm:p-4">
             <CreateSlot
               isOpen={slotPopup}
               onClose={() => {

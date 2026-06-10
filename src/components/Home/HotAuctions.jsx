@@ -39,6 +39,7 @@ const tabs = [
 const HotAuctions = ({ theme, onToggleTheme }) => {
   const [activeTab, setActiveTab] = useState("ongoing");
   const [loginRefresh, setLoginRefresh] = useState(0);
+  const [homeShowingUpcoming, setHomeShowingUpcoming] = useState(false);
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -64,11 +65,36 @@ const HotAuctions = ({ theme, onToggleTheme }) => {
   }, []);
 
   useEffect(() => {
-    if (activeTab === "my") {
-      if (playerId) dispatch(fetchAuctions(activeTab, playerId));
-    } else {
-      dispatch(fetchAuctions(activeTab, null));
-    }
+    let active = true;
+
+    const loadAuctions = async () => {
+      if (activeTab === "my") {
+        if (playerId) await dispatch(fetchAuctions(activeTab, playerId));
+        return;
+      }
+
+      const result = await dispatch(fetchAuctions(activeTab, null));
+      const fetchedAuctions = result?.data || [];
+
+      if (
+        active &&
+        isHome &&
+        activeTab === "ongoing" &&
+        fetchedAuctions.length === 0
+      ) {
+        setHomeShowingUpcoming(true);
+        await dispatch(fetchAuctions("upcoming", null));
+        return;
+      }
+
+      if (active) setHomeShowingUpcoming(false);
+    };
+
+    loadAuctions();
+
+    return () => {
+      active = false;
+    };
   }, [dispatch, playerId, activeTab, loginRefresh]);
 
   const handleCreateAuction = () => {
@@ -90,20 +116,32 @@ const HotAuctions = ({ theme, onToggleTheme }) => {
   const getStatusBadge = (auction) => {
     if (auction.isBiddingActive) {
       return (
-        <span className="auction-status auction-status-live">
-          <span className="auction-status-dot" />
+        <span className="absolute right-3 top-3 inline-flex min-h-7 items-center gap-1.5 rounded-full bg-[var(--danger)] px-3 text-[10px] font-black uppercase text-white shadow-[0_8px_18px_rgba(220,53,69,0.25)]">
+          <span className="h-1.5 w-1.5 rounded-full bg-white [animation:hotAuctionPulse_1.2s_ease-in-out_infinite]" />
           LIVE
         </span>
       );
     }
     if (auction.auctionStatus === "ongoing") {
-      return <span className="auction-status auction-status-primary">Ongoing</span>;
+      return (
+        <span className="absolute right-3 top-3 inline-flex min-h-7 items-center rounded-full bg-[var(--primary)] px-3 text-[10px] font-black uppercase text-white">
+          Ongoing
+        </span>
+      );
     }
     if (auction.auctionStatus === "upcoming") {
-      return <span className="auction-status auction-status-primary">Upcoming</span>;
+      return (
+        <span className="absolute right-3 top-3 inline-flex min-h-7 items-center rounded-full bg-[var(--primary)] px-3 text-[10px] font-black uppercase text-white">
+          Upcoming
+        </span>
+      );
     }
     if (auction.auctionStatus === "completed") {
-      return <span className="auction-status auction-status-success">Past</span>;
+      return (
+        <span className="absolute right-3 top-3 inline-flex min-h-7 items-center rounded-full bg-[var(--success)] px-3 text-[10px] font-black uppercase text-white">
+          Past
+        </span>
+      );
     }
     return null;
   };
@@ -115,23 +153,39 @@ const HotAuctions = ({ theme, onToggleTheme }) => {
     <>
       {!isHome && <Header theme={theme} onToggleTheme={onToggleTheme} />}
       <section
-        className={`hot-auctions-section min-h-[60vh] ${
-          isHome ? "hot-bg hot-auctions-home" : "pb-8 pt-0"
+        className={`min-h-[60vh] ${
+          isHome
+            ? "hot-bg border-t border-[rgba(8,186,247,0.26)] py-[26px] pb-11 max-md:py-7 max-md:pb-[38px]"
+            : "pb-8 pt-0"
         }`}
       >
         <div className="container mx-auto px-4 sm:px-6">
           {isHome && (
-            <div className="hot-auctions-heading">
-              <h2>
-                Hot Auctions <span>Happening</span> <strong>Now</strong>
+            <div className="mb-9 text-center text-[var(--text-primary)]">
+              <h2 className="m-0 font-heading text-[clamp(30px,4vw,44px)] font-black uppercase leading-tight">
+                {homeShowingUpcoming ? (
+                  <>
+                    Upcoming <span className="gradient-text mx-2">Auctions</span>
+                  </>
+                ) : (
+                  <>
+                    Hot Auctions{" "}
+                    <span className="gradient-text mx-2">Happening</span>
+                    <strong>Now</strong>
+                  </>
+                )}
               </h2>
-              <p>Join live auctions and bid on your favorite teams</p>
+              <p className="mx-auto mt-3 max-w-[560px] text-sm text-[var(--text-secondary)]">
+                {homeShowingUpcoming
+                  ? "Explore the next auctions and get ready before bidding begins"
+                  : "Join live auctions and bid on your favorite teams"}
+              </p>
             </div>
           )}
 
           {!isHome && (
-            <div className="sticky top-[76px] z-30 -mx-4 mb-8 px-4 pb-3 pt-0 max-md:top-[68px] sm:-mx-6 sm:px-6">
-              <div className="relative flex flex-col items-center gap-3 rounded-lg border border-[var(--border-card)] bg-[rgba(0,17,38,0.82)] p-2 shadow-[0_18px_42px_rgba(0,0,0,0.26)] backdrop-blur-xl sm:flex-row sm:justify-center">
+            <div className="sticky top-[92px] z-30 -mx-4 mb-8 px-4 pb-3 pt-0 max-md:top-[68px] sm:-mx-6 sm:px-6">
+              <div className="relative flex flex-col items-center gap-3 rounded-lg border border-[var(--border-card)] bg-[var(--bg-card)] p-2 shadow-[var(--shadow-card)] backdrop-blur-xl sm:flex-row sm:justify-center">
                 <div className="absolute inset-x-4 top-0 h-px bg-gradient-to-r from-transparent via-[var(--primary)] to-transparent opacity-70" />
 
                 <div className="flex w-full flex-wrap justify-center gap-2 sm:w-auto">
@@ -144,17 +198,9 @@ const HotAuctions = ({ theme, onToggleTheme }) => {
                         onClick={() => setActiveTab(tab.key)}
                         className={`min-h-10 rounded-md px-5 text-xs font-extrabold uppercase tracking-wide transition-all duration-200 max-sm:flex-1 ${
                           isActive
-                            ? "text-[var(--text-dark)] shadow-[0_10px_24px_rgba(255,196,0,0.24)]"
-                            : "border border-[var(--border-soft)] bg-white/[0.03] text-[var(--text-secondary)] hover:border-[var(--border-primary)] hover:text-[var(--primary)]"
+                            ? "border border-[var(--border-primary)] bg-[var(--primary)] text-white shadow-[0_10px_24px_rgba(8,186,247,0.22)]"
+                            : "border border-[var(--border-card)] bg-[var(--bg-main)] text-[var(--text-secondary)] hover:border-[var(--border-primary)] hover:bg-[var(--accent-light)] hover:text-[var(--primary)]"
                         }`}
-                        style={
-                          isActive
-                            ? {
-                                background:
-                                  "linear-gradient(180deg, var(--secondary), var(--secondary-strong))",
-                              }
-                            : undefined
-                        }
                       >
                         {tab.label}
                       </button>
@@ -164,7 +210,7 @@ const HotAuctions = ({ theme, onToggleTheme }) => {
 
                 <button
                   onClick={handleCreateAuction}
-                  className="btn btn-primary min-h-10 px-5 text-[11px] sm:absolute sm:right-2"
+                  className="ui-btn-secondary min-h-10 px-5 text-[11px] sm:absolute sm:right-2"
                 >
                   Create Auction
                 </button>
@@ -205,18 +251,26 @@ const HotAuctions = ({ theme, onToggleTheme }) => {
                     whileHover={{ y: -6 }}
                     transition={{ type: "spring", stiffness: 300 }}
                     onClick={() => handleOpenAuction(auction._id)}
-                    className="hot-auction-card card-surface"
+                    className="cursor-pointer overflow-hidden rounded-lg border border-[var(--border-card)] bg-[var(--bg-card)] text-[var(--text-primary)] shadow-[var(--shadow-card)] transition"
                   >
-                    <div className="hot-auction-image">
+                    <div className="relative h-[166px] overflow-hidden bg-[var(--bg-soft)]">
                       <img
+                        loading="lazy"
+                        decoding="async"
+                        className="h-full w-full object-cover transition duration-300"
                         src={auction.tournamentId?.bannerLogo || CricketImage}
                         alt={auction.auctionName}
                       />
                       {getStatusBadge(auction)}
                     </div>
 
-                    <div className="hot-auction-content">
-                      <h3 title={auction.auctionName}>{auction.auctionName}</h3>
+                    <div className="p-4">
+                      <h3
+                        className="mb-2.5 truncate font-heading text-[17px] font-black uppercase leading-tight text-[var(--text-primary)]"
+                        title={auction.auctionName}
+                      >
+                        {auction.auctionName}
+                      </h3>
 
                       <div className="mb-4 flex flex-col gap-2 text-[12px] leading-tight text-[var(--text-secondary)]">
                         <div className="grid grid-cols-[18px_minmax(0,1fr)] items-center gap-2">
@@ -227,11 +281,14 @@ const HotAuctions = ({ theme, onToggleTheme }) => {
                         </div>
 
                         <div className="grid grid-cols-[18px_minmax(0,1fr)] items-center gap-2">
-                          <Calendar size={14} className="text-[var(--primary)]" />
+                          <Calendar
+                            size={14}
+                            className="text-[var(--primary)]"
+                          />
                           <span className="truncate">
                             {getAuctionDate(
                               auction?.auctionStartedAt,
-                              auction?.auctionEndedAt
+                              auction?.auctionEndedAt,
                             )}
                           </span>
                         </div>
@@ -249,9 +306,10 @@ const HotAuctions = ({ theme, onToggleTheme }) => {
                           e.stopPropagation();
                           handleOpenAuction(auction._id);
                         }}
-                        className={`mini-btn ${idx % 2 === 1 ? "mini-btn-blue" : ""}`}
-                      >
-                        JOIN NOW
+                        className={
+                          "ui-btn-primary w-full min-h-[38px] text-xs uppercase"
+                        }>
+                        View Details
                       </button>
                     </div>
                   </motion.div>
@@ -261,7 +319,10 @@ const HotAuctions = ({ theme, onToggleTheme }) => {
 
           {isHome && auctions.length > 0 && (
             <div className="flex justify-center mt-10">
-              <button onClick={() => navigate("/auction")} className="btn btn-outline-primary">
+              <button
+                onClick={() => navigate("/auction")}
+                className="ui-btn-ghost min-w-[240px]"
+              >
                 View All Auctions {"->"}
               </button>
             </div>

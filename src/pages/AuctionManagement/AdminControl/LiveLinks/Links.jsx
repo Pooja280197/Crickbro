@@ -87,7 +87,7 @@ const Links = ({ auctionId }) => {
   return (
     <div className=" mx-auto rounded-2xl shadow-2xl border border-white/10 overflow-hidden">
       {/* Header */}
-      <div className="bg-[var(--secondary)] p-6 text-white">
+      <div className="bg-[var(--secondary)] p-6 text-[var(--text-dark)]">
         <h2 className="text-2xl font-bold text-[var(--text)]">
           Live Auction Center
         </h2>
@@ -106,8 +106,7 @@ const Links = ({ auctionId }) => {
           return (
             <div
               key={link.id}
-              className="group flex items-center justify-between p-4 rounded-xl border border-white/10 
-              hover:border-[var(--primary)] hover:bg-white/5 transition-all"
+              className="group flex items-center justify-between p-4 rounded-xl border border-white/10 hover:border-[var(--primary)] hover:bg-white/5 transition-all"
             >
               {/* Left */}
               <div
@@ -122,16 +121,14 @@ const Links = ({ auctionId }) => {
                   <p className="font-semibold text-[var(--secondary-dark)]">
                     {link.label}
                   </p>
-                  <p className="text-xs text-gray-500">{link.description}</p>
+                  <p className="text-xs text-[var(--text-secondary)]">{link.description}</p>
                 </div>
               </div>
               <div className="flex flex-row items-center gap-2">
               {link.preview && (
                 <button
                   onClick={() => setPreviewImage(link.preview)}
-                  className="flex items-center gap-2 text-sm px-3 py-1.5 rounded-md 
-      border border-white/10 hover:border-blue-400 
-      hover:text-blue-400 transition"
+                  className="flex items-center gap-2 text-sm px-3 py-1.5 rounded-md border border-white/10 hover:border-blue-400 hover:text-blue-400 transition"
                 >
                   👁 Sample View
                 </button>
@@ -150,9 +147,7 @@ const Links = ({ auctionId }) => {
               {/* Copy button */}
               <button
                 onClick={() => copyLink(link)}
-                className="flex items-center gap-2 text-sm px-3 py-1.5 rounded-md 
-                  border border-white/10 hover:border-[var(--primary)] 
-                  hover:text-[var(--primary)] transition"
+                className="flex items-center gap-2 text-sm px-3 py-1.5 rounded-md border border-white/10 hover:border-[var(--primary)] hover:text-[var(--primary)] transition"
               >
                 {copied === link.id ? (
                   <>
@@ -193,7 +188,7 @@ const Links = ({ auctionId }) => {
             {/* Close Button */}
             <button
               onClick={() => setPreviewImage(null)}
-              className="absolute top-2 right-2 bg-white text-black px-3 py-1 rounded-md"
+              className="absolute top-2 right-2 bg-[var(--bg-card)] text-[var(--text-primary)] px-3 py-1 rounded-md"
             >
               ✕
             </button>

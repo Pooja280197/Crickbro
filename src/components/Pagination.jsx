@@ -27,7 +27,7 @@ const Pagination = ({
   };
 
   return (
-    <div className={`auction-pagination flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between ${className}`}>
+    <div className={`ui-card-soft flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between ${className}`}>
       {showSummary && (
         <p className="text-xs sm:text-sm text-[var(--text-secondary)]">
           {summaryPrefix}{" "}
@@ -42,7 +42,7 @@ const Pagination = ({
           type="button"
           disabled={isFirstPage}
           onClick={handlePrevious}
-          className={`auction-btn auction-btn-ghost ${
+          className={`ui-btn-ghost ${
             isFirstPage
               ? "text-[var(--text-secondary)]"
               : "text-[var(--text-primary)]"
@@ -56,7 +56,7 @@ const Pagination = ({
           type="button"
           disabled={isLastPage}
           onClick={handleNext}
-          className={`auction-btn auction-btn-ghost ${
+          className={`ui-btn-ghost ${
             isLastPage
               ? "text-[var(--text-secondary)]"
               : "text-[var(--text-primary)]"

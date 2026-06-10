@@ -61,43 +61,47 @@ const CreateSession = ({
     onSave();
   };
 
+  const fieldBase =
+    "w-full rounded-lg border bg-[var(--bg-main)] p-2.5 text-sm text-[var(--text-primary)] outline-none transition focus:border-[var(--primary)] focus:ring-2 focus:ring-[var(--primary)]/15 sm:p-3";
+  const fieldClass = (error) =>
+    `${fieldBase} ${error ? "border-red-500" : "border-[var(--border-primary)]"}`;
+
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-2 sm:p-4 overflow-y-auto">
-      <div className="w-full max-w-xl bg-white text-gray-800 rounded-xl shadow-2xl border border-gray-200 overflow-hidden flex flex-col max-h-[90vh] sm:max-h-[85vh]">
+    <div className="fixed inset-0 z-[120000] flex items-center justify-center overflow-y-auto bg-black/50 p-3 pt-4 backdrop-blur-sm sm:p-4">
+      <div className="flex max-h-[92vh] w-full max-w-xl flex-col overflow-hidden rounded-lg border border-[var(--border-card)] bg-[var(--bg-card)] text-[var(--text-primary)] shadow-2xl sm:max-h-[88vh]">
         {/* Header - Fixed at top */}
-        <div className="flex-shrink-0 p-3 sm:p-4 border-b border-gray-200 bg-white flex items-center justify-between text-gray-800 sticky top-0 bg-white z-10">
+        <div className="sticky top-0 z-10 flex flex-shrink-0 items-center justify-between border-b border-[var(--border-card)] bg-[var(--bg-card)] p-3 text-[var(--text-primary)] sm:p-4">
+        
           <div>
             <h3 className="text-base sm:text-lg font-semibold">
               {isEditing ? "Edit Session" : "Create Session"}
             </h3>
             {slotName && (
-              <div className="text-xs sm:text-sm text-gray-500 mt-0.5">
+              <div className="text-xs sm:text-sm text-[var(--text-secondary)] mt-0.5">
                 Slot: {slotName}
               </div>
             )}
           </div>
           <button 
             onClick={onClose} 
-            className="text-gray-400 hover:text-gray-800 p-1 hover:bg-gray-100 rounded-full transition-colors"
+            className="text-[var(--text-muted)] hover:text-[var(--text-primary)] p-1 hover:bg-[var(--secondary-lighter)] rounded-full transition-colors"
           >
             ✕
           </button>
         </div>
 
         {/* Scrollable Content Area */}
-        <div className="flex-1 overflow-y-auto p-3 sm:p-5 space-y-4">
+        <div className="flex-1 space-y-4 overflow-y-auto bg-[var(--bg-main)] p-3 [scrollbar-color:var(--border-primary)_var(--bg-main)] [scrollbar-width:thin] sm:p-5 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-[var(--border-primary)] [&::-webkit-scrollbar-track]:bg-[var(--bg-main)] [&::-webkit-scrollbar]:w-2">
           {/* Session Name */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+          <div className="rounded-lg border border-[var(--border-card)] bg-[var(--bg-card)] p-4 shadow-sm">
+            <label className="block text-sm font-medium text-[var(--text-primary)] mb-1">
               Name <span className="text-red-500">*</span>
             </label>
             <input
               name="name"
               value={sessionData.name || ""}
               onChange={handleChange}
-              className={`w-full p-2.5 sm:p-3 rounded-lg bg-white border ${
-                errors.name ? "border-red-500" : "border-gray-300"
-              } focus:border-[var(--color-primary)] focus:ring-2 focus:ring-[var(--color-primary)]/20 outline-none transition text-sm sm:text-base`}
+              className={fieldClass(errors.name)}
               placeholder="Enter session name"
             />
             {errors.name && (
@@ -106,10 +110,19 @@ const CreateSession = ({
           </div>
 
           {/* Responsive Grid Layout */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+          <div className="rounded-lg border border-[var(--border-card)] bg-[var(--bg-card)] p-4 shadow-sm">
+            <div className="mb-4 border-b border-[var(--border-card)] pb-3">
+              <h4 className="text-sm font-semibold text-[var(--text-primary)]">
+                Session Schedule
+              </h4>
+              <p className="mt-0.5 text-xs text-[var(--text-secondary)]">
+                Set date, time, access status, and player capacity.
+              </p>
+            </div>
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {/* Date */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-[var(--text-primary)] mb-1">
                 Date
               </label>
               <input
@@ -117,13 +130,13 @@ const CreateSession = ({
                 type="date"
                 value={formatDateForInput(sessionData.slotDate) || ""}
                 onChange={handleChange}
-                className="w-full p-2.5 sm:p-3 rounded-lg bg-white border border-gray-300 focus:border-[var(--color-primary)] focus:ring-2 focus:ring-[var(--color-primary)]/20 outline-none transition text-sm"
+                className={`${fieldBase} border-[var(--border-primary)]`}
               />
             </div>
 
             {/* Start Time */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-[var(--text-primary)] mb-1">
                 Start Time
               </label>
               <input
@@ -131,13 +144,13 @@ const CreateSession = ({
                 type="time"
                 value={sessionData.slotStartTime || ""}
                 onChange={handleChange}
-                className="w-full p-2.5 sm:p-3 rounded-lg bg-white border border-gray-300 focus:border-[var(--color-primary)] focus:ring-2 focus:ring-[var(--color-primary)]/20 outline-none transition text-sm"
+                className={`${fieldBase} border-[var(--border-primary)]`}
               />
             </div>
 
             {/* End Time */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-[var(--text-primary)] mb-1">
                 End Time
               </label>
               <input
@@ -145,20 +158,20 @@ const CreateSession = ({
                 type="time"
                 value={sessionData.slotEndTime || ""}
                 onChange={handleChange}
-                className="w-full p-2.5 sm:p-3 rounded-lg bg-white border border-gray-300 focus:border-[var(--color-primary)] focus:ring-2 focus:ring-[var(--color-primary)]/20 outline-none transition text-sm"
+                className={`${fieldBase} border-[var(--border-primary)]`}
               />
             </div>
 
             {/* Session Status */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-[var(--text-primary)] mb-1">
                 Session Status
               </label>
               <select
                 value={sessionData.status}
                 name="status"
                 onChange={handleChange}
-                className="w-full p-2.5 sm:p-3 rounded-lg bg-white border border-gray-300 focus:border-[var(--color-primary)] focus:ring-2 focus:ring-[var(--color-primary)]/20 outline-none transition text-sm"
+                className={`${fieldBase} border-[var(--border-primary)]`}
               >
                 <option value="scheduled">Scheduled</option>
                 <option value="ongoing">Ongoing</option>
@@ -169,14 +182,14 @@ const CreateSession = ({
 
             {/* Session Access */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-[var(--text-primary)] mb-1">
                 Session Access
               </label>
               <select
                 value={sessionData.lockStatus}
                 name="lockStatus"
                 onChange={handleChange}
-                className="w-full p-2.5 sm:p-3 rounded-lg bg-white border border-gray-300 focus:border-[var(--color-primary)] focus:ring-2 focus:ring-[var(--color-primary)]/20 outline-none transition text-sm"
+                className={`${fieldBase} border-[var(--border-primary)]`}
               >
                 <option value="unlocked">Unlock</option>
                 <option value="locked">Lock</option>
@@ -185,7 +198,7 @@ const CreateSession = ({
 
             {/* Session Size */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-[var(--text-primary)] mb-1">
                 Session Size <span className="text-red-500">*</span>
               </label>
               <input
@@ -200,14 +213,15 @@ const CreateSession = ({
                     onSessionChange(e);
                   }
                 }}
-                className={`w-full p-2.5 sm:p-3 rounded-lg bg-white border ${
-                  errors.slotSize ? "border-red-500" : "border-gray-300"
-                } focus:border-[var(--color-primary)] focus:ring-2 focus:ring-[var(--color-primary)]/20 outline-none transition text-sm`}
+                className={`w-full p-2.5 sm:p-3 rounded-lg bg-[var(--bg-card)] border ${
+                  errors.slotSize ? "border-red-500" : "border-[var(--border-primary)]"
+                } focus:border-[var(--primary)] focus:ring-2 focus:ring-[var(--primary)]/15 outline-none transition text-sm`}
                 placeholder="Max players"
               />
               {errors.slotSize && (
                 <p className="text-red-500 text-xs mt-1">{errors.slotSize}</p>
               )}
+            </div>
             </div>
           </div>
 
@@ -220,17 +234,17 @@ const CreateSession = ({
         </div>
 
         {/* Sticky Footer Buttons */}
-        <div className="flex-shrink-0 p-3 sm:p-4 border-t border-gray-200 bg-gray-50 sticky bottom-0">
+        <div className="flex-shrink-0 p-3 sm:p-4 border-t border-[var(--border-card)] bg-[var(--bg-soft)] sticky bottom-0">
           <div className="flex flex-col-reverse sm:flex-row items-center justify-end gap-2 sm:gap-3">
             <button
               onClick={onClose}
-              className="w-full sm:w-auto px-4 py-2.5 sm:py-2 bg-white text-gray-700 rounded-lg border border-gray-300 hover:bg-gray-50 transition text-sm font-medium"
+              className="w-full sm:w-auto px-4 py-2.5 sm:py-2 bg-[var(--bg-card)] text-[var(--text-primary)] rounded-lg border border-[var(--border-primary)] hover:bg-[var(--bg-soft)] transition text-sm font-medium"
             >
               Cancel
             </button>
             <button
               onClick={handleSubmit}
-              className="w-full sm:w-auto px-5 py-2.5 sm:py-2 bg-[var(--color-button-primary)] text-white rounded-lg hover:opacity-90 transition text-sm font-medium"
+              className="w-full sm:w-auto px-5 py-2.5 sm:py-2 bg-[linear-gradient(135deg,var(--secondary),var(--secondary-strong))] text-[#102033] rounded-lg hover:opacity-90 transition text-sm font-semibold shadow-sm"
             >
               {isEditing ? "Save Changes" : "Create Session"}
             </button>

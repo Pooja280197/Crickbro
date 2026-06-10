@@ -1,4 +1,6 @@
 import { useEffect, useState } from "react";
+import profileIcon from "../../assets/Images/profile-icon.jpg";
+import { Link, useNavigate } from "react-router-dom";
 
 const auctionPlayers = [
   {
@@ -60,9 +62,11 @@ const auctionPlayers = [
 
 const AUCTION_SLIDE_MS = 4000;
 
+
 const HeroSection = () => {
   const [activeIndex, setActiveIndex] = useState(0);
   const activePlayer = auctionPlayers[activeIndex];
+  const navigate = useNavigate()
 
   useEffect(() => {
     const timer = window.setInterval(() => {
@@ -71,6 +75,8 @@ const HeroSection = () => {
 
     return () => window.clearInterval(timer);
   }, []);
+
+
 
   return (
     <section className="hero-bg relative min-h-[575px] pb-[82px] pt-[142px] max-md:min-h-0 max-md:pb-14 max-md:pt-[116px]">
@@ -85,41 +91,80 @@ const HeroSection = () => {
             move directly into CrickBro scoring, fixtures and leaderboards.
           </p>
           <div className="mt-8 flex flex-wrap gap-4">
-            <a className="btn btn-primary" href="/">
-              Create Auction <span>+</span>
-            </a>
-            <a className="btn btn-ghost" href="/">
+            <Link
+              className="ui-btn-secondary min-h-12 px-7 text-xs uppercase"
+              to="/createAuction"
+            >
+              Create Auction
+            </Link>
+            <Link className="ui-btn-ghost min-h-12 px-7 text-xs uppercase" 
+            to="/auction">
               Explore Auctions
-            </a>
+            </Link>
           </div>
         </div>
 
-        <div className="rounded-xl border border-[var(--border-card)] bg-[var(--bg-card)] p-[22px] shadow-[var(--shadow-card)] max-lg:max-w-[620px]" aria-label="Live auction preview">
-          <div className="flex flex-col gap-2 border-b border-[var(--border-soft)] pb-[22px]">
-            <strong className="text-sm">CrickBro Mega Auction</strong>
-            <span className="text-[10px] font-black uppercase text-[var(--danger)]">Live Auction</span>
-          </div>
-          <div key={activeIndex} className="grid grid-cols-[1fr_250px] gap-8 py-[26px] pb-5 [animation:auctionSlideIn_450ms_ease-out] max-md:grid-cols-1">
+        <div
+          className="relative max-lg:max-w-[620px] overflow-hidden rounded-[18px] border border-[var(--border-card)] bg-[linear-gradient(145deg,rgba(8,43,88,0.96),rgba(4,26,58,0.96))] p-4 shadow-[0_22px_48px_rgba(16,32,51,0.16)] max-md:rounded-[14px] max-md:p-3"
+          aria-label="Live auction preview"
+        >
+          <div className="relative z-[1] flex items-center justify-between gap-4 pb-3">
             <div>
-              <h3 className="mb-2.5 mt-0 text-[23px] font-bold">{activePlayer.name}</h3>
-              <span className="inline-flex rounded bg-[var(--primary-strong)] px-2 py-1 text-[10px] font-black uppercase text-white">{activePlayer.role}</span>
-              <p className="my-2 text-xs text-[var(--text-secondary)]">Batch {activePlayer.batch}</p>
-              <p className="my-2 text-xs text-[var(--text-secondary)]">Base Price</p>
-              <strong className="text-[34px] leading-none text-[var(--success)]">{activePlayer.basePrice}</strong>
+              <strong className="block text-sm font-black text-[var(--text-primary)]">CrickBro Mega Auction</strong>
+              <span className="mt-0.5 block text-[11px] font-bold text-[var(--text-secondary)]">Player on the block</span>
             </div>
-            <div className="rounded-lg border border-[var(--border-soft)] p-4">
-              <span className="text-[10px] font-black uppercase text-[var(--text-muted)]">Current Bid</span>
-              <strong className="block text-[32px] text-[var(--primary)]">{activePlayer.currentBid}</strong>
-              <p className="my-2 text-xs text-[var(--text-secondary)]">Highest bidder: {activePlayer.bidder}</p>
-              <p className="my-2 text-xs text-[var(--text-secondary)]">Last Selected Team: {activePlayer.team}</p>
-              <p className="my-2 text-xs text-[var(--text-secondary)]">Remaining Purse: {activePlayer.purse}</p>
-              <p className="my-2 text-xs text-[var(--text-secondary)]">If Win: {activePlayer.winAmount}</p>
+            <span className="inline-flex min-h-7 items-center gap-1.5 rounded-full bg-[var(--danger)] px-3 text-[10px] font-black uppercase text-white shadow-[0_8px_18px_rgba(220,53,69,0.26)] before:h-[7px] before:w-[7px] before:rounded-full before:bg-current before:content-[''] before:[animation:hotAuctionPulse_1.2s_ease-in-out_infinite]">
+              Live
+            </span>
+          </div>
+
+          <div key={activeIndex} className="relative z-[1] block [animation:auctionSlideIn_450ms_ease-out]">
+            <div className="flex items-center gap-3.5 max-md:items-start">
+              <div className="relative aspect-square w-28 shrink-0 overflow-hidden rounded-2xl bg-[image:var(--hero-photo-bg)] shadow-[0_14px_28px_rgba(16,32,51,0.12)] after:absolute after:bottom-0 after:left-[18px] after:right-[18px] after:h-11 after:rounded-t-full after:bg-[rgba(16,32,51,0.09)] after:blur-[10px] after:content-[''] max-md:w-[92px]">
+                <img className="relative z-[1] h-full w-full object-cover object-center" src={profileIcon} alt={activePlayer.name} />
+                <span className="absolute bottom-3 left-3 z-[2] rounded-full bg-[var(--secondary)] px-2.5 py-1 text-[9px] font-black text-[#102033]">{activePlayer.batch}</span>
+              </div>
+
+              <div className="flex min-w-0 flex-col">
+                <span className="w-fit rounded-full bg-[var(--primary-strong)] px-2.5 py-1.5 text-[10px] font-black uppercase text-white">{activePlayer.role}</span>
+                <h3 className="mb-0 mt-2.5 font-heading text-[clamp(22px,2.2vw,28px)] font-black leading-none text-[var(--text-primary)]">{activePlayer.name}</h3>
+              </div>
+            </div>
+
+            <div className="mt-3 grid grid-cols-2 gap-2">
+              <div className="rounded-xl bg-[var(--hero-bid-bg)] p-2.5 shadow-[0_8px_18px_rgba(16,32,51,0.06)]">
+                <span className="block text-[10px] font-black uppercase text-[var(--text-muted)]">Base Price</span>
+                <strong className="mt-1 block text-2xl font-black leading-none text-[var(--success)]">{activePlayer.basePrice}</strong>
+              </div>
+              <div className="rounded-xl bg-[var(--hero-bid-bg)] p-2.5 shadow-[0_8px_18px_rgba(16,32,51,0.06)]">
+                <span className="block text-[10px] font-black uppercase text-[var(--text-muted)]">Current Bid</span>
+                <strong className="mt-1 block text-2xl font-black leading-none text-[var(--primary)]">{activePlayer.currentBid}</strong>
+              </div>
+            </div>
+
+            <div className="mt-2 grid grid-cols-2 gap-[7px]">
+              <p className="m-0 rounded-[10px] bg-[var(--hero-detail-bg)] px-2.5 py-2">
+                <span className="block text-[10px] font-black uppercase text-[var(--text-muted)]">Highest bidder</span>
+                <strong className="mt-1 block truncate text-xs font-black text-[var(--text-primary)]">{activePlayer.bidder}</strong>
+              </p>
+              <p className="m-0 rounded-[10px] bg-[var(--hero-detail-bg)] px-2.5 py-2">
+                <span className="block text-[10px] font-black uppercase text-[var(--text-muted)]">Last selected</span>
+                <strong className="mt-1 block truncate text-xs font-black text-[var(--text-primary)]">{activePlayer.team}</strong>
+              </p>
+              <p className="m-0 rounded-[10px] bg-[var(--hero-detail-bg)] px-2.5 py-2">
+                <span className="block text-[10px] font-black uppercase text-[var(--text-muted)]">Remaining purse</span>
+                <strong className="mt-1 block truncate text-xs font-black text-[var(--text-primary)]">{activePlayer.purse}</strong>
+              </p>
+              <p className="m-0 rounded-[10px] bg-[var(--hero-detail-bg)] px-2.5 py-2">
+                <span className="block text-[10px] font-black uppercase text-[var(--text-muted)]">If win</span>
+                <strong className="mt-1 block truncate text-xs font-black text-[var(--text-primary)]">{activePlayer.winAmount}</strong>
+              </p>
             </div>
           </div>
-          <div className="h-1 overflow-hidden rounded-full bg-white/15">
+          <div className="relative z-[1] mt-3 h-[5px] overflow-hidden rounded-full bg-[rgba(16,32,51,0.1)]">
             <span
               key={activeIndex}
-              className="block h-full bg-[var(--primary)] [animation:auctionProgress_4s_linear_forwards]"
+              className="block h-full bg-gradient-to-r from-[var(--primary)] to-[var(--secondary)] [animation:auctionProgress_4s_linear_forwards]"
             />
           </div>
         </div>

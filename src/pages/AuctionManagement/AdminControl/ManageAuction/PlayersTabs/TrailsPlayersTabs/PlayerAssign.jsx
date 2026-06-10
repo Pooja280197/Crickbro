@@ -195,18 +195,18 @@ const PlayerAssign = ({
   };
 
   return (
-    <div className="fixed top-20 inset-0 z-50  flex items-center justify-center p-4  backdrop-blur-xs bg-black/30 font-main">
-      <div className="relative rounded-2xl shadow-2xl max-w-md w-full bg-white text-gray-800">
+    <div className="fixed top-20 inset-0 z-50 flex items-center justify-center p-4 backdrop-blur-xs bg-black/30 font-main">
+      <div className="relative rounded-2xl shadow-2xl max-w-md w-full bg-[var(--bg-card)] text-[var(--text-primary)]">
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b">
-          <h2 className="text-xl font-bold text-gray-800">
+          <h2 className="text-xl font-bold text-[var(--text-primary)]">
             Assign Players to Trial
           </h2>
           <button
             onClick={handleClose}
-            className="w-8 h-8 flex items-center justify-center hover:bg-gray-100 rounded-full"
+            className="w-8 h-8 flex items-center justify-center hover:bg-[var(--secondary-lighter)] rounded-full"
           >
-            <X className="w-5 h-5 text-gray-800" />
+            <X className="w-5 h-5 text-[var(--text-primary)]" />
           </button>
         </div>
 
@@ -230,7 +230,7 @@ const PlayerAssign = ({
               {/* Selected */}
               <div
                 onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                className="w-full p-3 border rounded-lg cursor-pointer bg-white"
+                className="w-full p-3 border rounded-lg cursor-pointer bg-[var(--bg-card)]"
               >
                 {selectedSlot
                   ? allSlots.find((s) => s._id === selectedSlot)?.slotName
@@ -239,7 +239,7 @@ const PlayerAssign = ({
 
               {/* Dropdown */}
               {isDropdownOpen && (
-                <div className="absolute z-50 w-full bg-white border rounded-lg mt-2 shadow-lg">
+                <div className="absolute z-50 w-full bg-[var(--bg-card)] border rounded-lg mt-2 shadow-lg">
                   {/* Search */}
                   <input
                     type="text"
@@ -266,20 +266,20 @@ const PlayerAssign = ({
                           setIsDropdownOpen(false);
                           fetchSessions(slot._id);
                         }}
-                        className="p-2 hover:bg-gray-100 cursor-pointer"
+                        className="p-2 hover:bg-[var(--secondary-lighter)] cursor-pointer"
                       >
                         {slot.slotName}
                       </div>
                     ))}
 
                     {slotLoading && (
-                      <div className="p-2 text-center text-sm text-gray-400">
+                      <div className="p-2 text-center text-sm text-[var(--text-muted)]">
                         Loading...
                       </div>
                     )}
 
                     {!hasMoreSlots && (
-                      <div className="p-2 text-center text-xs text-gray-400">
+                      <div className="p-2 text-center text-xs text-[var(--text-muted)]">
                         No more locations
                       </div>
                     )}
@@ -289,7 +289,7 @@ const PlayerAssign = ({
             </div>
             {/* Display messages based on state */}
             {slotLoading && (
-              <p className="text-sm text-gray-400 animate-pulse">
+              <p className="text-sm text-[var(--text-muted)] animate-pulse">
                 Loading locations...
               </p>
             )}
@@ -315,7 +315,7 @@ const PlayerAssign = ({
               value={selectedSession}
               onChange={(e) => setSelectedSession(e.target.value)}
               disabled={!selectedSlot || sessionLoading}
-              className="w-full p-3 border rounded-lg bg-white text-gray-800/90"
+              className="w-full p-3 border rounded-lg bg-[var(--bg-card)] text-[var(--text-primary)]/90"
             >
               <option value="" disabled hidden>
                 {!selectedSlot
@@ -344,13 +344,13 @@ const PlayerAssign = ({
             </select>
             {/* Display messages based on state */}
             {!selectedSlot && (
-              <p className="text-sm text-gray-400">
+              <p className="text-sm text-[var(--text-muted)]">
                 Please select a location first
               </p>
             )}
 
             {sessionLoading && selectedSlot && (
-              <p className="text-sm text-gray-400 animate-pulse">
+              <p className="text-sm text-[var(--text-muted)] animate-pulse">
                 Loading shift times...
               </p>
             )}
@@ -394,8 +394,8 @@ const PlayerAssign = ({
               loading ||
               (auctionSlots && auctionSlots.length === 0) ||
               (selectedSlot && sessions && sessions.length === 0)
-                ? "bg-gray-700 text-gray-400 cursor-not-allowed"
-                : "bg-blue-600 hover:bg-blue-700 text-white"
+                ? "bg-gray-700 text-[var(--text-muted)] cursor-not-allowed"
+                : "bg-blue-600 hover:bg-blue-700 text-[var(--text-dark)]"
             }`}
           >
             {loading ? "Assigning..." : "Assign to Trial"}

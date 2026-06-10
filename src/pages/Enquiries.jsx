@@ -6,6 +6,15 @@ import Header from "../components/Header";
 import Footer from "../components/Footer";
 import api from "../utils/api";
 import { FaEdit, FaTasks, FaTrash, FaPlus, FaSearch, FaEye } from "react-icons/fa";
+import {
+  CalendarDays,
+  CheckCircle2,
+  ClipboardList,
+  MessageSquareText,
+  PhoneCall,
+  Sparkles,
+  Trophy,
+} from "lucide-react";
 
 const SERVICE_FIELDS = [
   { key: "organiseTournament", label: "Organise tournament" },
@@ -73,6 +82,7 @@ const Enquiries = ({ theme, onToggleTheme }) => {
   const [newStatus, setNewStatus] = useState("");
   const [viewingEnquiry, setViewingEnquiry] = useState(null);
   const activeTab = isManage ? "manage" : "new";
+  const selectedServiceCount = Object.values(form.services).filter(Boolean).length;
 
   const queryParams = useMemo(
     () => ({
@@ -205,22 +215,22 @@ const Enquiries = ({ theme, onToggleTheme }) => {
   const openLogin = () => window.dispatchEvent(new Event("openLoginPopup"));
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900">
+    <div className="min-h-screen bg-[var(--bg-soft)] text-[var(--text-primary)]">
       <Header theme={theme} onToggleTheme={onToggleTheme} />
       <main className="max-w-7xl mx-auto px-4 py-10">
         {isManage ? (
           <>
             {isLoggedIn ? (
               <>
-                <section className="rounded-[2rem] bg-white shadow-xl border border-slate-200 overflow-hidden mb-10">
-                  <div className="flex flex-col md:flex-row items-center justify-between gap-4 bg-slate-100 px-6 py-5">
+                <section className="ui-card overflow-hidden mb-10 !p-0">
+                  <div className="flex flex-col md:flex-row items-center justify-between gap-4 bg-[var(--secondary-lighter)] px-6 py-5">
                     <div>
-                      <p className="text-sm font-medium text-slate-500">Enquiry management</p>
-                      <h2 className="text-2xl font-semibold text-slate-900">Manage enquiries</h2>
+                      <p className="text-sm font-medium text-[var(--text-secondary)]">Enquiry management</p>
+                      <h2 className="text-2xl font-semibold text-[var(--text-primary)]">Manage enquiries</h2>
                     </div>
                     <button
                       onClick={() => navigate('/enquiries')}
-                      className="btn-primary flex items-center gap-2"
+                      className="ui-btn-primary"
                     >
                       <FaPlus className="w-4 h-4" />
                       Create New Enquiry
@@ -230,20 +240,20 @@ const Enquiries = ({ theme, onToggleTheme }) => {
                   <div className="p-6">
                     <div className="space-y-6">
                       <div className="grid gap-4 md:grid-cols-4">
-                        <label className="space-y-2 text-sm text-slate-700">
+                        <label className="space-y-2 text-sm text-[var(--text-primary)]">
                           Search
                           <input
                             type="search"
                             value={manage.search}
                             onChange={(e) => setManage((prev) => ({ ...prev, search: e.target.value, page: 1 }))}
-                            className="input-field"
+                            className="ui-input"
                             placeholder="Name, email, mobile or tournament"
                           />
                         </label>
-                        <label className="space-y-2 text-sm text-slate-700">
+                        <label className="space-y-2 text-sm text-[var(--text-primary)]">
                           Status
                           <select
-                            className="input-field"
+                            className="ui-input"
                             value={manage.status}
                             onChange={(e) => setManage((prev) => ({ ...prev, status: e.target.value, page: 1 }))}
                           >
@@ -255,31 +265,31 @@ const Enquiries = ({ theme, onToggleTheme }) => {
                             ))}
                           </select>
                         </label>
-                        <label className="space-y-2 text-sm text-slate-700">
+                        <label className="space-y-2 text-sm text-[var(--text-primary)]">
                           From date
                           <input
                             type="date"
                             value={manage.startDate}
                             onChange={(e) => setManage((prev) => ({ ...prev, startDate: e.target.value, page: 1 }))}
-                            className="input-field"
+                            className="ui-input"
                           />
                         </label>
-                        <label className="space-y-2 text-sm text-slate-700">
+                        <label className="space-y-2 text-sm text-[var(--text-primary)]">
                           To date
                           <input
                             type="date"
                             value={manage.endDate}
                             onChange={(e) => setManage((prev) => ({ ...prev, endDate: e.target.value, page: 1 }))}
-                            className="input-field"
+                            className="ui-input"
                           />
                         </label>
                       </div>
 
-                      <div className="rounded-3xl border border-slate-200 bg-slate-50 p-5">
+                      <div className="ui-card-soft">
                         <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
                           <div>
-                            <p className="text-sm text-slate-500">Showing enquiries</p>
-                            <p className="text-lg font-semibold text-slate-900">
+                            <p className="text-sm text-[var(--text-secondary)]">Showing enquiries</p>
+                            <p className="text-lg font-semibold text-[var(--text-primary)]">
                               {manage.total} results • page {manage.page}
                             </p>
                           </div>
@@ -288,7 +298,7 @@ const Enquiries = ({ theme, onToggleTheme }) => {
                               type="button"
                               onClick={() => setManage((prev) => ({ ...prev, page: Math.max(prev.page - 1, 1) }))}
                               disabled={manage.page === 1 || loadingList}
-                              className="rounded-2xl border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-100 transition disabled:cursor-not-allowed disabled:opacity-50"
+                              className="ui-btn-ghost"
                             >
                               Prev
                             </button>
@@ -301,16 +311,16 @@ const Enquiries = ({ theme, onToggleTheme }) => {
                                 }))
                               }
                               disabled={manage.page >= Math.ceil(manage.total / manage.limit) || loadingList}
-                              className="rounded-2xl border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-100 transition disabled:cursor-not-allowed disabled:opacity-50"
+                              className="ui-btn-ghost"
                             >
                               Next
                             </button>
-                            <label className="text-sm text-slate-700">
+                            <label className="text-sm text-[var(--text-primary)]">
                               Page size
                               <select
                                 value={manage.limit}
                                 onChange={(e) => setManage((prev) => ({ ...prev, limit: Number(e.target.value), page: 1 }))}
-                                className="ml-2 rounded-xl border border-slate-300 bg-white px-3 py-2"
+                                className="ml-2 rounded-xl border border-[var(--border-primary)] bg-[var(--bg-card)] px-3 py-2"
                               >
                                 {[10, 20, 40].map((value) => (
                                   <option key={value} value={value}>
@@ -323,9 +333,9 @@ const Enquiries = ({ theme, onToggleTheme }) => {
                         </div>
                       </div>
 
-                      <div className="overflow-x-auto rounded-3xl border border-slate-200 bg-white shadow-sm">
+                      <div className="ui-card overflow-x-auto !p-0">
                         <table className="min-w-full text-left">
-                          <thead className="bg-slate-100 text-slate-500 text-sm uppercase tracking-[0.15em]">
+                          <thead className="bg-[var(--secondary-lighter)] text-[var(--text-secondary)] text-sm uppercase tracking-[0.15em]">
                             <tr>
                               <th className="px-4 py-4">Name</th>
                               <th className="px-4 py-4">Contact</th>
@@ -338,43 +348,43 @@ const Enquiries = ({ theme, onToggleTheme }) => {
                           <tbody>
                             {loadingList ? (
                               <tr>
-                                <td colSpan={6} className="px-4 py-8 text-center text-slate-500">
+                                <td colSpan={6} className="px-4 py-8 text-center text-[var(--text-secondary)]">
                                   Loading enquiries...
                                 </td>
                               </tr>
                             ) : manage.items.length === 0 ? (
                               <tr>
-                                <td colSpan={6} className="px-4 py-8 text-center text-slate-500">
+                                <td colSpan={6} className="px-4 py-8 text-center text-[var(--text-secondary)]">
                                   No enquiries found. Adjust filters or refresh.
                                 </td>
                               </tr>
                             ) : (
                               manage.items.map((item) => (
-                                <tr key={item._id} className="border-t border-slate-200 last:border-b">
-                                  <td className="px-4 py-4 text-sm text-slate-800 font-medium">
+                                <tr key={item._id} className="border-t border-[var(--border-card)] last:border-b">
+                                  <td className="px-4 py-4 text-sm text-[var(--text-primary)] font-medium">
                                     {item.fullName}
                                   </td>
-                                  <td className="px-4 py-4 text-sm text-slate-600 space-y-1">
+                                  <td className="px-4 py-4 text-sm text-[var(--text-secondary)] space-y-1">
                                     <div>{item.mobile}</div>
                                     <div>{item.email || "-"}</div>
                                   </td>
-                                  <td className="px-4 py-4 text-sm text-slate-600">
+                                  <td className="px-4 py-4 text-sm text-[var(--text-secondary)]">
                                     {item.tournamentName}
                                   </td>
                                   <td className="px-4 py-4 text-sm">
-                                    <span className="inline-flex rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold uppercase tracking-[0.15em] text-slate-700">
+                                    <span className="inline-flex rounded-full bg-[var(--secondary-lighter)] px-3 py-1 text-xs font-semibold uppercase tracking-[0.15em] text-[var(--text-primary)]">
                                       {item.status.replace("_", " ")}
                                     </span>
                                   </td>
-                                  <td className="px-4 py-4 text-sm text-slate-500">
+                                  <td className="px-4 py-4 text-sm text-[var(--text-secondary)]">
                                     {new Date(item.createdAt).toLocaleDateString()}
                                   </td>
-                                  <td className="px-4 py-4 text-sm text-slate-700">
+                                  <td className="px-4 py-4 text-sm text-[var(--text-primary)]">
                                     <div className="flex items-center gap-1">
                                       <button
                                         type="button"
                                         onClick={() => setViewingEnquiry(item)}
-                                        className="p-2 rounded-lg border border-slate-300 bg-white text-slate-700 hover:bg-slate-50 hover:border-indigo-300 transition"
+                                        className="ui-btn-ghost !min-h-9 !px-2"
                                         title="View Details"
                                       >
                                         <FaEye className="w-4 h-4" />
@@ -382,7 +392,7 @@ const Enquiries = ({ theme, onToggleTheme }) => {
                                       <button
                                         type="button"
                                         onClick={() => setEditingEnquiry(item)}
-                                        className="p-2 rounded-lg border border-slate-300 bg-white text-slate-700 hover:bg-slate-50 hover:border-indigo-300 transition"
+                                        className="ui-btn-ghost !min-h-9 !px-2"
                                         title="Edit Enquiry"
                                       >
                                         <FaEdit className="w-4 h-4" />
@@ -393,7 +403,7 @@ const Enquiries = ({ theme, onToggleTheme }) => {
                                           setStatusTarget(item);
                                           setNewStatus(item.status);
                                         }}
-                                        className="p-2 rounded-lg border border-slate-300 bg-white text-slate-700 hover:bg-slate-50 hover:border-indigo-300 transition"
+                                        className="ui-btn-ghost !min-h-9 !px-2"
                                         title="Update Status"
                                       >
                                         <FaTasks className="w-4 h-4" />
@@ -401,7 +411,7 @@ const Enquiries = ({ theme, onToggleTheme }) => {
                                       <button
                                         type="button"
                                         onClick={() => handleDelete(item._id)}
-                                        className="p-2 rounded-lg border border-red-200 bg-red-50 text-red-700 hover:bg-red-100 hover:border-red-300 transition"
+                                        className="ui-btn-danger !min-h-9 !px-2"
                                         title="Delete Enquiry"
                                       >
                                         <FaTrash className="w-4 h-4" />
@@ -417,116 +427,116 @@ const Enquiries = ({ theme, onToggleTheme }) => {
 
                       {editingEnquiry && (
                         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                          <div className="bg-white rounded-3xl border border-indigo-300/30 p-6 max-w-4xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+                          <div className="bg-[var(--bg-card)] rounded-3xl border border-indigo-300/30 p-6 max-w-4xl w-full mx-4 max-h-[90vh] overflow-y-auto">
                             <div className="flex items-center justify-between gap-4 mb-5">
                               <div>
-                                <h3 className="text-xl font-semibold text-slate-900">Edit enquiry</h3>
-                                <p className="text-sm text-slate-600">Update all enquiry details and save changes.</p>
+                                <h3 className="text-xl font-semibold text-[var(--text-primary)]">Edit enquiry</h3>
+                                <p className="text-sm text-[var(--text-secondary)]">Update all enquiry details and save changes.</p>
                               </div>
                               <button
                                 onClick={() => setEditingEnquiry(null)}
-                                className="text-slate-500 hover:text-slate-900"
+                                className="text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
                               >
                                 Cancel
                               </button>
                             </div>
                           <div className="grid gap-4 md:grid-cols-2">
-                            <label className="space-y-2 text-sm text-slate-700">
+                            <label className="space-y-2 text-sm text-[var(--text-primary)]">
                               Full name
                               <input
                                 type="text"
                                 value={editingEnquiry.fullName || ""}
                                 onChange={(e) => setEditingEnquiry((prev) => ({ ...prev, fullName: e.target.value }))}
-                                className="input-field"
+                                className="ui-input"
                               />
                             </label>
-                            <label className="space-y-2 text-sm text-slate-700">
+                            <label className="space-y-2 text-sm text-[var(--text-primary)]">
                               Mobile
                               <input
                                 type="text"
                                 value={editingEnquiry.mobile || ""}
                                 onChange={(e) => setEditingEnquiry((prev) => ({ ...prev, mobile: e.target.value }))}
-                                className="input-field"
+                                className="ui-input"
                               />
                             </label>
-                            <label className="space-y-2 text-sm text-slate-700">
+                            <label className="space-y-2 text-sm text-[var(--text-primary)]">
                               Email
                               <input
                                 type="email"
                                 value={editingEnquiry.email || ""}
                                 onChange={(e) => setEditingEnquiry((prev) => ({ ...prev, email: e.target.value }))}
-                                className="input-field"
+                                className="ui-input"
                               />
                             </label>
-                            <label className="space-y-2 text-sm text-slate-700">
+                            <label className="space-y-2 text-sm text-[var(--text-primary)]">
                               Location
                               <input
                                 type="text"
                                 value={editingEnquiry.location || ""}
                                 onChange={(e) => setEditingEnquiry((prev) => ({ ...prev, location: e.target.value }))}
-                                className="input-field"
+                                className="ui-input"
                               />
                             </label>
-                            <label className="space-y-2 text-sm text-slate-700">
+                            <label className="space-y-2 text-sm text-[var(--text-primary)]">
                               Tournament name
                               <input
                                 type="text"
                                 value={editingEnquiry.tournamentName || ""}
                                 onChange={(e) => setEditingEnquiry((prev) => ({ ...prev, tournamentName: e.target.value }))}
-                                className="input-field"
+                                className="ui-input"
                               />
                             </label>
-                            <label className="space-y-2 text-sm text-slate-700">
+                            <label className="space-y-2 text-sm text-[var(--text-primary)]">
                               Number of teams
                               <input
                                 type="number"
                                 value={editingEnquiry.numberOfTeams || ""}
                                 onChange={(e) => setEditingEnquiry((prev) => ({ ...prev, numberOfTeams: e.target.value }))}
-                                className="input-field"
+                                className="ui-input"
                               />
                             </label>
-                            <label className="space-y-2 text-sm text-slate-700">
+                            <label className="space-y-2 text-sm text-[var(--text-primary)]">
                               Start date
                               <input
                                 type="date"
                                 value={editingEnquiry.startDate ? editingEnquiry.startDate.split('T')[0] : ""}
                                 onChange={(e) => setEditingEnquiry((prev) => ({ ...prev, startDate: e.target.value }))}
-                                className="input-field"
+                                className="ui-input"
                               />
                             </label>
-                            <label className="space-y-2 text-sm text-slate-700">
+                            <label className="space-y-2 text-sm text-[var(--text-primary)]">
                               End date
                               <input
                                 type="date"
                                 value={editingEnquiry.endDate ? editingEnquiry.endDate.split('T')[0] : ""}
                                 onChange={(e) => setEditingEnquiry((prev) => ({ ...prev, endDate: e.target.value }))}
-                                className="input-field"
+                                className="ui-input"
                               />
                             </label>
-                            <label className="space-y-2 text-sm text-slate-700">
+                            <label className="space-y-2 text-sm text-[var(--text-primary)]">
                               Preferred contact time
                               <input
                                 type="text"
                                 value={editingEnquiry.preferredContactTime || ""}
                                 onChange={(e) => setEditingEnquiry((prev) => ({ ...prev, preferredContactTime: e.target.value }))}
-                                className="input-field"
+                                className="ui-input"
                               />
                             </label>
-                            <label className="space-y-2 text-sm text-slate-700">
+                            <label className="space-y-2 text-sm text-[var(--text-primary)]">
                               Budget
                               <input
                                 type="text"
                                 value={editingEnquiry.budget || ""}
                                 onChange={(e) => setEditingEnquiry((prev) => ({ ...prev, budget: e.target.value }))}
-                                className="input-field"
+                                className="ui-input"
                               />
                             </label>
-                            <label className="space-y-2 text-sm text-slate-700">
+                            <label className="space-y-2 text-sm text-[var(--text-primary)]">
                               Status
                               <select
                                 value={editingEnquiry.status || ""}
                                 onChange={(e) => setEditingEnquiry((prev) => ({ ...prev, status: e.target.value }))}
-                                className="input-field"
+                                className="ui-input"
                               >
                                 {STATUS_OPTIONS.map((option) => (
                                   <option key={option} value={option}>
@@ -535,12 +545,12 @@ const Enquiries = ({ theme, onToggleTheme }) => {
                                 ))}
                               </select>
                             </label>
-                            <label className="space-y-2 text-sm text-slate-700">
+                            <label className="space-y-2 text-sm text-[var(--text-primary)]">
                               Source
                               <select
                                 value={editingEnquiry.source || ""}
                                 onChange={(e) => setEditingEnquiry((prev) => ({ ...prev, source: e.target.value }))}
-                                className="input-field"
+                                className="ui-input"
                               >
                                 {SOURCE_OPTIONS.map((option) => (
                                   <option key={option} value={option}>
@@ -551,7 +561,7 @@ const Enquiries = ({ theme, onToggleTheme }) => {
                             </label>
                           </div>
                           <div className="mt-4">
-                            <label className="space-y-2 text-sm text-slate-700">
+                            <label className="space-y-2 text-sm text-[var(--text-primary)]">
                               Custom requirement
                               <textarea
                                 value={editingEnquiry.customRequirement || ""}
@@ -562,15 +572,15 @@ const Enquiries = ({ theme, onToggleTheme }) => {
                             </label>
                           </div>
                           <div className="mt-4">
-                            <h4 className="text-lg font-semibold text-slate-900 mb-3">Services</h4>
+                            <h4 className="text-lg font-semibold text-[var(--text-primary)] mb-3">Services</h4>
                             <div className="grid gap-3 sm:grid-cols-2">
                               {SERVICE_FIELDS.map((service) => (
                                 <label
                                   key={service.key}
                                   className={`flex cursor-pointer items-center gap-3 rounded-2xl border px-4 py-3 text-sm font-medium transition ${
                                     editingEnquiry.services?.[service.key]
-                                      ? "border-indigo-600 bg-indigo-50 text-slate-900 shadow-sm"
-                                      : "border-slate-200 bg-white text-slate-700 hover:border-indigo-400 hover:bg-slate-50"
+                                      ? "border-indigo-600 bg-indigo-50 text-[var(--text-primary)] shadow-sm"
+                                      : "border-[var(--border-card)] bg-[var(--bg-card)] text-[var(--text-primary)] hover:border-indigo-400 hover:bg-[var(--bg-soft)]"
                                   }`}
                                 >
                                   <input
@@ -593,13 +603,13 @@ const Enquiries = ({ theme, onToggleTheme }) => {
                           <div className="mt-5 flex flex-wrap gap-3">
                             <button
                               onClick={handleEditSave}
-                              className="btn-primary"
+                              className="ui-btn-primary"
                             >
                               Save changes
                             </button>
                             <button
                               onClick={() => setEditingEnquiry(null)}
-                              className="rounded-2xl border border-slate-300 bg-white px-5 py-3 font-semibold text-slate-700 hover:bg-slate-100 transition"
+                              className="rounded-2xl border border-[var(--border-primary)] bg-[var(--bg-card)] px-5 py-3 font-semibold text-[var(--text-primary)] hover:bg-[var(--secondary-lighter)] transition"
                             >
                               Close
                             </button>
@@ -610,80 +620,80 @@ const Enquiries = ({ theme, onToggleTheme }) => {
 
                       {viewingEnquiry && (
                         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                          <div className="bg-white rounded-3xl border border-green-300/30 p-6 max-w-4xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+                          <div className="bg-[var(--bg-card)] rounded-3xl border border-green-300/30 p-6 max-w-4xl w-full mx-4 max-h-[90vh] overflow-y-auto">
                             <div className="flex items-center justify-between gap-4 mb-5">
                               <div>
-                                <h3 className="text-xl font-semibold text-slate-900">View enquiry</h3>
-                                <p className="text-sm text-slate-600">View all enquiry details.</p>
+                                <h3 className="text-xl font-semibold text-[var(--text-primary)]">View enquiry</h3>
+                                <p className="text-sm text-[var(--text-secondary)]">View all enquiry details.</p>
                               </div>
                               <button
                                 onClick={() => setViewingEnquiry(null)}
-                                className="text-slate-500 hover:text-slate-900"
+                                className="text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
                               >
                                 Close
                               </button>
                             </div>
                           <div className="grid gap-4 md:grid-cols-2">
-                            <div className="space-y-2 text-sm text-slate-700">
+                            <div className="space-y-2 text-sm text-[var(--text-primary)]">
                               <strong>Full name:</strong> {viewingEnquiry.fullName || "-"}
                             </div>
-                            <div className="space-y-2 text-sm text-slate-700">
+                            <div className="space-y-2 text-sm text-[var(--text-primary)]">
                               <strong>Mobile:</strong> {viewingEnquiry.mobile || "-"}
                             </div>
-                            <div className="space-y-2 text-sm text-slate-700">
+                            <div className="space-y-2 text-sm text-[var(--text-primary)]">
                               <strong>Email:</strong> {viewingEnquiry.email || "-"}
                             </div>
-                            <div className="space-y-2 text-sm text-slate-700">
+                            <div className="space-y-2 text-sm text-[var(--text-primary)]">
                               <strong>Location:</strong> {viewingEnquiry.location || "-"}
                             </div>
-                            <div className="space-y-2 text-sm text-slate-700">
+                            <div className="space-y-2 text-sm text-[var(--text-primary)]">
                               <strong>Tournament name:</strong> {viewingEnquiry.tournamentName || "-"}
                             </div>
-                            <div className="space-y-2 text-sm text-slate-700">
+                            <div className="space-y-2 text-sm text-[var(--text-primary)]">
                               <strong>Number of teams:</strong> {viewingEnquiry.numberOfTeams || "-"}
                             </div>
-                            <div className="space-y-2 text-sm text-slate-700">
+                            <div className="space-y-2 text-sm text-[var(--text-primary)]">
                               <strong>Start date:</strong> {viewingEnquiry.startDate ? new Date(viewingEnquiry.startDate).toLocaleDateString() : "-"}
                             </div>
-                            <div className="space-y-2 text-sm text-slate-700">
+                            <div className="space-y-2 text-sm text-[var(--text-primary)]">
                               <strong>End date:</strong> {viewingEnquiry.endDate ? new Date(viewingEnquiry.endDate).toLocaleDateString() : "-"}
                             </div>
-                            <div className="space-y-2 text-sm text-slate-700">
+                            <div className="space-y-2 text-sm text-[var(--text-primary)]">
                               <strong>Preferred contact time:</strong> {viewingEnquiry.preferredContactTime || "-"}
                             </div>
-                            <div className="space-y-2 text-sm text-slate-700">
+                            <div className="space-y-2 text-sm text-[var(--text-primary)]">
                               <strong>Budget:</strong> {viewingEnquiry.budget || "-"}
                             </div>
-                            <div className="space-y-2 text-sm text-slate-700">
+                            <div className="space-y-2 text-sm text-[var(--text-primary)]">
                               <strong>Status:</strong> {viewingEnquiry.status ? viewingEnquiry.status.replace("_", " ") : "-"}
                             </div>
-                            <div className="space-y-2 text-sm text-slate-700">
+                            <div className="space-y-2 text-sm text-[var(--text-primary)]">
                               <strong>Source:</strong> {viewingEnquiry.source ? viewingEnquiry.source.charAt(0).toUpperCase() + viewingEnquiry.source.slice(1) : "-"}
                             </div>
                           </div>
                           <div className="mt-4">
-                            <strong className="text-sm text-slate-700">Custom requirement:</strong>
-                            <p className="mt-1 text-sm text-slate-600">{viewingEnquiry.customRequirement || "-"}</p>
+                            <strong className="text-sm text-[var(--text-primary)]">Custom requirement:</strong>
+                            <p className="mt-1 text-sm text-[var(--text-secondary)]">{viewingEnquiry.customRequirement || "-"}</p>
                           </div>
                           <div className="mt-4">
-                            <strong className="text-sm text-slate-700">Services:</strong>
+                            <strong className="text-sm text-[var(--text-primary)]">Services:</strong>
                             <div className="mt-2 grid gap-2 sm:grid-cols-2">
                               {SERVICE_FIELDS.map((service) => (
                                 viewingEnquiry.services?.[service.key] && (
-                                  <div key={service.key} className="text-sm text-slate-600 bg-white rounded-lg px-3 py-2 border border-slate-200">
+                                  <div key={service.key} className="text-sm text-[var(--text-secondary)] bg-[var(--bg-card)] rounded-lg px-3 py-2 border border-[var(--border-card)]">
                                     {service.label}
                                   </div>
                                 )
                               ))}
                               {!SERVICE_FIELDS.some(service => viewingEnquiry.services?.[service.key]) && (
-                                <div className="text-sm text-slate-500">No services selected</div>
+                                <div className="text-sm text-[var(--text-secondary)]">No services selected</div>
                               )}
                             </div>
                           </div>
                           <div className="mt-5 flex flex-wrap gap-3">
                             <button
                               onClick={() => setViewingEnquiry(null)}
-                              className="rounded-2xl border border-slate-300 bg-white px-5 py-3 font-semibold text-slate-700 hover:bg-slate-100 transition"
+                              className="rounded-2xl border border-[var(--border-primary)] bg-[var(--bg-card)] px-5 py-3 font-semibold text-[var(--text-primary)] hover:bg-[var(--secondary-lighter)] transition"
                             >
                               Close
                             </button>
@@ -694,25 +704,25 @@ const Enquiries = ({ theme, onToggleTheme }) => {
 
                       {statusTarget && (
                         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                          <div className="bg-white rounded-3xl border border-amber-300/40 p-6 max-w-md w-full mx-4">
+                          <div className="bg-[var(--bg-card)] rounded-3xl border border-amber-300/40 p-6 max-w-md w-full mx-4">
                             <div className="flex items-center justify-between gap-4 mb-5">
                               <div>
-                                <h3 className="text-xl font-semibold text-slate-900">Update status</h3>
-                                <p className="text-sm text-slate-600">Choose the next enquiry state.</p>
+                                <h3 className="text-xl font-semibold text-[var(--text-primary)]">Update status</h3>
+                                <p className="text-sm text-[var(--text-secondary)]">Choose the next enquiry state.</p>
                               </div>
                               <button
                                 onClick={() => setStatusTarget(null)}
-                                className="text-slate-500 hover:text-slate-900"
+                                className="text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
                               >
                                 Cancel
                               </button>
                             </div>
-                          <label className="space-y-2 text-sm text-slate-700">
+                          <label className="space-y-2 text-sm text-[var(--text-primary)]">
                             Status
                             <select
                               value={newStatus}
                               onChange={(e) => setNewStatus(e.target.value)}
-                              className="input-field"
+                              className="ui-input"
                             >
                               <option value="">Select status</option>
                               {STATUS_OPTIONS.map((option) => (
@@ -723,12 +733,12 @@ const Enquiries = ({ theme, onToggleTheme }) => {
                             </select>
                           </label>
                           <div className="mt-5 flex flex-wrap gap-3">
-                            <button onClick={handleStatusUpdate} className="btn-primary">
+                            <button onClick={handleStatusUpdate} className="ui-btn-primary">
                               Update status
                             </button>
                             <button
                               onClick={() => setStatusTarget(null)}
-                              className="rounded-2xl border border-slate-300 bg-white px-5 py-3 font-semibold text-slate-700 hover:bg-slate-100 transition"
+                              className="rounded-2xl border border-[var(--border-primary)] bg-[var(--bg-card)] px-5 py-3 font-semibold text-[var(--text-primary)] hover:bg-[var(--secondary-lighter)] transition"
                             >
                               Cancel
                             </button>
@@ -741,12 +751,12 @@ const Enquiries = ({ theme, onToggleTheme }) => {
                 </section>
               </>
             ) : (
-              <div className="rounded-3xl bg-white border border-red-100 p-6 text-center shadow-sm">
-                <p className="text-lg font-semibold text-slate-900">Management access requires login</p>
-                <p className="mt-2 text-slate-600">Please login to access enquiry management.</p>
+              <div className="rounded-3xl bg-[var(--bg-card)] border border-red-100 p-6 text-center shadow-sm">
+                <p className="text-lg font-semibold text-[var(--text-primary)]">Management access requires login</p>
+                <p className="mt-2 text-[var(--text-secondary)]">Please login to access enquiry management.</p>
                 <button
                   onClick={openLogin}
-                  className="mt-4 btn-primary"
+                  className="mt-4 ui-btn-secondary"
                 >
                   Login to manage enquiries
                 </button>
@@ -755,110 +765,178 @@ const Enquiries = ({ theme, onToggleTheme }) => {
           </>
         ) : (
           <>
-            <section className="rounded-[2rem] bg-white shadow-xl border border-slate-200 overflow-hidden">
-              <div className="flex flex-col md:flex-row items-center justify-between gap-4 bg-slate-100 px-6 py-5">
-                <div>
-                  <p className="text-sm font-medium text-slate-500">Enquiry form</p>
-                  <h2 className="text-2xl font-semibold text-slate-900">Submit your enquiry</h2>
+            <section className="overflow-hidden rounded-xl border border-[var(--border-card)] bg-[var(--bg-card)] shadow-[var(--shadow-card)]">
+              <div className="relative overflow-hidden border-b border-[var(--border-card)] bg-[var(--bg-main)] px-4 py-4 sm:px-5">
+                <div className="absolute right-6 top-4 hidden h-16 w-16 rounded-full border border-[var(--border-primary)] bg-[var(--accent-light)] opacity-60 blur-xl sm:block" />
+                <div className="relative flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+                  <div className="max-w-2xl">
+                    <span className="inline-flex items-center gap-2 rounded-full border border-[var(--border-primary)] bg-[var(--accent-light)] px-2.5 py-1 text-[11px] font-bold uppercase tracking-wide text-[var(--primary)]">
+                      <Sparkles size={13} />
+                      Enquiry form
+                    </span>
+                    <h2 className="mt-3 font-heading text-2xl font-black leading-tight text-[var(--text-primary)] md:text-3xl">
+                      Tell us what you want to run.
+                    </h2>
+                    <p className="mt-2 max-w-xl text-sm font-medium leading-5 text-[var(--text-secondary)]">
+                      Share your tournament details and services. Our team will use this to plan the right setup for you.
+                    </p>
+                  </div>
+
+                  <div className="grid gap-2 sm:grid-cols-3 lg:min-w-[390px]">
+                    {[
+                      { label: "Contact", value: "Details", icon: PhoneCall },
+                      { label: "Tournament", value: "Plan", icon: Trophy },
+                      { label: "Services", value: selectedServiceCount || 0, icon: ClipboardList },
+                    ].map((item) => {
+                      const Icon = item.icon;
+                      return (
+                        <div
+                          key={item.label}
+                          className="rounded-lg border border-[var(--border-card)] bg-[var(--bg-card)] px-3 py-2.5 shadow-sm"
+                        >
+                          <div className="flex items-center gap-2 text-[var(--primary)]">
+                            <Icon size={16} />
+                            <span className="text-[10px] font-black uppercase tracking-wide">
+                              {item.label}
+                            </span>
+                          </div>
+                          <p className="mt-1.5 text-sm font-bold text-[var(--text-primary)]">
+                            {item.value}
+                          </p>
+                        </div>
+                      );
+                    })}
+                  </div>
                 </div>
               </div>
 
-              <div className="p-6">
-                <div className="grid gap-8 lg:grid-cols-[1.4fr_0.6fr]">
-                  <div className="space-y-6 bg-slate-50 rounded-3xl border border-slate-200 p-6 shadow-sm">
-                    <div className="grid gap-4 md:grid-cols-2">
-                      <label className="space-y-2 text-sm text-slate-700">
-                        Full name
+              <div className="p-3 sm:p-4">
+                <div className="grid gap-4 xl:grid-cols-[minmax(0,1.4fr)_minmax(320px,0.6fr)]">
+                  <div className="order-1 space-y-4 rounded-lg border border-[var(--border-card)] bg-[var(--bg-soft)] p-4 shadow-sm">
+                    <div className="flex items-center gap-3 border-b border-[var(--border-card)] pb-3">
+                      <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-[var(--border-primary)] bg-[var(--accent-light)] text-[var(--primary)]">
+                        <MessageSquareText size={17} />
+                      </div>
+                      <div>
+                        <h3 className="text-sm font-bold text-[var(--text-primary)]">
+                          Basic information
+                        </h3>
+                        <p className="text-xs font-medium text-[var(--text-secondary)]">
+                          Required details help us contact you quickly.
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="grid gap-3 md:grid-cols-2">
+                      <label className="space-y-2 text-sm font-semibold text-[var(--text-primary)]">
+                        Full name <span className="text-[var(--danger)]">*</span>
                         <input
                           type="text"
                           value={form.fullName}
                           onChange={(e) => changeForm("fullName", e.target.value)}
-                          className="input-field"
+                          className="ui-input"
                           placeholder="Your name"
                         />
                       </label>
-                      <label className="space-y-2 text-sm text-slate-700">
-                        Mobile number
+                      <label className="space-y-2 text-sm font-semibold text-[var(--text-primary)]">
+                        Mobile number <span className="text-[var(--danger)]">*</span>
                         <input
                           type="tel"
                           value={form.mobile}
                           onChange={(e) => changeForm("mobile", e.target.value)}
-                          className="input-field"
+                          className="ui-input"
                           placeholder="Mobile number"
                         />
                       </label>
-                      <label className="space-y-2 text-sm text-slate-700">
+                      <label className="space-y-2 text-sm font-semibold text-[var(--text-primary)]">
                         Email address
                         <input
                           type="email"
                           value={form.email}
                           onChange={(e) => changeForm("email", e.target.value)}
-                          className="input-field"
+                          className="ui-input"
                           placeholder="Email (optional)"
                         />
                       </label>
-                      <label className="space-y-2 text-sm text-slate-700">
+                      <label className="space-y-2 text-sm font-semibold text-[var(--text-primary)]">
                         Location
                         <input
                           type="text"
                           value={form.location}
                           onChange={(e) => changeForm("location", e.target.value)}
-                          className="input-field"
+                          className="ui-input"
                           placeholder="City / venue"
                         />
                       </label>
-                      <label className="space-y-2 text-sm text-slate-700">
-                        Tournament name
+                    </div>
+
+                    <div className="flex items-center gap-3 border-b border-t border-[var(--border-card)] py-3">
+                      <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-[var(--border-primary)] bg-[var(--accent-light)] text-[var(--primary)]">
+                        <CalendarDays size={17} />
+                      </div>
+                      <div>
+                        <h3 className="text-sm font-bold text-[var(--text-primary)]">
+                          Tournament plan
+                        </h3>
+                        <p className="text-xs font-medium text-[var(--text-secondary)]">
+                          Add schedule, scale, and enquiry source.
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="grid gap-3 md:grid-cols-3">
+                      <label className="space-y-2 text-sm font-semibold text-[var(--text-primary)]">
+                        Tournament name <span className="text-[var(--danger)]">*</span>
                         <input
                           type="text"
                           value={form.tournamentName}
                           onChange={(e) => changeForm("tournamentName", e.target.value)}
-                          className="input-field"
+                          className="ui-input"
                           placeholder="Tournament name"
                         />
                       </label>
-                      <label className="space-y-2 text-sm text-slate-700">
+                      <label className="space-y-2 text-sm font-semibold text-[var(--text-primary)]">
                         Number of teams
                         <input
                           type="number"
                           value={form.numberOfTeams}
                           onChange={(e) => changeForm("numberOfTeams", e.target.value)}
-                          className="input-field"
+                          className="ui-input"
                           placeholder="Number"
                         />
                       </label>
-                      <label className="space-y-2 text-sm text-slate-700">
+                      <label className="space-y-2 text-sm font-semibold text-[var(--text-primary)]">
                         Start date
                         <input
                           type="date"
                           value={form.startDate}
                           onChange={(e) => changeForm("startDate", e.target.value)}
-                          className="input-field"
+                          className="ui-input"
                         />
                       </label>
-                      <label className="space-y-2 text-sm text-slate-700">
+                      <label className="space-y-2 text-sm font-semibold text-[var(--text-primary)]">
                         End date
                         <input
                           type="date"
                           value={form.endDate}
                           onChange={(e) => changeForm("endDate", e.target.value)}
-                          className="input-field"
+                          className="ui-input"
                         />
                       </label>
-                      <label className="space-y-2 text-sm text-slate-700">
+                      <label className="space-y-2 text-sm font-semibold text-[var(--text-primary)]">
                         Preferred contact time
                         <input
                           type="text"
                           value={form.preferredContactTime}
                           onChange={(e) => changeForm("preferredContactTime", e.target.value)}
-                          className="input-field"
+                          className="ui-input"
                           placeholder="E.g. 10am - 2pm"
                         />
                       </label>
-                      <label className="space-y-2 text-sm text-slate-700">
+                      <label className="space-y-2 text-sm font-semibold text-[var(--text-primary)]">
                         Source
                         <select
-                          className="input-field"
+                          className="ui-input"
                           value={form.source}
                           onChange={(e) => changeForm("source", e.target.value)}
                         >
@@ -871,64 +949,63 @@ const Enquiries = ({ theme, onToggleTheme }) => {
                       </label>
                     </div>
 
-                    <div>
-                      <label className="space-y-2 text-sm text-slate-700">
-                        Custom requirement
+                    <div className="grid gap-3 md:grid-cols-[minmax(0,1fr)_240px]">
+                      <label className="rounded-lg border border-[var(--border-card)] bg-[var(--bg-card)] p-3 text-sm font-semibold text-[var(--text-primary)] shadow-sm">
+                        <span className="mb-2 flex items-center justify-between gap-3">
+                          <span>Custom requirement</span>
+                          <span className="text-[10px] font-bold uppercase tracking-wide text-[var(--text-muted)]">
+                            Optional
+                          </span>
+                        </span>
                         <textarea
                           value={form.customRequirement}
                           onChange={(e) => changeForm("customRequirement", e.target.value)}
-                          className="input-field min-h-[140px]"
-                          placeholder="Describe your exact requirement"
+                          className="min-h-[92px] w-full resize-none rounded-lg border border-[var(--border-card)] bg-[var(--bg-main)] px-3 py-2 text-sm font-medium text-[var(--text-primary)] outline-none transition placeholder:text-[var(--text-muted)] focus:border-[var(--border-primary)] focus:bg-[var(--bg-card)]"
+                          placeholder="Example: auction setup, live scoring, streaming, ground support..."
                         />
                       </label>
-                    </div>
-
-                    <div>
-                      <label className="space-y-2 text-sm text-slate-700">
+                      <label className="space-y-2 text-sm font-semibold text-[var(--text-primary)]">
                         Budget
                         <input
                           type="text"
                           value={form.budget}
                           onChange={(e) => changeForm("budget", e.target.value)}
-                          className="input-field"
+                          className="ui-input"
                           placeholder="Budget range"
                         />
+                        <div className="rounded-lg border border-[var(--border-card)] bg-[var(--bg-card)] p-2.5 text-xs font-medium leading-5 text-[var(--text-secondary)]">
+                          Optional, but useful for suggesting the right service package.
+                        </div>
                       </label>
                     </div>
 
-                    <div className="grid gap-3 sm:grid-cols-2">
-                      <button
-                        onClick={handleSubmit}
-                        disabled={submitting}
-                        className="btn-primary w-full"
-                      >
-                        {submitting ? "Submitting..." : "Submit Enquiry"}
-                      </button>
-                      <button
-                        onClick={resetForm}
-                        type="button"
-                        className="w-full rounded-2xl border border-slate-300 px-5 py-3 font-semibold text-slate-700 hover:bg-slate-100 transition"
-                      >
-                        Reset form
-                      </button>
-                    </div>
                   </div>
 
-                  <aside className="rounded-3xl bg-white border border-slate-200 p-6 shadow-sm">
-                    <h3 className="text-xl font-semibold text-slate-900 mb-2">
-                      Services you can request
-                    </h3>
-                    <p className="text-sm text-slate-500 mb-5">
-                      Select all services you need for your tournament.
-                    </p>
-                    <div className="grid gap-3 sm:grid-cols-2">
+                  <aside className="order-2 rounded-lg border border-[var(--border-card)] bg-[var(--bg-card)] p-3 shadow-[var(--shadow-card)] xl:sticky xl:top-24 xl:self-start">
+                    <div className="mb-3 rounded-lg border border-[var(--border-card)] bg-[var(--bg-main)] p-3">
+                      <div className="flex items-start justify-between gap-3">
+                        <div>
+                          <h3 className="text-base font-bold text-[var(--text-primary)]">
+                            Services you can request
+                          </h3>
+                          <p className="mt-1 text-xs font-medium text-[var(--text-secondary)]">
+                            Select all services you need for your tournament.
+                          </p>
+                        </div>
+                        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-[var(--border-primary)] bg-[var(--accent-light)] text-sm font-black text-[var(--primary)]">
+                          {selectedServiceCount}
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="grid max-h-[520px] gap-2 overflow-y-auto pr-1 [scrollbar-color:var(--border-primary)_transparent] [scrollbar-width:thin]">
                       {SERVICE_FIELDS.map((service) => (
                         <label
                           key={service.key}
-                          className={`flex cursor-pointer items-center gap-3 rounded-2xl border px-4 py-3 text-sm font-medium transition ${
+                          className={`flex cursor-pointer items-center gap-2.5 rounded-lg border px-3 py-2.5 text-sm font-semibold transition ${
                             form.services[service.key]
-                              ? "border-indigo-600 bg-indigo-50 text-slate-900 shadow-sm"
-                              : "border-slate-200 bg-white text-slate-700 hover:border-indigo-400 hover:bg-slate-50"
+                              ? "border-[var(--border-primary)] bg-[var(--accent-light)] text-[var(--primary)] shadow-sm"
+                              : "border-[var(--border-card)] bg-[var(--bg-main)] text-[var(--text-primary)] hover:border-[var(--border-primary)] hover:bg-[var(--bg-soft)]"
                           }`}
                         >
                           <input
@@ -938,10 +1015,30 @@ const Enquiries = ({ theme, onToggleTheme }) => {
                             className="checkbox-consistent"
                           />
                           <span>{service.label}</span>
+                          {form.services[service.key] && (
+                            <CheckCircle2 size={16} className="ml-auto shrink-0" />
+                          )}
                         </label>
                       ))}
                     </div>
                   </aside>
+
+                  <div className="order-3 grid gap-3 rounded-lg border border-[var(--border-card)] bg-[var(--bg-main)] p-3 sm:grid-cols-2 xl:col-span-2">
+                    <button
+                      onClick={handleSubmit}
+                      disabled={submitting}
+                      className="ui-btn-primary w-full"
+                    >
+                      {submitting ? "Submitting..." : "Submit Enquiry"}
+                    </button>
+                    <button
+                      onClick={resetForm}
+                      type="button"
+                      className="w-full rounded-lg border border-[var(--border-card)] bg-[var(--bg-card)] px-5 py-3 font-semibold text-[var(--text-primary)] transition hover:border-[var(--border-primary)] hover:bg-[var(--accent-light)]"
+                    >
+                      Reset form
+                    </button>
+                  </div>
                 </div>
               </div>
             </section>

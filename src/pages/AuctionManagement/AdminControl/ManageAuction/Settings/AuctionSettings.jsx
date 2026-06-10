@@ -16,6 +16,8 @@ import {
 } from "../../../../../redux/actions";
 import {
   X,
+  Phone,
+  User,
   UserPlus,
   Users,
   Shield,
@@ -43,6 +45,29 @@ const tabs = [
   { key: "rules", label: "Edit Auction Rules", icon: SettingsIcon },
 ];
 
+const panelClass =
+  "overflow-hidden rounded-lg border border-[var(--border-card)] bg-[var(--bg-card)] shadow-[var(--shadow-card)]";
+const panelHeaderClass =
+  "border-b border-[var(--border-card)] bg-[var(--bg-main)] px-4 py-3";
+const iconTileClass =
+  "flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-[var(--border-primary)] bg-[var(--accent-light)] text-[var(--primary)]";
+const fieldShellClass =
+  "flex h-10 items-center gap-2 rounded-lg border border-[var(--border-card)] bg-[var(--bg-main)] px-3 transition focus-within:border-[var(--border-primary)] focus-within:bg-[var(--bg-card)]";
+const inputClass =
+  "w-full bg-transparent text-sm font-medium text-[var(--text-primary)] outline-none placeholder:text-[var(--text-secondary)] disabled:cursor-not-allowed disabled:text-[var(--text-secondary)]";
+const selectClass =
+  "h-10 w-full rounded-lg border border-[var(--border-card)] bg-[var(--bg-main)] px-3 text-sm font-medium text-[var(--text-primary)] outline-none transition focus:border-[var(--border-primary)] focus:bg-[var(--bg-card)]";
+const primaryButtonClass =
+  "inline-flex h-10 items-center justify-center gap-2 rounded-lg bg-[var(--secondary)] px-4 text-sm font-semibold text-[#102033] shadow-sm transition hover:bg-[var(--secondary-strong)] disabled:cursor-not-allowed disabled:opacity-60";
+const outlineButtonClass =
+  "inline-flex h-10 items-center justify-center gap-2 rounded-lg border border-[var(--border-card)] bg-[var(--bg-main)] px-4 text-sm font-semibold text-[var(--text-primary)] transition hover:border-[var(--border-primary)] hover:bg-[var(--accent-light)]";
+const listItemClass =
+  "flex items-center justify-between rounded-lg border border-[var(--border-card)] bg-[var(--bg-main)] p-3 transition hover:border-[var(--border-primary)] hover:bg-[var(--bg-card)]";
+const avatarClass =
+  "flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg bg-[var(--accent-light)] text-sm font-bold uppercase text-[var(--primary)]";
+const scrollClass =
+  "professional-scrollbar max-h-[400px] overflow-y-auto p-4";
+
 const AuctionSettings = ({ auctionId }) => {
   const [activeTab, setActiveTab] = useState("addAdmin");
   const [contact, setContact] = useState("");
@@ -50,7 +75,7 @@ const AuctionSettings = ({ auctionId }) => {
   const [sendAdminId, setSendAdminId] = useState(null);
   const [searchAuctionTeam, setSearchAuctionTeam] = useState("");
   const [selectedTeam, setSelectedTeam] = useState([]);
-  const [selectedTeamId, setSelectedTeamId] = useState();
+  const [selectedTeamId, setSelectedTeamId] = useState("");
   const [addName, setAddName] = useState("");
    const [showStatusModal, setShowStatusModal] = useState(false);
 
@@ -128,9 +153,16 @@ const AuctionSettings = ({ auctionId }) => {
           setName(res.data.data.name);
           setSendAdminId(res.data.data._id);
           setAddName(false);
+        } else {
+          setName("");
+          setSendAdminId("");
+          setAddName(true);
         }
       } catch (err) {
         console.error(err);
+        setName("");
+        setSendAdminId("");
+        setAddName(true);
       }
     } else {
       setSendAdminId("");
@@ -197,7 +229,7 @@ const AuctionSettings = ({ auctionId }) => {
     try {
       await dispatch(addTeamOwner(auctionId, selectedTeamId, payload));
       toast.success("Team Owner Added!");
-      setSelectedTeamId(null);
+      setSelectedTeamId("");
       setSendAdminId(null);
       setContact("");
       setName("");
@@ -222,6 +254,36 @@ const AuctionSettings = ({ auctionId }) => {
 
   const visibleTabs = tabs;
 
+  const getTeamName = (owner) =>
+    owner?.team?.name ||
+    owner?.teamId?.name ||
+    owner?.teamName ||
+    owner?.name ||
+    "Team";
+
+  const getTeamId = (owner) =>
+    owner?.team?._id || owner?.teamId?._id || owner?.teamId || owner?._id || "";
+
+  const getOwnerItems = (owner) => {
+    if (Array.isArray(owner?.owners)) return owner.owners;
+    if (Array.isArray(owner?.teamOwners)) return owner.teamOwners;
+    if (Array.isArray(owner?.owner)) return owner.owner;
+
+    const singleOwner =
+      owner?.owner ||
+      owner?.teamOwner ||
+      owner?.user ||
+      owner?.admin ||
+      (owner?.ownerName || owner?.ownerMobile
+        ? {
+            _id: owner?.ownerId || owner?._id,
+            name: owner?.ownerName,
+            mobile: owner?.ownerMobile,
+          }
+        : null);
+
+    return singleOwner ? [singleOwner] : [];
+  };
 
   const renderAddTeamOwner = () => {
     if (isTeamOwnersLoading) {
@@ -232,91 +294,100 @@ const AuctionSettings = ({ auctionId }) => {
       );
     }
 
+    const ownerCount = ownerList.reduce(
+      (total, owner) => total + getOwnerItems(owner).length,
+      0,
+    );
+
     // Add Team Owner Form Component
     const AddTeamOwnerForm = () => (
-      <div className="border rounded-lg bg-gray-50">
-        <div className="border-b px-4 py-3 bg-white rounded-t-lg">
-          <h3 className="font-semibold text-gray-800 flex items-center gap-2">
-            <UserPlus className="w-4 h-4" />
-            Add New Team Owner
-          </h3>
-          <p className="text-xs text-gray-500 mt-1">
-            Add team owners by phone number
-          </p>
+      <div className={panelClass}>
+        <div className={panelHeaderClass}>
+          <div className="flex items-center gap-3">
+            <div className={iconTileClass}>
+              <UserPlus className="h-4 w-4" />
+            </div>
+            <div>
+              <h3 className="text-sm font-semibold text-[var(--text-primary)]">
+                Add New Team Owner
+              </h3>
+              <p className="mt-0.5 text-xs text-[var(--text-secondary)]">
+                Add team owners by phone number
+              </p>
+            </div>
+          </div>
         </div>
 
         <div className="p-4 space-y-4">
           {/* Team Selection */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="mb-1.5 block text-xs font-semibold text-[var(--text-primary)]">
               Select Team
             </label>
-            <div className="px-3 py-2 rounded-lg bg-white border border-gray-300 focus-within:border-purple-500 focus-within:ring-1 focus-within:ring-purple-500 transition">
               <select
                 value={selectedTeamId}
                 onChange={(e) => setSelectedTeamId(e.target.value)}
-                className="w-full bg-transparent text-gray-800 outline-none text-sm cursor-pointer"
+                className={selectClass}
               >
-                <option value="" className="bg-white text-gray-800">
+                <option value="" className="bg-[var(--bg-card)] text-[var(--text-primary)]">
                   -- Select a team --
                 </option>
                 {tournamentTeam?.map((item) => (
                   <option
                     key={item?.teamId?._id}
                     value={item?.teamId?._id}
-                    className="bg-white text-gray-800"
+                    className="bg-[var(--bg-card)] text-[var(--text-primary)]"
                   >
                     {item?.teamId?.name}
                   </option>
                 ))}
               </select>
-            </div>
           </div>
 
           {/* Phone Input */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="mb-1.5 block text-xs font-semibold text-[var(--text-primary)]">
               Phone Number
             </label>
-            <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-white border border-gray-300 focus-within:border-purple-500 focus-within:ring-1 focus-within:ring-purple-500 transition">
-              <span className="text-gray-400 text-sm">📱</span>
+            <div className={fieldShellClass}>
+              <Phone className="h-4 w-4 text-[var(--primary)]" />
               <input
                 type="tel"
                 value={contact}
                 onChange={handleContactChange}
                 placeholder="Enter 10 digit mobile number"
                 maxLength={10}
-                className="w-full bg-transparent outline-none text-sm text-gray-800 placeholder-gray-400"
+                className={inputClass}
               />
             </div>
           </div>
 
           {/* Name Input */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="mb-1.5 block text-xs font-semibold text-[var(--text-primary)]">
               Owner Name
             </label>
-            <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-white border border-gray-300 focus-within:border-purple-500 focus-within:ring-1 focus-within:ring-purple-500 transition">
-              <span className="text-gray-400 text-sm">👤</span>
+            <div className={fieldShellClass}>
+              <User className="h-4 w-4 text-[var(--primary)]" />
               <input
                 type="text"
                 value={name}
-                disabled={!addName && !sendAdminId}
                 onChange={(e) => {
                   setName(e.target.value);
                   setAddName(true);
+                  setSendAdminId("");
                 }}
                 placeholder={
                   sendAdminId
                     ? "Auto fetched name"
                     : "Type name or auto-fetched"
                 }
-                className="w-full bg-transparent outline-none text-sm text-gray-800 placeholder-gray-400 disabled:bg-gray-100 disabled:cursor-not-allowed"
+                className={inputClass}
               />
             </div>
             {sendAdminId && !addName && (
-              <p className="text-xs text-green-600 mt-1">
-                ✓ Name auto-fetched from registered user
+              <p className="mt-1 text-xs font-medium text-emerald-600">
+                Name auto-fetched from registered user
               </p>
             )}
           </div>
@@ -324,9 +395,9 @@ const AuctionSettings = ({ auctionId }) => {
           {/* Add Button */}
           <button
             onClick={handleAddTeamOwner}
-            className="w-full btn-primary py-2.5 flex items-center justify-center gap-2"
+            className={`${primaryButtonClass} w-full`}
           >
-            <UserPlus className="w-4 h-4" />
+            <UserPlus className="h-4 w-4" />
             Add Team Owner
           </button>
         </div>
@@ -335,62 +406,78 @@ const AuctionSettings = ({ auctionId }) => {
 
     // Existing Team Owners List Component
     const ExistingTeamOwners = () => (
-      <div className="border rounded-lg bg-gray-50">
-        <div className="border-b px-4 py-3 bg-white rounded-t-lg">
-          <h3 className="font-semibold text-gray-800 flex items-center gap-2">
-            <Users className="w-4 h-4" />
-            Existing Team Owners
-          </h3>
-          <p className="text-xs text-gray-500 mt-1">
-            {ownerList.length} team owner{ownerList.length !== 1 ? "s" : ""}{" "}
-            assigned
-          </p>
+      <div className={panelClass}>
+        <div className={panelHeaderClass}>
+          <div className="flex items-center gap-3">
+            <div className={iconTileClass}>
+              <Users className="h-4 w-4" />
+            </div>
+            <div>
+              <h3 className="text-sm font-semibold text-[var(--text-primary)]">
+                Existing Team Owners
+              </h3>
+              <p className="mt-0.5 text-xs text-[var(--text-secondary)]">
+                {ownerCount} owner{ownerCount !== 1 ? "s" : ""} assigned
+              </p>
+            </div>
+          </div>
         </div>
 
-        <div className="p-4 max-h-[400px] overflow-y-auto">
+        <div className={scrollClass}>
           {ownerList.length === 0 ? (
-            <p className="text-center text-gray-400 py-8 text-sm">
+            <p className="rounded-lg border border-dashed border-[var(--border-card)] bg-[var(--bg-main)] py-8 text-center text-sm text-[var(--text-secondary)]">
               No team owners added yet
             </p>
           ) : (
             <div className="space-y-3">
-              {ownerList.map((owner) => (
-                <div key={owner?._id} className="space-y-2">
-                  <div className="text-sm font-medium text-gray-700 flex items-center gap-2">
-                    <Trophy className="w-4 h-4 text-yellow-500" />
-                    {owner?.team?.name}
+              {ownerList.map((owner) => {
+                const teamName = getTeamName(owner);
+                const teamId = getTeamId(owner);
+                const owners = getOwnerItems(owner);
+
+                return (
+                <div key={owner?._id || teamId || teamName} className="space-y-2">
+                  <div className="text-sm font-medium text-[var(--text-primary)] flex items-center gap-2">
+                    <Trophy className="h-4 w-4 text-[var(--primary)]" />
+                    <span className="truncate">{teamName}</span>
                   </div>
-                  {owner?.owners?.map((oname) => (
+                  {owners.length === 0 ? (
+                    <div className="rounded-lg border border-dashed border-[var(--border-card)] bg-[var(--bg-main)] px-3 py-3 text-sm text-[var(--text-secondary)] sm:ml-6">
+                      No owner assigned for this team
+                    </div>
+                  ) : owners.map((oname) => (
                     <div
-                      key={oname._id}
-                      className="flex items-center justify-between p-3 bg-white rounded-lg border hover:shadow-sm transition-shadow ml-6"
+                      key={oname?._id || oname?.mobile || oname?.name}
+                      className={`${listItemClass} ml-0 sm:ml-6`}
                     >
                       <div className="flex items-center gap-3 flex-1 min-w-0">
-                        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-green-500 to-blue-500 flex items-center justify-center text-white font-bold text-sm uppercase flex-shrink-0">
+                        <div className={avatarClass}>
                           {oname?.name?.substring(0, 2)}
                         </div>
                         <div className="flex-1 min-w-0">
-                          <p className="font-medium text-gray-800 text-sm truncate">
-                            {oname?.name}
+                          <p className="font-medium text-[var(--text-primary)] text-sm truncate">
+                            {oname?.name || oname?.ownerName || "Owner"}
                           </p>
-                          <p className="text-xs text-gray-400">
-                            ID: {oname._id?.slice(-6)}
+                          <p className="text-xs text-[var(--text-muted)]">
+                            {oname?.mobile || oname?.phone || oname?._id
+                              ? `ID: ${(oname?.mobile || oname?.phone || oname?._id)?.slice(-6)}`
+                              : "Owner details"}
                           </p>
                         </div>
                       </div>
                       <button
                         onClick={() =>
-                          handleRemoveTeamOwner(oname._id, owner?.team?._id)
+                          handleRemoveTeamOwner(oname?._id, teamId)
                         }
-                        className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors flex-shrink-0 ml-2"
+                        className="ml-2 flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg border border-red-200 bg-[var(--bg-card)] text-red-500 transition hover:bg-red-50"
                         title="Remove owner"
                       >
-                        <X className="w-4 h-4" />
+                        <X className="h-4 w-4" />
                       </button>
                     </div>
                   ))}
                 </div>
-              ))}
+              )})}
             </div>
           )}
         </div>
@@ -401,14 +488,14 @@ const AuctionSettings = ({ auctionId }) => {
       <>
         {/* Mobile/Tablet view - Stacked with Add form on top */}
         <div className="block lg:hidden space-y-6">
-          <AddTeamOwnerForm />
-          <ExistingTeamOwners />
+          {AddTeamOwnerForm()}
+          {ExistingTeamOwners()}
         </div>
 
         {/* Desktop view - Side by side */}
         <div className="hidden lg:grid lg:grid-cols-2 gap-6">
-          <ExistingTeamOwners />
-          <AddTeamOwnerForm />
+          {ExistingTeamOwners()}
+          {AddTeamOwnerForm()}
         </div>
       </>
     );
@@ -418,44 +505,50 @@ const AuctionSettings = ({ auctionId }) => {
     switch (activeTab) {
       case "addAdmin":
         return (
-          <div className="flex flex-col md:flex-row gap-6 w-full">
-            <div className="border rounded-lg bg-gray-50 w-full md:w-1/2">
-              <div className="border-b px-4 py-3 bg-white rounded-t-lg">
-                <h3 className="font-semibold text-gray-800 flex items-center gap-2">
-                  <UserPlus className="w-4 h-4" />
-                  Add New Organizer
-                </h3>
-                <p className="text-xs text-gray-500 mt-1">
-                  Add organizers by phone number
-                </p>
+          <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+            <div className={panelClass}>
+              <div className={panelHeaderClass}>
+                <div className="flex items-center gap-3">
+                  <div className={iconTileClass}>
+                    <UserPlus className="h-4 w-4" />
+                  </div>
+                  <div>
+                    <h3 className="text-sm font-semibold text-[var(--text-primary)]">
+                      Add New Organizer
+                    </h3>
+                    <p className="mt-0.5 text-xs text-[var(--text-secondary)]">
+                      Add organizers by phone number
+                    </p>
+                  </div>
+                </div>
               </div>
 
               <div className="p-4 space-y-4">
                 {/* Phone Input */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="mb-1.5 block text-xs font-semibold text-[var(--text-primary)]">
                     Phone Number
                   </label>
-                  <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-white border border-gray-300 focus-within:border-purple-500 focus-within:ring-1 focus-within:ring-purple-500 transition">
-                    <span className="text-gray-400 text-sm">📱</span>
+                  <div className={fieldShellClass}>
+                    <Phone className="h-4 w-4 text-[var(--primary)]" />
                     <input
                       type="tel"
                       value={contact}
                       onChange={handleContactChange}
                       placeholder="Enter 10 digit mobile number"
                       maxLength={10}
-                      className="w-full bg-transparent outline-none text-sm text-gray-800 placeholder-gray-400"
+                      className={inputClass}
                     />
                   </div>
                 </div>
 
                 {/* Name Input */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="mb-1.5 block text-xs font-semibold text-[var(--text-primary)]">
                     Organizer Name
                   </label>
-                  <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-white border border-gray-300 focus-within:border-purple-500 focus-within:ring-1 focus-within:ring-purple-500 transition">
-                    <span className="text-gray-400 text-sm">👤</span>
+                  <div className={fieldShellClass}>
+                    <User className="h-4 w-4 text-[var(--primary)]" />
                     <input
                       type="text"
                       value={name}
@@ -469,12 +562,12 @@ const AuctionSettings = ({ auctionId }) => {
                           ? "Auto fetched name"
                           : "Type name or auto-fetched"
                       }
-                      className="w-full bg-transparent outline-none text-sm text-gray-800 placeholder-gray-400 disabled:bg-gray-100 disabled:cursor-not-allowed"
+                      className={inputClass}
                     />
                   </div>
                   {sendAdminId && !addName && (
-                    <p className="text-xs text-green-600 mt-1">
-                      ✓ Name auto-fetched from registered user
+                    <p className="mt-1 text-xs font-medium text-emerald-600">
+                      Name auto-fetched from registered user
                     </p>
                   )}
                 </div>
@@ -482,29 +575,34 @@ const AuctionSettings = ({ auctionId }) => {
                 {/* Add Button */}
                 <button
                   onClick={handleAddAdmin}
-                  className="w-full btn-primary py-2.5 flex items-center justify-center gap-2"
+                  className={`${primaryButtonClass} w-full`}
                 >
-                  <UserPlus className="w-4 h-4" />
+                  <UserPlus className="h-4 w-4" />
                   Add Organizer
                 </button>
               </div>
             </div>
 
-            <div className="border rounded-lg bg-gray-50 w-full md:w-1/2">
-              <div className="border-b px-4 py-3 bg-white rounded-t-lg">
-                <h3 className="font-semibold text-gray-800 flex items-center gap-2">
-                  <Shield className="w-4 h-4" />
-                  Existing Organizers
-                </h3>
-                <p className="text-xs text-gray-500 mt-1">
-                  {adminList.length} organizer
-                  {adminList.length !== 1 ? "s" : ""} added
-                </p>
+            <div className={panelClass}>
+              <div className={panelHeaderClass}>
+                <div className="flex items-center gap-3">
+                  <div className={iconTileClass}>
+                    <Shield className="h-4 w-4" />
+                  </div>
+                  <div>
+                    <h3 className="text-sm font-semibold text-[var(--text-primary)]">
+                      Existing Organizers
+                    </h3>
+                    <p className="mt-0.5 text-xs text-[var(--text-secondary)]">
+                      {adminList.length} organizer{adminList.length !== 1 ? "s" : ""} added
+                    </p>
+                  </div>
+                </div>
               </div>
 
-              <div className="p-4 max-h-[400px] overflow-y-auto">
+              <div className={scrollClass}>
                 {adminList.length === 0 ? (
-                  <p className="text-center text-gray-400 py-8 text-sm">
+                  <p className="rounded-lg border border-dashed border-[var(--border-card)] bg-[var(--bg-main)] py-8 text-center text-sm text-[var(--text-secondary)]">
                     No organizers added yet
                   </p>
                 ) : (
@@ -512,24 +610,24 @@ const AuctionSettings = ({ auctionId }) => {
                     {adminList.map((admin) => (
                       <div
                         key={admin._id}
-                        className="flex items-center justify-between p-3 bg-white rounded-lg border hover:shadow-sm transition-shadow"
+                        className={listItemClass}
                       >
                         <div className="flex items-center gap-3 flex-1 min-w-0">
-                          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-white font-bold text-sm uppercase flex-shrink-0">
+                          <div className={avatarClass}>
                             {admin?.name?.substring(0, 2)}
                           </div>
                           <div className="flex-1 min-w-0">
-                            <p className="font-medium text-gray-800 text-sm truncate">
+                            <p className="font-medium text-[var(--text-primary)] text-sm truncate">
                               {admin.name}
                             </p>
                           </div>
                         </div>
                         <button
                           onClick={() => handleRemoveAdmin(admin._id)}
-                          className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors flex-shrink-0 ml-2"
+                          className="ml-2 flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg border border-red-200 bg-[var(--bg-card)] text-red-500 transition hover:bg-red-50"
                           title="Remove organizer"
                         >
-                          <X className="w-4 h-4" />
+                          <X className="h-4 w-4" />
                         </button>
                       </div>
                     ))}
@@ -541,170 +639,7 @@ const AuctionSettings = ({ auctionId }) => {
         );
 
       case "addOwner":
-        return (
-          <div className="flex flex-col w-full md:flex-row gap-6">
-            <div className="border rounded-lg bg-gray-50 w-full md:w-1/2">
-              <div className="border-b px-4 py-3 bg-white rounded-t-lg">
-                <h3 className="font-semibold text-gray-800 flex items-center gap-2">
-                  <UserPlus className="w-4 h-4" />
-                  Add New Team Owner
-                </h3>
-                <p className="text-xs text-gray-500 mt-1">
-                  Add team owners by phone number
-                </p>
-              </div>
-
-              <div className="p-4 space-y-4">
-                {/* Team Selection */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Select Team
-                  </label>
-                  <div className="px-3 py-2 rounded-lg bg-white border border-gray-300 focus-within:border-purple-500 focus-within:ring-1 focus-within:ring-purple-500 transition">
-                    <select
-                      value={selectedTeamId}
-                      onChange={(e) => setSelectedTeamId(e.target.value)}
-                      className="w-full bg-transparent text-gray-800 outline-none text-sm cursor-pointer"
-                    >
-                      <option value="" className="bg-white text-gray-800">
-                        -- Select a team --
-                      </option>
-                      {tournamentTeam?.map((item) => (
-                        <option
-                          key={item?.teamId?._id}
-                          value={item?.teamId?._id}
-                          className="bg-white text-gray-800"
-                        >
-                          {item?.teamId?.name}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                </div>
-
-                {/* Phone Input */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Phone Number
-                  </label>
-                  <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-white border border-gray-300 focus-within:border-purple-500 focus-within:ring-1 focus-within:ring-purple-500 transition">
-                    <span className="text-gray-400 text-sm">📱</span>
-                    <input
-                      type="tel"
-                      value={contact}
-                      onChange={handleContactChange}
-                      placeholder="Enter 10 digit mobile number"
-                      maxLength={10}
-                      className="w-full bg-transparent outline-none text-sm text-gray-800 placeholder-gray-400"
-                    />
-                  </div>
-                </div>
-
-                {/* Name Input */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Owner Name
-                  </label>
-                  <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-white border border-gray-300 focus-within:border-purple-500 focus-within:ring-1 focus-within:ring-purple-500 transition">
-                    <span className="text-gray-400 text-sm">👤</span>
-                    <input
-                      type="text"
-                      value={name}
-                      disabled={!addName && !sendAdminId}
-                      onChange={(e) => {
-                        setName(e.target.value);
-                        setAddName(true);
-                      }}
-                      placeholder={
-                        sendAdminId
-                          ? "Auto fetched name"
-                          : "Type name or auto-fetched"
-                      }
-                      className="w-full bg-transparent outline-none text-sm text-gray-800 placeholder-gray-400 disabled:bg-gray-100 disabled:cursor-not-allowed"
-                    />
-                  </div>
-                  {sendAdminId && !addName && (
-                    <p className="text-xs text-green-600 mt-1">
-                      ✓ Name auto-fetched from registered user
-                    </p>
-                  )}
-                </div>
-
-                {/* Add Button */}
-                <button
-                  onClick={handleAddTeamOwner}
-                  className="w-full btn-primary py-2.5 flex items-center justify-center gap-2"
-                >
-                  <UserPlus className="w-4 h-4" />
-                  Add Team Owner
-                </button>
-              </div>
-            </div>
-            <div className="border rounded-lg bg-gray-50 w-full md:w-1/2">
-              <div className="border-b px-4 py-3 bg-white rounded-t-lg">
-                <h3 className="font-semibold text-gray-800 flex items-center gap-2">
-                  <Users className="w-4 h-4" />
-                  Existing Team Owners
-                </h3>
-                <p className="text-xs text-gray-500 mt-1">
-                  {ownerList.length} team owner
-                  {ownerList.length !== 1 ? "s" : ""} assigned
-                </p>
-              </div>
-
-              <div className="p-4 max-h-[400px] overflow-y-auto">
-                {ownerList.length === 0 ? (
-                  <p className="text-center text-gray-400 py-8 text-sm">
-                    No team owners added yet
-                  </p>
-                ) : (
-                  <div className="space-y-3">
-                    {ownerList.map((owner) => (
-                      <div key={owner?._id} className="space-y-2">
-                        <div className="text-sm font-medium text-gray-700 flex items-center gap-2">
-                          <Trophy className="w-4 h-4 text-yellow-500" />
-                          {owner?.team?.name}
-                        </div>
-                        {owner?.owners?.map((oname) => (
-                          <div
-                            key={oname._id}
-                            className="flex items-center justify-between p-3 bg-white rounded-lg border hover:shadow-sm transition-shadow ml-6"
-                          >
-                            <div className="flex items-center gap-3 flex-1 min-w-0">
-                              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-green-500 to-blue-500 flex items-center justify-center text-white font-bold text-sm uppercase flex-shrink-0">
-                                {oname?.name?.substring(0, 2)}
-                              </div>
-                              <div className="flex-1 min-w-0">
-                                <p className="font-medium text-gray-800 text-sm truncate">
-                                  {oname?.name}
-                                </p>
-                                <p className="text-xs text-gray-400">
-                                  ID: {oname._id?.slice(-6)}
-                                </p>
-                              </div>
-                            </div>
-                            <button
-                              onClick={() =>
-                                handleRemoveTeamOwner(
-                                  oname._id,
-                                  owner?.team?._id,
-                                )
-                              }
-                              className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors flex-shrink-0 ml-2"
-                              title="Remove owner"
-                            >
-                              <X className="w-4 h-4" />
-                            </button>
-                          </div>
-                        ))}
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-        );
+        return renderAddTeamOwner();
 
       case "category":
         return <Categories auctionId={auctionId} />;
@@ -732,40 +667,51 @@ const AuctionSettings = ({ auctionId }) => {
     }
   };
 
-  const navigate =useNavigate();
+  const navigate = useNavigate();
 
   return (
-    <div className="w-full max-w-7xl mx-auto px-4 py-4 sm:px-6">
+    <div className="mx-auto w-full max-w-7xl space-y-4 p-3 text-[var(--text-primary)] sm:p-4 lg:p-5">
       {/* Header Section */}
-      <div className="flex items-center justify-between">
-        <div className="mb-6">
-          <h2 className="text-xl sm:text-2xl font-bold text-gray-800">
-            Auction Settings
-          </h2>
-          <p className="text-sm text-gray-500 mt-1">
-            Manage organizers, team owners and auction rules
-          </p>
-        </div>
-        <div className="flex flex-row">
-          <button className="flex bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-lg transition-colors"
-          onClick={(e) => {
+      <div className="rounded-lg border border-[var(--border-card)] bg-[var(--bg-card)] p-4 shadow-[var(--shadow-card)]">
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+          <div className="flex items-start gap-3">
+            <div className={iconTileClass}>
+              <SettingsIcon className="h-4 w-4" />
+            </div>
+            <div>
+              <h2 className="text-lg font-semibold tracking-normal text-[var(--text-primary)] sm:text-xl">
+                Auction Settings
+              </h2>
+              <p className="mt-1 text-sm text-[var(--text-secondary)]">
+                Manage organizers, team owners, categories, barcode and auction rules.
+              </p>
+            </div>
+          </div>
+          <div className="flex flex-col gap-2 sm:flex-row">
+            <button
+              className={primaryButtonClass}
+              onClick={(e) => {
                   e.stopPropagation();
                   navigate(`/editAuction/${auctionId}`);
-                }}>
-            <Edit className="w-5 h-5 text-white" />
-            <span className="ml-1 text-sm text-white">Edit Auction</span>
-          </button>
-          <button className="ml-3 flex bg-gray-200 hover:bg-gray-300 text-gray-800 py-2 px-4 rounded-lg transition-colors"
-           onClick={() => setShowStatusModal(true)}>
-            <Settings className="w-5 h-5 text-gray-800" />
-            <span className="ml-1 text-sm">Update Auction Status</span>
-          </button>
+                }}
+            >
+              <Edit className="h-4 w-4" />
+              Edit Auction
+            </button>
+            <button
+              className={outlineButtonClass}
+              onClick={() => setShowStatusModal(true)}
+            >
+              <Settings className="h-4 w-4 text-[var(--primary)]" />
+              Update Auction Status
+            </button>
+          </div>
         </div>
       </div>
 
       {/* Tabs - Made responsive */}
-      <div className="mb-6 overflow-x-auto scrollbar-hide">
-        <div className="flex items-center gap-3 min-w-max py-2">
+      <div className="overflow-x-auto scrollbar-hide rounded-lg border border-[var(--border-card)] bg-[var(--bg-card)] p-2 shadow-[var(--shadow-card)]">
+        <div className="flex min-w-max items-center gap-2">
           {visibleTabs.map((tab) => {
             const Icon = tab.icon;
             const isActive = activeTab === tab.key;
@@ -774,34 +720,14 @@ const AuctionSettings = ({ auctionId }) => {
               <button
                 key={tab.key}
                 onClick={() => setActiveTab(tab.key)}
-                className={`group relative flex items-center gap-2 px-5 py-3 rounded-2xl text-sm font-medium transition-all duration-300 whitespace-nowrap backdrop-blur-md
-${
-  isActive
-    ? "bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-[0_10px_30px_rgba(124,58,237,0.35)] scale-[1.02]"
-    : "bg-white/80 text-gray-600 border border-white shadow-md hover:shadow-xl hover:-translate-y-0.5 hover:text-purple-600"
-}`}
+                className={`inline-flex h-10 items-center gap-2 rounded-lg border px-3 text-sm font-semibold transition ${
+                  isActive
+                    ? "border-[var(--border-primary)] bg-[var(--secondary)] text-[#102033] shadow-sm"
+                    : "border-transparent bg-transparent text-[var(--text-secondary)] hover:border-[var(--border-card)] hover:bg-[var(--accent-light)] hover:text-[var(--text-primary)]"
+                }`}
               >
-                {/* Active Glow */}
-                {isActive && (
-                  <div className="absolute inset-0 rounded-2xl bg-purple-500/10 blur-xl" />
-                )}
-
-                {/* Icon */}
-                <div
-                  className={`relative z-10 transition-transform duration-300 ${
-                    isActive ? "scale-110" : "group-hover:scale-105"
-                  }`}
-                >
-                  <Icon className="w-4 h-4" />
-                </div>
-
-                {/* Label */}
-                <span className="relative z-10">{tab.label}</span>
-
-                {/* Active Dot */}
-                {isActive && (
-                  <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1.5 h-1.5 bg-white rounded-full" />
-                )}
+                <Icon className="h-4 w-4" />
+                <span>{tab.label}</span>
               </button>
             );
           })}
@@ -809,7 +735,7 @@ ${
       </div>
 
       {/* Content */}
-      <div className="bg-white rounded-lg">{renderContent()}</div>
+      <div>{renderContent()}</div>
        <ChangeAuctionStatus
         isOpen={showStatusModal}
         onClose={() => setShowStatusModal(false)}
