@@ -215,7 +215,15 @@ export const fetchUserRole = (auctionId, playerId) => {
 export const fetchProfile = (playerId) => {
   return async (dispatch) => {
     if (!isValidMongoObjectId(playerId)) {
-      return;
+      const message = "Player not found";
+      dispatch({
+        type: "API_ERROR",
+        key: "profile",
+        payload: message,
+        clearData: true,
+      });
+      localStorage.removeItem("userDetail");
+      return { ok: false, error: { message } };
     }
     dispatch({ type: "API_START", key: "profile" });
     try {
@@ -228,28 +236,52 @@ export const fetchProfile = (playerId) => {
           },
         }
       );
+
+      const profile = response?.data?.data;
+      if (
+        response?.data?.success === false ||
+        !profile ||
+        typeof profile !== "object" ||
+        Object.keys(profile).length === 0
+      ) {
+        const message = response?.data?.message || "Player not found";
+        dispatch({
+          type: "API_ERROR",
+          key: "profile",
+          payload: message,
+          clearData: true,
+        });
+        localStorage.removeItem("userDetail");
+        return { ok: false, error: { message } };
+      }
+
       dispatch({
         type: "API_SUCCESS",
         key: "profile",
-        payload: response?.data?.data,
+        payload: profile,
       });
 
 
       let obj = {
-        name: response.data.data.name,
-        mobile: response.data.data.mobile,
-        profilePicture: response.data.data.profilePicture,
-        batchId: response.data.data.batchId
+        name: profile.name,
+        mobile: profile.mobile,
+        profilePicture: profile.profilePicture,
+        batchId: profile.batchId
       }
       localStorage.setItem('userDetail', JSON.stringify(obj));
+      return { ok: true, data: profile };
     } catch (error) {
+      const message =
+        error?.response?.data?.message ||
+        "Failed to fetch profile";
       dispatch({
         type: "API_ERROR",
         key: "profile",
-        payload:
-          error?.response?.data?.message ||
-          "Failed to fetch profile",
+        payload: message,
+        clearData: true,
       });
+      localStorage.removeItem("userDetail");
+      return { ok: false, error: { message } };
     }
   };
 };

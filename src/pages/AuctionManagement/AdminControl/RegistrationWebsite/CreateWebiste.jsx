@@ -175,6 +175,17 @@ const TournamentAdminForm = ({ tournamentId, auctionId, TrialType }) => {
     const rawCard = formData.cardImages || { title: "Gallery", description: "", Images: [] };
     const keyFeat = formData.keyFeatures || { title: "Key Features", features: [] };
     const rulesSection = formData.rules || { title: "Rules & Guidelines", description: "", items: [] };
+    const sponsors = (formData.sponsors || [])
+      .map((sponsor, index) => ({
+        ...sponsor,
+        name: String(sponsor?.name || "").trim(),
+        logo: String(sponsor?.logo || sponsor?.url || "").trim(),
+        website: String(sponsor?.website || "").trim(),
+        tier: sponsor?.tier || "partner",
+        order: Number(sponsor?.order) || index + 1,
+      }))
+      .filter((sponsor) => sponsor.name && sponsor.logo);
+
     return {
       tournamentId: formData.tournamentId, auctionId: formData.auctionId,
       tournamentTitle: formData.tournamentTitle, tournamentName: formData.tournamentName,
@@ -183,7 +194,7 @@ const TournamentAdminForm = ({ tournamentId, auctionId, TrialType }) => {
       keyFeatures: { ...keyFeat, features: (keyFeat.features || []).filter((f) => f?.title?.trim() && f?.description?.trim()) },
       rules: { title: rulesSection.title, description: rulesSection.description, items: (rulesSection.items || []).filter((r) => r?.title?.trim() && r?.description?.trim()) },
       galleryImages: (formData.galleryImages || []).filter((g) => String(g?.imageUrl || g?.url || "").trim()),
-      sponsors: (formData.sponsors || []).filter((s) => String(s?.name || "").trim() && String(s?.logo || s?.url || "").trim()),
+      sponsors,
       questionsAnswers: (formData.questionsAnswers || []).filter((q) => q?.question?.trim() && q?.answer?.trim()),
       cardImages: { title: rawCard.title, description: rawCard.description, Images: (rawCard.Images || []).filter((img) => String(img?.imageUrl || img?.url || "").trim()) },
       showTrialLocations: formData.showTrialLocations || false,
@@ -282,7 +293,47 @@ const TournamentAdminForm = ({ tournamentId, auctionId, TrialType }) => {
       if (response.data.success) {
         if (field === "sliderImages") setFormData((prev) => ({ ...prev, sliderImages: response.data.data.sliderImages }));
         else if (field === "galleryImages") setFormData((prev) => ({ ...prev, galleryImages: response.data.data.galleryImages }));
-        else if (field === "sponsors") setFormData((prev) => ({ ...prev, sponsors: response.data.data.sponsors }));
+        else if (field === "sponsors") {
+          setFormData((prev) => {
+            const currentSponsors = [...(prev.sponsors || [])];
+            const uploadedSponsors = Array.isArray(response.data.data.sponsors)
+              ? response.data.data.sponsors
+              : [];
+            const uploadedSponsor =
+              uploadedSponsors[index] ||
+              uploadedSponsors[uploadedSponsors.length - 1] ||
+              response.data.data.sponsor ||
+              {};
+
+            if (index !== null && currentSponsors[index]) {
+              currentSponsors[index] = {
+                ...uploadedSponsor,
+                ...currentSponsors[index],
+                logo:
+                  uploadedSponsor.logo ||
+                  uploadedSponsor.url ||
+                  currentSponsors[index].logo ||
+                  currentSponsors[index].url ||
+                  "",
+              };
+            } else if (uploadedSponsors.length) {
+              uploadedSponsors.forEach((sponsor, sponsorIndex) => {
+                currentSponsors[sponsorIndex] = {
+                  ...sponsor,
+                  ...(currentSponsors[sponsorIndex] || {}),
+                  logo:
+                    sponsor.logo ||
+                    sponsor.url ||
+                    currentSponsors[sponsorIndex]?.logo ||
+                    currentSponsors[sponsorIndex]?.url ||
+                    "",
+                };
+              });
+            }
+
+            return { ...prev, sponsors: currentSponsors };
+          });
+        }
         else if (field === "cardImages") setFormData((prev) => ({ ...prev, cardImages: response.data.data.cardImages }));
         toast.success(`${field} uploaded successfully`);
       }
@@ -951,7 +1002,7 @@ const TournamentAdminForm = ({ tournamentId, auctionId, TrialType }) => {
                 Save Basic Info
               </button>
             )}
-            <button onClick={() => navigate(`/landing-page/${tournamentId}/${auctionId}`)} className="lp-btn-view">
+            <button onClick={() => navigate(`/viewlanding-page/${tournamentId}/${auctionId}`)} className="lp-btn-view">
               <FiEye size={14} /> Preview
             </button>
             <button onClick={() => setShowBarcodeModal(true)} disabled={!landingPageId} className="lp-btn-barcode">

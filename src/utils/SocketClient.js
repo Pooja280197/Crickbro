@@ -9,12 +9,14 @@ export const connectAuctionSocket = ({
   auctionId,
   onSnapshot,
   onUpdate,
+  onAuctionPlayerStats,
   onDisconnect,
   onError,
 }) => {
   // create socket instance once
   if (!socket) {
     socket = io(socketUrl, {
+      path: "/auction/socket.io",
       transports: ["websocket"],
       reconnection: true,
       reconnectionDelay: 1000,
@@ -25,6 +27,7 @@ export const connectAuctionSocket = ({
   // Prevent attaching duplicate handlers
   socket.off("connect");
   socket.off("auctionUpdate");
+  socket.off("auctionPlayerStats");
   socket.off("joinAuctionRoom");
   socket.off("disconnect");
   socket.off("connect_error");
@@ -63,6 +66,10 @@ export const connectAuctionSocket = ({
     }
   });
 
+  if (onAuctionPlayerStats) {
+    socket.on("auctionPlayerStats", onAuctionPlayerStats);
+  }
+
   socket.on("disconnect", (reason) => {
     console.warn("⚠️ Socket Disconnected:", reason);
     onDisconnect && onDisconnect(reason);
@@ -89,4 +96,10 @@ export const disconnectSocket = () => {
 /* ================= GET SOCKET ================= */
 
 export const getSocket = () => socket;
+
+/** Merged stats for broadcast overlay — server answers only to this socket (not full-room auctionUpdate). */
+export const requestAuctionPlayerStats = (auctionId, playerId) => {
+  if (!socket?.connected || !auctionId || !playerId) return;
+  socket.emit("requestAuctionPlayerStats", { auctionId, playerId });
+};
 

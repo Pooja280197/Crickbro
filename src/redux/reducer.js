@@ -59,6 +59,12 @@ export default function reducer(state = initialState, action) {
           ...state.error,
           [action.key]: action.payload,
         },
+        ...(action.clearData && {
+          data: {
+            ...state.data,
+            [action.key]: null,
+          },
+        }),
       };
 
     case "LOGOUT":

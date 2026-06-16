@@ -5,6 +5,12 @@ const formatDateForInput = (dateString) => {
   return dateString.split("T")[0];
 };
 
+const getTodayForInput = () => {
+  const today = new Date();
+  const timezoneOffset = today.getTimezoneOffset() * 60 * 1000;
+  return new Date(today.getTime() - timezoneOffset).toISOString().split("T")[0];
+};
+
 const CreateSession = ({
   isOpen,
   onClose,
@@ -39,12 +45,9 @@ const CreateSession = ({
       valid = false;
     }
 
-    if (
-      sessionData.slotStartTime &&
-      sessionData.slotEndTime &&
-      sessionData.slotStartTime >= sessionData.slotEndTime
-    ) {
-      newErrors.time = "Start time must be earlier than end time";
+    const slotDate = formatDateForInput(sessionData.slotDate);
+    if (slotDate && slotDate < getTodayForInput()) {
+      newErrors.slotDate = "Date must be today or a future date";
       valid = false;
     }
 
@@ -128,10 +131,14 @@ const CreateSession = ({
               <input
                 name="slotDate"
                 type="date"
+                min={getTodayForInput()}
                 value={formatDateForInput(sessionData.slotDate) || ""}
                 onChange={handleChange}
-                className={`${fieldBase} border-[var(--border-primary)]`}
+                className={fieldClass(errors.slotDate)}
               />
+              {errors.slotDate && (
+                <p className="mt-1 text-xs text-red-500">{errors.slotDate}</p>
+              )}
             </div>
 
             {/* Start Time */}
@@ -199,7 +206,7 @@ const CreateSession = ({
             {/* Session Size */}
             <div>
               <label className="block text-sm font-medium text-[var(--text-primary)] mb-1">
-                Session Size <span className="text-red-500">*</span>
+                Session Size 
               </label>
               <input
                 name="slotSize"
@@ -225,12 +232,6 @@ const CreateSession = ({
             </div>
           </div>
 
-          {/* Time Error Message */}
-          {errors.time && (
-            <div className="bg-red-50 border border-red-200 rounded-lg p-3">
-              <p className="text-red-600 text-sm">{errors.time}</p>
-            </div>
-          )}
         </div>
 
         {/* Sticky Footer Buttons */}

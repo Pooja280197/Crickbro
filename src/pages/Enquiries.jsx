@@ -4,6 +4,7 @@ import { toast } from "react-toastify";
 import { useSelector } from "react-redux";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
+import DeleteConfirmModal from "../components/DeleteConfirmModal";
 import api from "../utils/api";
 import { FaEdit, FaTasks, FaTrash, FaPlus, FaSearch, FaEye } from "react-icons/fa";
 import {
@@ -81,6 +82,8 @@ const Enquiries = ({ theme, onToggleTheme }) => {
   const [statusTarget, setStatusTarget] = useState(null);
   const [newStatus, setNewStatus] = useState("");
   const [viewingEnquiry, setViewingEnquiry] = useState(null);
+  const [deleteTarget, setDeleteTarget] = useState(null);
+  const [deletingEnquiry, setDeletingEnquiry] = useState(false);
   const activeTab = isManage ? "manage" : "new";
   const selectedServiceCount = Object.values(form.services).filter(Boolean).length;
 
@@ -182,15 +185,18 @@ const Enquiries = ({ theme, onToggleTheme }) => {
     }
   };
 
-  const handleDelete = async (enquiryId) => {
-    const confirmed = window.confirm("Delete this enquiry permanently?");
-    if (!confirmed) return;
+  const handleDelete = async () => {
+    if (!deleteTarget?._id) return;
+    setDeletingEnquiry(true);
     try {
-      await api.delete(`/webSiteApi/enquiries/delete/${enquiryId}`);
+      await api.delete(`/webSiteApi/enquiries/delete/${deleteTarget._id}`);
       toast.success("Enquiry deleted successfully.");
+      setDeleteTarget(null);
       fetchEnquiries();
     } catch (err) {
       toast.error(err?.response?.data?.message || "Delete failed.");
+    } finally {
+      setDeletingEnquiry(false);
     }
   };
 
@@ -410,7 +416,7 @@ const Enquiries = ({ theme, onToggleTheme }) => {
                                       </button>
                                       <button
                                         type="button"
-                                        onClick={() => handleDelete(item._id)}
+                                        onClick={() => setDeleteTarget(item)}
                                         className="ui-btn-danger !min-h-9 !px-2"
                                         title="Delete Enquiry"
                                       >
@@ -426,23 +432,36 @@ const Enquiries = ({ theme, onToggleTheme }) => {
                       </div>
 
                       {editingEnquiry && (
-                        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                          <div className="bg-[var(--bg-card)] rounded-3xl border border-indigo-300/30 p-6 max-w-4xl w-full mx-4 max-h-[90vh] overflow-y-auto">
-                            <div className="flex items-center justify-between gap-4 mb-5">
+                        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/60 p-3 backdrop-blur-sm sm:p-6">
+                          <div className="flex max-h-[94vh] w-full max-w-5xl flex-col overflow-hidden rounded-3xl border border-[var(--border-card)] bg-[var(--bg-card)] shadow-2xl">
+                            <div className="flex items-start justify-between gap-4 border-b border-[var(--border-card)] bg-[var(--bg-soft)] px-5 py-4 sm:px-7 sm:py-5">
                               <div>
-                                <h3 className="text-xl font-semibold text-[var(--text-primary)]">Edit enquiry</h3>
-                                <p className="text-sm text-[var(--text-secondary)]">Update all enquiry details and save changes.</p>
+                                <p className="mb-1 text-xs font-bold uppercase tracking-[0.16em] text-[var(--primary)]">
+                                  Enquiry management
+                                </p>
+                                <h3 className="text-2xl font-semibold text-[var(--text-primary)]">Edit enquiry</h3>
+                                <p className="mt-1 text-sm text-[var(--text-secondary)]">
+                                  Update the contact, tournament, and service details below.
+                                </p>
                               </div>
                               <button
+                                type="button"
                                 onClick={() => setEditingEnquiry(null)}
-                                className="text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
+                                className="ui-btn-ghost !min-h-9 shrink-0 !px-3"
                               >
-                                Cancel
+                                Close
                               </button>
                             </div>
-                          <div className="grid gap-4 md:grid-cols-2">
-                            <label className="space-y-2 text-sm text-[var(--text-primary)]">
-                              Full name
+
+                            <div className="enquiry-modal-scroll overflow-x-hidden overflow-y-auto px-5 py-5 sm:px-7 sm:py-6">
+                              <div className="rounded-2xl border border-[var(--border-card)] bg-[var(--bg-soft)] p-4 sm:p-5">
+                                <div className="mb-4">
+                                  <h4 className="text-lg font-semibold text-[var(--text-primary)]">Enquiry details</h4>
+                                  <p className="text-sm text-[var(--text-secondary)]">Contact and tournament information.</p>
+                                </div>
+                                <div className="grid gap-4 md:grid-cols-2">
+                            <label className="space-y-2 text-sm font-medium text-[var(--text-primary)]">
+                              <span>Full name</span>
                               <input
                                 type="text"
                                 value={editingEnquiry.fullName || ""}
@@ -450,8 +469,8 @@ const Enquiries = ({ theme, onToggleTheme }) => {
                                 className="ui-input"
                               />
                             </label>
-                            <label className="space-y-2 text-sm text-[var(--text-primary)]">
-                              Mobile
+                            <label className="space-y-2 text-sm font-medium text-[var(--text-primary)]">
+                              <span>Mobile</span>
                               <input
                                 type="text"
                                 value={editingEnquiry.mobile || ""}
@@ -459,8 +478,8 @@ const Enquiries = ({ theme, onToggleTheme }) => {
                                 className="ui-input"
                               />
                             </label>
-                            <label className="space-y-2 text-sm text-[var(--text-primary)]">
-                              Email
+                            <label className="space-y-2 text-sm font-medium text-[var(--text-primary)]">
+                              <span>Email</span>
                               <input
                                 type="email"
                                 value={editingEnquiry.email || ""}
@@ -468,8 +487,8 @@ const Enquiries = ({ theme, onToggleTheme }) => {
                                 className="ui-input"
                               />
                             </label>
-                            <label className="space-y-2 text-sm text-[var(--text-primary)]">
-                              Location
+                            <label className="space-y-2 text-sm font-medium text-[var(--text-primary)]">
+                              <span>Location</span>
                               <input
                                 type="text"
                                 value={editingEnquiry.location || ""}
@@ -477,8 +496,8 @@ const Enquiries = ({ theme, onToggleTheme }) => {
                                 className="ui-input"
                               />
                             </label>
-                            <label className="space-y-2 text-sm text-[var(--text-primary)]">
-                              Tournament name
+                            <label className="space-y-2 text-sm font-medium text-[var(--text-primary)]">
+                              <span>Tournament name</span>
                               <input
                                 type="text"
                                 value={editingEnquiry.tournamentName || ""}
@@ -486,8 +505,8 @@ const Enquiries = ({ theme, onToggleTheme }) => {
                                 className="ui-input"
                               />
                             </label>
-                            <label className="space-y-2 text-sm text-[var(--text-primary)]">
-                              Number of teams
+                            <label className="space-y-2 text-sm font-medium text-[var(--text-primary)]">
+                              <span>Number of teams</span>
                               <input
                                 type="number"
                                 value={editingEnquiry.numberOfTeams || ""}
@@ -495,8 +514,8 @@ const Enquiries = ({ theme, onToggleTheme }) => {
                                 className="ui-input"
                               />
                             </label>
-                            <label className="space-y-2 text-sm text-[var(--text-primary)]">
-                              Start date
+                            <label className="space-y-2 text-sm font-medium text-[var(--text-primary)]">
+                              <span>Start date</span>
                               <input
                                 type="date"
                                 value={editingEnquiry.startDate ? editingEnquiry.startDate.split('T')[0] : ""}
@@ -504,8 +523,8 @@ const Enquiries = ({ theme, onToggleTheme }) => {
                                 className="ui-input"
                               />
                             </label>
-                            <label className="space-y-2 text-sm text-[var(--text-primary)]">
-                              End date
+                            <label className="space-y-2 text-sm font-medium text-[var(--text-primary)]">
+                              <span>End date</span>
                               <input
                                 type="date"
                                 value={editingEnquiry.endDate ? editingEnquiry.endDate.split('T')[0] : ""}
@@ -513,8 +532,8 @@ const Enquiries = ({ theme, onToggleTheme }) => {
                                 className="ui-input"
                               />
                             </label>
-                            <label className="space-y-2 text-sm text-[var(--text-primary)]">
-                              Preferred contact time
+                            <label className="space-y-2 text-sm font-medium text-[var(--text-primary)]">
+                              <span>Preferred contact time</span>
                               <input
                                 type="text"
                                 value={editingEnquiry.preferredContactTime || ""}
@@ -522,8 +541,8 @@ const Enquiries = ({ theme, onToggleTheme }) => {
                                 className="ui-input"
                               />
                             </label>
-                            <label className="space-y-2 text-sm text-[var(--text-primary)]">
-                              Budget
+                            <label className="space-y-2 text-sm font-medium text-[var(--text-primary)]">
+                              <span>Budget</span>
                               <input
                                 type="text"
                                 value={editingEnquiry.budget || ""}
@@ -531,8 +550,8 @@ const Enquiries = ({ theme, onToggleTheme }) => {
                                 className="ui-input"
                               />
                             </label>
-                            <label className="space-y-2 text-sm text-[var(--text-primary)]">
-                              Status
+                            <label className="space-y-2 text-sm font-medium text-[var(--text-primary)]">
+                              <span>Status</span>
                               <select
                                 value={editingEnquiry.status || ""}
                                 onChange={(e) => setEditingEnquiry((prev) => ({ ...prev, status: e.target.value }))}
@@ -545,8 +564,8 @@ const Enquiries = ({ theme, onToggleTheme }) => {
                                 ))}
                               </select>
                             </label>
-                            <label className="space-y-2 text-sm text-[var(--text-primary)]">
-                              Source
+                            <label className="space-y-2 text-sm font-medium text-[var(--text-primary)]">
+                              <span>Source</span>
                               <select
                                 value={editingEnquiry.source || ""}
                                 onChange={(e) => setEditingEnquiry((prev) => ({ ...prev, source: e.target.value }))}
@@ -559,28 +578,39 @@ const Enquiries = ({ theme, onToggleTheme }) => {
                                 ))}
                               </select>
                             </label>
-                          </div>
-                          <div className="mt-4">
-                            <label className="space-y-2 text-sm text-[var(--text-primary)]">
-                              Custom requirement
+                                </div>
+                              </div>
+
+                          <div className="mt-5 rounded-2xl border border-[var(--border-card)] bg-[var(--bg-soft)] p-4 sm:p-5">
+                            <div className="mb-4">
+                              <h4 className="text-lg font-semibold text-[var(--text-primary)]">Custom requirement</h4>
+                              <p className="text-sm text-[var(--text-secondary)]">
+                                Add any special requests, notes, or tournament requirements.
+                              </p>
+                            </div>
+                            <label className="block text-sm font-medium text-[var(--text-primary)]">
                               <textarea
                                 value={editingEnquiry.customRequirement || ""}
                                 onChange={(e) => setEditingEnquiry((prev) => ({ ...prev, customRequirement: e.target.value }))}
-                                className="input-field min-h-[100px]"
-                                placeholder="Describe requirements"
+                                className="ui-input min-h-[170px] resize-y !py-3 leading-relaxed"
+                                placeholder="Describe the client's requirements in detail..."
                               />
                             </label>
                           </div>
-                          <div className="mt-4">
-                            <h4 className="text-lg font-semibold text-[var(--text-primary)] mb-3">Services</h4>
-                            <div className="grid gap-3 sm:grid-cols-2">
+
+                          <div className="mt-5 rounded-2xl border border-[var(--border-card)] bg-[var(--bg-soft)] p-4 sm:p-5">
+                            <div className="mb-4">
+                              <h4 className="text-lg font-semibold text-[var(--text-primary)]">Services</h4>
+                              <p className="text-sm text-[var(--text-secondary)]">Select every service requested for this enquiry.</p>
+                            </div>
+                            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
                               {SERVICE_FIELDS.map((service) => (
                                 <label
                                   key={service.key}
-                                  className={`flex cursor-pointer items-center gap-3 rounded-2xl border px-4 py-3 text-sm font-medium transition ${
+                                  className={`flex cursor-pointer items-center gap-3 rounded-xl border px-4 py-3 text-sm font-medium transition ${
                                     editingEnquiry.services?.[service.key]
-                                      ? "border-indigo-600 bg-indigo-50 text-[var(--text-primary)] shadow-sm"
-                                      : "border-[var(--border-card)] bg-[var(--bg-card)] text-[var(--text-primary)] hover:border-indigo-400 hover:bg-[var(--bg-soft)]"
+                                      ? "border-[var(--primary)] bg-[var(--accent-light)] text-[var(--text-primary)] shadow-sm"
+                                      : "border-[var(--border-card)] bg-[var(--bg-card)] text-[var(--text-primary)] hover:border-[var(--primary)] hover:bg-[var(--accent-light)]"
                                   }`}
                                 >
                                   <input
@@ -600,18 +630,22 @@ const Enquiries = ({ theme, onToggleTheme }) => {
                               ))}
                             </div>
                           </div>
-                          <div className="mt-5 flex flex-wrap gap-3">
+                            </div>
+
+                          <div className="flex flex-wrap justify-end gap-3 border-t border-[var(--border-card)] bg-[var(--bg-soft)] px-5 py-4 sm:px-7">
                             <button
-                              onClick={handleEditSave}
-                              className="ui-btn-primary"
+                              type="button"
+                              onClick={() => setEditingEnquiry(null)}
+                              className="ui-btn-ghost"
                             >
-                              Save changes
+                              Cancel
                             </button>
                             <button
-                              onClick={() => setEditingEnquiry(null)}
-                              className="rounded-2xl border border-[var(--border-primary)] bg-[var(--bg-card)] px-5 py-3 font-semibold text-[var(--text-primary)] hover:bg-[var(--secondary-lighter)] transition"
+                              type="button"
+                              onClick={handleEditSave}
+                              className="ui-btn-primary !px-6"
                             >
-                              Close
+                              Save changes
                             </button>
                           </div>
                         </div>
@@ -619,81 +653,120 @@ const Enquiries = ({ theme, onToggleTheme }) => {
                       )}
 
                       {viewingEnquiry && (
-                        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                          <div className="bg-[var(--bg-card)] rounded-3xl border border-green-300/30 p-6 max-w-4xl w-full mx-4 max-h-[90vh] overflow-y-auto">
-                            <div className="flex items-center justify-between gap-4 mb-5">
+                        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/60 p-3 backdrop-blur-sm sm:p-6">
+                          <div className="flex max-h-[94vh] w-full max-w-5xl flex-col overflow-hidden rounded-3xl border border-[var(--border-card)] bg-[var(--bg-card)] shadow-2xl">
+                            <div className="flex items-start justify-between gap-4 border-b border-[var(--border-card)] bg-[var(--bg-soft)] px-5 py-4 sm:px-7 sm:py-5">
                               <div>
-                                <h3 className="text-xl font-semibold text-[var(--text-primary)]">View enquiry</h3>
-                                <p className="text-sm text-[var(--text-secondary)]">View all enquiry details.</p>
+                                <p className="mb-1 text-xs font-bold uppercase tracking-[0.16em] text-[var(--primary)]">
+                                  Enquiry overview
+                                </p>
+                                <h3 className="text-2xl font-semibold text-[var(--text-primary)]">
+                                  {viewingEnquiry.fullName || "View enquiry"}
+                                </h3>
+                                <p className="mt-1 text-sm text-[var(--text-secondary)]">
+                                  {viewingEnquiry.tournamentName || "Complete enquiry details"}
+                                </p>
                               </div>
                               <button
+                                type="button"
                                 onClick={() => setViewingEnquiry(null)}
-                                className="text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
+                                className="ui-btn-ghost !min-h-9 shrink-0 !px-3"
                               >
                                 Close
                               </button>
                             </div>
-                          <div className="grid gap-4 md:grid-cols-2">
-                            <div className="space-y-2 text-sm text-[var(--text-primary)]">
-                              <strong>Full name:</strong> {viewingEnquiry.fullName || "-"}
+
+                            <div className="enquiry-modal-scroll overflow-x-hidden overflow-y-auto px-5 py-5 sm:px-7 sm:py-6">
+                              <div className="mb-5 flex flex-wrap gap-2">
+                                <span className="inline-flex items-center rounded-full border border-[var(--primary)] bg-[var(--accent-light)] px-3 py-1.5 text-xs font-bold capitalize text-[var(--primary)]">
+                                  {viewingEnquiry.status ? viewingEnquiry.status.replace("_", " ") : "No status"}
+                                </span>
+                                <span className="inline-flex items-center rounded-full border border-[var(--border-card)] bg-[var(--bg-soft)] px-3 py-1.5 text-xs font-semibold capitalize text-[var(--text-secondary)]">
+                                  Source: {viewingEnquiry.source || "-"}
+                                </span>
+                              </div>
+
+                              <section className="rounded-2xl border border-[var(--border-card)] bg-[var(--bg-soft)] p-4 sm:p-5">
+                                <div className="mb-4">
+                                  <h4 className="text-lg font-semibold text-[var(--text-primary)]">Contact details</h4>
+                                  <p className="text-sm text-[var(--text-secondary)]">Primary contact information for this enquiry.</p>
+                                </div>
+                                <div className="grid gap-3 md:grid-cols-2">
+                                  {[
+                                    ["Full name", viewingEnquiry.fullName],
+                                    ["Mobile", viewingEnquiry.mobile],
+                                    ["Email", viewingEnquiry.email],
+                                    ["Location", viewingEnquiry.location],
+                                    ["Preferred contact time", viewingEnquiry.preferredContactTime],
+                                    ["Budget", viewingEnquiry.budget],
+                                  ].map(([label, value]) => (
+                                    <div key={label} className="rounded-xl border border-[var(--border-card)] bg-[var(--bg-card)] px-4 py-3">
+                                      <p className="text-xs font-bold uppercase tracking-[0.12em] text-[var(--text-muted)]">{label}</p>
+                                      <p className="mt-1 break-words text-sm font-semibold text-[var(--text-primary)]">{value || "-"}</p>
+                                    </div>
+                                  ))}
+                                </div>
+                              </section>
+
+                              <section className="mt-5 rounded-2xl border border-[var(--border-card)] bg-[var(--bg-soft)] p-4 sm:p-5">
+                                <div className="mb-4">
+                                  <h4 className="text-lg font-semibold text-[var(--text-primary)]">Tournament details</h4>
+                                  <p className="text-sm text-[var(--text-secondary)]">Schedule and participation overview.</p>
+                                </div>
+                                <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-4">
+                                  {[
+                                    ["Tournament", viewingEnquiry.tournamentName],
+                                    ["Number of teams", viewingEnquiry.numberOfTeams],
+                                    ["Start date", viewingEnquiry.startDate ? new Date(viewingEnquiry.startDate).toLocaleDateString() : "-"],
+                                    ["End date", viewingEnquiry.endDate ? new Date(viewingEnquiry.endDate).toLocaleDateString() : "-"],
+                                  ].map(([label, value]) => (
+                                    <div key={label} className="rounded-xl border border-[var(--border-card)] bg-[var(--bg-card)] px-4 py-3">
+                                      <p className="text-xs font-bold uppercase tracking-[0.12em] text-[var(--text-muted)]">{label}</p>
+                                      <p className="mt-1 break-words text-sm font-semibold text-[var(--text-primary)]">{value || "-"}</p>
+                                    </div>
+                                  ))}
+                                </div>
+                              </section>
+
+                              <section className="mt-5 rounded-2xl border border-[var(--border-card)] bg-[var(--bg-soft)] p-4 sm:p-5">
+                                <div className="mb-3">
+                                  <h4 className="text-lg font-semibold text-[var(--text-primary)]">Custom requirement</h4>
+                                  <p className="text-sm text-[var(--text-secondary)]">Additional notes and special requests.</p>
+                                </div>
+                                <div className="min-h-[110px] whitespace-pre-wrap rounded-xl border border-[var(--border-card)] bg-[var(--bg-card)] px-4 py-3 text-sm leading-7 text-[var(--text-secondary)]">
+                                  {viewingEnquiry.customRequirement || "No custom requirements provided."}
+                                </div>
+                              </section>
+
+                              <section className="mt-5 rounded-2xl border border-[var(--border-card)] bg-[var(--bg-soft)] p-4 sm:p-5">
+                                <div className="mb-4">
+                                  <h4 className="text-lg font-semibold text-[var(--text-primary)]">Requested services</h4>
+                                  <p className="text-sm text-[var(--text-secondary)]">Services selected for this enquiry.</p>
+                                </div>
+                                <div className="flex flex-wrap gap-2">
+                                  {SERVICE_FIELDS.map((service) => (
+                                    viewingEnquiry.services?.[service.key] && (
+                                      <span
+                                        key={service.key}
+                                        className="inline-flex items-center gap-2 rounded-full border border-[var(--primary)] bg-[var(--accent-light)] px-3 py-2 text-sm font-semibold text-[var(--text-primary)]"
+                                      >
+                                        <span className="h-2 w-2 rounded-full bg-[var(--primary)]" />
+                                        {service.label}
+                                      </span>
+                                    )
+                                  ))}
+                                  {!SERVICE_FIELDS.some(service => viewingEnquiry.services?.[service.key]) && (
+                                    <p className="text-sm text-[var(--text-secondary)]">No services selected.</p>
+                                  )}
+                                </div>
+                              </section>
                             </div>
-                            <div className="space-y-2 text-sm text-[var(--text-primary)]">
-                              <strong>Mobile:</strong> {viewingEnquiry.mobile || "-"}
-                            </div>
-                            <div className="space-y-2 text-sm text-[var(--text-primary)]">
-                              <strong>Email:</strong> {viewingEnquiry.email || "-"}
-                            </div>
-                            <div className="space-y-2 text-sm text-[var(--text-primary)]">
-                              <strong>Location:</strong> {viewingEnquiry.location || "-"}
-                            </div>
-                            <div className="space-y-2 text-sm text-[var(--text-primary)]">
-                              <strong>Tournament name:</strong> {viewingEnquiry.tournamentName || "-"}
-                            </div>
-                            <div className="space-y-2 text-sm text-[var(--text-primary)]">
-                              <strong>Number of teams:</strong> {viewingEnquiry.numberOfTeams || "-"}
-                            </div>
-                            <div className="space-y-2 text-sm text-[var(--text-primary)]">
-                              <strong>Start date:</strong> {viewingEnquiry.startDate ? new Date(viewingEnquiry.startDate).toLocaleDateString() : "-"}
-                            </div>
-                            <div className="space-y-2 text-sm text-[var(--text-primary)]">
-                              <strong>End date:</strong> {viewingEnquiry.endDate ? new Date(viewingEnquiry.endDate).toLocaleDateString() : "-"}
-                            </div>
-                            <div className="space-y-2 text-sm text-[var(--text-primary)]">
-                              <strong>Preferred contact time:</strong> {viewingEnquiry.preferredContactTime || "-"}
-                            </div>
-                            <div className="space-y-2 text-sm text-[var(--text-primary)]">
-                              <strong>Budget:</strong> {viewingEnquiry.budget || "-"}
-                            </div>
-                            <div className="space-y-2 text-sm text-[var(--text-primary)]">
-                              <strong>Status:</strong> {viewingEnquiry.status ? viewingEnquiry.status.replace("_", " ") : "-"}
-                            </div>
-                            <div className="space-y-2 text-sm text-[var(--text-primary)]">
-                              <strong>Source:</strong> {viewingEnquiry.source ? viewingEnquiry.source.charAt(0).toUpperCase() + viewingEnquiry.source.slice(1) : "-"}
-                            </div>
-                          </div>
-                          <div className="mt-4">
-                            <strong className="text-sm text-[var(--text-primary)]">Custom requirement:</strong>
-                            <p className="mt-1 text-sm text-[var(--text-secondary)]">{viewingEnquiry.customRequirement || "-"}</p>
-                          </div>
-                          <div className="mt-4">
-                            <strong className="text-sm text-[var(--text-primary)]">Services:</strong>
-                            <div className="mt-2 grid gap-2 sm:grid-cols-2">
-                              {SERVICE_FIELDS.map((service) => (
-                                viewingEnquiry.services?.[service.key] && (
-                                  <div key={service.key} className="text-sm text-[var(--text-secondary)] bg-[var(--bg-card)] rounded-lg px-3 py-2 border border-[var(--border-card)]">
-                                    {service.label}
-                                  </div>
-                                )
-                              ))}
-                              {!SERVICE_FIELDS.some(service => viewingEnquiry.services?.[service.key]) && (
-                                <div className="text-sm text-[var(--text-secondary)]">No services selected</div>
-                              )}
-                            </div>
-                          </div>
-                          <div className="mt-5 flex flex-wrap gap-3">
+
+                          <div className="flex justify-end border-t border-[var(--border-card)] bg-[var(--bg-soft)] px-5 py-4 sm:px-7">
                             <button
+                              type="button"
                               onClick={() => setViewingEnquiry(null)}
-                              className="rounded-2xl border border-[var(--border-primary)] bg-[var(--bg-card)] px-5 py-3 font-semibold text-[var(--text-primary)] hover:bg-[var(--secondary-lighter)] transition"
+                              className="ui-btn-primary !px-6"
                             >
                               Close
                             </button>
@@ -746,6 +819,18 @@ const Enquiries = ({ theme, onToggleTheme }) => {
                         </div>
                         </div>
                       )}
+
+                      <DeleteConfirmModal
+                        open={Boolean(deleteTarget)}
+                        title="Delete enquiry"
+                        description={`Are you sure you want to delete the enquiry from ${
+                          deleteTarget?.fullName || "this contact"
+                        }? This action cannot be undone.`}
+                        confirmText="Delete enquiry"
+                        loading={deletingEnquiry}
+                        onConfirm={handleDelete}
+                        onClose={() => setDeleteTarget(null)}
+                      />
                     </div>
                   </div>
                 </section>

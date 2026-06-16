@@ -145,13 +145,26 @@ const CreateSlot = ({
       ...base,
       fontSize: "0.875rem",
       color: "var(--text-primary)",
-      backgroundColor: state.isSelected
+      backgroundColor: state.isSelected || state.isFocused
         ? "var(--accent-light)"
         : "var(--bg-card)",
       transition: "none",
     }),
     singleValue: (base) => ({ ...base, color: "var(--text-primary)" }),
     placeholder: (base) => ({ ...base, color: "var(--text-muted)" }),
+    input: (base) => ({ ...base, color: "var(--text-primary)" }),
+    dropdownIndicator: (base) => ({
+      ...base,
+      color: "var(--text-muted)",
+    }),
+    indicatorSeparator: (base) => ({
+      ...base,
+      backgroundColor: "var(--border-card)",
+    }),
+    noOptionsMessage: (base) => ({
+      ...base,
+      color: "var(--text-secondary)",
+    }),
   };
 
   return (
@@ -427,7 +440,7 @@ const CreateSlot = ({
 
                 <div className="relative">
                   <div
-                    className="flex cursor-pointer items-center justify-between rounded-lg border border-[var(--border-primary)] bg-[var(--bg-card)] p-2.5 transition-all hover:border-[var(--primary)]"
+                    className="flex cursor-pointer items-center justify-between rounded-lg border border-[var(--border-primary)] bg-[var(--bg-main)] p-2.5 transition-all hover:border-[var(--primary)]"
                     onClick={() =>
                       setOpenSelectorDropdown(!openSelectorDropdown)
                     }
@@ -450,7 +463,7 @@ const CreateSlot = ({
                         <input
                           type="text"
                           placeholder="Search selectors..."
-                          className="w-full rounded border border-[var(--border-card)] px-2 py-1.5 text-sm focus:border-[var(--primary)] focus:outline-none"
+                          className="w-full rounded border border-[var(--border-card)] bg-[var(--bg-main)] px-2 py-1.5 text-sm text-[var(--text-primary)] outline-none placeholder:text-[var(--text-muted)] focus:border-[var(--primary)]"
                           onChange={(e) => {
                             const searchTerm = e.target.value.toLowerCase();
                             const items =

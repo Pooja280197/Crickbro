@@ -760,7 +760,7 @@ const AuctionOverview = ({ auctionId }) => {
       {players.length > 0 ? (
         <div className="space-y-4">
           {/* Grid View - Responsive columns */}
-          <div className="grid grid-cols-2 gap-2 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-8">
+          <div className="grid grid-cols-2 gap-4 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 ">
             {players.map((player) => (
               <div
                 key={player._id}

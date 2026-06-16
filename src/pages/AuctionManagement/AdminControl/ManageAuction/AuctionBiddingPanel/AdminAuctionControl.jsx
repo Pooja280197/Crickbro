@@ -1,11 +1,12 @@
-import api from "../../../../utils/api";
+import api from "../../../../../utils/api";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
-import { connectAuctionSocket, disconnectSocket } from "../../../../utils/SocketClient";
+import { connectAuctionSocket, disconnectSocket } from "../../../../../utils/SocketClient";
 import { toast } from "react-toastify";
-import ConfirmDialog from "../../../../components/ConfirmDialog";
-import profile from "../../../../assets/Images/profile-icon.jpg";
+import ConfirmDialog from "../../../../../components/ConfirmDialog";
+import profile from "../../../../../assets/Images/profile-icon.jpg";
 import { ChevronLeft, ChevronRight, Eye, Filter, Search, Settings } from "lucide-react";
+import { computeCategoryLockReserveForTeam } from "./categoryBudgetLockUtils";
 
 /* ================= CONSTANTS ================= */
 
@@ -29,14 +30,13 @@ const formatBidTime = (val) => {
 };
 
 const formatMoney = (amount) => {
-  if (!amount || isNaN(amount)) return "0";
-
-  if (amount >= 10000000)
-    return `${parseFloat((amount / 10000000).toFixed(2))}Cr`;
-  if (amount >= 100000) return `${parseFloat((amount / 100000).toFixed(2))}L`;
-  if (amount >= 1000) return `${parseFloat((amount / 1000).toFixed(1))}k`;
-
-  return amount.toString();
+  const n = Number(amount);
+  if (!Number.isFinite(n)) return "0";
+  if (n >= 10000000)
+    return `${parseFloat((n / 10000000).toFixed(2))}Cr`;
+  if (n >= 100000) return `${parseFloat((n / 100000).toFixed(2))}L`;
+  if (n >= 1000) return `${parseFloat((n / 1000).toFixed(1))}k`;
+  return n.toString();
 };
 
 /* ================= COMPONENT ================= */
@@ -49,6 +49,8 @@ const AdminAuctionControl = () => {
   const [categories, setCategories] = useState([]);
   const [selectedCategoryId, setSelectedCategoryId] = useState("");
   const [selectedStatus, setSelectedStatus] = useState("available");
+  /** "sequence" = orderInCategory; "random" = any eligible player */
+  const [nextPlayerPickMode, setNextPlayerPickMode] = useState("sequence");
 
   const [categoryCounts, setCategoryCounts] = useState(null);
   const [countsLoading, setCountsLoading] = useState(false);
@@ -351,6 +353,7 @@ const AdminAuctionControl = () => {
       auctionId,
       categoryId: value,
       playerStatus: selectedStatus,
+      nextPickMode: nextPlayerPickMode,
     });
   };
 
@@ -365,6 +368,7 @@ const AdminAuctionControl = () => {
       const data = {
         categoryId: selectedCategoryId,
         playerStatus: selectedStatus,
+        nextPickMode: nextPlayerPickMode,
       };
 
       await api.post(`/webSiteApi/auction/callNext/${auctionId}`, data);
@@ -819,7 +823,7 @@ const AdminAuctionControl = () => {
 
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 text-slate-50 px-4 py-2">
+    <div className="admin-auction-control min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 text-slate-50 px-4 py-2">
       <div className="w-full mx-auto space-y-2">
         {/* <div className="flex justify-center items-center font-bold text-yellow-400">
           ADMIN AUCTION CONTROL
@@ -936,6 +940,16 @@ const AdminAuctionControl = () => {
                 >
                   <option value="available">Available</option>
                   <option value="unsold">Unsold</option>
+                </select>
+
+                <select
+                  value={nextPlayerPickMode}
+                  onChange={(e) => setNextPlayerPickMode(e.target.value)}
+                  title="How to pick the next player when you press Next Player"
+                  className="w-full sm:w-auto bg-slate-800 border border-slate-700 text-sm rounded-lg px-3 py-2 outline-none focus:ring-2 focus:ring-sky-500"
+                >
+                  <option value="sequence">Sequence</option>
+                  <option value="random">Random</option>
                 </select>
 
                 {selectedCategoryId && !canMarkDecision && (
@@ -1313,16 +1327,16 @@ const AdminAuctionControl = () => {
             {/* TEAMS GRID – ALWAYS VISIBLE WHEN TEAMS EXIST */}
           </div>
           <div className="space-y-4 relative">
-            <div className=" bg-gradient-to-br from-slate-900 to-slate-950 border border-slate-700/50 rounded-2xl p-4 sm:p-5 min-h-[260px] md:h-[400px] flex flex-col shadow-lg overflow-y-auto">
-              <div className="mb-4 sticky top-0 bg-slate-900 z-10 py-2">
-                <h3 className="text-lg font-bold text-slate-100 tracking-wide ">
+            <div className="bidding-history-panel bg-gradient-to-br from-slate-900 to-slate-950 border border-slate-700/50 rounded-2xl p-4 sm:p-5 min-h-[260px] md:h-[400px] flex flex-col shadow-lg overflow-y-auto">
+              <div className="bidding-history-header mb-4 sticky top-0 bg-slate-900 z-10 py-2">
+                <h3 className="bidding-history-title text-lg font-bold text-slate-100 tracking-wide ">
                   BIDDING HISTORY
                 </h3>
               </div>
 
               <div className="flex-1">
                 {biddingHistory.length === 0 ? (
-                  <div className="h-full flex flex-col items-center justify-center text-slate-400">
+                  <div className="bidding-history-empty h-full flex flex-col items-center justify-center text-slate-400">
                     <div className="text-4xl mb-3 opacity-50">📭</div>
                     <p className="text-sm">No bids yet</p>
                   </div>
@@ -1331,7 +1345,7 @@ const AdminAuctionControl = () => {
                     {biddingHistory.map((entry, idx) => (
                       <div
                         key={idx}
-                        className={`flex items-center justify-between px-4 py-3 rounded-lg transition-colors ${idx === 0
+                        className={`bidding-history-row flex items-center justify-between px-4 py-3 rounded-lg transition-colors ${idx === 0
                           ? "bg-amber-500/20 border border-amber-500/40 ring-2 ring-amber-400/30 animate-pulse shadow-lg shadow-amber-400/20"
                           : "bg-slate-800/50 border border-slate-700/30 hover:bg-slate-800/70"
                           }`}
@@ -1488,6 +1502,33 @@ const AdminAuctionControl = () => {
                   return Math.max(team.remainingBudget - payAmount, 0);
                 })();
 
+                const lockCats = socketData?.categoryBudgetLocks || [];
+                const soldMap =
+                  socketData?.soldPlayersByTeamCategory?.[String(team.teamId)] ||
+                  {};
+                const remNum = Number(team.remainingBudget);
+                const showLockBidCap =
+                  socketData?.auctionStatus === "ongoing" &&
+                  currentPlayer?.status === "bidding" &&
+                  lockCats.length > 0;
+
+                let maxBidAfterLocks = null;
+                let reserveLocked = null;
+                if (showLockBidCap && Number.isFinite(remNum)) {
+                  const { reserve } = computeCategoryLockReserveForTeam(
+                    lockCats,
+                    soldMap,
+                    {
+                      categoryId: currentPlayer?.categoryId || null,
+                      consumeSlotFromBidCategory: Boolean(
+                        currentPlayer?.categoryId,
+                      ),
+                    },
+                  );
+                  reserveLocked = reserve;
+                  maxBidAfterLocks = Math.max(0, remNum - reserve);
+                }
+
                 return (
                   <button
                     key={team.teamId}
@@ -1528,6 +1569,21 @@ const AdminAuctionControl = () => {
                     </div>
                     <div className="text-xs text-slate-400">
                       ₹{displayBudget.toLocaleString()}
+                      {maxBidAfterLocks !== null && (
+                        <div className="text-[11px] text-amber-200/95 mt-1 leading-snug">
+                          <span className="text-slate-500">
+                            Max bid (after locks):{" "}
+                          </span>
+                          <span className="font-semibold text-amber-100">
+                            ₹{maxBidAfterLocks.toLocaleString()}
+                          </span>
+                          {reserveLocked > 0 && (
+                            <span className="block text-[10px] text-slate-500 mt-0.5">
+                              Reserved: ₹{reserveLocked.toLocaleString()}
+                            </span>
+                          )}
+                        </div>
+                      )}
                       {remainingIfWin !== null &&
                         currentPlayer?.status !== "sold" && (
                           <div className="text-[11px] text-slate-300 mt-1">

@@ -1,5 +1,5 @@
 import React, { lazy, Suspense, useState, useMemo, useEffect } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import Header from "../../components/Header";
 import Footer from "../../components/Footer";
 import {
@@ -30,6 +30,7 @@ import {
   Eye,
   Briefcase,
   FileText,
+  Link2,
 } from "lucide-react";
 
 // TAB CONTENT COMPONENTS
@@ -56,6 +57,7 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 // import TrialSlot from "../../pages/AuctionDetailsTabs/TrialSlotTab/TrialSlot";
 import { toast } from "react-toastify";
+import Links from "../../pages/AuctionManagement/AdminControl/ManageAuction/OverlayLinks/Links.jsx";
 const TeamsTab = lazy(
   () =>
     import(
@@ -74,7 +76,7 @@ const AuctionOverview = lazy(
 const Dashboard = lazy(
   () => import("../../pages/AuctionManagement/AdminControl/Dashboard"),
 );
-const Links = lazy(() => import("./AdminControl/LiveLinks/Links.jsx"));
+
 const RegistrationOverview = lazy(
   () =>
     import(
@@ -112,6 +114,13 @@ const ManagePlayerTabs = lazy(
     import("./AdminControl/Trials&Selection/TrailsPlayersTabs/ManagePlayerTabs.jsx"),
 );
 
+const AdminAuctionControl= lazy(
+  () =>
+    import("./AdminControl/ManageAuction/AuctionBiddingPanel/AdminAuctionControl.jsx"),
+);
+
+
+
 /* ===============================
    ROLE PRIORITY ORDER (Highest to Lowest)
 ================================ */
@@ -129,7 +138,6 @@ const roleTabs = {
     "trialsAndSelection",
     "manageAuction",
     "allPlayers",
-    // "players",
     "trialSettings",
     "auctionSettings",
     "auctionOverview",
@@ -204,6 +212,8 @@ const tabStructure = [
       { key: "auctionOverview", label: "Auction Overview", icon: Eye },
       { key: "manageTeams", label: "Manage Teams", icon: UsersRound },
       { key: "players", label: "Manage Players", icon: Users },
+      { key: "overlayLinks", label: "Live Links", icon: Link2},
+      { key: "biddingPanel", label: "Auction Room", icon: Gavel },
     ],
   },
   {
@@ -231,6 +241,7 @@ const AuctionDetails = ({ theme, onToggleTheme }) => {
   const { auctionId } = useParams();
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [expandedMenus, setExpandedMenus] = useState({
@@ -239,8 +250,12 @@ const AuctionDetails = ({ theme, onToggleTheme }) => {
   });
   const playerId = localStorage.getItem("playerId");
   const userRole = useSelector((state) => state.data?.userRole);
-  const [activeTab, setActiveTab] = useState("dashboard");
-  const [activeSubTab, setActiveSubTab] = useState(null);
+  const [activeTab, setActiveTab] = useState(
+    () => searchParams.get("tab") || "dashboard",
+  );
+  const [activeSubTab, setActiveSubTab] = useState(
+    () => searchParams.get("subTab") || null,
+  );
   const [visitedTabs, setVisitedTabs] = useState(() => new Set());
   const tournamentId = useSelector((state) => state.tournamentId);
   const isTrialType = useSelector(
@@ -308,6 +323,7 @@ const AuctionDetails = ({ theme, onToggleTheme }) => {
 
   // Set default active tab when roles load
   useEffect(() => {
+    if (!userRole) return;
     if (visibleTabs.length === 0) return;
 
     const activeParent = visibleTabs.find((tab) => tab.key === activeTab);
@@ -338,6 +354,26 @@ const AuctionDetails = ({ theme, onToggleTheme }) => {
     : currentParentTab
       ? activeTab
       : null;
+
+  useEffect(() => {
+    if (!effectiveTab) return;
+
+    setSearchParams(
+      (previousParams) => {
+        const nextParams = new URLSearchParams(previousParams);
+        nextParams.set("tab", activeTab);
+
+        if (activeSubTab) {
+          nextParams.set("subTab", activeSubTab);
+        } else {
+          nextParams.delete("subTab");
+        }
+
+        return nextParams;
+      },
+      { replace: true },
+    );
+  }, [activeTab, activeSubTab, effectiveTab, setSearchParams]);
 
   useEffect(() => {
     if (!effectiveTab) return;
@@ -403,6 +439,8 @@ const AuctionDetails = ({ theme, onToggleTheme }) => {
       case "overlayLinks":
         return <Links auctionId={auctionId} />;
 
+      case "biddingPanel":
+        return <AdminAuctionControl auctionId={auctionId} />; 
       case "info":
         return <TournamentDetails auctionId={auctionId} />;
 

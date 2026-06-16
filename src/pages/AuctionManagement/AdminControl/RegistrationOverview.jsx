@@ -19,16 +19,26 @@ import {
 import { fetchSlotList } from "../../../redux/actions";
 import { useDispatch, useSelector } from "react-redux";
 
-const Field = ({ label, value, full }) => (
-  <div className={full ? "md:col-span-2" : ""}>
-    <p className="text-[10px] font-bold uppercase tracking-wide text-[var(--text-muted)]">
-      {label}
-    </p>
-    <div className="mt-1.5 min-h-9 break-words rounded-lg border border-[var(--border-card)] bg-[var(--bg-main)] px-3 py-2 text-sm font-semibold text-[var(--text-primary)]">
-      {value || "-"}
+const Field = ({ label, value, full }) => {
+  const hasValue =
+    value !== null &&
+    value !== undefined &&
+    value !== "-" &&
+    (typeof value !== "string" || value.trim() !== "");
+
+  if (!hasValue) return null;
+
+  return (
+    <div className={full ? "md:col-span-2" : ""}>
+      <p className="text-[10px] font-bold uppercase tracking-wide text-[var(--text-muted)]">
+        {label}
+      </p>
+      <div className="mt-1.5 min-h-9 break-words rounded-lg border border-[var(--border-card)] bg-[var(--bg-main)] px-3 py-2 text-sm font-semibold text-[var(--text-primary)]">
+        {value}
+      </div>
     </div>
-  </div>
-);
+  );
+};
 
 const Section = ({ title, icon, children }) => (
   <div className="rounded-xl border border-[var(--border-card)] bg-[var(--bg-card)] p-3 shadow-sm">

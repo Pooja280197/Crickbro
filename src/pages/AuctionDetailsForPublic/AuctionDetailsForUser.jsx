@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
-import { motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import {
   fetchAuctionDetails,
   EnrollPlayer,
@@ -324,6 +324,7 @@ export default function AuctionDetailsPage({ theme, onToggleTheme }) {
 
   const handleSocketData = useCallback((data) => {
     const payload = data?.data || data;
+    console.log("Received socket data:", payload);
 
     setSocketData((prev) => ({
       ...payload,
@@ -339,7 +340,6 @@ export default function AuctionDetailsPage({ theme, onToggleTheme }) {
 
   useEffect(() => {
     if (!auctionId) return;
-
     const socket = connectAuctionSocket({
       auctionId,
       onSnapshot: handleSocketData,
@@ -610,8 +610,8 @@ export default function AuctionDetailsPage({ theme, onToggleTheme }) {
               label="Entry Fee"
               value={`₹${Number(tournamentId?.entryFees || 0).toLocaleString("en-IN")}`}
             />
-            <DetailTile icon={Activity} label="Pitch Type" value={tournamentId?.pitchType} />
-            <DetailTile icon={Trophy} label="Match Type" value={tournamentId?.matchType} />
+            <DetailTile icon={Activity} label="Pitch Type" value={tournamentId?.pitchType?.charAt(0)?.toUpperCase() + tournamentId?.pitchType?.slice(1)} />
+            <DetailTile icon={Trophy} label="Match Type" value={tournamentId?.matchType?.charAt(0)?.toUpperCase() + tournamentId?.matchType?.slice(1)} />
           </div>
         </div>
 
@@ -878,7 +878,7 @@ export default function AuctionDetailsPage({ theme, onToggleTheme }) {
                 />
 
                 <div className="flex-1">
-                  <h3 className="text-base font-bold text-[var(--text-primary)]">
+                  <h3 className="text-base font-semibold text-[var(--text-primary)]">
                     {team?.teamId?.name}
                   </h3>
 
@@ -923,19 +923,66 @@ export default function AuctionDetailsPage({ theme, onToggleTheme }) {
   const BiddingTab = () => {
     const latestBid =
       currentPlayer?.bidHistory?.[currentPlayer?.bidHistory?.length - 1];
+    const currentPlayerStatus = String(currentPlayer?.status || "")
+      .trim()
+      .toLowerCase();
+    const isSold = currentPlayerStatus === "sold";
+    const isUnsold = currentPlayerStatus === "unsold";
+    const hasFinalStatus = isSold || isUnsold;
 
     return (
       <div className="space-y-6">
         {currentPlayer ? (
-          <div className="rounded-xl border border-[var(--border-card)] bg-[var(--bg-card)] p-4 shadow-[var(--shadow-card)]">
+          <div className="relative overflow-hidden rounded-xl border border-[var(--border-card)] bg-[var(--bg-card)] p-4 shadow-[var(--shadow-card)]">
+            <AnimatePresence>
+              {hasFinalStatus && (
+                <motion.div
+                  key={`${currentPlayer?._id || currentPlayer?.playerId || currentPlayer?.batchId}-${currentPlayerStatus}`}
+                  initial={{ opacity: 0, scale: 0.88, rotate: -10 }}
+                  animate={{ opacity: 1, scale: 1, rotate: -8 }}
+                  exit={{ opacity: 0, scale: 0.9 }}
+                  transition={{ type: "spring", stiffness: 220, damping: 16 }}
+                  className="pointer-events-none absolute inset-0 z-20 flex items-center justify-center bg-black/25 backdrop-blur-[1px]"
+                >
+                  <motion.div
+                    initial={{ y: 26 }}
+                    animate={{ y: [26, 0, 0], scale: [0.98, 1.06, 1] }}
+                    transition={{ duration: 0.7, ease: "easeOut" }}
+                    className={`rounded-xl border-4 px-8 py-4 text-4xl font-black uppercase tracking-[0.22em] shadow-2xl sm:text-6xl ${
+                      isSold
+                        ? "border-emerald-300 bg-emerald-600/90 text-white shadow-emerald-900/30"
+                        : "border-red-300 bg-red-600/90 text-white shadow-red-900/30"
+                    }`}
+                  >
+                    {isSold ? "Sold" : "Unsold"}
+                  </motion.div>
+                </motion.div>
+              )}
+            </AnimatePresence>
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-lg font-bold text-[var(--text-primary)] flex items-center gap-2">
                 <Activity className="w-5 h-5 text-[var(--primary)]" />
                 Live Auction
               </h2>
-              <span className="px-3 py-1 text-xs rounded-full bg-green-100 text-green-700 font-medium flex items-center gap-1">
-                <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse" />
-                BIDDING ACTIVE
+              <span
+                className={`px-3 py-1 text-xs rounded-full font-medium flex items-center gap-1 ${
+                  isSold
+                    ? "bg-emerald-100 text-emerald-700"
+                    : isUnsold
+                      ? "bg-red-100 text-red-700"
+                      : "bg-green-100 text-green-700"
+                }`}
+              >
+                <span
+                  className={`w-1.5 h-1.5 rounded-full ${
+                    isSold
+                      ? "bg-emerald-500"
+                      : isUnsold
+                        ? "bg-red-500"
+                        : "bg-green-500 animate-pulse"
+                  }`}
+                />
+                {isSold ? "SOLD" : isUnsold ? "UNSOLD" : "BIDDING ACTIVE"}
               </span>
             </div>
 
@@ -957,11 +1004,11 @@ export default function AuctionDetailsPage({ theme, onToggleTheme }) {
                       Batch: {currentPlayer?.batchId}
                     </span>
                     <span className="rounded-md bg-[var(--bg-main)] px-2 py-1 text-[var(--text-secondary)]">
-                      {currentPlayer?.categoryName}
+                      Category: {currentPlayer?.categoryName}
                     </span>
                     {currentPlayer.role && (
                       <span className="rounded-md bg-[var(--bg-main)] px-2 py-1 text-[var(--text-secondary)]">
-                        Role: {currentPlayer?.role}
+                        Role: {currentPlayer?.role?.charAt(0)?.toUpperCase() + currentPlayer?.role?.slice(1)}
                       </span>
                     )}
                   </div>
@@ -1003,20 +1050,20 @@ export default function AuctionDetailsPage({ theme, onToggleTheme }) {
             </div>
 
             {currentPlayer.bidHistory?.length > 0 && (
-              <div className="mt-6">
-                <h3 className="text-sm font-semibold text-[var(--text-primary)] mb-3">
+              <div className="mt-6 min-h-0">
+                <h3 className="mb-3 text-sm font-semibold text-[var(--text-primary)]">
                   Bid History
                 </h3>
-                <div className="space-y-2 max-h-36 overflow-y-auto pr-2">
+                <div className="max-h-56 min-h-0 space-y-2 overflow-y-auto overscroll-contain pr-2 [scrollbar-color:var(--primary)_transparent] [scrollbar-gutter:stable] [scrollbar-width:thin] [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-[var(--primary)]">
                   {[...currentPlayer.bidHistory].reverse().map((bid, idx) => (
                     <div
                       key={idx}
-                      className="flex items-center justify-between rounded-lg bg-[var(--bg-main)] px-4 py-2 text-sm"
+                      className="flex min-w-0 items-center justify-between gap-3 rounded-lg bg-[var(--bg-main)] px-4 py-2 text-sm"
                     >
-                      <span className="font-medium text-[var(--text-primary)]">
+                      <span className="min-w-0 truncate font-medium text-[var(--text-primary)]">
                         {bid?.teamName}
                       </span>
-                      <span className="font-semibold text-[var(--primary)]">
+                      <span className="shrink-0 font-semibold text-[var(--primary)]">
                         ₹{bid?.bidAmount?.toLocaleString()}
                       </span>
                     </div>
@@ -1107,7 +1154,7 @@ export default function AuctionDetailsPage({ theme, onToggleTheme }) {
   return (
     <div className="min-h-screen bg-[var(--bg-main)] text-[var(--text-primary)]">
       <Header theme={theme} onToggleTheme={onToggleTheme} />
-      <div className="mx-auto max-w-6xl space-y-4 px-3 py-4 sm:px-5 sm:py-5">
+      <div className="mx-auto max-w-6xl space-y-4 px-3 py-4 pb-28 sm:px-5 sm:py-5 lg:pb-5">
         {/* Hero Section */}
         <div className={`${panelClass} relative overflow-hidden`}>
           <img
@@ -1260,7 +1307,7 @@ export default function AuctionDetailsPage({ theme, onToggleTheme }) {
               </button>
             )}
 
-            {socketData && (
+            
               <button
                 onClick={() => setActiveTab(TABS.BIDDING)}
                 className={`rounded-lg px-3 py-2 text-xs font-semibold transition-all sm:text-sm ${activeTab === TABS.BIDDING
@@ -1273,7 +1320,7 @@ export default function AuctionDetailsPage({ theme, onToggleTheme }) {
                   Live Bidding
                 </div>
               </button>
-            )}
+            
           </nav>
         </div>
 
@@ -1281,12 +1328,13 @@ export default function AuctionDetailsPage({ theme, onToggleTheme }) {
         <div className="min-h-[400px]">{renderActiveTab()}</div>
 
         {/* Mobile Register Button */}
-        <div className="lg:hidden pt-4 flex flex-col gap-2">
+        <div className="fixed inset-x-0 bottom-0 z-40 border-t border-[var(--border-card)] bg-[var(--bg-card)]/95 px-3 py-3 shadow-[0_-12px_30px_rgba(0,0,0,0.18)] backdrop-blur lg:hidden">
+          <div className="mx-auto flex max-w-6xl flex-col gap-2">
           {auctionData?.showRegistrationForm && (
             <button
               onClick={userRole?.auctionPlayer ? handleViewDetails : handleRegisterClick}
-              className={`w-full rounded-lg px-8 py-3 font-semibold shadow-sm transition-all ${userRole?.auctionPlayer
-                  ? "border border-[var(--border-card)] bg-[var(--bg-card)] text-[var(--text-primary)] hover:border-[var(--border-primary)] hover:bg-[var(--accent-light)]"
+              className={`w-full rounded-lg px-5 py-3 text-sm font-bold shadow-sm transition-all ${userRole?.auctionPlayer
+                  ? "border border-[var(--border-primary)] bg-[var(--secondary)] text-[#102033] hover:bg-[var(--secondary-strong)]"
                   : "bg-[var(--primary)] text-white hover:bg-[var(--color-button-primary-hover)]"
                 }`}
             >
@@ -1301,6 +1349,7 @@ export default function AuctionDetailsPage({ theme, onToggleTheme }) {
               Register Team
             </button>
           )}
+          </div>
         </div>
 
         {showDetails &&

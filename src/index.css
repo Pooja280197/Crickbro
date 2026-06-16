@@ -1,12 +1,12 @@
-@import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&family=Red+Hat+Display:wght@300;400;500;600;700;800;900&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Red+Hat+Display:wght@300;400;500;600;700;800;900&display=swap");
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 :root {
-  --font-primary: "Montserrat", "Inter", "Segoe UI", Arial, sans-serif;
-  --font-heading: "Red Hat Display", sans-serif;
+  --font-primary: "Poppins", "Segoe UI", Arial, sans-serif;
+  --font-heading: "Red Hat Display", "Poppins", sans-serif;
 
   --primary: #08baf7;
   --primary-strong: #0094ff;
@@ -774,6 +774,35 @@ button {
 
 }
 
+.enquiry-modal-scroll {
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in srgb, var(--primary) 72%, white)
+    color-mix(in srgb, var(--bg-soft) 82%, transparent);
+}
+
+.enquiry-modal-scroll::-webkit-scrollbar {
+  width: 8px;
+}
+
+.enquiry-modal-scroll::-webkit-scrollbar-track {
+  margin-block: 10px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--bg-soft) 82%, transparent);
+}
+
+.enquiry-modal-scroll::-webkit-scrollbar-thumb {
+  min-height: 48px;
+  border: 2px solid var(--bg-card);
+  border-radius: 999px;
+  background: linear-gradient(180deg, var(--primary), var(--primary-strong));
+}
+
+.enquiry-modal-scroll::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, var(--primary-strong), var(--primary));
+}
+
 /* AuctionManagement comfort pass: calmer, easier to scan and operate. */
 
 .auction-management-theme .relative.z-10.p-4,
@@ -940,46 +969,46 @@ button {
 :root,
 [data-theme="light"],
 [data-theme="dark"] {
-  --primary: #1769e0;
-  --primary-strong: #0b55bd;
-  --secondary: #f4b400;
-  --secondary-strong: #d99600;
-  --text-gradient: linear-gradient(90deg, #0f4fb8 0%, #1769e0 58%, #d99600 100%);
+  --primary: #0f5ed7;
+  --primary-strong: #0849ad;
+  --secondary: #f0a800;
+  --secondary-strong: #d07f00;
+  --text-gradient: linear-gradient(90deg, #0849ad 0%, #0f5ed7 58%, #d07f00 100%);
   --success: #0d9f6e;
   --danger: #dc3545;
 
-  --bg-main: #f5f8fc;
-  --bg-deep: #eaf1f8;
-  --bg-section: #eef4fb;
+  --bg-main: #edf4ff;
+  --bg-deep: #dceaff;
+  --bg-section: #e4effd;
   --bg-card: #ffffff;
-  --bg-soft: #f8fbff;
+  --bg-soft: #f3f8ff;
   --bg-stat: #ffffff;
   --header-bg: rgba(255, 255, 255, 0.94);
 
-  --text-primary: #102033;
-  --text-secondary: #52657a;
-  --text-muted: #7b8ca0;
+  --text-primary: #0a1d33;
+  --text-secondary: #405a78;
+  --text-muted: #667b94;
   --text-dark: #ffffff;
 
-  --border-primary: rgba(23, 105, 224, 0.24);
-  --border-soft: rgba(16, 32, 51, 0.1);
-  --border-card: rgba(16, 32, 51, 0.11);
-  --accent: #1769e0;
-  --accent-light: rgba(23, 105, 224, 0.09);
-  --secondary-light: rgba(244, 180, 0, 0.14);
-  --secondary-lighter: rgba(16, 32, 51, 0.06);
-  --background: #f5f8fc;
-  --primary-dark: #102033;
-  --secondary-dark: #52657a;
+  --border-primary: rgba(15, 94, 215, 0.34);
+  --border-soft: rgba(10, 29, 51, 0.13);
+  --border-card: rgba(15, 94, 215, 0.16);
+  --accent: #0f5ed7;
+  --accent-light: rgba(15, 94, 215, 0.12);
+  --secondary-light: rgba(240, 168, 0, 0.18);
+  --secondary-lighter: rgba(15, 94, 215, 0.07);
+  --background: #edf4ff;
+  --primary-dark: #0a1d33;
+  --secondary-dark: #405a78;
 
-  --color-button-primary: #1769e0;
-  --color-button-primary-hover: #0b55bd;
-  --color-button-secondary: #f4b400;
-  --color-button-secondary-hover: #d99600;
-  --color-button-border: rgba(23, 105, 224, 0.24);
+  --color-button-primary: #0f5ed7;
+  --color-button-primary-hover: #0849ad;
+  --color-button-secondary: #f0a800;
+  --color-button-secondary-hover: #d07f00;
+  --color-button-border: rgba(15, 94, 215, 0.34);
 
-  --shadow-card: 0 10px 28px rgba(16, 32, 51, 0.08);
-  --shadow-glow: 0 10px 28px rgba(16, 32, 51, 0.08);
+  --shadow-card: 0 12px 30px rgba(15, 61, 120, 0.13);
+  --shadow-glow: 0 14px 34px rgba(15, 94, 215, 0.13);
 
   --inverse-bg: linear-gradient(180deg, rgba(16, 32, 51, 0.96), rgba(8, 18, 32, 0.98));
   --inverse-card: linear-gradient(180deg, rgba(255, 255, 255, 0.075), rgba(255, 255, 255, 0.035)), rgba(255, 255, 255, 0.035);
@@ -991,12 +1020,215 @@ button {
   --inverse-accent: #f4b400;
   --inverse-accent-text: #102033;
 
-  --hero-card-bg: linear-gradient(145deg, rgba(255, 255, 255, 0.94), rgba(248, 251, 255, 0.88)), var(--bg-card);
-  --hero-card-glow: radial-gradient(circle at 16% 0%, rgba(23, 105, 224, 0.12), transparent 30%), radial-gradient(circle at 92% 18%, rgba(244, 180, 0, 0.16), transparent 28%);
-  --hero-photo-bg: linear-gradient(180deg, rgba(23, 105, 224, 0.12), rgba(16, 32, 51, 0.08)), #eef4fb;
+  --hero-card-bg: linear-gradient(145deg, rgba(255, 255, 255, 0.98), rgba(239, 246, 255, 0.94)), var(--bg-card);
+  --hero-card-glow: radial-gradient(circle at 16% 0%, rgba(15, 94, 215, 0.16), transparent 30%), radial-gradient(circle at 92% 18%, rgba(240, 168, 0, 0.2), transparent 28%);
+  --hero-photo-bg: linear-gradient(180deg, rgba(15, 94, 215, 0.15), rgba(10, 29, 51, 0.09)), #e4effd;
   --hero-panel-bg: transparent;
   --hero-bid-bg: #ffffff;
   --hero-detail-bg: rgba(16, 32, 51, 0.045);
+}
+
+[data-theme="light"] body {
+  background:
+    radial-gradient(circle at 12% 0%, rgba(15, 94, 215, 0.12), transparent 30%),
+    radial-gradient(circle at 92% 10%, rgba(240, 168, 0, 0.11), transparent 26%),
+    linear-gradient(180deg, #edf4ff 0%, #f8fbff 48%, #eaf3ff 100%) !important;
+}
+
+[data-theme="light"] .site-shell,
+[data-theme="light"] .auction-management-theme {
+  background:
+    radial-gradient(circle at 12% 0%, rgba(15, 94, 215, 0.1), transparent 28%),
+    radial-gradient(circle at 88% 12%, rgba(240, 168, 0, 0.1), transparent 24%),
+    linear-gradient(180deg, #edf4ff 0%, #f8fbff 52%, #e6f0ff 100%) !important;
+}
+
+[data-theme="light"] .auction-management-theme .bg-white,
+[data-theme="light"] .auction-management-theme .bg-gray-50,
+[data-theme="light"] .auction-management-theme .bg-slate-100,
+[data-theme="light"] .auction-management-theme [class*="bg-[var(--bg-card)]"],
+[data-theme="light"] .auction-management-theme [class*="bg-[var(--bg-section)]"],
+[data-theme="light"] .auction-management-theme [class*="bg-[var(--background)]"] {
+  border-color: rgba(15, 94, 215, 0.18) !important;
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.98), rgba(239, 246, 255, 0.92)),
+    #ffffff !important;
+  box-shadow:
+    0 12px 30px rgba(15, 61, 120, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.88) !important;
+}
+
+[data-theme="light"] .auction-management-theme input,
+[data-theme="light"] .auction-management-theme select,
+[data-theme="light"] .auction-management-theme textarea {
+  border-color: rgba(15, 94, 215, 0.22) !important;
+  background: #ffffff !important;
+  box-shadow: 0 1px 0 rgba(15, 61, 120, 0.04) !important;
+}
+
+[data-theme="light"] .auction-management-theme tbody tr {
+  background: #ffffff !important;
+  box-shadow:
+    0 0 0 1px rgba(15, 94, 215, 0.13),
+    0 6px 16px rgba(15, 61, 120, 0.08) !important;
+}
+
+[data-theme="light"] .auction-management-theme tbody tr:hover {
+  background: #f0f6ff !important;
+}
+
+[data-theme="light"] .bidding-history-panel {
+  border-color: rgba(15, 94, 215, 0.18) !important;
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.98), rgba(239, 246, 255, 0.94)),
+    #ffffff !important;
+  box-shadow:
+    0 14px 32px rgba(15, 61, 120, 0.13),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9) !important;
+}
+
+[data-theme="light"] .bidding-history-header {
+  background: linear-gradient(180deg, #ffffff, rgba(239, 246, 255, 0.96)) !important;
+}
+
+[data-theme="light"] .bidding-history-title {
+  color: var(--text-primary) !important;
+}
+
+[data-theme="light"] .bidding-history-empty {
+  color: var(--text-muted) !important;
+}
+
+[data-theme="light"] .bidding-history-row {
+  border-color: rgba(15, 94, 215, 0.14) !important;
+  background: #ffffff !important;
+  box-shadow: 0 6px 16px rgba(15, 61, 120, 0.07) !important;
+}
+
+[data-theme="light"] .bidding-history-row:hover {
+  background: #f0f6ff !important;
+}
+
+[data-theme="light"] .bidding-history-row .text-slate-200,
+[data-theme="light"] .bidding-history-row .text-amber-100 {
+  color: var(--text-primary) !important;
+}
+
+[data-theme="light"] .bidding-history-row .text-emerald-400 {
+  color: #047857 !important;
+}
+
+[data-theme="light"] .bidding-history-row .text-amber-300,
+[data-theme="light"] .bidding-history-row .text-amber-400 {
+  color: #b77900 !important;
+}
+
+.registration-pass-card {
+  color: #0f172a !important;
+  background: #ffffff !important;
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  box-shadow: 0 26px 70px rgba(2, 18, 42, 0.32) !important;
+}
+
+.registration-pass-inner {
+  background: #ffffff;
+}
+
+.registration-pass-brand-band {
+  background: #f1f3f7 !important;
+}
+
+.registration-pass-brand-card,
+.registration-pass-section {
+  background: #ffffff !important;
+  border-color: rgba(15, 23, 42, 0.1) !important;
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.06) !important;
+}
+
+.registration-pass-tile {
+  background: #f7f9fc !important;
+  border: 1px solid rgba(15, 23, 42, 0.04);
+}
+
+.registration-pass-complete {
+  background:
+    linear-gradient(135deg, rgba(236, 253, 245, 0.98), rgba(220, 252, 231, 0.92)),
+    #ecfdf5 !important;
+  border-color: rgba(16, 185, 129, 0.28) !important;
+}
+
+.registration-pass-card .bg-\[var\(--bg-main\)\] {
+  background:
+    linear-gradient(135deg, rgba(15, 94, 215, 0.1), rgba(240, 168, 0, 0.08)),
+    #eef5ff !important;
+}
+
+.registration-pass-card .bg-\[var\(--bg-card\)\] {
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.98), rgba(244, 248, 255, 0.94)),
+    #ffffff !important;
+}
+
+.registration-pass-card .border-\[var\(--border-card\)\] {
+  border-color: rgba(15, 94, 215, 0.16) !important;
+}
+
+.registration-pass-card .text-\[var\(--text-primary\)\] {
+  color: #0f172a !important;
+}
+
+.registration-pass-card .text-\[var\(--text-secondary\)\] {
+  color: #52657a !important;
+}
+
+.registration-pass-card > .rounded-b-3xl {
+  color: #ffffff !important;
+  border-color: rgba(255, 255, 255, 0.18) !important;
+  background:
+    radial-gradient(circle at 14% 0%, rgba(255, 255, 255, 0.18), transparent 32%),
+    linear-gradient(135deg, #0a3c8f 0%, #0f5ed7 54%, #f0a800 145%) !important;
+}
+
+.registration-pass-card > .rounded-b-3xl .bg-\[var\(--bg-card\)\] {
+  border-color: rgba(255, 255, 255, 0.28) !important;
+  background: rgba(255, 255, 255, 0.94) !important;
+  box-shadow: 0 10px 24px rgba(4, 24, 58, 0.16) !important;
+}
+
+.registration-pass-card > .rounded-b-3xl .text-\[var\(--text-primary\)\] {
+  color: #0f172a !important;
+}
+
+.registration-pass-card > .rounded-b-3xl .text-\[var\(--text-secondary\)\] {
+  color: #475569 !important;
+}
+
+.registration-pass-card .rounded-3xl,
+.registration-pass-card .rounded-2xl {
+  border-radius: 18px !important;
+}
+
+.registration-pass-card .shadow-sm {
+  box-shadow: 0 10px 24px rgba(15, 61, 120, 0.08) !important;
+}
+
+.registration-pass-card .space-y-2 > .rounded-2xl,
+.registration-pass-card .grid .rounded-2xl {
+  border: 1px solid rgba(15, 94, 215, 0.11);
+}
+
+.registration-pass-card img[alt="QR Code"] {
+  border-radius: 14px;
+  border: 1px solid rgba(15, 94, 215, 0.14);
+  background: #ffffff;
+  padding: 8px;
+}
+
+.registration-pass-card .border-emerald-200 {
+  border-color: rgba(5, 150, 105, 0.28) !important;
+  background:
+    linear-gradient(135deg, rgba(236, 253, 245, 0.96), rgba(209, 250, 229, 0.86)),
+    #ecfdf5 !important;
 }
 
 .registration-website {
@@ -2881,4 +3113,204 @@ body {
   .registration-website .reg-content-flow h2 {
     font-size: clamp(1.4rem, 8vw, 2.2rem) !important;
   }
+}
+
+/* Shared dark surface language: deep canvas, layered navy cards and soft cyan glow. */
+:root:not([data-theme="light"]) {
+  --primary: #00baf2;
+  --primary-strong: #168cff;
+  --secondary: #ffbd00;
+  --secondary-strong: #ff9f00;
+  --accent: #00c8ff;
+  --text-primary: #f7f9fd;
+  --text-secondary: #b6c2d5;
+  --text-muted: #8496b1;
+  --bg-main: #001331;
+  --bg-deep: #000c22;
+  --bg-section: #031b3b;
+  --bg-card: rgba(5, 32, 68, 0.94);
+  --bg-soft: rgba(7, 39, 78, 0.84);
+  --header-bg: rgba(0, 13, 36, 0.97);
+  --border-primary: rgba(0, 190, 246, 0.5);
+  --border-soft: rgba(120, 169, 221, 0.16);
+  --border-card: rgba(0, 156, 230, 0.28);
+  --accent-light: rgba(0, 190, 246, 0.12);
+  --secondary-light: rgba(255, 189, 0, 0.16);
+  --shadow-card:
+    0 18px 42px rgba(0, 5, 18, 0.34),
+    inset 0 1px 0 rgba(255, 255, 255, 0.045);
+  --shadow-glow: 0 0 28px rgba(0, 190, 246, 0.1);
+}
+
+:root:not([data-theme="light"]) body {
+  background:
+    radial-gradient(circle at 50% -15%, rgba(0, 126, 220, 0.12), transparent 34rem),
+    linear-gradient(180deg, var(--bg-deep), var(--bg-main));
+  background-attachment: fixed;
+}
+
+:root:not([data-theme="light"]) .site-shell,
+:root:not([data-theme="light"]) .auction-management-theme {
+  background:
+    radial-gradient(circle at 50% 0%, rgba(0, 126, 220, 0.1), transparent 34rem),
+    linear-gradient(180deg, var(--bg-deep), var(--bg-main));
+}
+
+:root:not([data-theme="light"]) .home-card,
+:root:not([data-theme="light"]) .ui-card,
+:root:not([data-theme="light"]) .ui-card-soft {
+  border-color: var(--border-card);
+  background:
+    linear-gradient(145deg, rgba(8, 49, 96, 0.96), rgba(4, 29, 62, 0.97) 52%, rgba(2, 22, 49, 0.98));
+  box-shadow:
+    var(--shadow-card),
+    0 0 0 1px rgba(255, 255, 255, 0.018);
+  backdrop-filter: blur(16px) saturate(1.12);
+  -webkit-backdrop-filter: blur(16px) saturate(1.12);
+}
+
+:root:not([data-theme="light"]) .home-card:hover,
+:root:not([data-theme="light"]) .ui-card:hover {
+  border-color: rgba(16, 215, 255, 0.42);
+  box-shadow:
+    0 22px 48px rgba(0, 5, 18, 0.42),
+    0 0 26px rgba(0, 190, 246, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+:root:not([data-theme="light"]) .auction-management-theme .bg-white,
+:root:not([data-theme="light"]) .auction-management-theme .bg-gray-50,
+:root:not([data-theme="light"]) .auction-management-theme .bg-gray-100,
+:root:not([data-theme="light"]) .auction-management-theme .bg-slate-50,
+:root:not([data-theme="light"]) .auction-management-theme .bg-slate-100,
+:root:not([data-theme="light"]) .auction-management-theme [class*="bg-[var(--bg-card)]"],
+:root:not([data-theme="light"]) .auction-management-theme [class*="bg-[var(--bg-section)]"],
+:root:not([data-theme="light"]) .auction-management-theme [class*="bg-[var(--background)]"] {
+  border-color: var(--border-card) !important;
+  background:
+    linear-gradient(145deg, rgba(8, 49, 96, 0.96), rgba(4, 29, 62, 0.97) 52%, rgba(2, 22, 49, 0.98)) !important;
+}
+
+:root:not([data-theme="light"]) .auction-management-theme input,
+:root:not([data-theme="light"]) .auction-management-theme select,
+:root:not([data-theme="light"]) .auction-management-theme textarea {
+  border-color: rgba(73, 171, 232, 0.22) !important;
+  background:
+    linear-gradient(180deg, rgba(0, 15, 38, 0.86), rgba(3, 27, 60, 0.9)) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.045),
+    0 1px 0 rgba(255, 255, 255, 0.02) !important;
+}
+
+:root:not([data-theme="light"]) .auction-management-theme tbody tr {
+  background:
+    linear-gradient(90deg, rgba(7, 43, 84, 0.88), rgba(3, 28, 61, 0.92)) !important;
+  box-shadow:
+    inset 0 0 0 1px rgba(42, 174, 255, 0.13),
+    0 8px 24px rgba(0, 0, 0, 0.12);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root:not([data-theme="light"]) .home-card,
+  :root:not([data-theme="light"]) .ui-card {
+    transition: none;
+  }
+}
+
+/* Auction room: keep its dense control layout while using the shared
+   Auction Management palette in both light and dark mode. */
+.auction-management-theme .admin-auction-control {
+  color: var(--text-primary);
+  background:
+    radial-gradient(circle at 16% 0%, color-mix(in srgb, var(--primary) 13%, transparent), transparent 32rem),
+    linear-gradient(180deg, var(--bg-main), var(--bg-deep)) !important;
+}
+
+.auction-management-theme .admin-auction-control .bg-slate-950,
+.auction-management-theme .admin-auction-control .bg-slate-950\/30 {
+  background-color: color-mix(in srgb, var(--bg-deep) 88%, transparent) !important;
+}
+
+.auction-management-theme .admin-auction-control .bg-slate-900,
+.auction-management-theme .admin-auction-control .bg-slate-900\/60,
+.auction-management-theme .admin-auction-control .bg-slate-900\/80 {
+  background:
+    linear-gradient(145deg, color-mix(in srgb, var(--primary) 7%, transparent), transparent 50%),
+    var(--bg-card) !important;
+}
+
+.auction-management-theme .admin-auction-control .bg-slate-800,
+.auction-management-theme .admin-auction-control .bg-slate-800\/60,
+.auction-management-theme .admin-auction-control .bg-slate-800\/80,
+.auction-management-theme .admin-auction-control .bg-gray-800,
+.auction-management-theme .admin-auction-control .bg-gray-800\/50,
+.auction-management-theme .admin-auction-control .bg-gray-800\/90 {
+  background-color: var(--bg-soft) !important;
+}
+
+.auction-management-theme .admin-auction-control .bg-slate-700,
+.auction-management-theme .admin-auction-control .bg-gray-700 {
+  background-color: var(--accent-light) !important;
+}
+
+.auction-management-theme .admin-auction-control .border-slate-800,
+.auction-management-theme .admin-auction-control .border-slate-700,
+.auction-management-theme .admin-auction-control .border-slate-600,
+.auction-management-theme .admin-auction-control .border-gray-800,
+.auction-management-theme .admin-auction-control .border-gray-700,
+.auction-management-theme .admin-auction-control .border-gray-300,
+.auction-management-theme .admin-auction-control .border-gray-200 {
+  border-color: var(--border-card) !important;
+}
+
+.auction-management-theme .admin-auction-control .text-white,
+.auction-management-theme .admin-auction-control .text-slate-50,
+.auction-management-theme .admin-auction-control .text-slate-100,
+.auction-management-theme .admin-auction-control .text-slate-200,
+.auction-management-theme .admin-auction-control .text-gray-100 {
+  color: var(--text-primary) !important;
+}
+
+.auction-management-theme .admin-auction-control .text-slate-300,
+.auction-management-theme .admin-auction-control .text-slate-400,
+.auction-management-theme .admin-auction-control .text-gray-300,
+.auction-management-theme .admin-auction-control .text-gray-400 {
+  color: var(--text-secondary) !important;
+}
+
+.auction-management-theme .admin-auction-control .text-slate-500,
+.auction-management-theme .admin-auction-control .text-gray-500 {
+  color: var(--text-muted) !important;
+}
+
+.auction-management-theme .admin-auction-control .bg-blue-600,
+.auction-management-theme .admin-auction-control .bg-sky-500 {
+  background: linear-gradient(180deg, var(--primary), var(--primary-strong)) !important;
+}
+
+.auction-management-theme .admin-auction-control .border-blue-500,
+.auction-management-theme .admin-auction-control .border-sky-500 {
+  border-color: var(--border-primary) !important;
+}
+
+.auction-management-theme .admin-auction-control .bg-blue-500\/10,
+.auction-management-theme .admin-auction-control .bg-sky-500\/10 {
+  background-color: var(--accent-light) !important;
+}
+
+.auction-management-theme .admin-auction-control .text-sky-300,
+.auction-management-theme .admin-auction-control .text-sky-400 {
+  color: var(--primary) !important;
+}
+
+.auction-management-theme .admin-auction-control .text-yellow-400,
+.auction-management-theme .admin-auction-control .text-amber-100,
+.auction-management-theme .admin-auction-control .text-amber-200\/95,
+.auction-management-theme .admin-auction-control .text-amber-300 {
+  color: var(--secondary) !important;
+}
+
+.auction-management-theme .admin-auction-control select option {
+  color: var(--text-primary);
+  background: var(--bg-card);
 }

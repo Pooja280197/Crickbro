@@ -6,8 +6,10 @@ import { useLoginPopup } from "./context/LoginPopupContext";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import ProtectedRoute from "./components/ProtectedRoute";
+import Home from "./pages/Home";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
+import TermsOfService from "./pages/TermsOfService";
 
-const Home = lazy(() => import("./pages/Home"));
 const HotAuctions = lazy(() => import("./components/Home/HotAuctions"));
 const TabsNavigation = lazy(
   () => import("./pages/AuctionManagement/TabsNavigation"),
@@ -19,15 +21,39 @@ const AboutUs = lazy(() => import("./pages/AboutUs"));
 const MyProfile = lazy(() => import("./pages/MyProfile"));
 const AdminAuctionControl = lazy(
   () =>
-    import(
-      "./pages/AuctionManagement/AdminControl/ManageAuction/AdminAuctionControl"
-    ),
+    import("./pages/AuctionManagement/AdminControl/ManageAuction/AuctionBiddingPanel/AdminAuctionControl"),
 );
 const HowItWorks = lazy(() => import("./pages/HowItWorks"));
 const AuctionDetailsForUser = lazy(
   () => import("./pages/AuctionDetailsForPublic/AuctionDetailsForUser"),
 );
-const RegWebsite = lazy(() => import("./pages/ViewRegistrationWebiste/RegWebsite"));
+const RegWebsite = lazy(
+  () => import("./pages/ViewRegistrationWebiste/RegWebsite"),
+);
+const LiveAuctionForAudience = lazy(
+  () => import("./pages/AuctionManagement/AdminControl/ManageAuction/OverlayLinks/LiveAuctionForAudience"),
+);
+const AuctionPlayerOverlay = lazy(
+  () => import("./pages/AuctionManagement/AdminControl/ManageAuction/OverlayLinks/AuctionPlayerOverlay"),
+);
+const AuctionPlayerOverlayV2 = lazy(
+  () => import("./pages/AuctionManagement/AdminControl/ManageAuction/OverlayLinks/AuctionPlayerOverlayV2"),
+);
+const AuctionPlayerOverlayV3 = lazy(
+  () => import("./pages/AuctionManagement/AdminControl/ManageAuction/OverlayLinks/AuctionPlayerOverlayV3"),
+);
+const TeamsOverlay = lazy(
+  () => import("./pages/AuctionManagement/AdminControl/ManageAuction/OverlayLinks/TeamsOverlay"),
+);
+const AuctionSplitOverlay = lazy(
+  () => import("./pages/AuctionManagement/AdminControl/ManageAuction/OverlayLinks/AuctionSplitOverlay"),
+);
+const AuctionBroadcastBoardOverlay = lazy(
+  () =>
+    import(
+      "./pages/AuctionManagement/AdminControl/ManageAuction/OverlayLinks/AuctionBroadcastBoardOverlay"
+    ),
+);
 
 const PageLoader = () => (
   <div className="flex min-h-screen items-center justify-center bg-[var(--bg-main)]">
@@ -45,91 +71,149 @@ function AppContent({ theme, toggleTheme }) {
             path="/"
             element={<Home theme={theme} onToggleTheme={toggleTheme} />}
           />
-        <Route
-          exact
-          path="/auction"
-          element={<HotAuctions theme={theme} onToggleTheme={toggleTheme} />}
-        />
-        <Route
-          exact
-          path="/auction-details/:auctionId"
-          element={
-            <ProtectedRoute>
-              <TabsNavigation theme={theme} onToggleTheme={toggleTheme} />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          exact
-          path="/enquiries"
-          element={<Enquiries theme={theme} onToggleTheme={toggleTheme} />}
-        />
-        <Route
-          exact
-          path="/enquiries/manage"
-          element={
-            <ProtectedRoute>
-              <Enquiries theme={theme} onToggleTheme={toggleTheme} />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          exact
-          path="/createAuction"
-          element={
-            <ProtectedRoute>
-              <CreateEditAuction theme={theme} onToggleTheme={toggleTheme} />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          exact
-          path="/editAuction/:auctionId"
-          element={
-            <ProtectedRoute requireAuctionAdmin>
-              <CreateEditAuction theme={theme} onToggleTheme={toggleTheme} />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          exact
-          path="/about"
-          element={<AboutUs theme={theme} onToggleTheme={toggleTheme} />}
-        />
-        <Route
-          exact
-          path="/myProfile"
-          element={
-            <ProtectedRoute>
-              <MyProfile theme={theme} onToggleTheme={toggleTheme} />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          exact
-          path="/live-auction/:auctionId"
-          element={
-            <ProtectedRoute requireAuctionAdmin>
-              <AdminAuctionControl />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="howItWorks"
-          element={<HowItWorks theme={theme} onToggleTheme={toggleTheme} />}
-        />
-        <Route
-          exact
-          path="/viewAuction/:auctionId"
-          element={
-            <AuctionDetailsForUser theme={theme} onToggleTheme={toggleTheme} />
-          }
-        />
-        <Route
-          exact
-          path="/viewlanding-page/:tournamentId/:auctionId"
-          element={<RegWebsite />}
-        />
+          <Route
+            exact
+            path="/auction"
+            element={<HotAuctions theme={theme} onToggleTheme={toggleTheme} />}
+          />
+
+          <Route
+            exact
+            path="/privacy-policy"
+            element={
+              <PrivacyPolicy theme={theme} onToggleTheme={toggleTheme} />
+            }
+          />
+
+          <Route
+            exact
+            path="/terms-of-service"
+            element={
+              <TermsOfService theme={theme} onToggleTheme={toggleTheme} />
+            }
+          />
+
+          <Route
+            exact
+            path="/auction-details/:auctionId"
+            element={
+              <ProtectedRoute>
+                <TabsNavigation theme={theme} onToggleTheme={toggleTheme} />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            exact
+            path="/enquiries"
+            element={<Enquiries theme={theme} onToggleTheme={toggleTheme} />}
+          />
+          <Route
+            exact
+            path="/enquiries/manage"
+            element={
+              <ProtectedRoute>
+                <Enquiries theme={theme} onToggleTheme={toggleTheme} />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            exact
+            path="/createAuction"
+            element={
+              <ProtectedRoute>
+                <CreateEditAuction theme={theme} onToggleTheme={toggleTheme} />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            exact
+            path="/editAuction/:auctionId"
+            element={
+              <ProtectedRoute requireAuctionAdmin>
+                <CreateEditAuction theme={theme} onToggleTheme={toggleTheme} />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            exact
+            path="/about"
+            element={<AboutUs theme={theme} onToggleTheme={toggleTheme} />}
+          />
+          <Route
+            exact
+            path="/myProfile"
+            element={
+              <ProtectedRoute>
+                <MyProfile theme={theme} onToggleTheme={toggleTheme} />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            exact
+            path="/live-auction/:auctionId"
+            element={
+              <ProtectedRoute requireAuctionAdmin>
+                <AdminAuctionControl />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Overlay screen routes */}
+         <Route
+            exact
+            path="/live-auction-audience/:auctionId"
+            element={<LiveAuctionForAudience />}
+          />
+          <Route
+            exact
+            path="/auction-overlay-v1/:auctionId"
+            element={<AuctionPlayerOverlay />}
+          />
+          <Route
+            exact
+            path="/auction-overlay-v2/:auctionId"
+            element={<AuctionPlayerOverlayV2 />}
+          />
+          <Route
+            exact
+            path="/auction-overlay-v3/:auctionId"
+            element={<AuctionPlayerOverlayV3 />}
+          />
+          <Route
+            exact
+            path="/teams-overlay/:auctionId"
+            element={<TeamsOverlay />}
+          />
+          <Route
+            exact
+            path="/auction-split-overlay/:auctionId"
+            element={<AuctionSplitOverlay />}
+          />
+          <Route
+            exact
+            path="/auction-broadcast-board/:auctionId"
+            element={<AuctionBroadcastBoardOverlay />}
+            />
+
+          <Route
+            path="howItWorks"
+            element={<HowItWorks theme={theme} onToggleTheme={toggleTheme} />}
+          />
+          <Route
+            exact
+            path="/viewAuction/:auctionId"
+            element={
+              <AuctionDetailsForUser
+                theme={theme}
+                onToggleTheme={toggleTheme}
+              />
+            }
+          />
+          <Route
+            exact
+            path="/viewlanding-page/:tournamentId/:auctionId"
+            element={<RegWebsite />}
+          />
         </Routes>
       </Suspense>
     </ContentProvider>

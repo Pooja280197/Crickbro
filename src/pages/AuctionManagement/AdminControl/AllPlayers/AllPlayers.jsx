@@ -33,6 +33,8 @@ import {
   Trophy,
   ScrollText,
   Menu,
+  LayoutGrid,
+  Table2,
 } from "lucide-react";
 import PlayerAssign from "../../../../components/PlayerAssign";
 import PlayerCard from "../../../../components/PlayerCard";
@@ -98,6 +100,7 @@ const AllPlayers = () => {
   const [slotSearch, setSlotSearch] = useState("");
   const [selectedSlotLabel, setSelectedSlotLabel] = useState("");
   const [slotPage, setSlotPage] = useState(1);
+  const [viewMode, setViewMode] = useState("card");
   // const hasRating = !!localStorage.getItem(`playerRating${auctionId}`);
   const debouncedSearch = useDebounce(searchQuery, 400);
   const playerList = auctionPlayersData?.list || [];
@@ -359,6 +362,179 @@ const AllPlayers = () => {
     }
   };
 
+  const formatText = (value) => {
+    if (value === null || value === undefined || value === "") return "-";
+    return String(value);
+  };
+
+  const formatRole = (role) =>
+    role ? String(role).replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase()) : "-";
+
+  const getPlayerInfo = (item) => {
+    const playerData = item?.player || item || {};
+    const playerRole = playerData?.playerRole || item?.playerRole;
+    const playerType = item?.playersRatings?.playerType;
+    const roleToDisplay =
+      activePlayerTab === "assigned"
+        ? playerType || playerRole
+        : playerRole || playerType;
+
+    return {
+      id: playerData?._id || item?._id,
+      name: playerData?.name || "Unknown Player",
+      image: playerData?.profilePicture || "",
+      mobile: playerData?.mobile
+        ? `${playerData?.countryCode ? `${playerData.countryCode} ` : ""}${playerData.mobile}`
+        : "",
+      location: playerData?.location || "",
+      role: roleToDisplay,
+      status: item?.status || playerData?.status || "",
+      basePrice: item?.basePrice,
+      currentBid: item?.currentBid,
+      slotName: item?.slot?.slotName || item?.slot?.location?.venue || "",
+      sessionName: item?.session?.name || "",
+      rating: item?.playersRatings?.avgRating?.overall || item?.playersRatings?.overallRating || "",
+    };
+  };
+
+  const getInitials = (name = "") => {
+    const words = name.trim().split(/\s+/).filter(Boolean);
+    if (!words.length) return "NA";
+    if (words.length === 1) return words[0].slice(0, 2).toUpperCase();
+    return `${words[0][0]}${words[words.length - 1][0]}`.toUpperCase();
+  };
+
+  const renderPlayersTable = () => (
+    <div className="overflow-hidden rounded-lg border border-[var(--border-card)] bg-[var(--bg-card)] shadow-[var(--shadow-card)]">
+      <div className="overflow-x-auto">
+        <table className="min-w-full text-left text-sm">
+          <thead className="border-b border-[var(--border-card)] bg-[var(--bg-main)] text-xs uppercase text-[var(--text-secondary)]">
+            <tr>
+              {activePlayerTab === "unassigned" && (
+                <th className="w-12 px-4 py-3">
+                  <button
+                    type="button"
+                    onClick={handleSelectAll}
+                    className="flex h-8 w-8 items-center justify-center rounded-lg border border-[var(--border-card)] text-[var(--text-secondary)] transition hover:border-[var(--border-primary)] hover:bg-[var(--accent-light)] hover:text-[var(--text-primary)]"
+                    aria-label="Select all players"
+                  >
+                    {selectedPlayers.length === getFilteredPlayers().length ? (
+                      <CheckSquare className="h-4 w-4" />
+                    ) : (
+                      <Square className="h-4 w-4" />
+                    )}
+                  </button>
+                </th>
+              )}
+              <th className="px-4 py-3">Player</th>
+              <th className="px-4 py-3">Role</th>
+              <th className="px-4 py-3">Mobile</th>
+              <th className="px-4 py-3">Location</th>
+              <th className="px-4 py-3">Status</th>
+              <th className="px-4 py-3">Base Price</th>
+              {activePlayerTab === "assigned" && (
+                <>
+                  <th className="px-4 py-3">Slot</th>
+                  <th className="px-4 py-3">Session</th>
+                  <th className="px-4 py-3">Rating</th>
+                </>
+              )}
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-[var(--border-card)]">
+            {getFilteredPlayers().map((item) => {
+              const info = getPlayerInfo(item);
+              const isSelected = selectedPlayers?.includes(info.id);
+
+              return (
+                <tr
+                  key={item?._id || info.id}
+                  className="transition hover:bg-[var(--accent-light)]"
+                >
+                  {activePlayerTab === "unassigned" && (
+                    <td className="px-4 py-3">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          if (isSelected) {
+                            setSelectedPlayers(
+                              selectedPlayers?.filter((id) => id !== info.id),
+                            );
+                          } else {
+                            setSelectedPlayers([...selectedPlayers, info.id]);
+                          }
+                        }}
+                        className="flex h-8 w-8 items-center justify-center rounded-lg border border-[var(--border-card)] text-[var(--text-secondary)] transition hover:border-[var(--border-primary)] hover:bg-[var(--accent-light)] hover:text-[var(--text-primary)]"
+                        aria-label={`Select ${info.name}`}
+                      >
+                        {isSelected ? (
+                          <CheckSquare className="h-4 w-4 text-[var(--primary)]" />
+                        ) : (
+                          <Square className="h-4 w-4" />
+                        )}
+                      </button>
+                    </td>
+                  )}
+                  <td className="min-w-56 px-4 py-3">
+                    <div className="flex items-center gap-3">
+                      {info.image ? (
+                        <img
+                          src={info.image}
+                          alt={info.name}
+                          className="h-10 w-10 rounded-full object-cover ring-1 ring-[var(--border-card)]"
+                        />
+                      ) : (
+                        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[var(--secondary-lighter)] text-xs font-bold text-[var(--primary)]">
+                          {getInitials(info.name)}
+                        </div>
+                      )}
+                      <div className="min-w-0">
+                        <p className="truncate font-semibold text-[var(--text-primary)]">
+                          {info.name}
+                        </p>
+                       
+                      </div>
+                    </div>
+                  </td>
+                  <td className="px-4 py-3 font-medium text-[var(--text-primary)]">
+                    {formatRole(info.role)}
+                  </td>
+                  <td className="px-4 py-3 text-[var(--text-secondary)]">
+                    {formatText(info.mobile)}
+                  </td>
+                  <td className="px-4 py-3 text-[var(--text-secondary)]">
+                    {formatText(info.location)}
+                  </td>
+                  <td className="px-4 py-3">
+                    <span className="inline-flex rounded-full border border-[var(--border-card)] bg-[var(--bg-main)] px-2.5 py-1 text-xs font-semibold text-[var(--text-primary)]">
+                      {formatText(info.status)}
+                    </span>
+                  </td>
+                  <td className="px-4 py-3 font-semibold text-[var(--text-primary)]">
+                    {info.basePrice ? `₹${Number(info.basePrice).toLocaleString("en-IN")}` : "-"}
+                  </td>
+                  {activePlayerTab === "assigned" && (
+                    <>
+                      <td className="px-4 py-3 text-[var(--text-secondary)]">
+                        {formatText(info.slotName)}
+                      </td>
+                      <td className="px-4 py-3 text-[var(--text-secondary)]">
+                        {formatText(info.sessionName)}
+                      </td>
+                      <td className="px-4 py-3 font-semibold text-[var(--text-primary)]">
+                        {formatText(info.rating)}
+                      </td>
+                    </>
+                  )}
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+
   return (
     <div className="mx-auto w-full max-w-7xl px-3 py-4 sm:px-4 lg:px-5">
       <div className="space-y-4">
@@ -395,7 +571,7 @@ const AllPlayers = () => {
                 )}
               </div>
 
-              <div className="mt-4 grid grid-cols-1 gap-3 lg:grid-cols-[minmax(0,1fr)_auto_auto] lg:items-center">
+              <div className="mt-4 grid grid-cols-1 gap-3 lg:grid-cols-[minmax(0,1fr)_auto_auto_auto] lg:items-center">
                 <div className="relative">
                   <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--text-secondary)]" />
                   <input
@@ -440,6 +616,33 @@ const AllPlayers = () => {
                       ))}
                     </div>
                   )}
+                </div>
+
+                <div className="inline-flex h-10 overflow-hidden rounded-lg border border-[var(--border-card)] bg-[var(--bg-main)]">
+                  <button
+                    type="button"
+                    onClick={() => setViewMode("card")}
+                    className={`inline-flex items-center justify-center gap-2 px-3 text-xs font-semibold transition ${
+                      viewMode === "card"
+                        ? "bg-[var(--secondary)] text-[#102033]"
+                        : "text-[var(--text-secondary)] hover:bg-[var(--accent-light)] hover:text-[var(--text-primary)]"
+                    }`}
+                  >
+                    <LayoutGrid className="h-4 w-4" />
+                    Cards
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setViewMode("table")}
+                    className={`inline-flex items-center justify-center gap-2 border-l border-[var(--border-card)] px-3 text-xs font-semibold transition ${
+                      viewMode === "table"
+                        ? "bg-[var(--secondary)] text-[#102033]"
+                        : "text-[var(--text-secondary)] hover:bg-[var(--accent-light)] hover:text-[var(--text-primary)]"
+                    }`}
+                  >
+                    <Table2 className="h-4 w-4" />
+                    Table
+                  </button>
                 </div>
 
                 {(activePlayerTab === "all" ||
@@ -621,59 +824,55 @@ const AllPlayers = () => {
             {/* Players Grid */}
             <div className="mx-auto max-w-7xl pb-6">
               {getFilteredPlayers().length > 0 ? (
-                <div
-                  className={
-                    activePlayerTab === "assigned"
-                      ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4"
-                      : "grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-8 gap-3"
-                  }
-                >
-                  {getFilteredPlayers().map((item) => {
-                    const playerRole =
-                      item?.player?.playerRole || item?.playerRole;
-                    const playerType = item?.playersRatings?.playerType;
-                    const roleToDisplay =
+                viewMode === "table" ? (
+                  renderPlayersTable()
+                ) : (
+                  <div
+                    className={
                       activePlayerTab === "assigned"
-                        ? playerType || playerRole
-                        : playerRole || playerType;
+                        ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4"
+                        : "grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-8 gap-3"
+                    }
+                  >
+                    {getFilteredPlayers().map((item) => {
+                      const info = getPlayerInfo(item);
 
-                    return (
-                      <PlayerCard
-                        key={item?._id}
-                        player={item} // Pass the entire item object
-                        type={roleToDisplay}
-                        auctionId={auctionId}
-                        selectedSlotId={slot}
-                        selectedSlotSessions={selectedSlotSessions}
-                        slotDetails={slotDetail || []}
-                        onActionComplete={() =>
-                          fetchPlayers(activePlayerTab, currentPageState)
-                        }
-                        mode={
-                          activePlayerTab === "unassigned"
-                            ? "select"
-                            : activePlayerTab === "assigned"
-                              ? "assigned"
-                              : "view"
-                        }
-                        isSelected={selectedPlayers?.includes(
-                          item?.player?._id,
-                        )}
-                        onRemove={() => fetchPlayers("assigned")}
-                        onSelect={(id) => {
-                          if (selectedPlayers?.includes(id)) {
-                            setSelectedPlayers(
-                              selectedPlayers?.filter((x) => x !== id),
-                            );
-                          } else {
-                            setSelectedPlayers([...selectedPlayers, id]);
+                      return (
+                        <PlayerCard
+                          key={item?._id}
+                          player={item} // Pass the entire item object
+                          type={info.role}
+                          auctionId={auctionId}
+                          selectedSlotId={slot}
+                          selectedSlotSessions={selectedSlotSessions}
+                          slotDetails={slotDetail || []}
+                          onActionComplete={() =>
+                            fetchPlayers(activePlayerTab, currentPageState)
                           }
-                        }}
-                        showActions={activePlayerTab === "unassigned"}
-                      />
-                    );
-                  })}
-                </div>
+                          mode={
+                            activePlayerTab === "unassigned"
+                              ? "select"
+                              : activePlayerTab === "assigned"
+                                ? "assigned"
+                                : "view"
+                          }
+                          isSelected={selectedPlayers?.includes(info.id)}
+                          onRemove={() => fetchPlayers("assigned")}
+                          onSelect={(id) => {
+                            if (selectedPlayers?.includes(id)) {
+                              setSelectedPlayers(
+                                selectedPlayers?.filter((x) => x !== id),
+                              );
+                            } else {
+                              setSelectedPlayers([...selectedPlayers, id]);
+                            }
+                          }}
+                          showActions={activePlayerTab === "unassigned"}
+                        />
+                      );
+                    })}
+                  </div>
+                )
               ) : (
                 <div className="ui-card py-14 text-center">
                   <div className="inline-flex items-center justify-center w-14 h-14 bg-[var(--secondary-lighter)] rounded-full mb-3">

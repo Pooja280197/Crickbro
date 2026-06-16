@@ -1,6 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchPerformance, fetchProfile } from "../redux/actions";
+import {
+  fetchPerformance,
+  fetchProfile,
+  isValidMongoObjectId,
+} from "../redux/actions";
 import {
   Calendar,
   MapPin,
@@ -741,6 +745,7 @@ export default function PlayerProfile({ theme, onToggleTheme }) {
   const dispatch = useDispatch();
   const isLoading = useSelector((state) => state.loading?.profile || null);
   const profile = useSelector((state) => state.data?.profile || null);
+  const profileError = useSelector((state) => state.error?.profile || null);
   const performance = useSelector((state) => state.data?.myPerformance || null);
   const [activeTab, setActiveTab] = useState("profile");
   const [selectedItem, setSelectedItem] = useState(null);
@@ -900,13 +905,13 @@ export default function PlayerProfile({ theme, onToggleTheme }) {
   ];
 
   useEffect(() => {
-    if (playerId) {
-      dispatch(fetchProfile(playerId));
+    dispatch(fetchProfile(playerId));
+    if (isValidMongoObjectId(playerId)) {
       dispatch(fetchPerformance(playerId));
     }
   }, [playerId, dispatch]);
 
-  if (isLoading) {
+  if (isLoading || (!profile && !profileError)) {
     return (
       <div className="p-10 text-center">
         <Loader text="Loading Profile..." fullScreen="false" />
@@ -941,7 +946,31 @@ export default function PlayerProfile({ theme, onToggleTheme }) {
     }
   };
 
-  if (!profile) return null;
+  if (!profile) {
+    return (
+      <div className="min-h-screen bg-[var(--bg-main)] font-sans text-[var(--text-primary)]">
+        <Header theme={theme} onToggleTheme={onToggleTheme} />
+        <main className="mx-auto flex max-w-7xl items-center justify-center px-4 py-20 sm:px-6 lg:px-8">
+          <div className={`${panelClass} w-full max-w-lg p-8 text-center`}>
+            <h1 className="text-xl font-bold text-[var(--text-primary)]">
+              {profileError || "Player profile not found"}
+            </h1>
+            <p className="mt-2 text-sm text-[var(--text-secondary)]">
+              Your player profile is not available yet. Register for an auction
+              to create your player profile.
+            </p>
+            <button
+              type="button"
+              className={`${primaryButtonClass} mt-6`}
+              onClick={() => navigate("/auction")}
+            >
+              Explore Auctions
+            </button>
+          </div>
+        </main>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-[var(--bg-main)] font-sans text-[var(--text-primary)]">

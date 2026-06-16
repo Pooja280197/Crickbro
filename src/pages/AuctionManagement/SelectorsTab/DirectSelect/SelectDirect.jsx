@@ -243,7 +243,7 @@ function SelectDirect({ auctionId }) {
             />
             <button
               onClick={() => setShowBarcodeScanner(true)}
-              className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--secondary-lighter)] rounded-md transition"
+              className="absolute right-2 -translate-y-1/2 p-1.5 text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--secondary-lighter)] rounded-md transition"
               title="Scan barcode"
               aria-label="Scan barcode"
             >

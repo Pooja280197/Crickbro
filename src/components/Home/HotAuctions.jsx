@@ -266,7 +266,7 @@ const HotAuctions = ({ theme, onToggleTheme }) => {
 
                     <div className="p-4">
                       <h3
-                        className="mb-2.5 truncate font-heading text-[17px] font-black uppercase leading-tight text-[var(--text-primary)]"
+                        className="mb-2.5 truncate font-heading text-[17px] font-extrabold uppercase leading-tight text-[var(--text-primary)]"
                         title={auction.auctionName}
                       >
                         {auction.auctionName}

@@ -2,14 +2,14 @@ import { lazy, Suspense, useEffect, useRef, useState } from "react";
 import Header from "../components/Header";
 import HeroSection from "../components/Home/HeroSection";
 import StatsStrip from "../components/Home/StatsStrip";
+import FeatureCards from "../components/Home/FeatureCards";
+import HowItWorks from "../components/Home/HowItWorks";
+import Testimonals from "../components/Home/Testimonals";
+import PowerfulFeatures from "../components/Home/PowerfulFeatures";
+import CTASection from "../components/Home/CTASection";
+import Footer from "../components/Footer";
 
 const HotAuctions = lazy(() => import("../components/Home/HotAuctions"));
-const FeatureCards = lazy(() => import("../components/Home/FeatureCards"));
-const HowItWorks = lazy(() => import("../components/Home/HowItWorks"));
-const Testimonals = lazy(() => import("../components/Home/Testimonals"));
-const PowerfulFeatures = lazy(() => import("../components/Home/PowerfulFeatures"));
-const CTASection = lazy(() => import("../components/Home/CTASection"));
-const Footer = lazy(() => import("../components/Footer"));
 
 const DeferredSection = ({ children, minHeight = 280 }) => {
   const sectionRef = useRef(null);
@@ -51,25 +51,13 @@ const Home = ({ theme, onToggleTheme }) => {
         <DeferredSection minHeight={520}>
           <HotAuctions />
         </DeferredSection>
-        <DeferredSection>
-          <FeatureCards />
-        </DeferredSection>
-        <DeferredSection>
-          <HowItWorks />
-        </DeferredSection>
-        <DeferredSection>
-          <Testimonals />
-        </DeferredSection>
-        <DeferredSection>
-          <PowerfulFeatures />
-        </DeferredSection>
-        <DeferredSection minHeight={220}>
-          <CTASection />
-        </DeferredSection>
+        <FeatureCards />
+        <HowItWorks />
+        <Testimonals />
+        <PowerfulFeatures />
+        <CTASection />
       </main>
-      <DeferredSection minHeight={260}>
-        <Footer />
-      </DeferredSection>
+      <Footer />
     </div>
   );
 };
