@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
-import { Eye, MapPin, Clock, Calendar, X, Check, Star } from "lucide-react";
+import { Award, Eye, MapPin, Clock, Calendar, X, Check, Star } from "lucide-react";
 import { toast } from "react-toastify";
 import api from "../utils/api";
 
@@ -78,7 +78,7 @@ const getObjectId = (value) => {
 };
 
 /* ================= PLAYER DETAILS MODAL ================= */
-const PlayerDetailsModal = ({
+export const PlayerDetailsModal = ({
   player,
   isOpen,
   onClose,
@@ -87,7 +87,11 @@ const PlayerDetailsModal = ({
   isSaving,
   isRemoving,
   type,
-  onRemoveSession
+  onRemoveSession,
+  onRatePlayer,
+  onGradePlayer,
+  initialAction = "",
+  actionOnly = false,
 }) => {
   const [showMoreDetails, setShowMoreDetails] = useState(false);
   const [showTrialDetails, setShowTrialDetails] = useState(false);
@@ -114,13 +118,13 @@ const PlayerDetailsModal = ({
     if (isOpen) {
       setShowMoreDetails(false);
       setShowTrialDetails(false);
-      setIsEditing(false);
-      setShowDeleteConfirm(false);
-      setSessionShowDeleteConfirm(false)
+      setIsEditing(initialAction === "edit");
+      setShowDeleteConfirm(initialAction === "delete");
+      setSessionShowDeleteConfirm(initialAction === "removeSession")
       setProfileFile(null);
       setProfilePreview(playerData?.profilePicture || "");
     }
-  }, [isOpen, player?._id, player?.player?._id]);
+  }, [isOpen, player?._id, player?.player?._id, initialAction]);
 
   const playerName = playerData?.name || "";
   const playerImage = playerData?.profilePicture || "";
@@ -277,6 +281,43 @@ const PlayerDetailsModal = ({
   };
 
   if (typeof document === "undefined") return null;
+
+  if (actionOnly && (initialAction === "delete" || initialAction === "removeSession")) {
+    const isRemoveSession = initialAction === "removeSession";
+
+    return createPortal(
+      <div className="fixed inset-0 z-[120000] flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm">
+        <div className="w-full max-w-sm rounded-2xl border border-red-100 bg-[var(--bg-card)] p-5 shadow-2xl">
+          <h3 className="text-lg font-semibold text-[var(--text-primary)]">
+            {isRemoveSession ? "Remove Player From Session" : "Remove Player"}
+          </h3>
+          <p className="mt-2 text-sm text-[var(--text-secondary)]">
+            {isRemoveSession
+              ? "Are you sure you want to remove this player from the Slot/Session?"
+              : "Are you sure you want to remove this player from the auction?"}
+          </p>
+          <div className="mt-4 flex justify-end gap-2">
+            <button
+              type="button"
+              onClick={onClose}
+              className="rounded-lg border border-[var(--border-primary)] px-4 py-2 text-sm font-medium text-[var(--text-primary)] hover:bg-[var(--secondary-lighter)]"
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
+              onClick={isRemoveSession ? handleConfirmRemoveSession : handleConfirmDelete}
+              disabled={isRemoving}
+              className="rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700 disabled:opacity-60"
+            >
+              {isRemoving ? "Removing..." : "OK"}
+            </button>
+          </div>
+        </div>
+      </div>,
+      document.body,
+    );
+  }
 
   return createPortal(
     <div className="fixed inset-0 z-[120000] flex items-center justify-center overflow-y-auto bg-black/60 p-2 backdrop-blur-sm sm:p-4">
@@ -679,8 +720,36 @@ const PlayerDetailsModal = ({
         </div>
 
         {/* Footer */}
-        {(onEdit || onDelete) && (
+        {(onRatePlayer || onGradePlayer || onEdit || onDelete || onRemoveSession) && (
           <div className="flex flex-wrap justify-end gap-2 border-t border-[var(--border-card)] bg-[var(--bg-card)] p-4">
+            {!isEditing && onRatePlayer && (
+              <button
+                type="button"
+                onClick={() => {
+                  onClose();
+                  onRatePlayer(player);
+                }}
+                className="inline-flex items-center gap-2 rounded-lg border border-[var(--border-primary)] bg-[var(--accent-light)] px-4 py-2 text-sm font-semibold text-[var(--primary)] hover:bg-[var(--secondary)] hover:text-[#102033]"
+              >
+                <Star className="h-4 w-4" />
+                Rating
+              </button>
+            )}
+
+            {!isEditing && onGradePlayer && (
+              <button
+                type="button"
+                onClick={() => {
+                  onClose();
+                  onGradePlayer(player);
+                }}
+                className="inline-flex items-center gap-2 rounded-lg border border-[var(--border-primary)] bg-[var(--accent-light)] px-4 py-2 text-sm font-semibold text-[var(--primary)] hover:bg-[var(--secondary)] hover:text-[#102033]"
+              >
+                <Award className="h-4 w-4" />
+                Grading
+              </button>
+            )}
+
             {!isEditing && onEdit && (
               <button
                 type="button"
@@ -758,6 +827,8 @@ const PlayerCard = ({
   selectedSlotId,
   selectedSlotSessions = [],
   slotDetails = [],
+  onRatePlayer,
+  onGradePlayer,
 }) => {
   const [imageError, setImageError] = useState(false);
   const [detailsModalOpen, setDetailsModalOpen] = useState(false);
@@ -1013,6 +1084,8 @@ const PlayerCard = ({
           isSaving={isSaving}
           isRemoving={isRemoving}
           type={type}
+          onRatePlayer={onRatePlayer}
+          onGradePlayer={onGradePlayer}
           // onRemoveSession={handleRemoveFromSession}
           
         />
@@ -1195,6 +1268,8 @@ const PlayerCard = ({
           isRemoving={isRemoving}
           type={type}
           onRemoveSession={handleRemoveFromSession}
+          onRatePlayer={onRatePlayer}
+          onGradePlayer={onGradePlayer}
         />
       </>
     );
@@ -1279,6 +1354,8 @@ const PlayerCard = ({
         isSaving={isSaving}
         isRemoving={isRemoving}
         type={type}
+        onRatePlayer={onRatePlayer}
+        onGradePlayer={onGradePlayer}
         
       />
     </>

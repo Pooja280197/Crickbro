@@ -268,7 +268,7 @@ const AuctionPlayers = () => {
   };
 
   return (
-    <div className="mx-auto w-full max-w-7xl px-3 py-4 text-[var(--text-primary)] sm:px-4 lg:px-5">
+    <div className="mx-auto w-full px-3 py-4 text-[var(--text-primary)] sm:px-4 lg:px-5">
       <div className="space-y-4">
         <div className="rounded-lg border border-[var(--border-card)] bg-[var(--bg-card)] p-4 shadow-[var(--shadow-card)]">
           <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">

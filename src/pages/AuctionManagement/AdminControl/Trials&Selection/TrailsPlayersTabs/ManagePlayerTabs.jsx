@@ -47,6 +47,8 @@ const ManagePlayerTabs = () => {
   const [currentPageState, setCurrentPageState] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(16);
   const [isItemsDropdownOpen, setIsItemsDropdownOpen] = useState(false);
+  const [unassignedViewMode, setUnassignedViewMode] = useState("grid");
+  const [assignedViewMode, setAssignedViewMode] = useState("grid");
   const [isAddPlayerOpen, setIsAddPlayerOpen] = useState(false);
   const [slot, setSlot] = useState("");
   const [selectedSlotSessions, setSelectedSlotSessions] = useState([]);
@@ -271,14 +273,12 @@ const ManagePlayerTabs = () => {
   };
 
   return (
-    <div className="mx-auto w-full max-w-7xl px-3 py-4 sm:px-4 lg:px-5">
+    <div className="mx-auto w-full px-3 py-4 sm:px-4 lg:px-5">
       <div className="space-y-4">
         <div className="rounded-lg border border-[var(--border-card)] bg-[var(--bg-card)] p-4 shadow-[var(--shadow-card)]">
           <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
             <div className="min-w-0">
-              <p className="text-xs font-semibold uppercase tracking-wide text-[var(--text-secondary)]">
-                Trials
-              </p>
+          
               <h1 className="mt-1 text-xl font-bold leading-7 text-[var(--text-primary)]">
                 Players for Trials
               </h1>
@@ -338,6 +338,8 @@ const ManagePlayerTabs = () => {
             slot={slot}
             selectedSlotSessions={selectedSlotSessions}
             slotDetail={slotDetail}
+            viewMode={unassignedViewMode}
+            setViewMode={setUnassignedViewMode}
           />
         )}
 
@@ -382,6 +384,8 @@ const ManagePlayerTabs = () => {
             totalPages={totalPages}
             totalPlayers={totalPlayers}
             auctionId={auctionId}
+            viewMode={assignedViewMode}
+            setViewMode={setAssignedViewMode}
           />
         )}
   

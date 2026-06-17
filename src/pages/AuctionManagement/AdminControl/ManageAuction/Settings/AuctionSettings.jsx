@@ -28,6 +28,7 @@ import {
   UserCheck,
   Edit,
   Settings,
+  RotateCcw,
 } from "lucide-react";
 import Loader from "../../../../../components/Loader";
 import { toast } from "react-toastify";
@@ -52,11 +53,13 @@ const panelHeaderClass =
 const iconTileClass =
   "flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-[var(--border-primary)] bg-[var(--accent-light)] text-[var(--primary)]";
 const fieldShellClass =
-  "flex h-10 items-center gap-2 rounded-lg border border-[var(--border-card)] bg-[var(--bg-main)] px-3 transition focus-within:border-[var(--border-primary)] focus-within:bg-[var(--bg-card)]";
+  "group flex h-11 items-center rounded-lg border border-[var(--border-card)] bg-[var(--bg-main)] transition focus-within:border-[var(--border-primary)] focus-within:bg-[var(--bg-card)] focus-within:ring-2 focus-within:ring-[var(--accent-light)]";
+const inputIconClass =
+  "flex h-full w-11 shrink-0 items-center justify-center rounded-l-lg border-r border-[var(--border-card)] bg-[var(--accent-light)] text-[var(--primary)] transition group-focus-within:border-[var(--border-primary)]";
 const inputClass =
-  "w-full bg-transparent text-sm font-medium text-[var(--text-primary)] outline-none placeholder:text-[var(--text-secondary)] disabled:cursor-not-allowed disabled:text-[var(--text-secondary)]";
+  "h-full min-w-0 flex-1 bg-transparent px-3 text-sm font-medium text-[var(--text-primary)] outline-none placeholder:text-[var(--text-secondary)] disabled:cursor-not-allowed disabled:text-[var(--text-secondary)]";
 const selectClass =
-  "h-10 w-full rounded-lg border border-[var(--border-card)] bg-[var(--bg-main)] px-3 text-sm font-medium text-[var(--text-primary)] outline-none transition focus:border-[var(--border-primary)] focus:bg-[var(--bg-card)]";
+  "h-full min-w-0 flex-1 bg-transparent px-3 text-sm font-medium text-[var(--text-primary)] outline-none";
 const primaryButtonClass =
   "inline-flex h-10 items-center justify-center gap-2 rounded-lg bg-[var(--secondary)] px-4 text-sm font-semibold text-[#102033] shadow-sm transition hover:bg-[var(--secondary-strong)] disabled:cursor-not-allowed disabled:opacity-60";
 const outlineButtonClass =
@@ -324,24 +327,29 @@ const AuctionSettings = ({ auctionId }) => {
             <label className="mb-1.5 block text-xs font-semibold text-[var(--text-primary)]">
               Select Team
             </label>
+            <div className={fieldShellClass}>
+              <div className={inputIconClass}>
+                <Trophy className="h-4 w-4" />
+              </div>
               <select
                 value={selectedTeamId}
                 onChange={(e) => setSelectedTeamId(e.target.value)}
                 className={selectClass}
               >
-                <option value="" className="bg-[var(--bg-card)] text-[var(--text-primary)]">
+                <option value="" className="bg-black text-[var(--text-primary)]">
                   -- Select a team --
                 </option>
                 {tournamentTeam?.map((item) => (
                   <option
                     key={item?.teamId?._id}
                     value={item?.teamId?._id}
-                    className="bg-[var(--bg-card)] text-[var(--text-primary)]"
+                    className="bg-black text-[var(--text-primary)]"
                   >
                     {item?.teamId?.name}
                   </option>
                 ))}
               </select>
+            </div>
           </div>
 
           {/* Phone Input */}
@@ -350,7 +358,9 @@ const AuctionSettings = ({ auctionId }) => {
               Phone Number
             </label>
             <div className={fieldShellClass}>
-              <Phone className="h-4 w-4 text-[var(--primary)]" />
+              <div className={inputIconClass}>
+                <Phone className="h-4 w-4" />
+              </div>
               <input
                 type="tel"
                 value={contact}
@@ -359,6 +369,21 @@ const AuctionSettings = ({ auctionId }) => {
                 maxLength={10}
                 className={inputClass}
               />
+              {contact ? (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setContact("");
+                    setName("");
+                    setSendAdminId(null);
+                    setAddName(false);
+                  }}
+                  className="mr-2 flex h-7 w-7 shrink-0 items-center justify-center rounded-md text-[var(--text-secondary)] transition hover:bg-[var(--accent-light)] hover:text-[var(--text-primary)]"
+                  title="Clear"
+                >
+                  <RotateCcw className="h-4 w-4" />
+                </button>
+              ) : null}
             </div>
           </div>
 
@@ -368,10 +393,13 @@ const AuctionSettings = ({ auctionId }) => {
               Owner Name
             </label>
             <div className={fieldShellClass}>
-              <User className="h-4 w-4 text-[var(--primary)]" />
+              <div className={inputIconClass}>
+                <User className="h-4 w-4" />
+              </div>
               <input
                 type="text"
                 value={name}
+                disabled={sendAdminId && !addName}
                 onChange={(e) => {
                   setName(e.target.value);
                   setAddName(true);
@@ -386,8 +414,8 @@ const AuctionSettings = ({ auctionId }) => {
               />
             </div>
             {sendAdminId && !addName && (
-              <p className="mt-1 text-xs font-medium text-emerald-600">
-                Name auto-fetched from registered user
+              <p className="mt-1.5 inline-flex rounded-full bg-emerald-50 px-2 py-0.5 text-[11px] font-semibold text-emerald-700">
+                Auto-fetched
               </p>
             )}
           </div>
@@ -458,11 +486,11 @@ const AuctionSettings = ({ auctionId }) => {
                           <p className="font-medium text-[var(--text-primary)] text-sm truncate">
                             {oname?.name || oname?.ownerName || "Owner"}
                           </p>
-                          <p className="text-xs text-[var(--text-muted)]">
+                          {/* <p className="text-xs text-[var(--text-muted)]">
                             {oname?.mobile || oname?.phone || oname?._id
                               ? `ID: ${(oname?.mobile || oname?.phone || oname?._id)?.slice(-6)}`
                               : "Owner details"}
-                          </p>
+                          </p> */}
                         </div>
                       </div>
                       <button
@@ -493,9 +521,9 @@ const AuctionSettings = ({ auctionId }) => {
         </div>
 
         {/* Desktop view - Side by side */}
-        <div className="hidden lg:grid lg:grid-cols-2 gap-6">
-          {ExistingTeamOwners()}
+        <div className="hidden gap-4 lg:grid lg:grid-cols-[minmax(340px,0.85fr)_minmax(500px,1.15fr)]">
           {AddTeamOwnerForm()}
+          {ExistingTeamOwners()}
         </div>
       </>
     );
@@ -530,7 +558,9 @@ const AuctionSettings = ({ auctionId }) => {
                     Phone Number
                   </label>
                   <div className={fieldShellClass}>
-                    <Phone className="h-4 w-4 text-[var(--primary)]" />
+                    <div className={inputIconClass}>
+                      <Phone className="h-4 w-4" />
+                    </div>
                     <input
                       type="tel"
                       value={contact}
@@ -539,6 +569,21 @@ const AuctionSettings = ({ auctionId }) => {
                       maxLength={10}
                       className={inputClass}
                     />
+                    {contact ? (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setContact("");
+                          setName("");
+                          setSendAdminId(null);
+                          setAddName(false);
+                        }}
+                        className="mr-2 flex h-7 w-7 shrink-0 items-center justify-center rounded-md text-[var(--text-secondary)] transition hover:bg-[var(--accent-light)] hover:text-[var(--text-primary)]"
+                        title="Clear"
+                      >
+                        <RotateCcw className="h-4 w-4" />
+                      </button>
+                    ) : null}
                   </div>
                 </div>
 
@@ -548,14 +593,17 @@ const AuctionSettings = ({ auctionId }) => {
                     Organizer Name
                   </label>
                   <div className={fieldShellClass}>
-                    <User className="h-4 w-4 text-[var(--primary)]" />
+                    <div className={inputIconClass}>
+                      <User className="h-4 w-4" />
+                    </div>
                     <input
                       type="text"
                       value={name}
-                      disabled={!addName && !sendAdminId}
+                      disabled={sendAdminId && !addName}
                       onChange={(e) => {
                         setName(e.target.value);
                         setAddName(true);
+                        setSendAdminId("");
                       }}
                       placeholder={
                         sendAdminId
@@ -566,8 +614,8 @@ const AuctionSettings = ({ auctionId }) => {
                     />
                   </div>
                   {sendAdminId && !addName && (
-                    <p className="mt-1 text-xs font-medium text-emerald-600">
-                      Name auto-fetched from registered user
+                    <p className="mt-1.5 inline-flex rounded-full bg-emerald-50 px-2 py-0.5 text-[11px] font-semibold text-emerald-700">
+                      Auto-fetched
                     </p>
                   )}
                 </div>
@@ -670,7 +718,7 @@ const AuctionSettings = ({ auctionId }) => {
   const navigate = useNavigate();
 
   return (
-    <div className="mx-auto w-full max-w-7xl space-y-4 p-3 text-[var(--text-primary)] sm:p-4 lg:p-5">
+    <div className="mx-auto w-full space-y-4 p-3 text-[var(--text-primary)] sm:p-4 lg:p-5 bg-[var(--bg-main)]">
       {/* Header Section */}
       <div className="rounded-lg border border-[var(--border-card)] bg-[var(--bg-card)] p-4 shadow-[var(--shadow-card)]">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">

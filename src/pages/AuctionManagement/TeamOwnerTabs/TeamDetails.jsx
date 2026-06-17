@@ -159,32 +159,44 @@ const TeamDetails = ({ auctionId, playerId }) => {
     if (!teams || teams.length <= 1) return null;
 
     return (
-      <div className="rounded-lg border border-[var(--border-card)] bg-[var(--bg-card)] p-2 shadow-[var(--shadow-card)]">
-      <div className="flex flex-wrap gap-2">
-        {teams.map((t, index) => (
-          <button
-            key={t.teamId}
-            onClick={() => setSelectedTeamIndex(index)}
-            className={`flex min-h-12 items-center gap-2 rounded-lg border px-3 py-2 text-left transition ${
-              selectedTeamIndex === index
-                ? "border-[var(--border-primary)] bg-[var(--accent-light)] text-[var(--primary)] shadow-sm"
-                : "border-[var(--border-card)] bg-[var(--bg-card)] text-[var(--text-primary)] hover:border-[var(--border-primary)] hover:bg-[var(--secondary-lighter)]"
-            }`}
-          >
-            <img
-              src={t.teamLogo}
-              alt={t.teamName}
-              className="w-8 h-8 rounded-lg object-cover"
-            />
-            <div className="text-left">
-              <p className="text-sm font-bold">{t.teamName}</p>
-              <p className="text-xs text-[var(--text-secondary)]">
-                {t.teamCity}
-              </p>
-            </div>
-          </button>
-        ))}
-      </div>
+      <div className="overflow-hidden rounded-lg border border-[var(--border-card)] bg-[var(--bg-card)] p-2 shadow-[var(--shadow-card)]">
+        <select
+          value={selectedTeamIndex}
+          onChange={(event) => setSelectedTeamIndex(Number(event.target.value))}
+          className="h-11 w-full rounded-lg border border-[var(--border-card)] bg-[var(--bg-main)] px-3 text-sm font-semibold text-[var(--text-primary)] outline-none transition focus:border-[var(--border-primary)] md:hidden"
+        >
+          {teams.map((t, index) => (
+            <option key={t.teamId} value={index}>
+              {t.teamName} {t.teamCity ? `- ${t.teamCity}` : ""}
+            </option>
+          ))}
+        </select>
+
+        <div className="hidden gap-2 overflow-x-auto [-ms-overflow-style:none] [scrollbar-width:none] md:flex [&::-webkit-scrollbar]:hidden">
+          {teams.map((t, index) => (
+            <button
+              key={t.teamId}
+              onClick={() => setSelectedTeamIndex(index)}
+              className={`flex min-h-12 w-[220px] flex-none min-w-0 items-center gap-2 rounded-lg border px-3 py-2 text-left transition ${
+                selectedTeamIndex === index
+                  ? "border-[var(--border-primary)] bg-[var(--accent-light)] text-[var(--primary)] shadow-sm"
+                  : "border-[var(--border-card)] bg-[var(--bg-card)] text-[var(--text-primary)] hover:border-[var(--border-primary)] hover:bg-[var(--secondary-lighter)]"
+              }`}
+            >
+              <img
+                src={t.teamLogo}
+                alt={t.teamName}
+                className="h-8 w-8 shrink-0 rounded-lg object-cover"
+              />
+              <div className="min-w-0 text-left">
+                <p className="truncate text-sm font-bold">{t.teamName}</p>
+                <p className="truncate text-xs text-[var(--text-secondary)]">
+                  {t.teamCity}
+                </p>
+              </div>
+            </button>
+          ))}
+        </div>
       </div>
     );
   };
@@ -451,9 +463,7 @@ const TeamDetails = ({ auctionId, playerId }) => {
               className="h-16 w-16 rounded-lg border border-[var(--border-card)] bg-[var(--bg-main)] object-cover"
             />
             <div className="min-w-0">
-              <p className="text-xs font-semibold uppercase tracking-wide text-[var(--text-secondary)]">
-                Team Owner Dashboard
-              </p>
+          
               <h1 className="mt-1 truncate text-2xl font-bold text-[var(--text-primary)]">
                 {team?.teamName}
               </h1>
@@ -463,7 +473,7 @@ const TeamDetails = ({ auctionId, playerId }) => {
             </div>
           </div>
 
-          <div className="rounded-lg border border-[var(--border-card)] bg-[var(--bg-main)] p-3">
+          {/* <div className="rounded-lg border border-[var(--border-card)] bg-[var(--bg-main)] p-3">
             <div className="mb-2 flex items-center justify-between text-xs font-semibold text-[var(--text-secondary)]">
               <span>Budget Utilization</span>
               <span>{budgetUsage.toFixed(1)}%</span>
@@ -478,7 +488,7 @@ const TeamDetails = ({ auctionId, playerId }) => {
               <InfoTile label="Remaining" value={formatCurrency(details?.remainingBudget)} />
               <InfoTile label="Squad" value={details?.currentSquadSize || 0} />
             </div>
-          </div>
+          </div> */}
         </div>
       </div>
 

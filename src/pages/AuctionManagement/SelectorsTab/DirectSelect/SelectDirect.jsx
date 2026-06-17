@@ -15,6 +15,11 @@ import BarcodeScanner from "./BarcodeScanner";
 import { createPortal } from "react-dom";
 import Pagination from "../../../../components/Pagination";
 
+const panelClass =
+  "rounded-lg border border-[var(--border-card)] bg-[var(--bg-card)] shadow-[var(--shadow-card)]";
+const iconTileClass =
+  "flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-[var(--border-primary)] bg-[var(--accent-light)] text-[var(--primary)]";
+
 function SelectDirect({ auctionId }) {
   const dispatch = useDispatch();
   const [searchAssignedPlayer, setSearchAssignedPlayer] = useState("");
@@ -230,8 +235,53 @@ function SelectDirect({ auctionId }) {
         />
       )}
 
-      <div className="flex flex-col gap-y-4 px-2 sm:p-6">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3">
+      <div className="flex flex-col gap-y-4 p-3 sm:p-6">
+        <div className={`${panelClass} overflow-hidden`}>
+          <div className="flex flex-col gap-3 border-b border-[var(--border-card)] bg-[var(--bg-main)] p-4 lg:flex-row lg:items-center lg:justify-between">
+            <div className="flex min-w-0 items-start gap-3">
+              <div className={iconTileClass}>
+                <CheckSquare size={18} />
+              </div>
+              <div className="min-w-0">
+                <h2 className="mt-1 text-lg font-semibold text-[var(--text-primary)]">
+                  Direct Select
+                </h2>
+                <p className="mt-1 text-sm font-medium text-[var(--text-secondary)]">
+                  Select players directly, scan barcodes, and manage selection status.
+                </p>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+              <div className="rounded-lg border border-[var(--border-card)] bg-[var(--bg-card)] px-3 py-2">
+                <p className="text-[10px] font-bold uppercase text-[var(--text-muted)]">
+                  Total
+                </p>
+                <p className="text-sm font-semibold text-[var(--text-primary)]">
+                  {selectorPlayersTotal || 0}
+                </p>
+              </div>
+              <div className="rounded-lg border border-[var(--border-card)] bg-[var(--bg-card)] px-3 py-2">
+                <p className="text-[10px] font-bold uppercase text-[var(--text-muted)]">
+                  Showing
+                </p>
+                <p className="text-sm font-semibold text-[var(--primary)]">
+                  {selectorPlayers.length}
+                </p>
+              </div>
+              <div className="rounded-lg border border-[var(--border-card)] bg-[var(--bg-card)] px-3 py-2">
+                <p className="text-[10px] font-bold uppercase text-[var(--text-muted)]">
+                  Selected
+                </p>
+                <p className="text-sm font-semibold text-[var(--text-primary)]">
+                  {selectedPlayers.length}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-2 sm:gap-3">
           <div className="sm:col-span-1 relative w-full">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 sm:w-4 sm:h-4 text-[var(--text-muted)]" />
             <input
@@ -291,6 +341,23 @@ function SelectDirect({ auctionId }) {
             <option value="not_selected">Not Selected</option>
             <option value="pending">Pending</option>
           </select>
+
+           <div className="flex items-center gap-2 sm:gap-3">
+                <label className="text-xs sm:text-sm font-medium text-[var(--text-secondary)] whitespace-nowrap">
+                  Per page:
+                </label>
+                <select
+                  value={itemsPerPage}
+                  onChange={(e) => setItemsPerPage(Number(e.target.value))}
+                  className="ui-input w-auto"
+                >
+                  <option value="16">16</option>
+                  <option value="32">32</option>
+                  <option value="64">64</option>
+                  <option value="96">96</option>
+                </select>
+              </div>
+
         </div>
 
         {selectedPlayers.length > 0 && !sessionLocked && (
@@ -343,22 +410,7 @@ function SelectDirect({ auctionId }) {
             </div>
 
             <div className="ui-card-soft mt-6">
-              <div className="flex items-center gap-2 sm:gap-3">
-                <label className="text-xs sm:text-sm font-medium text-[var(--text-secondary)] whitespace-nowrap">
-                  Per page:
-                </label>
-                <select
-                  value={itemsPerPage}
-                  onChange={(e) => setItemsPerPage(Number(e.target.value))}
-                  className="ui-input w-auto"
-                >
-                  <option value="16">16</option>
-                  <option value="32">32</option>
-                  <option value="64">64</option>
-                  <option value="96">96</option>
-                </select>
-              </div>
-
+             
               <Pagination
                 className="flex-1"
                 currentPage={selectorPlayersPage || 1}

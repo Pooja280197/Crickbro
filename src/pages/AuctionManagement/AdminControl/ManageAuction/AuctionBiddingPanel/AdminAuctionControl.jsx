@@ -1,11 +1,11 @@
 import api from "../../../../../utils/api";
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import { connectAuctionSocket, disconnectSocket } from "../../../../../utils/SocketClient";
 import { toast } from "react-toastify";
 import ConfirmDialog from "../../../../../components/ConfirmDialog";
 import profile from "../../../../../assets/Images/profile-icon.jpg";
-import { ChevronLeft, ChevronRight, Eye, Filter, Search, Settings } from "lucide-react";
+import { ChevronLeft, ChevronRight, Eye, Filter, Maximize2, Minimize2, Search, Settings } from "lucide-react";
 import { computeCategoryLockReserveForTeam } from "./categoryBudgetLockUtils";
 
 /* ================= CONSTANTS ================= */
@@ -43,8 +43,10 @@ const formatMoney = (amount) => {
 
 const AdminAuctionControl = () => {
   const { auctionId } = useParams();
+  const auctionRoomRef = useRef(null);
 
   /* ---------- UI STATE ---------- */
+  const [isRoomFullscreen, setIsRoomFullscreen] = useState(false);
 
   const [categories, setCategories] = useState([]);
   const [selectedCategoryId, setSelectedCategoryId] = useState("");
@@ -116,6 +118,40 @@ const AdminAuctionControl = () => {
       <div className="mt-1">{children}</div>
     </div>
   );
+
+  const enterFullscreen = async () => {
+    setIsRoomFullscreen(true);
+    const el = auctionRoomRef.current;
+    try {
+      if (el?.requestFullscreen) {
+        await el.requestFullscreen();
+      }
+    } catch (error) {
+      console.error("Unable to enter fullscreen:", error);
+    }
+  };
+
+  const exitFullscreen = async () => {
+    setIsRoomFullscreen(false);
+    try {
+      if (document.fullscreenElement) {
+        await document.exitFullscreen();
+      }
+    } catch (error) {
+      console.error("Unable to exit fullscreen:", error);
+    }
+  };
+
+  useEffect(() => {
+    const syncFullscreenState = () => {
+      setIsRoomFullscreen(document.fullscreenElement === auctionRoomRef.current);
+    };
+
+    document.addEventListener("fullscreenchange", syncFullscreenState);
+    return () => {
+      document.removeEventListener("fullscreenchange", syncFullscreenState);
+    };
+  }, []);
 
   /* ---------- FETCH CATEGORIES ---------- */
 
@@ -823,11 +859,37 @@ const AdminAuctionControl = () => {
 
 
   return (
-    <div className="admin-auction-control min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 text-slate-50 px-4 py-2">
+    <div
+      ref={auctionRoomRef}
+      className={`admin-auction-control bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 text-slate-50 px-4 py-2 ${isRoomFullscreen
+        ? "fixed inset-0 z-[9999] min-h-screen overflow-y-auto"
+        : "min-h-screen"
+        }`}
+    >
       <div className="w-full mx-auto space-y-2">
         {/* <div className="flex justify-center items-center font-bold text-yellow-400">
           ADMIN AUCTION CONTROL
         </div> */}
+        <div className="flex justify-end">
+          <button
+            type="button"
+            onClick={isRoomFullscreen ? exitFullscreen : enterFullscreen}
+            className="inline-flex items-center gap-2 rounded-lg border border-slate-700 bg-slate-900/80 px-3 py-2 text-sm font-semibold text-slate-100 shadow-sm transition hover:border-sky-400 hover:bg-slate-800"
+          >
+            {isRoomFullscreen ? (
+              <>
+                <Minimize2 className="h-4 w-4" />
+                Minimize
+              </>
+            ) : (
+              <>
+                <Maximize2 className="h-4 w-4" />
+                Full Screen
+              </>
+            )}
+          </button>
+        </div>
+
         {/* HEADER STATS */}
         <div className="grid grid-cols-2 md:grid-cols-6 gap-3">
           <Card label="Auction Status">

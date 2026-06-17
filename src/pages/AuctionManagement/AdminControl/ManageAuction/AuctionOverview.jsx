@@ -13,6 +13,8 @@ import {
   Calendar,
   Clock,
   Edit,
+  LayoutGrid,
+  Table2,
 } from "lucide-react";
 import api from "../../../../utils/api";
 // import toast from 'react-hot-toast';
@@ -31,6 +33,10 @@ const outlineButtonClass =
 const iconTileClass =
   "flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-[var(--border-primary)] bg-[var(--accent-light)] text-[var(--primary)]";
 const optionClass = "bg-[var(--bg-card)] text-[var(--text-primary)]";
+const optionStyle = {
+  backgroundColor: "var(--bg-card)",
+  color: "var(--text-primary)",
+};
 
 const AuctionOverview = ({ auctionId }) => {
   const [players, setPlayers] = useState([]);
@@ -47,6 +53,8 @@ const AuctionOverview = ({ auctionId }) => {
   const [apiCategories, setApiCategories] = useState([]);
   const [teams, setTeams] = useState([]);
   const [showFilters, setShowFilters] = useState(false);
+  const [showStatusDropdown, setShowStatusDropdown] = useState(false);
+  const [showCategoryDropdown, setShowCategoryDropdown] = useState(false);
   const [expandedBidHistory, setExpandedBidHistory] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [editFinalPrice, setEditFinalPrice] = useState("");
@@ -55,6 +63,7 @@ const AuctionOverview = ({ auctionId }) => {
   const [editLoading, setEditLoading] = useState(false);
   const [teamSearch, setTeamSearch] = useState("");
   const [showTeamDropdown, setShowTeamDropdown] = useState(false);
+  const [viewMode, setViewMode] = useState("card");
 
   // Fetch players from API with filters
   const fetchPlayersWithFilters = useCallback(
@@ -281,6 +290,21 @@ const AuctionOverview = ({ auctionId }) => {
     getTeamDisplayName(team).toLowerCase().includes(teamSearch.toLowerCase()),
   );
 
+  const statusOptions = [
+    { value: "", label: "All Players" },
+    { value: "sold", label: "Sold" },
+    { value: "unsold", label: "Unsold" },
+    { value: "available", label: "Available" },
+  ];
+
+  const selectedStatusLabel =
+    statusOptions.find((option) => option.value === statusFilter)?.label ||
+    "All Players";
+
+  const selectedCategoryLabel =
+    apiCategories.find((category) => category._id === categoryFilterName)
+      ?.name || "All Categories";
+
   // Get team name from soldTo or highestBidder using teams state
   const getTeamName = (player) => {
     if (player.soldTo?.id) {
@@ -453,7 +477,7 @@ const AuctionOverview = ({ auctionId }) => {
   };
 
   return (
-    <div className="mx-auto w-full max-w-7xl space-y-4 p-3 text-[var(--text-primary)] sm:p-4 lg:p-5">
+    <div className="mx-auto w-full space-y-4 p-3 text-[var(--text-primary)] sm:p-4 lg:p-5 bg-[var(--bg-main)]">
       {/* Header with Stats */}
       <div className={`${panelClass} p-4`}>
         <div className="mb-4 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
@@ -463,19 +487,11 @@ const AuctionOverview = ({ auctionId }) => {
             </div>
             <div>
               <h1 className="text-lg font-semibold tracking-normal text-[var(--text-primary)] sm:text-xl">
-                Auction Players
+                Auction Overview <span className="rounded-full border border-[var(--border-card)] bg-[var(--bg-main)] px-2.5 py-1 text-xs font-semibold text-[var(--text-secondary)]">({totalPlayers} players)</span>
               </h1>
               <p className="mt-1 text-sm text-[var(--text-secondary)]">
                 Track sold, unsold and available players with final bids and team details.
               </p>
-              <div className="mt-2 flex flex-wrap gap-2">
-                <span className="rounded-full border border-[var(--border-card)] bg-[var(--bg-main)] px-2.5 py-1 text-xs font-semibold text-[var(--text-secondary)]">
-                  {totalPlayers} players
-                </span>
-                <span className="rounded-full border border-[var(--border-primary)] bg-[var(--accent-light)] px-2.5 py-1 text-xs font-semibold text-[var(--primary)]">
-                  Page {currentPage} of {totalPages || 1}
-                </span>
-              </div>
             </div>
           </div>
 
@@ -489,14 +505,40 @@ const AuctionOverview = ({ auctionId }) => {
                 onChange={(e) =>
                   handleItemsPerPageChange(Number(e.target.value))
                 }
-                className="h-10 bg-[var(--bg-card)] text-sm font-semibold text-[var(--text-primary)] outline-none"
+                className="h-10 bg-[var(--bg-card)] text-sm font-semibold text-[var(--text-primary)] "
               >
-                <option value={6} className="bg-[var(--bg-card)] text-[var(--text-primary)]">6</option>
-                <option value={12} className="bg-[var(--bg-card)] text-[var(--text-primary)]">12</option>
-                <option value={24} className="bg-[var(--bg-card)] text-[var(--text-primary)]">24</option>
-                <option value={50} className="bg-[var(--bg-card)] text-[var(--text-primary)]">50</option>
-                <option value={100} className="bg-[var(--bg-card)] text-[var(--text-primary)]">100</option>
+                <option value={6} className={optionClass} style={optionStyle}>6</option>
+                <option value={12} className={optionClass} style={optionStyle}>12</option>
+                <option value={24} className={optionClass} style={optionStyle}>24</option>
+                <option value={50} className={optionClass} style={optionStyle}>50</option>
+                <option value={100} className={optionClass} style={optionStyle}>100</option>
               </select>
+            </div>
+            <div className="inline-flex h-10 overflow-hidden rounded-lg border border-[var(--border-card)] bg-[var(--bg-card)]">
+              <button
+                type="button"
+                onClick={() => setViewMode("card")}
+                className={`inline-flex items-center justify-center gap-2 px-3 text-xs font-semibold transition ${
+                  viewMode === "card"
+                    ? "bg-[var(--secondary)] text-[#102033]"
+                    : "text-[var(--text-secondary)] hover:bg-[var(--accent-light)] hover:text-[var(--text-primary)]"
+                }`}
+              >
+                <LayoutGrid className="h-4 w-4" />
+                
+              </button>
+              <button
+                type="button"
+                onClick={() => setViewMode("table")}
+                className={`inline-flex items-center justify-center gap-2 border-l border-[var(--border-card)] px-3 text-xs font-semibold transition ${
+                  viewMode === "table"
+                    ? "bg-[var(--secondary)] text-[#102033]"
+                    : "text-[var(--text-secondary)] hover:bg-[var(--accent-light)] hover:text-[var(--text-primary)]"
+                }`}
+              >
+                <Table2 className="h-4 w-4" />
+                
+              </button>
             </div>
             <button
               onClick={handleDownload}
@@ -555,6 +597,48 @@ const AuctionOverview = ({ auctionId }) => {
                   <label className="mb-1.5 block text-xs font-semibold text-[var(--text-primary)]">
                     Status
                   </label>
+                  <div className="relative">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setShowStatusDropdown((prev) => !prev);
+                        setShowCategoryDropdown(false);
+                      }}
+                      className={`${inputClass} flex w-full items-center justify-between text-left text-[var(--text-primary)]`}
+                    >
+                      <span className="truncate">{selectedStatusLabel}</span>
+                      <ChevronDown
+                        className={`h-4 w-4 shrink-0 text-[var(--text-secondary)] transition ${
+                          showStatusDropdown ? "rotate-180" : ""
+                        }`}
+                      />
+                    </button>
+
+                    {showStatusDropdown && (
+                      <div className="absolute z-[90] mt-1 w-full overflow-hidden rounded-lg border border-[var(--border-card)] bg-[var(--bg-card)] p-1 shadow-[0_18px_42px_rgba(0,0,0,0.22)]">
+                        {statusOptions.map((option) => (
+                          <button
+                            key={option.value || "all"}
+                            type="button"
+                            onClick={() => {
+                              setStatusFilter(option.value);
+                              if (option.value === "unsold") {
+                                setTeamIdFilter("");
+                              }
+                              setShowStatusDropdown(false);
+                            }}
+                            className={`w-full rounded-md px-3 py-2 text-left text-sm font-medium transition hover:bg-[var(--accent-light)] ${
+                              statusFilter === option.value
+                                ? "bg-[var(--accent-light)] text-[var(--primary)]"
+                                : "text-[var(--text-primary)]"
+                            }`}
+                          >
+                            {option.label}
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
                   <select
                     value={statusFilter}
                     onChange={(e) => {
@@ -566,12 +650,12 @@ const AuctionOverview = ({ auctionId }) => {
                         setTeamIdFilter("");
                       }
                     }}
-                    className={`${inputClass} w-full text-[var(--text-primary)]`}
+                    className="hidden"
                   >
-                    <option value="" className={optionClass}>All Players</option>
-                    <option value="sold" className={optionClass}>Sold</option>
-                    <option value="unsold" className={optionClass}>Unsold</option>
-                    <option value="available" className={optionClass}>Available</option>
+                    <option value="" className={optionClass} style={optionStyle}>All Players</option>
+                    <option value="sold" className={optionClass} style={optionStyle}>Sold</option>
+                    <option value="unsold" className={optionClass} style={optionStyle}>Unsold</option>
+                    <option value="available" className={optionClass} style={optionStyle}>Available</option>
                   </select>
                 </div>
 
@@ -673,17 +757,78 @@ const AuctionOverview = ({ auctionId }) => {
                   <label className="mb-1.5 block text-xs font-semibold text-[var(--text-primary)]">
                     Category
                   </label>
+                  <div className="relative">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setShowCategoryDropdown((prev) => !prev);
+                        setShowStatusDropdown(false);
+                      }}
+                      className={`${inputClass} flex w-full items-center justify-between text-left`}
+                    >
+                      <span className="truncate">{selectedCategoryLabel}</span>
+                      <ChevronDown
+                        className={`h-4 w-4 shrink-0 text-[var(--text-secondary)] transition ${
+                          showCategoryDropdown ? "rotate-180" : ""
+                        }`}
+                      />
+                    </button>
+
+                    {showCategoryDropdown && (
+                      <div className="professional-scrollbar absolute z-[90] mt-1 max-h-56 w-full overflow-y-auto rounded-lg border border-[var(--border-card)] bg-[var(--bg-card)] p-1 shadow-[0_18px_42px_rgba(0,0,0,0.22)]">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setCategoryFilterName("");
+                            setShowCategoryDropdown(false);
+                          }}
+                          className={`w-full rounded-md px-3 py-2 text-left text-sm font-medium transition hover:bg-[var(--accent-light)] ${
+                            !categoryFilterName
+                              ? "bg-[var(--accent-light)] text-[var(--primary)]"
+                              : "text-[var(--text-primary)]"
+                          }`}
+                        >
+                          All Categories
+                        </button>
+
+                        {apiCategories.map((category) => (
+                          <button
+                            key={category._id}
+                            type="button"
+                            onClick={() => {
+                              setCategoryFilterName(category._id);
+                              setShowCategoryDropdown(false);
+                            }}
+                            className={`w-full rounded-md px-3 py-2 text-left text-sm font-medium transition hover:bg-[var(--accent-light)] ${
+                              categoryFilterName === category._id
+                                ? "bg-[var(--accent-light)] text-[var(--primary)]"
+                                : "text-[var(--text-primary)]"
+                            }`}
+                          >
+                            {category.name}
+                          </button>
+                        ))}
+
+                        {apiCategories.length === 0 && (
+                          <div className="px-3 py-2 text-sm text-[var(--text-secondary)]">
+                            No categories found
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
                   <select
                     value={categoryFilterName}
                     onChange={(e) => setCategoryFilterName(e.target.value)}
-                    className={`${inputClass} w-full`}
+                    className="hidden"
                   >
-                    <option value="" className={optionClass}>All Categories</option>
+                    <option value="" className={optionClass} style={optionStyle}>All Categories</option>
                     {apiCategories.map((category) => (
                       <option
                         key={category._id}
                         value={category._id}
                         className={optionClass}
+                        style={optionStyle}
                       >
                         {category.name}
                       </option>
@@ -756,11 +901,11 @@ const AuctionOverview = ({ auctionId }) => {
         </div>
       </div>
 
-      {/* Players Grid Only - No Table View */}
+      {/* Players */}
       {players.length > 0 ? (
         <div className="space-y-4">
-          {/* Grid View - Responsive columns */}
-          <div className="grid grid-cols-2 gap-4 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 ">
+          {viewMode === "card" ? (
+            <div className="grid grid-cols-2 gap-4 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 ">
             {players.map((player) => (
               <div
                 key={player._id}
@@ -851,7 +996,116 @@ const AuctionOverview = ({ auctionId }) => {
                 </div>
               </div>
             ))}
-          </div>
+            </div>
+          ) : (
+            <div className={`${panelClass} overflow-hidden`}>
+              <div className="professional-scrollbar max-h-[calc(100vh-360px)] min-h-[300px] overflow-auto">
+                <table className="w-full min-w-[960px] border-separate border-spacing-0 text-left text-sm">
+                  <thead className="text-xs uppercase text-[var(--text-secondary)] shadow-sm">
+                    <tr>
+                      {[
+                        "Player",
+                        "Status",
+                        "Team",
+                        "Base Price",
+                        "Final Price",
+                        "Mobile",
+                        "Action",
+                      ].map((heading) => (
+                        <th
+                          key={heading}
+                          className="sticky top-0 z-20 bg-[var(--bg-main)] px-4 py-3"
+                        >
+                          {heading}
+                        </th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-[var(--border-card)]">
+                    {players.map((player) => {
+                      const status = player.isSold
+                        ? "Sold"
+                        : player.status === "unsold"
+                          ? "Unsold"
+                          : "Available";
+                      const finalPrice =
+                        player.finalPrice || player.currentBid || player.basePrice || 0;
+
+                      return (
+                        <tr
+                          key={player._id}
+                          className="cursor-pointer transition hover:bg-[var(--accent-light)]"
+                          onClick={() => setViewingPlayer(player)}
+                        >
+                          <td className="min-w-64 px-4 py-3">
+                            <div className="flex items-center gap-3">
+                              {hasValidPlayerImage(player) ? (
+                                <img
+                                  src={getPlayerImage(player)}
+                                  alt={player?.player?.name || "Player"}
+                                  className="h-10 w-10 rounded-lg border border-[var(--border-card)] bg-[var(--secondary-lighter)] object-cover"
+                                />
+                              ) : (
+                                <div className="flex h-10 w-10 items-center justify-center rounded-lg border border-[var(--border-card)] bg-[var(--accent-light)] text-xs font-bold text-[var(--primary)]">
+                                  {getPlayerInitials(player?.player?.name)}
+                                </div>
+                              )}
+                              <div className="min-w-0">
+                                <p className="truncate font-semibold text-[var(--text-primary)]">
+                                  {player?.player?.name || "Unnamed Player"}
+                                </p>
+                                <p className="truncate text-xs text-[var(--text-secondary)]">
+                                  {player?.player?.batchId || "-"}
+                                </p>
+                              </div>
+                            </div>
+                          </td>
+                          <td className="px-4 py-3">
+                            <span
+                              className={`inline-flex rounded-full border px-2.5 py-1 text-xs font-semibold ${
+                                player.isSold
+                                  ? "border-emerald-200 bg-emerald-50 text-emerald-700"
+                                  : player.status === "unsold"
+                                    ? "border-red-200 bg-red-50 text-red-700"
+                                    : "border-[var(--border-primary)] bg-[var(--accent-light)] text-[var(--primary)]"
+                              }`}
+                            >
+                              {status}
+                            </span>
+                          </td>
+                          <td className="px-4 py-3 font-medium text-[var(--text-primary)]">
+                            {player.isSold ? getTeamName(player) : "-"}
+                          </td>
+                          <td className="px-4 py-3 text-[var(--text-secondary)]">
+                            {formatCurrency(player.basePrice || 0)}
+                          </td>
+                          <td className="px-4 py-3 font-semibold text-[var(--primary)]">
+                            {formatCurrency(finalPrice)}
+                          </td>
+                          <td className="px-4 py-3 text-[var(--text-secondary)]">
+                            {player?.player?.mobile || "-"}
+                          </td>
+                          <td className="px-4 py-3">
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setViewingPlayer(player);
+                              }}
+                              className="inline-flex h-8 items-center justify-center gap-2 rounded-lg border border-[var(--border-card)] bg-[var(--bg-card)] px-3 text-xs font-semibold text-[var(--text-primary)] transition hover:border-[var(--border-primary)] hover:bg-[var(--accent-light)]"
+                            >
+                              <Eye className="h-4 w-4" />
+                              View
+                            </button>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
 
           {/* Pagination - Fixed */}
           {totalPages > 1 && (
@@ -931,7 +1185,7 @@ const AuctionOverview = ({ auctionId }) => {
                   </div>
                 </div>
 
-                <div>
+                <div className="flex items-center gap-2"> 
                   <button
                     onClick={() => {
                       setEditingPlayer(viewingPlayer);
@@ -1228,10 +1482,15 @@ const AuctionOverview = ({ auctionId }) => {
                 onChange={(e) => setEditTeamId(e.target.value)}
                 className={`${inputClass} w-full pl-12 pr-4`}
               >
-                <option value="">Choose Team</option>
+                <option value="" className={optionClass} style={optionStyle}>Choose Team</option>
 
                 {teams.map((team) => (
-                  <option key={team.teamId} value={team.teamId}>
+                  <option
+                    key={team.teamId}
+                    value={team.teamId}
+                    className={optionClass}
+                    style={optionStyle}
+                  >
                     {team.teamName}
                   </option>
                 ))}

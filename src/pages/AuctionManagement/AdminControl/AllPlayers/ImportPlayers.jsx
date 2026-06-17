@@ -6,7 +6,7 @@ import { importPlayer } from "../../../../redux/actions";
 import { useDispatch } from "react-redux";
 import { toast } from "react-toastify";
 
-const ImportPlayers = ({ auctionId }) => {
+const ImportPlayers = ({ auctionId, onImportSuccess }) => {
   const fileInputRef = useRef(null);
   const [file, setFile] = useState(null);
   const [open, setOpen] = useState(false);
@@ -27,6 +27,7 @@ const ImportPlayers = ({ auctionId }) => {
     try {
       await dispatch(importPlayer(auctionId, formData));
       toast.success("Players uploaded successfully ✅");
+      await onImportSuccess?.();
       handleClose();
     } catch (error) {
       console.error(error);

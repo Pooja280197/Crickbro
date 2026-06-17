@@ -429,11 +429,8 @@ function PlayerPicker({ players, value, onSelect, placeholder, theme = "gray" })
     return () => document.removeEventListener("mousedown", close);
   }, []);
 
-  const themeBtn = theme === "indigo"
-    ? "border-indigo-200 bg-indigo-50 text-indigo-800 hover:bg-indigo-100"
-    : theme === "emerald"
-    ? "border-emerald-200 bg-emerald-50 text-emerald-800 hover:bg-emerald-100"
-    : "border-[var(--border-card)] bg-[var(--bg-card)] text-[var(--text-primary)] hover:bg-[var(--bg-soft)]";
+  const themeBtn =
+    "border-[var(--border-card)] bg-[var(--bg-main)] text-[var(--text-primary)] hover:border-[var(--border-primary)] hover:bg-[var(--accent-light)]";
 
   return (
     <div ref={ref} className="relative">
@@ -457,7 +454,7 @@ function PlayerPicker({ players, value, onSelect, placeholder, theme = "gray" })
         <div className="absolute z-[80] mt-1 w-full min-w-[220px] bg-[var(--bg-card)] border border-[var(--border-card)] rounded-xl shadow-2xl max-h-56 overflow-y-auto">
           <input
             autoFocus
-            className="sticky top-0 w-full px-3 py-2 text-sm border-b outline-none bg-[var(--bg-card)]"
+            className="sticky top-0 w-full px-3 py-2 text-sm border-b border-[var(--border-card)] outline-none bg-[var(--bg-card)] text-[var(--text-primary)] placeholder:text-[var(--text-secondary)]"
             placeholder="Search player..."
             value={q}
             onChange={(e) => setQ(e.target.value)}
@@ -469,7 +466,7 @@ function PlayerPicker({ players, value, onSelect, placeholder, theme = "gray" })
                 key={p.auctionPlayerId}
                 type="button"
                 className={`w-full text-left px-3 py-2 text-sm flex items-center gap-2 ${
-                  locked ? "opacity-50 cursor-not-allowed bg-[var(--bg-soft)]" : "hover:bg-[var(--bg-soft)]"
+                  locked ? "opacity-50 cursor-not-allowed bg-[var(--bg-main)]" : "text-[var(--text-primary)] hover:bg-[var(--accent-light)]"
                 }`}
                 onClick={() => {
                   if (locked) {
@@ -634,10 +631,8 @@ const BallByBallRating = ({ auctionId, slot, session, onBack }) => {
     const valueType = String(field?.type || "string").toLowerCase();
     const options = Array.isArray(field?.options) ? field.options.filter(Boolean) : [];
     const value = valueMap[fieldKey];
-    const inputBaseClass = "w-full text-sm border rounded-xl px-3 py-2 bg-[var(--bg-card)] focus:outline-none";
-    const themedInputClass = role === "batsman"
-      ? `${inputBaseClass} border-indigo-200 focus:border-indigo-400`
-      : `${inputBaseClass} border-emerald-200 focus:border-emerald-400`;
+    const inputBaseClass = "w-full text-sm border rounded-xl px-3 py-2 bg-[var(--bg-card)] text-[var(--text-primary)] focus:outline-none";
+    const themedInputClass = `${inputBaseClass} border-[var(--border-card)] focus:border-[var(--border-primary)]`;
 
     if (fieldType === "dropdown") {
       return (
@@ -1119,7 +1114,7 @@ const BallByBallRating = ({ auctionId, slot, session, onBack }) => {
     : "";
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-100 via-white to-blue-50 flex flex-col">
+    <div className="min-h-screen bg-[var(--bg-main)] text-[var(--text-primary)] flex flex-col">
 
       {/* Delete Confirmation Popup */}
       {deleteConfirm !== null && (
@@ -1165,7 +1160,7 @@ const BallByBallRating = ({ auctionId, slot, session, onBack }) => {
                 const sess = filterSlotSessions.find((s) => String(s._id) === String(filterSessionId));
                 const isLocked = String(sess?.lockStatus || "").trim().toLowerCase() === "locked";
                 return isLocked ? (
-                  <span className="text-xs font-medium text-red-500 bg-red-50 border border-red-200 px-2 py-0.5 rounded-full">🔒 Session Locked — Rating blocked</span>
+                  <span className="text-xs font-medium text-red-600 bg-red-500/10 border border-red-500/30 px-2 py-0.5 rounded-full">🔒 Session Locked — Rating blocked</span>
                 ) : null;
               })()}
             </div>
@@ -1214,22 +1209,22 @@ const BallByBallRating = ({ auctionId, slot, session, onBack }) => {
         {/* Player Pickers */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           {/* Batsman */}
-          <div className="bg-[var(--bg-card)] border border-indigo-100 rounded-2xl p-3 sm:p-4 shadow-sm">
+          <div className="bg-[var(--bg-card)] border border-[var(--border-card)] rounded-2xl p-3 sm:p-4 shadow-sm">
             <div className="flex items-center justify-between gap-2 mb-3">
               <div className="flex items-center gap-2">
                 <span className="text-xl">🏏</span>
-                <span className="text-indigo-800 font-semibold text-sm">Batsman</span>
+                <span className="text-[var(--primary)] font-semibold text-sm">Batsman</span>
               </div>
               {batsman && (
                 <div className="flex items-center gap-1.5">
-                  <span className="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-indigo-100 text-indigo-700 border border-indigo-200">
+                  <span className="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-[var(--accent-light)] text-[var(--primary)] border border-[var(--border-primary)]">
                     {batsmanRecordCount} record{batsmanRecordCount !== 1 ? "s" : ""}
                   </span>
                   <button
                     type="button"
                     onClick={() => setViewRecordsConfig({ role: "batsman", player: batsman })}
                     disabled={batsmanRecordCount === 0}
-                    className="w-7 h-7 rounded-full border border-indigo-200 bg-[var(--bg-card)] text-indigo-700 text-xs font-semibold hover:bg-indigo-100 disabled:opacity-40 disabled:cursor-not-allowed"
+                    className="w-7 h-7 rounded-full border border-[var(--border-card)] bg-[var(--bg-card)] text-[var(--primary)] text-xs font-semibold hover:bg-[var(--accent-light)] disabled:opacity-40 disabled:cursor-not-allowed"
                     title="View batting records"
                   >
                     👁
@@ -1238,7 +1233,7 @@ const BallByBallRating = ({ auctionId, slot, session, onBack }) => {
               )}
             </div>
             {loadingPlayers ? (
-              <div className="text-sm text-indigo-400 py-1">Loading…</div>
+              <div className="text-sm text-[var(--text-secondary)] py-1">Loading…</div>
             ) : (
               <>
                 <PlayerPicker
@@ -1253,17 +1248,17 @@ const BallByBallRating = ({ auctionId, slot, session, onBack }) => {
           </div>
 
           {/* Bowler Pool */}
-          <div className="bg-[var(--bg-card)] border border-emerald-100 rounded-2xl p-3 sm:p-4 shadow-sm">
+          <div className="bg-[var(--bg-card)] border border-[var(--border-card)] rounded-2xl p-3 sm:p-4 shadow-sm">
             <div className="flex items-center gap-2 mb-3">
               <span className="text-xl">🎳</span>
-              <span className="text-emerald-800 font-semibold text-sm">Bowlers</span>
+              <span className="text-[var(--primary)] font-semibold text-sm">Bowlers</span>
               {bowlerPool.length > 0 && (
-                <span className="text-xs text-emerald-600 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full">
+                <span className="text-xs text-[var(--primary)] bg-[var(--accent-light)] border border-[var(--border-primary)] px-2 py-0.5 rounded-full">
                   {bowlerPool.length} added
                 </span>
               )}
               {bowler && (
-                <span className="text-xs text-white bg-emerald-600 px-2 py-0.5 rounded-full ml-auto">
+                <span className="text-xs text-[#102033] bg-[var(--secondary)] px-2 py-0.5 rounded-full ml-auto">
                   ⚡ {bowlerDisplayName(bowler.player)}
                 </span>
               )}
@@ -1282,26 +1277,26 @@ const BallByBallRating = ({ auctionId, slot, session, onBack }) => {
                       key={p.auctionPlayerId || pid}
                       className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-full text-xs font-medium border cursor-pointer transition select-none ${
                         isActive
-                          ? "bg-emerald-600 text-[var(--text-dark)] border-emerald-600 shadow-sm"
-                          : "bg-emerald-50 text-emerald-700 border-emerald-200 hover:border-emerald-400"
+                          ? "bg-[var(--secondary)] text-[#102033] border-[var(--secondary)] shadow-sm"
+                          : "bg-[var(--bg-main)] text-[var(--text-secondary)] border-[var(--border-card)] hover:border-[var(--border-primary)] hover:text-[var(--text-primary)]"
                       }`}
                       onClick={() => setBowler(p)}
                       title={`Click to set ${bName} as active bowler`}
                     >
                       <span className="truncate max-w-[110px]">{bName}</span>
                       {recCount > 0 && (
-                        <span className={`text-[10px] ${isActive ? "text-emerald-100" : "text-emerald-500"}`}>({recCount})</span>
+                        <span className={`text-[10px] ${isActive ? "text-[#102033]" : "text-[var(--primary)]"}`}>({recCount})</span>
                       )}
                       <button
                         type="button"
                         onClick={(e) => { e.stopPropagation(); setViewRecordsConfig({ role: "bowler", player: p }); }}
-                        className={`opacity-60 hover:opacity-100 transition ${isActive ? "text-[var(--text-dark)]" : "text-emerald-500"}`}
+                        className={`opacity-60 hover:opacity-100 transition ${isActive ? "text-[#102033]" : "text-[var(--primary)]"}`}
                         title="View records"
                       >👁</button>
                       <button
                         type="button"
                         onClick={(e) => { e.stopPropagation(); removeBowlerFromPool(p.player?._id); }}
-                        className={`opacity-60 hover:opacity-100 transition ${isActive ? "text-[var(--text-dark)]" : "text-emerald-400"}`}
+                        className={`opacity-60 hover:opacity-100 transition ${isActive ? "text-[#102033]" : "text-[var(--primary)]"}`}
                         title="Remove"
                       >✕</button>
                     </div>
@@ -1311,7 +1306,7 @@ const BallByBallRating = ({ auctionId, slot, session, onBack }) => {
             )}
 
             {loadingPlayers ? (
-              <div className="text-sm text-emerald-400 py-1">Loading…</div>
+              <div className="text-sm text-[var(--text-secondary)] py-1">Loading…</div>
             ) : (
               <PlayerPicker
                 players={players.filter((p) =>
@@ -1343,7 +1338,7 @@ const BallByBallRating = ({ auctionId, slot, session, onBack }) => {
                 </button>
               </div>
 
-              <div className="max-h-[60vh] overflow-y-auto divide-y divide-gray-100">
+              <div className="max-h-[60vh] overflow-y-auto divide-y divide-[var(--border-card)]">
                 {activeViewRecords.length ? activeViewRecords.map((ev, i) => (
                   <div key={`view-${viewRecordsConfig?.role}-${i}`} className="px-4 py-3 text-xs sm:text-sm">
                     <div className="flex items-center justify-between gap-2">
@@ -1384,13 +1379,13 @@ const BallByBallRating = ({ auctionId, slot, session, onBack }) => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 
           {/* ── Batsman Side ── */}
-          <div className="bg-[var(--bg-card)] border border-indigo-100 rounded-2xl p-3 sm:p-4 space-y-3 shadow-sm">
+          <div className="bg-[var(--bg-card)] border border-[var(--border-card)] rounded-2xl p-3 sm:p-4 space-y-3 shadow-sm">
             <div className="flex items-center justify-between">
-              <h3 className="text-indigo-700 font-semibold text-sm">
+              <h3 className="text-[var(--primary)] font-semibold text-sm">
                 🏏 {batsman ? batsman.player?.name : "Shot Direction"}
               </h3>
               {ball.selectedShot && (
-                <span className="text-xs bg-yellow-100 text-yellow-700 px-2 py-0.5 rounded-full font-medium">
+                <span className="text-xs bg-[var(--accent-light)] text-[var(--primary)] border border-[var(--border-primary)] px-2 py-0.5 rounded-full font-medium">
                   {ball.selectedShot.name}
                 </span>
               )}
@@ -1411,9 +1406,9 @@ const BallByBallRating = ({ auctionId, slot, session, onBack }) => {
           </div>
 
           {/* ── Bowler Side ── */}
-          <div className="bg-[var(--bg-card)] border border-emerald-100 rounded-2xl p-3 sm:p-4 space-y-3 shadow-sm">
+          <div className="bg-[var(--bg-card)] border border-[var(--border-card)] rounded-2xl p-3 sm:p-4 space-y-3 shadow-sm">
             <div className="flex items-center justify-between">
-              <h3 className="text-emerald-700 font-semibold text-sm">
+              <h3 className="text-[var(--primary)] font-semibold text-sm">
                 🎳 {bowler ? bowler.player?.name : "Bowling Zone"}
               </h3>
               {ball.selectedZone && (
@@ -1458,8 +1453,8 @@ const BallByBallRating = ({ auctionId, slot, session, onBack }) => {
                       onClick={() => setBall((b) => ({ ...b, ballType: bt.value }))}
                       className={`px-2.5 py-1 text-xs rounded-full border font-medium transition ${
                         ball.ballType === bt.value
-                          ? "bg-slate-700 text-[var(--text-dark)] border-slate-700"
-                          : "bg-[var(--bg-card)] text-[var(--text-secondary)] border-[var(--border-card)] hover:border-gray-400"
+                          ? "bg-[var(--secondary)] text-[#102033] border-[var(--secondary)]"
+                          : "bg-[var(--bg-card)] text-[var(--text-secondary)] border-[var(--border-card)] hover:border-[var(--border-primary)]"
                       }`}
                     >
                       {bt.label}
@@ -1479,10 +1474,10 @@ const BallByBallRating = ({ auctionId, slot, session, onBack }) => {
                       onClick={() => handleRuns(r)}
                       className={`w-9 h-9 rounded-full text-xs font-bold border transition ${
                         ball.runsScored === r
-                          ? r === 4 ? "bg-blue-600 text-[var(--text-dark)] border-blue-600"
-                          : r === 6 ? "bg-orange-500 text-[var(--text-dark)] border-orange-500"
-                          : "bg-slate-700 text-[var(--text-dark)] border-slate-700"
-                          : "bg-[var(--bg-card)] text-[var(--text-primary)] border-[var(--border-card)] hover:border-gray-400"
+                          ? r === 4 ? "bg-blue-600 text-white border-blue-600"
+                          : r === 6 ? "bg-orange-500 text-white border-orange-500"
+                          : "bg-[var(--secondary)] text-[#102033] border-[var(--secondary)]"
+                          : "bg-[var(--bg-card)] text-[var(--text-primary)] border-[var(--border-card)] hover:border-[var(--border-primary)]"
                       }`}
                     >
                       {r === 4 ? "4◈" : r === 6 ? "6✦" : r}
@@ -1516,8 +1511,8 @@ const BallByBallRating = ({ auctionId, slot, session, onBack }) => {
                         onClick={() => setBall((b) => ({ ...b, wicketType: wt.value }))}
                         className={`px-2.5 py-1 text-xs rounded-full border transition ${
                           ball.wicketType === wt.value
-                            ? "bg-red-600 text-[var(--text-dark)] border-red-600"
-                            : "bg-[var(--bg-card)] text-[var(--text-secondary)] border-[var(--border-card)] hover:border-red-300"
+                            ? "bg-red-600 text-white border-red-600"
+                            : "bg-[var(--bg-card)] text-[var(--text-secondary)] border-[var(--border-card)] hover:border-red-500/40"
                         }`}
                       >
                         {wt.label}
@@ -1531,7 +1526,7 @@ const BallByBallRating = ({ auctionId, slot, session, onBack }) => {
                 <button
                   type="button"
                   onClick={() => setBall({ ...EMPTY_BALL })}
-                  className="w-full sm:w-auto md:w-full lg:w-auto flex-shrink-0 px-4 py-2 rounded-xl bg-[var(--secondary-lighter)] hover:bg-gray-300 text-[var(--text-primary)] font-semibold text-sm transition"
+                  className="w-full sm:w-auto md:w-full lg:w-auto flex-shrink-0 px-4 py-2 rounded-xl border border-[var(--border-card)] bg-[var(--bg-main)] hover:bg-[var(--accent-light)] text-[var(--text-primary)] font-semibold text-sm transition"
                   title="Form clear karo nayi rating ke liye"
                 >
                   🔄 Clear
@@ -1578,7 +1573,7 @@ const BallByBallRating = ({ auctionId, slot, session, onBack }) => {
                     <th className="px-3 py-2 text-center">Del</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-100">
+                <tbody className="divide-y divide-[var(--border-card)]">
                   {events.map((ev, i) => (
                     <tr key={i} className="hover:bg-[var(--bg-soft)] transition">
                       <td className="px-3 py-2 font-medium text-[var(--text-secondary)]">{ev.ballNumber}</td>
@@ -1600,13 +1595,13 @@ const BallByBallRating = ({ auctionId, slot, session, onBack }) => {
                          : ev.runsScored}
                       </td>
                       <td className="px-3 py-2 text-center">
-                        {ev.isWicket ? <span className="text-red-600 font-bold">W</span> : <span className="text-gray-300">—</span>}
+                        {ev.isWicket ? <span className="text-red-600 font-bold">W</span> : <span className="text-[var(--text-muted)]">—</span>}
                       </td>
                       <td className="px-3 py-2 text-center">
                         <button
                           type="button"
                           onClick={() => deleteEvent(i)}
-                          className="text-gray-300 hover:text-red-500 transition text-base"
+                          className="text-[var(--text-muted)] hover:text-red-500 transition text-base"
                         >✕</button>
                       </td>
                     </tr>
@@ -1615,7 +1610,7 @@ const BallByBallRating = ({ auctionId, slot, session, onBack }) => {
               </table>
             </div>
 
-            <div className="md:hidden divide-y divide-gray-100">
+            <div className="md:hidden divide-y divide-[var(--border-card)]">
               {events.map((ev, i) => (
                 <div key={`m-${i}`} className="p-3 space-y-2">
                   <div className="flex items-center justify-between">
@@ -1623,7 +1618,7 @@ const BallByBallRating = ({ auctionId, slot, session, onBack }) => {
                     <button
                       type="button"
                       onClick={() => deleteEvent(i)}
-                      className="text-gray-300 hover:text-red-500 transition text-base"
+                      className="text-[var(--text-muted)] hover:text-red-500 transition text-base"
                     >
                       ✕
                     </button>
@@ -1655,23 +1650,23 @@ const BallByBallRating = ({ auctionId, slot, session, onBack }) => {
         {/* Comments + Submit */}
         {events.length > 0 && (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pb-8">
-            <div className="bg-[var(--bg-card)] border border-indigo-100 rounded-2xl p-4 shadow-sm">
-              <p className="text-xs font-semibold text-indigo-700 mb-2">🏏 Batsman Comments</p>
+            <div className="bg-[var(--bg-card)] border border-[var(--border-card)] rounded-2xl p-4 shadow-sm">
+              <p className="text-xs font-semibold text-[var(--primary)] mb-2">🏏 Batsman Comments</p>
               <textarea
                 value={batsmanComments}
                 onChange={(e) => setBatsmanComments(e.target.value)}
                 placeholder={`Overall comments about ${batsman?.player?.name || "batsman"}…`}
                 rows={2}
-                className="w-full text-sm border border-indigo-200 rounded-xl px-3 py-2 bg-[var(--bg-card)] focus:outline-none focus:border-indigo-400 resize-none"
+                className="w-full text-sm border border-[var(--border-card)] rounded-xl px-3 py-2 bg-[var(--bg-card)] text-[var(--text-primary)] placeholder:text-[var(--text-secondary)] focus:outline-none focus:border-[var(--border-primary)] resize-none"
               />
               {batsmanRatingFields.length > 0 && (
-                <div className="mt-3 pt-3 border-t border-indigo-100 space-y-2">
-                  <p className="text-xs font-semibold text-indigo-700">Custom Fields</p>
+                <div className="mt-3 pt-3 border-t border-[var(--border-card)] space-y-2">
+                  <p className="text-xs font-semibold text-[var(--primary)]">Custom Fields</p>
                   {batsmanRatingFields.map((field, idx) => {
                     const fieldKey = getFieldId(field, idx);
                     return (
                       <div key={`batsman-custom-${fieldKey}`}>
-                        <p className="text-xs text-indigo-600 mb-1">{getFieldLabel(field, idx)}</p>
+                        <p className="text-xs text-[var(--text-secondary)] mb-1">{getFieldLabel(field, idx)}</p>
                         {renderCustomFieldInput(field, idx, "batsman", batsmanCustomFields)}
                       </div>
                     );
@@ -1681,8 +1676,8 @@ const BallByBallRating = ({ auctionId, slot, session, onBack }) => {
             </div>
             <div className="space-y-3">
               {bowlerPool.length === 0 ? (
-                <div className="bg-[var(--bg-card)] border border-emerald-100 rounded-2xl p-4 shadow-sm">
-                  <p className="text-xs text-emerald-400 text-center py-2">Koi bowler pool mein nahi hai</p>
+                <div className="bg-[var(--bg-card)] border border-[var(--border-card)] rounded-2xl p-4 shadow-sm">
+                  <p className="text-xs text-[var(--text-secondary)] text-center py-2">Koi bowler pool mein nahi hai</p>
                 </div>
               ) : (
                 bowlerPool.map((p) => {
@@ -1690,8 +1685,8 @@ const BallByBallRating = ({ auctionId, slot, session, onBack }) => {
                   const bName = bowlerDisplayName(p.player);
                   const meta = bowlerMetaByPlayer[pid] || { comments: "", customFields: {} };
                   return (
-                    <div key={pid} className="bg-[var(--bg-card)] border border-emerald-100 rounded-2xl p-4 shadow-sm">
-                      <p className="text-xs font-semibold text-emerald-700 mb-2">🎳 {bName}</p>
+                    <div key={pid} className="bg-[var(--bg-card)] border border-[var(--border-card)] rounded-2xl p-4 shadow-sm">
+                      <p className="text-xs font-semibold text-[var(--primary)] mb-2">🎳 {bName}</p>
                       <textarea
                         value={meta.comments}
                         onChange={(e) =>
@@ -1702,16 +1697,16 @@ const BallByBallRating = ({ auctionId, slot, session, onBack }) => {
                         }
                         placeholder={`Overall comments about ${p.player?.name || "bowler"}…`}
                         rows={2}
-                        className="w-full text-sm border border-emerald-200 rounded-xl px-3 py-2 bg-[var(--bg-card)] focus:outline-none focus:border-emerald-400 resize-none"
+                        className="w-full text-sm border border-[var(--border-card)] rounded-xl px-3 py-2 bg-[var(--bg-card)] text-[var(--text-primary)] placeholder:text-[var(--text-secondary)] focus:outline-none focus:border-[var(--border-primary)] resize-none"
                       />
                       {bowlerRatingFields.length > 0 && (
-                        <div className="mt-3 pt-3 border-t border-emerald-100 space-y-2">
-                          <p className="text-xs font-semibold text-emerald-700">Custom Fields</p>
+                        <div className="mt-3 pt-3 border-t border-[var(--border-card)] space-y-2">
+                          <p className="text-xs font-semibold text-[var(--primary)]">Custom Fields</p>
                           {bowlerRatingFields.map((field, idx) => {
                             const fieldKey = getFieldId(field, idx);
                             return (
                               <div key={`bowler-custom-${pid}-${fieldKey}`}>
-                                <p className="text-xs text-emerald-600 mb-1">{getFieldLabel(field, idx)}</p>
+                                <p className="text-xs text-[var(--text-secondary)] mb-1">{getFieldLabel(field, idx)}</p>
                                 {renderCustomFieldInput(field, idx, "bowler", meta.customFields, pid)}
                               </div>
                             );

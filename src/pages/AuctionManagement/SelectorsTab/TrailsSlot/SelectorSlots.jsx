@@ -106,15 +106,13 @@ const SelectorSlots = ({ auctionId }) => {
   return (
     <div className="w-full space-y-3 p-3 sm:p-4">
       <div className={`${panelClass} overflow-hidden`}>
-        <div className="flex flex-col gap-3 border-b border-[var(--border-card)] bg-[var(--bg-main)] p-4 lg:flex-row lg:items-center lg:justify-between">
+        <div className="flex flex-col gap-3 border-b border-[var(--border-card)] bg-[var(--bg-card)] p-4 lg:flex-row lg:items-center lg:justify-between">
           <div className="flex min-w-0 items-start gap-3">
             <div className={iconTileClass}>
               <ShieldCheck size={18} />
             </div>
             <div className="min-w-0">
-              <p className="text-[11px] font-bold uppercase tracking-wide text-[var(--primary)]">
-                Selector Panel
-              </p>
+             
               <h2 className="mt-1 text-lg font-semibold text-[var(--text-primary)]">
                 Trial Slots
               </h2>

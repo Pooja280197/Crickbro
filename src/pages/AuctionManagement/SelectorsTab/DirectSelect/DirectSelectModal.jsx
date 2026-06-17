@@ -162,7 +162,7 @@ function DirectSelectModal({ selectedPlayers, selectorPlayers, onClose, auctionI
                     <h3 className="font-semibold text-sm sm:text-base truncate">{player.player?.batchId}</h3>
                     <div className="flex flex-wrap gap-1 sm:gap-2 mt-1">
                       <span className="inline-block px-2 sm:px-3 py-0.5 sm:py-1 bg-blue-100 text-blue-800 rounded-full text-xs sm:text-sm font-medium">
-                        {formatRole(player?.rating?.playerType || player?.player?.playerType)}
+                        {formatRole(player?.rating?.playerType || player?.player?.playerRole)}
                       </span>
                     </div>
                   </div>

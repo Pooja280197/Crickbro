@@ -35,7 +35,7 @@ const getPercentage = (value, max) => {
 };
 
 const StatCard = ({ title, value, icon: Icon, helper }) => (
-  <div className="flex min-h-[132px] flex-col justify-between rounded-lg border border-[var(--border-card)] bg-[var(--bg-card)] p-4 shadow-[var(--shadow-card)] transition hover:border-[var(--border-primary)]">
+  <div className="flex min-h-[100px] flex-col justify-between rounded-lg border border-[var(--border-card)] bg-[var(--bg-card)] p-4 shadow-[var(--shadow-card)] transition hover:border-[var(--border-primary)]">
     <div className="flex items-start justify-between gap-3">
       <div className="min-w-0">
         <p className="truncate text-xs font-semibold uppercase tracking-wide text-[var(--text-secondary)]">

@@ -123,7 +123,7 @@ const CreateCategory = ({ isOpen, onClose, onSubmit, initialData }) => {
         </div>
 
         {/* BODY - Scrollable area */}
-        <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4 sm:space-y-6">
+        <div className="professional-scrollbar flex-1 space-y-4 overflow-y-auto overscroll-contain p-4 [scrollbar-gutter:stable] sm:space-y-6 sm:p-6">
           
           {/* CATEGORY NAME */}
           <div>

@@ -62,6 +62,7 @@ const AllPlayers = () => {
   const dispatch = useDispatch();
 
   const loading = useSelector((state) => state?.loading?.auctionPlayers);
+  const playersError = useSelector((state) => state?.error?.auctionPlayers);
 
   const auctionTypeTrial = useSelector(
     (state) => state?.data?.auctionDetails?.trailTypeAuction,
@@ -107,6 +108,7 @@ const AllPlayers = () => {
   const totalPages = auctionPlayersData?.pages || 0;
   const totalPlayers = auctionPlayersData?.total || 0;
   const currentPage = auctionPlayersData?.page || 1;
+  const isPlayersLoading = loading || (!auctionPlayersData && !playersError);
   const slots = useSelector((state) => state?.data?.slotList);
   const slotDetail = slots?.data;
   const dropdownRef = useRef();
@@ -216,7 +218,7 @@ const AllPlayers = () => {
   }, [auctionId, slotPage, slotSearch]);
 
   const fetchPlayers = (activePlayerTab, page = 1) => {
-    dispatch(
+    return dispatch(
       getAuctionPlayers({
         auctionId: auctionId,
         activePlayerTab,
@@ -276,6 +278,11 @@ const AllPlayers = () => {
   const handleAssignmentSuccess = () => {
     fetchPlayers(activePlayerTab);
     setSelectedPlayers([]);
+  };
+
+  const handleImportSuccess = () => {
+    setCurrentPageState(1);
+    return fetchPlayers(activePlayerTab, 1);
   };
 
   const getFilteredPlayers = () => {
@@ -404,14 +411,16 @@ const AllPlayers = () => {
     return `${words[0][0]}${words[words.length - 1][0]}`.toUpperCase();
   };
 
+  const tableHeadCellClass = "sticky top-0 z-30 bg-[var(--bg-main)] px-4 py-3";
+
   const renderPlayersTable = () => (
     <div className="overflow-hidden rounded-lg border border-[var(--border-card)] bg-[var(--bg-card)] shadow-[var(--shadow-card)]">
-      <div className="overflow-x-auto">
-        <table className="min-w-full text-left text-sm">
-          <thead className="border-b border-[var(--border-card)] bg-[var(--bg-main)] text-xs uppercase text-[var(--text-secondary)]">
+      <div className="professional-scrollbar h-[calc(100vh-330px)] min-h-[300px] overflow-auto">
+        <table className="w-full min-w-[920px] border-separate border-spacing-0 text-left text-sm">
+          <thead className="border-b border-[var(--border-card)] text-xs uppercase text-[var(--text-secondary)] shadow-sm">
             <tr>
               {activePlayerTab === "unassigned" && (
-                <th className="w-12 px-4 py-3">
+                <th className={`${tableHeadCellClass} w-12`}>
                   <button
                     type="button"
                     onClick={handleSelectAll}
@@ -426,17 +435,17 @@ const AllPlayers = () => {
                   </button>
                 </th>
               )}
-              <th className="px-4 py-3">Player</th>
-              <th className="px-4 py-3">Role</th>
-              <th className="px-4 py-3">Mobile</th>
-              <th className="px-4 py-3">Location</th>
-              <th className="px-4 py-3">Status</th>
-              <th className="px-4 py-3">Base Price</th>
+              <th className={tableHeadCellClass}>Player</th>
+              <th className={tableHeadCellClass}>Role</th>
+              <th className={tableHeadCellClass}>Mobile</th>
+              <th className={tableHeadCellClass}>Location</th>
+              <th className={tableHeadCellClass}>Status</th>
+              <th className={tableHeadCellClass}>Base Price</th>
               {activePlayerTab === "assigned" && (
                 <>
-                  <th className="px-4 py-3">Slot</th>
-                  <th className="px-4 py-3">Session</th>
-                  <th className="px-4 py-3">Rating</th>
+                  <th className={tableHeadCellClass}>Slot</th>
+                  <th className={tableHeadCellClass}>Session</th>
+                  <th className={tableHeadCellClass}>Rating</th>
                 </>
               )}
             </tr>
@@ -475,7 +484,7 @@ const AllPlayers = () => {
                       </button>
                     </td>
                   )}
-                  <td className="min-w-56 px-4 py-3">
+                  <td className="min-w-56 px-4 py-1">
                     <div className="flex items-center gap-3">
                       {info.image ? (
                         <img
@@ -496,32 +505,32 @@ const AllPlayers = () => {
                       </div>
                     </div>
                   </td>
-                  <td className="px-4 py-3 font-medium text-[var(--text-primary)]">
+                  <td className="px-4 py-1 font-medium text-[var(--text-primary)]">
                     {formatRole(info.role)}
                   </td>
-                  <td className="px-4 py-3 text-[var(--text-secondary)]">
+                  <td className="px-4 py-1 text-[var(--text-secondary)]">
                     {formatText(info.mobile)}
                   </td>
-                  <td className="px-4 py-3 text-[var(--text-secondary)]">
+                  <td className="px-4 py-1 text-[var(--text-secondary)]">
                     {formatText(info.location)}
                   </td>
-                  <td className="px-4 py-3">
+                  <td className="px-4 py-1">
                     <span className="inline-flex rounded-full border border-[var(--border-card)] bg-[var(--bg-main)] px-2.5 py-1 text-xs font-semibold text-[var(--text-primary)]">
                       {formatText(info.status)}
                     </span>
                   </td>
-                  <td className="px-4 py-3 font-semibold text-[var(--text-primary)]">
+                  <td className="px-4 py-1 font-semibold text-[var(--text-primary)]">
                     {info.basePrice ? `₹${Number(info.basePrice).toLocaleString("en-IN")}` : "-"}
                   </td>
                   {activePlayerTab === "assigned" && (
                     <>
-                      <td className="px-4 py-3 text-[var(--text-secondary)]">
+                      <td className="px-4 py-1 text-[var(--text-secondary)]">
                         {formatText(info.slotName)}
                       </td>
-                      <td className="px-4 py-3 text-[var(--text-secondary)]">
+                      <td className="px-4 py-1 text-[var(--text-secondary)]">
                         {formatText(info.sessionName)}
                       </td>
-                      <td className="px-4 py-3 font-semibold text-[var(--text-primary)]">
+                      <td className="px-4 py-1 font-semibold text-[var(--text-primary)]">
                         {formatText(info.rating)}
                       </td>
                     </>
@@ -536,19 +545,17 @@ const AllPlayers = () => {
   );
 
   return (
-    <div className="mx-auto w-full max-w-7xl px-3 py-4 sm:px-4 lg:px-5">
-      <div className="space-y-4">
+    <div className="mx-auto flex h-[calc(100vh-96px)] min-h-[560px] w-full flex-col px-3 py-4 sm:px-4 lg:px-5">
+      <div className="flex min-h-0 flex-1 flex-col gap-4">
         {(activePlayerTab === "all" ||
           (auctionTypeTrial &&
             (activePlayerTab === "unassigned" ||
               activePlayerTab === "assigned"))) && (
           <>
-            <div className="rounded-lg border border-[var(--border-card)] bg-[var(--bg-card)] p-4 shadow-[var(--shadow-card)]">
+            <div className="sticky top-4 z-40 shrink-0 rounded-lg border border-[var(--border-card)] bg-[var(--bg-card)] p-4 shadow-[var(--shadow-card)]">
               <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
                 <div className="min-w-0">
-                  <p className="text-xs font-semibold uppercase tracking-wide text-[var(--text-secondary)]">
-                    Players
-                  </p>
+                
                   <h1 className="mt-1 text-xl font-bold leading-7 text-[var(--text-primary)]">
                     Registered Players
                   </h1>
@@ -559,7 +566,10 @@ const AllPlayers = () => {
 
                 {activePlayerTab === "all" && (
                   <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
-                    <ImportPlayers auctionId={auctionId} />
+                    <ImportPlayers
+                      auctionId={auctionId}
+                      onImportSuccess={handleImportSuccess}
+                    />
                     <button
                       className="inline-flex h-9 items-center justify-center gap-2 rounded-lg border border-[var(--border-primary)] bg-[var(--secondary)] px-3 text-xs font-semibold text-[#102033] shadow-sm transition hover:bg-[var(--secondary-strong)]"
                       onClick={() => setIsAddPlayerOpen(true)}
@@ -629,7 +639,7 @@ const AllPlayers = () => {
                     }`}
                   >
                     <LayoutGrid className="h-4 w-4" />
-                    Cards
+                    
                   </button>
                   <button
                     type="button"
@@ -641,7 +651,7 @@ const AllPlayers = () => {
                     }`}
                   >
                     <Table2 className="h-4 w-4" />
-                    Table
+                    
                   </button>
                 </div>
 
@@ -821,96 +831,108 @@ const AllPlayers = () => {
               auctionId={auctionId}
             />
 
-            {/* Players Grid */}
-            <div className="mx-auto max-w-7xl pb-6">
-              {getFilteredPlayers().length > 0 ? (
-                viewMode === "table" ? (
-                  renderPlayersTable()
-                ) : (
-                  <div
-                    className={
-                      activePlayerTab === "assigned"
-                        ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4"
-                        : "grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-8 gap-3"
-                    }
-                  >
-                    {getFilteredPlayers().map((item) => {
-                      const info = getPlayerInfo(item);
+            <div className="professional-scrollbar min-h-0 flex-1 overflow-y-auto pr-1">
+              {/* Players Grid */}
+              <div className="mx-auto max-w-7xl pb-6">
+                {isPlayersLoading ? (
+                  <div className="ui-card py-14 text-center">
+                    <div className="mx-auto mb-3 h-14 w-14 animate-pulse rounded-full bg-[var(--secondary-lighter)]" />
+                    <h3 className="text-md font-semibold text-[var(--text-primary)]">
+                      Loading players...
+                    </h3>
+                    <p className="text-sm text-[var(--text-secondary)]">
+                      Please wait while players are fetched.
+                    </p>
+                  </div>
+                ) : getFilteredPlayers().length > 0 ? (
+                  viewMode === "table" ? (
+                    renderPlayersTable()
+                  ) : (
+                    <div
+                      className={
+                        activePlayerTab === "assigned"
+                          ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4"
+                          : "grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-8 gap-3"
+                      }
+                    >
+                      {getFilteredPlayers().map((item) => {
+                        const info = getPlayerInfo(item);
 
-                      return (
-                        <PlayerCard
-                          key={item?._id}
-                          player={item} // Pass the entire item object
-                          type={info.role}
-                          auctionId={auctionId}
-                          selectedSlotId={slot}
-                          selectedSlotSessions={selectedSlotSessions}
-                          slotDetails={slotDetail || []}
-                          onActionComplete={() =>
-                            fetchPlayers(activePlayerTab, currentPageState)
-                          }
-                          mode={
-                            activePlayerTab === "unassigned"
-                              ? "select"
-                              : activePlayerTab === "assigned"
-                                ? "assigned"
-                                : "view"
-                          }
-                          isSelected={selectedPlayers?.includes(info.id)}
-                          onRemove={() => fetchPlayers("assigned")}
-                          onSelect={(id) => {
-                            if (selectedPlayers?.includes(id)) {
-                              setSelectedPlayers(
-                                selectedPlayers?.filter((x) => x !== id),
-                              );
-                            } else {
-                              setSelectedPlayers([...selectedPlayers, id]);
+                        return (
+                          <PlayerCard
+                            key={item?._id}
+                            player={item} // Pass the entire item object
+                            type={info.role}
+                            auctionId={auctionId}
+                            selectedSlotId={slot}
+                            selectedSlotSessions={selectedSlotSessions}
+                            slotDetails={slotDetail || []}
+                            onActionComplete={() =>
+                              fetchPlayers(activePlayerTab, currentPageState)
                             }
-                          }}
-                          showActions={activePlayerTab === "unassigned"}
-                        />
-                      );
-                    })}
+                            mode={
+                              activePlayerTab === "unassigned"
+                                ? "select"
+                                : activePlayerTab === "assigned"
+                                  ? "assigned"
+                                  : "view"
+                            }
+                            isSelected={selectedPlayers?.includes(info.id)}
+                            onRemove={() => fetchPlayers("assigned")}
+                            onSelect={(id) => {
+                              if (selectedPlayers?.includes(id)) {
+                                setSelectedPlayers(
+                                  selectedPlayers?.filter((x) => x !== id),
+                                );
+                              } else {
+                                setSelectedPlayers([...selectedPlayers, id]);
+                              }
+                            }}
+                            showActions={activePlayerTab === "unassigned"}
+                          />
+                        );
+                      })}
+                    </div>
+                  )
+                ) : (
+                  <div className="ui-card py-14 text-center">
+                    <div className="inline-flex items-center justify-center w-14 h-14 bg-[var(--secondary-lighter)] rounded-full mb-3">
+                      <Search className="w-6 h-6 text-[var(--text-muted)]" />
+                    </div>
+                    <h3 className="text-md font-semibold text-[var(--text-primary)]">
+                      No players found
+                    </h3>
+                    <p className="text-[var(--text-secondary)] text-sm">
+                      {activePlayerTab === "all"
+                        ? "No players available"
+                        : activePlayerTab === "unassigned"
+                          ? "Try adjusting your search"
+                          : "No assigned players found"}
+                    </p>
                   </div>
-                )
-              ) : (
-                <div className="ui-card py-14 text-center">
-                  <div className="inline-flex items-center justify-center w-14 h-14 bg-[var(--secondary-lighter)] rounded-full mb-3">
-                    <Search className="w-6 h-6 text-[var(--text-muted)]" />
-                  </div>
-                  <h3 className="text-md font-semibold text-[var(--text-primary)]">
-                    No players found
-                  </h3>
-                  <p className="text-[var(--text-secondary)] text-sm">
-                    {activePlayerTab === "all"
-                      ? "No players available"
-                      : activePlayerTab === "unassigned"
-                        ? "Try adjusting your search"
-                        : "No assigned players found"}
-                  </p>
-                </div>
-              )}
-            </div>
+                )}
+              </div>
 
-            {/* Pagination Controls */}
-            {(activePlayerTab === "all" ||
-              (auctionTypeTrial &&
-                (activePlayerTab === "unassigned" ||
-                  activePlayerTab === "assigned"))) &&
-              totalPages > 1 && (
-                 <Pagination
-                   className="mx-auto max-w-7xl"
-                   currentPage={currentPageState}
-                   totalPages={totalPages}
-                   summaryPrefix={`Total: ${totalPlayers} players | Page`}
-                   onPageChange={(page) => {
-                     setCurrentPageState(page);
-                     fetchPlayers(activePlayerTab, page);
-                   }}
-                   prevLabel="Previous"
-                   nextLabel="Next"
-                 />
-               )}
+              {/* Pagination Controls */}
+              {(activePlayerTab === "all" ||
+                (auctionTypeTrial &&
+                  (activePlayerTab === "unassigned" ||
+                    activePlayerTab === "assigned"))) &&
+                totalPages > 1 && (
+                  <Pagination
+                    className="mx-auto max-w-7xl pb-2 "
+                    currentPage={currentPageState}
+                    totalPages={totalPages}
+                    summaryPrefix={`Total: ${totalPlayers} players | Page`}
+                    onPageChange={(page) => {
+                      setCurrentPageState(page);
+                      fetchPlayers(activePlayerTab, page);
+                    }}
+                    prevLabel="Previous"
+                    nextLabel="Next"
+                  />
+                )}
+            </div>
           </>
         )}
         {/* ========= NEW FLOW: Selected / Auction ========= */}

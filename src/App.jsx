@@ -55,6 +55,10 @@ const AuctionBroadcastBoardOverlay = lazy(
     ),
 );
 
+const TeamBidding=lazy(
+  () => import("./pages/AuctionManagement/TeamOwnerTabs/TeamBiddingPanel")
+)
+
 const PageLoader = () => (
   <div className="flex min-h-screen items-center justify-center bg-[var(--bg-main)]">
     <div className="h-10 w-10 animate-spin rounded-full border-4 border-[var(--border-primary)] border-t-[var(--primary)]" />
@@ -213,6 +217,12 @@ function AppContent({ theme, toggleTheme }) {
             exact
             path="/viewlanding-page/:tournamentId/:auctionId"
             element={<RegWebsite />}
+          />
+
+            <Route
+            exact
+            path="/team-bidding/:auctionId"
+            element={<TeamBidding />}
           />
         </Routes>
       </Suspense>

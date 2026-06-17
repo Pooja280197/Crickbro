@@ -6,7 +6,10 @@ import {
   Users,
   Trash2,
   CheckSquare,
+  Eye,
+  LayoutGrid,
   Square,
+  Table2,
   ChevronDown,
 } from "lucide-react";
 import PlayerCard from "./SelectedPlayerCard";
@@ -52,6 +55,8 @@ const SelectedAuctionManager = ({
   const [selectedCategoryId, setSelectedCategoryId] = useState([]);
   const [itemsPerPage, setItemsPerPage] = useState(8);
   const [isItemsDropdownOpen, setIsItemsDropdownOpen] = useState(false);
+  const [unassignedViewMode, setUnassignedViewMode] = useState("grid");
+  const [auctionViewMode, setAuctionViewMode] = useState("grid");
   const [fromRating, setFromRating] = useState("");
   const [toRating, setToRating] = useState("");
   const [typeFilter, setTypeFilter] = useState("");
@@ -125,6 +130,61 @@ const SelectedAuctionManager = ({
   const debouncedAssignPlayer = useDebounce(searchAssign, 200);
 
   const enableBulkMode = Boolean(categorySearchId);
+  const getPlayerCore = (item) => item?.player || {};
+
+  const formatRoleLabel = (role) => {
+    if (!role) return "Role not set";
+    return String(role)
+      .split(/[-\s]+/)
+      .filter(Boolean)
+      .map((part) => part.charAt(0).toUpperCase() + part.slice(1).toLowerCase())
+      .join(" ");
+  };
+
+  const getPlayerRole = (item) =>
+    formatRoleLabel(
+      item?.player?.playerRole ||
+        item?.playerRole ||
+        item?.playersRatings?.playerType,
+    );
+
+  const getRatingLabel = (item) =>
+    item?.directSelected
+      ? item?.directSelectedGrade || "N/A"
+      : item?.playersRatings?.avgRating
+        ? Number(item.playersRatings.avgRating).toFixed(2)
+        : "-";
+
+  const ViewModeToggle = ({ mode, onChange }) => (
+    <div className="inline-flex h-9 overflow-hidden rounded-lg border border-[var(--border-card)] bg-[var(--bg-main)] p-0.5 shadow-sm">
+      <button
+        type="button"
+        onClick={() => onChange("grid")}
+        className={`inline-flex h-8 items-center gap-1.5 rounded-md px-2.5 text-xs font-semibold transition ${
+          mode === "grid"
+            ? "bg-[var(--secondary)] text-[#102033]"
+            : "text-[var(--text-secondary)] hover:bg-[var(--accent-light)] hover:text-[var(--text-primary)]"
+        }`}
+        title="Grid view"
+      >
+        <LayoutGrid className="h-4 w-4" />
+        Grid
+      </button>
+      <button
+        type="button"
+        onClick={() => onChange("table")}
+        className={`inline-flex h-8 items-center gap-1.5 rounded-md px-2.5 text-xs font-semibold transition ${
+          mode === "table"
+            ? "bg-[var(--secondary)] text-[#102033]"
+            : "text-[var(--text-secondary)] hover:bg-[var(--accent-light)] hover:text-[var(--text-primary)]"
+        }`}
+        title="Table view"
+      >
+        <Table2 className="h-4 w-4" />
+        Table
+      </button>
+    </div>
+  );
 
   const unassignedPlayers = useSelector((state) =>
     isTrialType ? state?.data?.selectedPlayers : state?.data?.unassignedPlayers,
@@ -718,6 +778,11 @@ const SelectedAuctionManager = ({
             )}
           </div>
 
+          <ViewModeToggle
+            mode={isUnassigned ? unassignedViewMode : auctionViewMode}
+            onChange={isUnassigned ? setUnassignedViewMode : setAuctionViewMode}
+          />
+
           {/* Filter button */}
           <button
             onClick={() => setShowFilters(!showFilters)}
@@ -1003,6 +1068,161 @@ const SelectedAuctionManager = ({
     );
   };
 
+  const renderPlayersTable = ({ players, isUnassigned }) => (
+    <div className="overflow-hidden rounded-lg border border-[var(--border-card)] bg-[var(--bg-card)] shadow-[var(--shadow-card)]">
+      <div className="professional-scrollbar overflow-x-auto">
+        <table className="min-w-[860px] w-full text-left text-sm">
+          <thead className="sticky top-0 z-10 bg-[var(--bg-main)] text-[11px] font-bold uppercase tracking-wide text-[var(--text-secondary)]">
+            <tr className="border-b border-[var(--border-card)]">
+              <th className="w-12 px-3 py-3">Select</th>
+              <th className="px-3 py-3">Player</th>
+              <th className="px-3 py-3">Batch ID</th>
+              <th className="px-3 py-3">Role</th>
+              <th className="px-3 py-3">{isTrialType ? "Rating" : "Status"}</th>
+              {!isUnassigned && <th className="px-3 py-3">Category</th>}
+              {isTrialType && <th className="px-3 py-3">Slot / Session</th>}
+              <th className="px-3 py-3 text-right">Actions</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-[var(--border-card)]">
+            {players.map((item) => {
+              const core = getPlayerCore(item);
+              const id = core?._id;
+              const selected = isUnassigned
+                ? selectedIds.includes(id)
+                : selectedAuctionIds.includes(id);
+              const name = core?.name || "Unknown";
+              const profilePicture = core?.profilePicture;
+              const initials =
+                String(name)
+                  .split(" ")
+                  .filter(Boolean)
+                  .map((part) => part[0])
+                  .join("")
+                  .slice(0, 2)
+                  .toUpperCase() || "P";
+              const categoryName =
+                item?.category?.name ||
+                core?.category?.name ||
+                item?.categoryName ||
+                "-";
+
+              return (
+                <tr
+                  key={id}
+                  className={`transition hover:bg-[var(--accent-light)]/60 ${
+                    selected ? "bg-[var(--accent-light)]" : "bg-[var(--bg-card)]"
+                  }`}
+                >
+                  <td className="px-3 py-3">
+                    <button
+                      type="button"
+                      onClick={() =>
+                        isUnassigned
+                          ? setSelectedIds((prev) =>
+                              prev.includes(id)
+                                ? prev.filter((playerId) => playerId !== id)
+                                : [...prev, id],
+                            )
+                          : handleAuctionPlayerSelect(id)
+                      }
+                      className={`flex h-8 w-8 items-center justify-center rounded-lg border transition ${
+                        selected
+                          ? "border-[var(--primary)] bg-[var(--primary)] text-white"
+                          : "border-[var(--border-card)] bg-[var(--bg-main)] text-[var(--text-secondary)] hover:border-[var(--border-primary)] hover:text-[var(--primary)]"
+                      }`}
+                      title={selected ? "Deselect player" : "Select player"}
+                    >
+                      {selected ? (
+                        <CheckSquare className="h-4 w-4" />
+                      ) : (
+                        <Square className="h-4 w-4" />
+                      )}
+                    </button>
+                  </td>
+                  <td className="px-3 py-3">
+                    <div className="flex min-w-0 items-center gap-3">
+                      <div className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-lg border border-[var(--border-card)] bg-[var(--accent-light)] text-xs font-bold text-[var(--primary)]">
+                        {profilePicture ? (
+                          <img
+                            src={profilePicture}
+                            alt={name}
+                            className="h-full w-full object-cover"
+                          />
+                        ) : (
+                          initials
+                        )}
+                      </div>
+                      <div className="min-w-0">
+                        <p className="truncate font-semibold text-[var(--text-primary)]">
+                          {name}
+                        </p>
+                        <p className="truncate text-xs text-[var(--text-secondary)]">
+                          {core?.mobileNumber || core?.phone || core?.email || "Player"}
+                        </p>
+                      </div>
+                    </div>
+                  </td>
+                  <td className="px-3 py-3 text-[var(--text-secondary)]">
+                    {core?.batchId || "-"}
+                  </td>
+                  <td className="px-3 py-3">
+                    <span className="inline-flex max-w-[160px] rounded-full border border-[var(--border-primary)] bg-[var(--accent-light)] px-2.5 py-1 text-xs font-bold text-[var(--primary)]">
+                      <span className="truncate">{getPlayerRole(item)}</span>
+                    </span>
+                  </td>
+                  <td className="px-3 py-3 font-semibold text-[var(--text-primary)]">
+                    {isTrialType ? getRatingLabel(item) : item?.status || "Selected"}
+                  </td>
+                  {!isUnassigned && (
+                    <td className="px-3 py-3 text-[var(--text-secondary)]">
+                      {categoryName}
+                    </td>
+                  )}
+                  {isTrialType && (
+                    <td className="px-3 py-3 text-[var(--text-secondary)]">
+                      <div className="max-w-[180px] truncate">
+                        {item?.slot?.slotName || "-"}
+                      </div>
+                      <div className="max-w-[180px] truncate text-xs text-[var(--text-muted)]">
+                        {item?.session?.name || "-"}
+                      </div>
+                    </td>
+                  )}
+                  <td className="px-3 py-3">
+                    <div className="flex justify-end gap-2">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setSelectedPlayerDetails(item);
+                          setIsPlayerDetailsOpen(true);
+                        }}
+                        className="inline-flex h-8 items-center gap-1.5 rounded-lg border border-[var(--border-card)] bg-[var(--bg-main)] px-2.5 text-xs font-semibold text-[var(--text-primary)] transition hover:border-[var(--border-primary)] hover:bg-[var(--accent-light)]"
+                      >
+                        <Eye className="h-3.5 w-3.5" />
+                        View
+                      </button>
+                      {!isUnassigned && (
+                        <button
+                          type="button"
+                          onClick={() => setDeleteCandidate(item)}
+                          className="inline-flex h-8 items-center gap-1.5 rounded-lg border border-red-200 bg-[var(--bg-card)] px-2.5 text-xs font-semibold text-red-500 transition hover:bg-red-50"
+                        >
+                          <Trash2 className="h-3.5 w-3.5" />
+                          Remove
+                        </button>
+                      )}
+                    </div>
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+
   return (
     <div className="w-full overflow-visible">
       {/* Header Tabs */}
@@ -1070,28 +1290,37 @@ const SelectedAuctionManager = ({
                   </p>
                 </div>
               ) : (
-                <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7">
-                  {selectPlayersList.map((player) => (
-                    <PlayerCard
-                      key={player?.player?._id}
-                      player={player}
-                      selected={selectedIds.includes(player?.player?._id)}
-                      selectable
-                      onSelect={() => {
-                        setSelectedIds((prev) =>
-                          prev.includes(player.player._id)
-                            ? prev.filter((id) => id !== player.player._id)
-                            : [...prev, player.player._id],
-                        );
-                      }}
-                      isTrialType={isTrialType}
-                      onViewDetails={() => {
-                        setSelectedPlayerDetails(player);
-                        setIsPlayerDetailsOpen(true);
-                      }}
-                    />
-                  ))}
-                </div>
+                <>
+                  {unassignedViewMode === "table" ? (
+                    renderPlayersTable({
+                      players: selectPlayersList,
+                      isUnassigned: true,
+                    })
+                  ) : (
+                    <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7">
+                      {selectPlayersList.map((player) => (
+                        <PlayerCard
+                          key={player?.player?._id}
+                          player={player}
+                          selected={selectedIds.includes(player?.player?._id)}
+                          selectable
+                          onSelect={() => {
+                            setSelectedIds((prev) =>
+                              prev.includes(player.player._id)
+                                ? prev.filter((id) => id !== player.player._id)
+                                : [...prev, player.player._id],
+                            );
+                          }}
+                          isTrialType={isTrialType}
+                          onViewDetails={() => {
+                            setSelectedPlayerDetails(player);
+                            setIsPlayerDetailsOpen(true);
+                          }}
+                        />
+                      ))}
+                    </div>
+                  )}
+                </>
               )}
             </div>
 
@@ -1194,26 +1423,35 @@ const SelectedAuctionManager = ({
                   </p>
                 </div>
               ) : (
-                <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7">
-                  {auctionPlayers.map((player) => (
-                    <PlayerCard
-                      key={player.player._id}
-                      player={player}
-                      selectable
-                      selected={selectedAuctionIds.includes(player.player._id)}
-                      onSelect={() =>
-                        handleAuctionPlayerSelect(player.player._id)
-                      }
-                      showDelete
-                      onDelete={() => setDeleteCandidate(player)}
-                      onViewDetails={() => {
-                        setSelectedPlayerDetails(player);
-                        setIsPlayerDetailsOpen(true);
-                      }}
-                      // activeTab={tab}
-                    />
-                  ))}
-                </div>
+                <>
+                  {auctionViewMode === "table" ? (
+                    renderPlayersTable({
+                      players: auctionPlayers,
+                      isUnassigned: false,
+                    })
+                  ) : (
+                    <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7">
+                      {auctionPlayers.map((player) => (
+                        <PlayerCard
+                          key={player.player._id}
+                          player={player}
+                          selectable
+                          selected={selectedAuctionIds.includes(player.player._id)}
+                          onSelect={() =>
+                            handleAuctionPlayerSelect(player.player._id)
+                          }
+                          showDelete
+                          onDelete={() => setDeleteCandidate(player)}
+                          onViewDetails={() => {
+                            setSelectedPlayerDetails(player);
+                            setIsPlayerDetailsOpen(true);
+                          }}
+                          // activeTab={tab}
+                        />
+                      ))}
+                    </div>
+                  )}
+                </>
               )}
             </div>
 

@@ -34,7 +34,9 @@ import {
 } from "lucide-react";
 
 // TAB CONTENT COMPONENTS
-const TournamentDetails = lazy(() => import("./AdminControl/TournamentInfo.jsx"));
+const TournamentDetails = lazy(
+  () => import("./AdminControl/TournamentInfo.jsx"),
+);
 // import DetailsOfAuction from "../../pages/AuctionDetailsTabs/DetailsOfAuction";
 // import AuctionPlayers from "../../pages/AuctionDetailsTabs/AuctionPlayers";
 // import AuctionTeams from "../../pages/AuctionDetailsTabs/AuctionTeams";
@@ -45,9 +47,7 @@ const Slot = lazy(
 // import Categories from "../../pages/AuctionDetailsTabs/CategoryTab/Categories";
 const CreateWebsite = lazy(
   () =>
-    import(
-      "../../pages/AuctionManagement/AdminControl/RegistrationWebsite/CreateWebiste.jsx"
-    ),
+    import("../../pages/AuctionManagement/AdminControl/RegistrationWebsite/CreateWebiste.jsx"),
 );
 import {
   EnrollPlayer,
@@ -60,18 +60,14 @@ import { toast } from "react-toastify";
 import Links from "../../pages/AuctionManagement/AdminControl/ManageAuction/OverlayLinks/Links.jsx";
 const TeamsTab = lazy(
   () =>
-    import(
-      "../../pages/AuctionManagement/AdminControl/ManageAuction/ManageTeams/TeamsTab.jsx"
-    ),
+    import("../../pages/AuctionManagement/AdminControl/ManageAuction/ManageTeams/TeamsTab.jsx"),
 );
 // import OwnerTeamDetails from "./Live_Auction/TeamOwner/OwnerTeamDetails";
 // import SelectorPlayerCard from "../../pages/AuctionDetailsTabs/AssignedPlayersTab/SelectorPlayerCard";
 // import AssignedPlayersToSelector from "../../pages/AuctionDetailsTabs/AssignedPlayersTab/AssignedPlayersToSelector";
 const AuctionOverview = lazy(
   () =>
-    import(
-      "../../pages/AuctionManagement/AdminControl/ManageAuction/AuctionOverview.jsx"
-    ),
+    import("../../pages/AuctionManagement/AdminControl/ManageAuction/AuctionOverview.jsx"),
 );
 const Dashboard = lazy(
   () => import("../../pages/AuctionManagement/AdminControl/Dashboard"),
@@ -79,15 +75,11 @@ const Dashboard = lazy(
 
 const RegistrationOverview = lazy(
   () =>
-    import(
-      "../../pages/AuctionManagement/AdminControl/RegistrationOverview.jsx"
-    ),
+    import("../../pages/AuctionManagement/AdminControl/RegistrationOverview.jsx"),
 );
 const DirectSelect = lazy(
   () =>
-    import(
-      "../../pages/AuctionManagement/SelectorsTab/DirectSelect/SelectDirect.jsx"
-    ),
+    import("../../pages/AuctionManagement/SelectorsTab/DirectSelect/SelectDirect.jsx"),
 );
 // import AdminPanel from "./AuctionDetailsTabs/AdminPanel";
 const TrialSettings = lazy(
@@ -105,7 +97,9 @@ const PlayersAssignedToSelector = lazy(
   () => import("./SelectorsTab/AssignedPlayers/PlayerAssignedToSelector.jsx"),
 );
 const TeamDetails = lazy(() => import("./TeamOwnerTabs/TeamDetails.jsx"));
-const AllPlayers = lazy(() => import("./AdminControl/AllPlayers/AllPlayers.jsx"));
+const AllPlayers = lazy(
+  () => import("./AdminControl/AllPlayers/AllPlayers.jsx"),
+);
 const ManagePlayers = lazy(
   () => import("./AdminControl/ManageAuction/PlayersTabs/ManagePlayers.jsx"),
 );
@@ -114,12 +108,10 @@ const ManagePlayerTabs = lazy(
     import("./AdminControl/Trials&Selection/TrailsPlayersTabs/ManagePlayerTabs.jsx"),
 );
 
-const AdminAuctionControl= lazy(
+const AdminAuctionControl = lazy(
   () =>
     import("./AdminControl/ManageAuction/AuctionBiddingPanel/AdminAuctionControl.jsx"),
 );
-
-
 
 /* ===============================
    ROLE PRIORITY ORDER (Highest to Lowest)
@@ -131,7 +123,7 @@ const ROLE_PRIORITY = ["admin", "selector", "teamOwner", "player"];
 ================================ */
 const roleTabs = {
   admin: [
-    "info",   
+    "info",
     "dashboard",
     "registrationOverview",
     "createWebsite",
@@ -145,7 +137,13 @@ const roleTabs = {
     "categories",
     "overlayLinks",
   ],
-  selector: ["info", "assignedPlayers", "trialslot", "directSelect","selectorTabs"],
+  selector: [
+    "info",
+    "assignedPlayers",
+    "trialslot",
+    "directSelect",
+    "selectorTabs",
+  ],
   teamOwner: ["info", "myteam"],
   player: ["info"],
   newPlayer: ["info"],
@@ -174,7 +172,7 @@ const tabStructure = [
     icon: FileText,
     subTabs: [],
   },
-   {
+  {
     key: "allPlayers",
     label: "All Players",
     icon: Users,
@@ -212,7 +210,7 @@ const tabStructure = [
       { key: "auctionOverview", label: "Auction Overview", icon: Eye },
       { key: "manageTeams", label: "Manage Teams", icon: UsersRound },
       { key: "players", label: "Manage Players", icon: Users },
-      { key: "overlayLinks", label: "Live Links", icon: Link2},
+      { key: "overlayLinks", label: "Live Links", icon: Link2 },
       { key: "biddingPanel", label: "Auction Room", icon: Gavel },
     ],
   },
@@ -226,7 +224,7 @@ const tabStructure = [
       { key: "directSelect", label: "Direct Select", icon: CheckSquare },
     ],
   },
-   {
+  {
     key: "myteam",
     label: "My Team",
     icon: Briefcase,
@@ -416,7 +414,7 @@ const AuctionDetails = ({ theme, onToggleTheme }) => {
         return <TrialSettings auctionId={auctionId} />;
 
       case "trialPlayers":
-        return <ManagePlayerTabs auctionId={auctionId} />;  
+        return <ManagePlayerTabs auctionId={auctionId} />;
 
       case "assignedPlayers":
         return <PlayersAssignedToSelector auctionId={auctionId} />;
@@ -434,20 +432,20 @@ const AuctionDetails = ({ theme, onToggleTheme }) => {
         return <TeamsTab auctionId={auctionId} />;
 
       case "myteam":
-        return <TeamDetails auctionId={auctionId} playerId={playerId} />;  
+        return <TeamDetails auctionId={auctionId} playerId={playerId} />;
 
       case "overlayLinks":
         return <Links auctionId={auctionId} />;
 
       case "biddingPanel":
-        return <AdminAuctionControl auctionId={auctionId} />; 
+        return <AdminAuctionControl auctionId={auctionId} />;
       case "info":
         return <TournamentDetails auctionId={auctionId} />;
 
       case "trialSlot":
         return <SelectorSlots auctionId={auctionId} />;
 
-       default:
+      default:
         return null;
     }
   };
@@ -546,7 +544,7 @@ const AuctionDetails = ({ theme, onToggleTheme }) => {
                           setMobileMenuOpen(false);
                         }
                       }}
-                        className={`w-full flex items-center justify-between gap-3 px-4 py-3 rounded-lg text-sm font-semibold transition cursor-pointer ${
+                      className={`w-full flex items-center justify-between gap-3 px-4 py-3 rounded-lg text-sm font-semibold transition cursor-pointer ${
                         isParentActive
                           ? "bg-[var(--secondary)] text-[var(--text-dark)] shadow-md"
                           : "text-[var(--text-secondary)] hover:bg-[var(--accent-light)] hover:text-[var(--primary)]"
@@ -582,7 +580,7 @@ const AuctionDetails = ({ theme, onToggleTheme }) => {
                                 setActiveSubTab(subTab.key);
                                 setMobileMenuOpen(false);
                               }}
-                                className={`flex items-center gap-3 px-3 py-2 rounded-lg text-xs font-medium transition cursor-pointer ${
+                              className={`flex items-center gap-3 px-3 py-2 rounded-lg text-xs font-medium transition cursor-pointer ${
                                 isSubActive
                                   ? "bg-[var(--secondary)] text-[var(--text-dark)]"
                                   : "text-[var(--text-secondary)] hover:bg-[var(--accent-light)] hover:text-[var(--primary)]"
@@ -614,7 +612,7 @@ const AuctionDetails = ({ theme, onToggleTheme }) => {
                 sidebarCollapsed ? "w-16" : "w-64"
               }`}
             >
-              <div className="border-b border-[var(--border-card)] p-3">
+              <div className="border-b border-[var(--border-card)] p-3 ">
                 {/* {!sidebarCollapsed && (
                   <div className="mb-3 flex items-center gap-3">
                     <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-[var(--border-primary)] bg-[var(--accent-light)] text-[var(--primary)]">
@@ -630,142 +628,144 @@ const AuctionDetails = ({ theme, onToggleTheme }) => {
                     </div>
                   </div>
                 )} */}
-              {/* Toggle Button */}
-              <button
-                onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
-                className="hidden w-full items-center justify-center gap-2 rounded-lg border border-[var(--border-card)] bg-transparent px-3 py-2 text-xs font-semibold text-[var(--text-secondary)] transition hover:border-[var(--border-primary)] hover:bg-[var(--accent-light)] hover:text-[var(--primary)] md:flex"
-                title={sidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"}
-              >
-                {sidebarCollapsed ? (
-                  <ChevronRight className="w-4 h-4" />
-                ) : (
-                  <ChevronLeft className="w-4 h-4" />
-                )}
-                {!sidebarCollapsed && (
-                  <span className="text-xs font-medium">Collapse</span>
-                )}
-              </button>
+                {/* Toggle Button */}
+                <button
+                  onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
+                  className="hidden w-full items-center justify-center gap-2 rounded-lg border border-[var(--border-card)] bg-[var(--bg-main)] px-3 py-2 text-xs font-semibold text-[var(--text-secondary)] transition hover:border-[var(--border-primary)] hover:bg-[var(--accent-light)] hover:text-[var(--primary)] md:flex"
+                  title={
+                    sidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"
+                  }
+                >
+                  {sidebarCollapsed ? (
+                    <ChevronRight className="w-4 h-4" />
+                  ) : (
+                    <ChevronLeft className="w-4 h-4" />
+                  )}
+                  {!sidebarCollapsed && (
+                    <span className="text-xs font-medium">Collapse</span>
+                  )}
+                </button>
               </div>
 
               <nav className="min-h-0 flex-1 overflow-y-auto px-3 py-3 pr-2">
                 {visibleTabs.map((tab) => {
-                const Icon = tab.icon;
-                const isParentActive = activeTab === tab.key;
-                const filteredSubTabs = getFilteredSubTabs(tab);
-                const isExpanded = expandedMenus[tab.key];
+                  const Icon = tab.icon;
+                  const isParentActive = activeTab === tab.key;
+                  const filteredSubTabs = getFilteredSubTabs(tab);
+                  const isExpanded = expandedMenus[tab.key];
 
-                if (sidebarCollapsed) {
-                  // Collapsed view - icons only
+                  if (sidebarCollapsed) {
+                    // Collapsed view - icons only
+                    return (
+                      <div key={tab.key} className="group relative mb-2">
+                        <div
+                          onClick={() => {
+                            if (filteredSubTabs.length > 0) {
+                              toggleMenu(tab.key);
+                              setActiveTab(tab.key);
+                            } else {
+                              setActiveTab(tab.key);
+                              setActiveSubTab(null);
+                            }
+                          }}
+                          className={`w-full flex items-center justify-center rounded-lg border px-2 py-1 transition cursor-pointer ${
+                            isParentActive
+                              ? "border-[var(--border-primary)] bg-[var(--accent-light)] text-[var(--primary)] shadow-sm"
+                              : "border-transparent bg-transparent text-[var(--text-secondary)] hover:border-[var(--border-card)] hover:bg-[var(--secondary-lighter)] hover:text-[var(--primary)]"
+                          }`}
+                          title={tab.label}
+                        >
+                          <Icon className="w-5 h-5" />
+                        </div>
+                        {/* Tooltip for collapsed mode */}
+                        <div className="absolute left-full ml-2 top-1/2 z-50 -translate-y-1/2 rounded bg-gray-800 px-2 py-1 text-xs text-white opacity-0 transition pointer-events-none whitespace-nowrap group-hover:opacity-100">
+                          {tab.label}
+                        </div>
+                      </div>
+                    );
+                  }
+
+                  // Expanded view
                   return (
-                    <div key={tab.key} className="group relative mb-2">
+                    <div key={tab.key} className="mb-2">
                       <div
                         onClick={() => {
                           if (filteredSubTabs.length > 0) {
                             toggleMenu(tab.key);
                             setActiveTab(tab.key);
+                            if (!isExpanded && filteredSubTabs.length > 0) {
+                              setActiveSubTab(filteredSubTabs[0].key);
+                            }
                           } else {
                             setActiveTab(tab.key);
                             setActiveSubTab(null);
                           }
                         }}
-                        className={`w-full flex items-center justify-center rounded-lg border px-2 py-3 transition cursor-pointer ${
+                        className={`relative w-full flex items-center justify-between gap-2.5 rounded-lg border font-bold px-2.5 py-1 text-xs  transition cursor-pointer ${
                           isParentActive
                             ? "border-[var(--border-primary)] bg-[var(--accent-light)] text-[var(--primary)] shadow-sm"
                             : "border-transparent bg-transparent text-[var(--text-secondary)] hover:border-[var(--border-card)] hover:bg-[var(--secondary-lighter)] hover:text-[var(--primary)]"
                         }`}
-                        title={tab.label}
                       >
-                        <Icon className="w-5 h-5" />
+                        {isParentActive && (
+                          <span className="absolute left-0 top-1/2 h-5 w-1 -translate-y-1/2 rounded-r-full bg-[var(--secondary)]" />
+                        )}
+                        <div className="flex min-w-0 items-center gap-2.5">
+                          <span
+                            className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-md ${
+                              isParentActive
+                                ? "bg-[var(--secondary)] text-[#102033]"
+                                : "bg-[var(--secondary-lighter)] text-[var(--text-secondary)]"
+                            }`}
+                          >
+                            <Icon className="h-3.5 w-3.5" />
+                          </span>
+                          <span className="truncate">{tab.label}</span>
+                        </div>
+                        {filteredSubTabs.length > 0 && (
+                          <>
+                            {isExpanded ? (
+                              <ChevronUp className="h-3.5 w-3.5 shrink-0" />
+                            ) : (
+                              <ChevronDown className="h-3.5 w-3.5 shrink-0" />
+                            )}
+                          </>
+                        )}
                       </div>
-                      {/* Tooltip for collapsed mode */}
-                      <div className="absolute left-full ml-2 top-1/2 z-50 -translate-y-1/2 rounded bg-gray-800 px-2 py-1 text-xs text-white opacity-0 transition pointer-events-none whitespace-nowrap group-hover:opacity-100">
-                        {tab.label}
-                      </div>
+
+                      {filteredSubTabs.length > 0 && isExpanded && (
+                        <div className="ml-3 mt-1 space-y-1 border-l border-[var(--border-card)] pl-3">
+                          {filteredSubTabs.map((subTab) => {
+                            const SubIcon = subTab.icon;
+                            const isSubActive =
+                              activeSubTab === subTab.key &&
+                              activeTab === tab.key;
+                            return (
+                              <div
+                                key={subTab.key}
+                                onClick={() => {
+                                  setActiveTab(tab.key);
+                                  setActiveSubTab(subTab.key);
+                                }}
+                                className={`relative flex items-center gap-2 rounded-lg border px-2.5 py-1.5 text-[11px] font-medium transition cursor-pointer ${
+                                  isSubActive
+                                    ? "border-[var(--border-primary)] bg-[var(--accent-light)] text-[var(--primary)]"
+                                    : "border-transparent bg-transparent text-[var(--text-secondary)] hover:border-[var(--border-card)] hover:bg-[var(--secondary-lighter)] hover:text-[var(--primary)]"
+                                }`}
+                              >
+                                {isSubActive && (
+                                  <span className="absolute left-0 top-1/2 h-3.5 w-1 -translate-y-1/2 rounded-r-full bg-[var(--secondary)]" />
+                                )}
+                                <SubIcon className="h-3 w-3 shrink-0" />
+                                <span className="truncate">{subTab.label}</span>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      )}
                     </div>
                   );
-                }
-
-                // Expanded view
-                return (
-                  <div key={tab.key} className="mb-2">
-                    <div
-                      onClick={() => {
-                        if (filteredSubTabs.length > 0) {
-                          toggleMenu(tab.key);
-                          setActiveTab(tab.key);
-                          if (!isExpanded && filteredSubTabs.length > 0) {
-                            setActiveSubTab(filteredSubTabs[0].key);
-                          }
-                        } else {
-                          setActiveTab(tab.key);
-                          setActiveSubTab(null);
-                        }
-                      }}
-                      className={`relative w-full flex items-center justify-between gap-2.5 rounded-lg border px-2.5 py-2 text-xs font-medium transition cursor-pointer ${
-                        isParentActive
-                          ? "border-[var(--border-primary)] bg-[var(--accent-light)] text-[var(--primary)] shadow-sm"
-                          : "border-transparent bg-transparent text-[var(--text-secondary)] hover:border-[var(--border-card)] hover:bg-[var(--secondary-lighter)] hover:text-[var(--primary)]"
-                      }`}
-                    >
-                      {isParentActive && (
-                        <span className="absolute left-0 top-1/2 h-5 w-1 -translate-y-1/2 rounded-r-full bg-[var(--secondary)]" />
-                      )}
-                      <div className="flex min-w-0 items-center gap-2.5">
-                        <span
-                          className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-md ${
-                            isParentActive
-                              ? "bg-[var(--secondary)] text-[#102033]"
-                              : "bg-[var(--secondary-lighter)] text-[var(--text-secondary)]"
-                          }`}
-                        >
-                          <Icon className="h-3.5 w-3.5" />
-                        </span>
-                        <span className="truncate">{tab.label}</span>
-                      </div>
-                      {filteredSubTabs.length > 0 && (
-                        <>
-                          {isExpanded ? (
-                            <ChevronUp className="h-3.5 w-3.5 shrink-0" />
-                          ) : (
-                            <ChevronDown className="h-3.5 w-3.5 shrink-0" />
-                          )}
-                        </>
-                      )}
-                    </div>
-
-                    {filteredSubTabs.length > 0 && isExpanded && (
-                      <div className="ml-3 mt-1 space-y-1 border-l border-[var(--border-card)] pl-3">
-                        {filteredSubTabs.map((subTab) => {
-                          const SubIcon = subTab.icon;
-                          const isSubActive =
-                            activeSubTab === subTab.key &&
-                            activeTab === tab.key;
-                          return (
-                            <div
-                              key={subTab.key}
-                              onClick={() => {
-                                setActiveTab(tab.key);
-                                setActiveSubTab(subTab.key);
-                              }}
-                              className={`relative flex items-center gap-2 rounded-lg border px-2.5 py-1.5 text-[11px] font-medium transition cursor-pointer ${
-                                isSubActive
-                                  ? "border-[var(--border-primary)] bg-[var(--accent-light)] text-[var(--primary)]"
-                                  : "border-transparent bg-transparent text-[var(--text-secondary)] hover:border-[var(--border-card)] hover:bg-[var(--secondary-lighter)] hover:text-[var(--primary)]"
-                              }`}
-                            >
-                              {isSubActive && (
-                                <span className="absolute left-0 top-1/2 h-3.5 w-1 -translate-y-1/2 rounded-r-full bg-[var(--secondary)]" />
-                              )}
-                              <SubIcon className="h-3 w-3 shrink-0" />
-                              <span className="truncate">{subTab.label}</span>
-                            </div>
-                          );
-                        })}
-                      </div>
-                    )}
-                  </div>
-                );
-              })}
+                })}
               </nav>
             </div>
           </aside>
@@ -776,7 +776,7 @@ const AuctionDetails = ({ theme, onToggleTheme }) => {
               sidebarCollapsed ? "md:left-20" : "md:left-72"
             }`}
           >
-            <div className="min-h-[calc(100vh-108px)] overflow-visible rounded-xl border border-[var(--border-card)] bg-[var(--bg-card)] text-[var(--text-primary)] shadow-[var(--shadow-card)] scrollbar-hide md:h-full md:min-h-0 md:overflow-y-auto">
+            <div className="min-h-[calc(100vh-108px)] overflow-visible rounded-xl border border-[var(--border-card)] bg-[var(--bg-main)] text-[var(--text-primary)] shadow-[var(--shadow-card)] scrollbar-hide md:h-full md:min-h-0 md:overflow-y-auto">
               <Suspense
                 fallback={
                   <div className="flex min-h-[320px] items-center justify-center">

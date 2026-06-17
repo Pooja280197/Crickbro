@@ -376,15 +376,13 @@ const TeamsTab = ({ auctionId }) => {
   return (
     <div className="w-full space-y-4 p-3 sm:p-4">
       <div className={`${panelClass} overflow-hidden`}>
-        <div className="flex flex-col gap-4 border-b border-[var(--border-card)] bg-[var(--bg-main)] p-4 sm:p-5 lg:flex-row lg:items-center lg:justify-between">
+        <div className="flex flex-col gap-4 border-b border-[var(--border-card)] bg-[var(--bg-card)] p-4 sm:p-5 lg:flex-row lg:items-center lg:justify-between">
           <div className="flex min-w-0 items-start gap-3">
             <div className={iconTileClass}>
               <Users size={18} />
             </div>
             <div className="min-w-0">
-              <p className="text-[11px] font-bold uppercase tracking-wide text-[var(--primary)]">
-                Manage Auction Teams
-              </p>
+             
               <h2 className="mt-1 text-lg font-semibold text-[var(--text-primary)] sm:text-xl">
                 Teams setup
               </h2>
@@ -394,36 +392,7 @@ const TeamsTab = ({ auctionId }) => {
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
-            <div className="rounded-lg border border-[var(--border-card)] bg-[var(--bg-card)] px-3 py-2">
-              <p className="text-[10px] font-bold uppercase tracking-wide text-[var(--text-muted)]">
-                Available
-              </p>
-              <p className="mt-1 text-sm font-semibold text-[var(--text-primary)]">
-                {Array.isArray(tournamentTeam) ? tournamentTeam.length : 0}
-              </p>
-            </div>
-            <div className="rounded-lg border border-[var(--border-card)] bg-[var(--bg-card)] px-3 py-2">
-              <p className="text-[10px] font-bold uppercase tracking-wide text-[var(--text-muted)]">
-                Selected
-              </p>
-              <p className="mt-1 text-sm font-semibold text-[var(--primary)]">
-                {selectedTeam.length}
-              </p>
-            </div>
-            <div className="rounded-lg border border-[var(--border-card)] bg-[var(--bg-card)] px-3 py-2">
-              <p className="text-[10px] font-bold uppercase tracking-wide text-[var(--text-muted)]">
-                Auction
-              </p>
-              <p className="mt-1 text-sm font-semibold text-[var(--text-primary)]">
-                {totalAuctionTeams}
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <div className="flex flex-col gap-3 p-4 sm:p-5">
-          <div className="flex flex-wrap gap-2 rounded-lg border border-[var(--border-card)] bg-[var(--bg-main)] p-1">
+          <div className="ml-auto flex w-full flex-wrap gap-2 rounded-lg border border-[var(--border-card)] bg-[var(--bg-main)] p-1 sm:w-auto lg:justify-end">
             {tabs.map((tab) => (
               <button
                 key={tab.key}
@@ -438,6 +407,10 @@ const TeamsTab = ({ auctionId }) => {
               </button>
             ))}
           </div>
+        </div>
+
+        <div className="flex flex-col gap-3 p-4 sm:p-5">
+         
 
           <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
             <div className="relative w-full lg:max-w-md">

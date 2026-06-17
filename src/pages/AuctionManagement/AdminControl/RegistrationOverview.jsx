@@ -394,7 +394,7 @@ const RegistrationOverview = ({ auctionId: auctionIdProp }) => {
         {cards.map((card, i) => (
           <div
             key={i}
-            className="flex min-h-[104px] flex-col justify-between rounded-lg border border-[var(--border-card)] border-l-[5px] border-l-[var(--accent-light)] bg-[var(--bg-card)] p-3 shadow-[var(--shadow-card)] transition hover:border-[var(--border-primary)]"
+            className="flex min-h-[80px] flex-col justify-between rounded-lg border border-[var(--border-card)] border-l-[5px] border-l-[var(--accent-light)] bg-[var(--bg-card)] p-3 shadow-[var(--shadow-card)] transition hover:border-[var(--border-primary)]"
           >
             <div className="flex items-start justify-between gap-3">
               <div className="min-w-0">

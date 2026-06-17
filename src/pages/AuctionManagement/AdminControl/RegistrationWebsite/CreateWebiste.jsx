@@ -444,11 +444,11 @@ const TournamentAdminForm = ({ tournamentId, auctionId, TrialType }) => {
           <div className="lp-title-row">
             <div>
               <h1 className="lp-main-title">Landing Page Builder</h1>
-              <p className="lp-main-subtitle">
+              {/* <p className="lp-main-subtitle">
                 {isBasicInfoSaved
                   ? `Editing: ${formData.tournamentTitle || "Tournament"}`
                   : "Fill Basic Info and save to unlock all sections"}
-              </p>
+              </p> */}
             </div>
             <div className="lp-title-badges">
               {isBasicInfoSaved && (
@@ -1480,18 +1480,23 @@ const TournamentAdminForm = ({ tournamentId, auctionId, TrialType }) => {
         /* ── Admin Theme Overrides ─────────────────── */
         .lp-root {
           font-family: inherit;
-          min-height: calc(100vh - 108px);
+          height: calc(100vh - 108px);
+          min-height: 560px;
           background: var(--bg-main);
           color: var(--text-primary);
           font-size: 13px;
+          display: flex;
+          flex-direction: column;
+          overflow: hidden;
         }
         .lp-root * {
           letter-spacing: 0;
         }
         .lp-sticky-header {
-          position: relative;
-          top: auto;
-          z-index: 1;
+          position: sticky;
+          top: 0;
+          z-index: 30;
+          flex: 0 0 auto;
           border: 1px solid var(--border-card);
           border-radius: 8px;
           background: var(--bg-card);
@@ -1576,9 +1581,16 @@ const TournamentAdminForm = ({ tournamentId, auctionId, TrialType }) => {
         }
         .lp-body {
           max-width: none;
-          padding: 14px 0 86px;
+          width: 100%;
+          flex: 1 1 auto;
+          min-height: 0;
+          overflow-y: auto;
+          overscroll-behavior: contain;
+          padding: 14px 18px 86px;
+          scrollbar-gutter: stable;
         }
         .lp-content-card {
+          width: 100%;
           min-height: 360px;
           border: 1px solid var(--border-card);
           border-radius: 8px;

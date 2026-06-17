@@ -20,9 +20,9 @@ import {
   User,
   Plus,
   Trash2,
-  Search,
   RotateCcw,
   Save,
+  Search,
 } from "lucide-react";
 import Loader from "../../../../../components/Loader";
 import RatingInput from "../../../../../components/RatingInput";
@@ -159,6 +159,7 @@ const Settings = ({ auctionId, isTrialType }) => {
         if (res?.data?.data) {
           setName(res.data.data.name);
           setSendAdminId(res.data.data._id);
+          setAddName(false);
         }
       } catch (err) {
         console.error(err);
@@ -378,41 +379,55 @@ const Settings = ({ auctionId, isTrialType }) => {
     switch (activeTab) {
       case "addSelectors":
         return (
-          <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+          <div className="grid grid-cols-1 gap-4 xl:grid-cols-[minmax(340px,0.85fr)_minmax(500px,1.15fr)]">
             {/* Add New Selector Form Component */}
             <div className={panelClass}>
-              <div className={panelHeaderClass}>
+              <div className="border-b border-[var(--border-card)] bg-[var(--bg-card)] px-4 py-3">
                 <div className="flex items-center gap-3">
                   <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[var(--accent-light)] text-[var(--primary)]">
                     <UserPlus className="h-4 w-4" />
                   </div>
                   <div>
-                    <h3 className="text-sm font-semibold text-[var(--text-primary)]">
+                    <h3 className="text-sm font-bold text-[var(--text-primary)]">
                       Add New Selector
                     </h3>
-                    <p className="mt-0.5 text-xs text-[var(--text-secondary)]">
-                      Search registered users by mobile number.
-                    </p>
                   </div>
                 </div>
               </div>
 
-              <div className="space-y-4 p-4">
+              <div className="space-y-3 p-4">
                 {/* Phone Input */}
                 <div>
                   <label className="mb-1.5 block text-xs font-semibold text-[var(--text-primary)]">
                     Phone Number
                   </label>
-                  <div className="flex h-10 items-center gap-2 rounded-lg border border-[var(--border-card)] bg-[var(--bg-main)] px-3 transition focus-within:border-[var(--border-primary)] focus-within:bg-[var(--bg-card)]">
-                    <Phone className="h-4 w-4 text-[var(--primary)]" />
+                  <div className="group flex h-11 items-center rounded-lg border border-[var(--border-card)] bg-[var(--bg-main)] transition focus-within:border-[var(--border-primary)] focus-within:bg-[var(--bg-card)] focus-within:ring-2 focus-within:ring-[var(--accent-light)]">
+                    <div className="flex h-full w-11 shrink-0 items-center justify-center rounded-l-lg border-r border-[var(--border-card)] bg-[var(--accent-light)] text-[var(--primary)] transition group-focus-within:border-[var(--border-primary)]">
+                      <Phone className="h-4 w-4" />
+                    </div>
                     <input
                       type="tel"
                       value={contact}
                       onChange={handleContactChange}
                       placeholder="Enter 10 digit mobile number"
                       maxLength={10}
-                      className="w-full bg-transparent text-sm font-medium text-[var(--text-primary)] outline-none placeholder:text-[var(--text-secondary)]"
+                      className="h-full min-w-0 flex-1 bg-transparent px-3 text-sm font-medium text-[var(--text-primary)] outline-none placeholder:text-[var(--text-secondary)]"
                     />
+                    {contact ? (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setContact("");
+                          setName("");
+                          setSendAdminId(null);
+                        setAddName("");
+                      }}
+                        className="mr-2 flex h-7 w-7 shrink-0 items-center justify-center rounded-md text-[var(--text-secondary)] transition hover:bg-[var(--accent-light)] hover:text-[var(--text-primary)]"
+                        title="Clear"
+                      >
+                        <RotateCcw className="h-4 w-4" />
+                      </button>
+                    ) : null}
                   </div>
                 </div>
 
@@ -421,8 +436,10 @@ const Settings = ({ auctionId, isTrialType }) => {
                   <label className="mb-1.5 block text-xs font-semibold text-[var(--text-primary)]">
                     Selector Name
                   </label>
-                  <div className="flex h-10 items-center gap-2 rounded-lg border border-[var(--border-card)] bg-[var(--bg-main)] px-3 transition focus-within:border-[var(--border-primary)] focus-within:bg-[var(--bg-card)]">
-                    <User className="h-4 w-4 text-[var(--primary)]" />
+                  <div className="group flex h-11 items-center rounded-lg border border-[var(--border-card)] bg-[var(--bg-main)] transition focus-within:border-[var(--border-primary)] focus-within:bg-[var(--bg-card)] focus-within:ring-2 focus-within:ring-[var(--accent-light)]">
+                    <div className="flex h-full w-11 shrink-0 items-center justify-center rounded-l-lg border-r border-[var(--border-card)] bg-[var(--accent-light)] text-[var(--primary)] transition group-focus-within:border-[var(--border-primary)]">
+                      <User className="h-4 w-4" />
+                    </div>
                     <input
                       type="text"
                       value={name}
@@ -431,12 +448,12 @@ const Settings = ({ auctionId, isTrialType }) => {
                         setName(e.target.value);
                       }}
                       placeholder={addName ? "Type Name" : "Auto fetched name"}
-                      className="w-full bg-transparent text-sm font-medium text-[var(--text-primary)] outline-none placeholder:text-[var(--text-secondary)] disabled:cursor-not-allowed disabled:text-[var(--text-secondary)]"
+                      className="h-full min-w-0 flex-1 bg-transparent px-3 text-sm font-medium text-[var(--text-primary)] outline-none placeholder:text-[var(--text-secondary)] disabled:cursor-not-allowed disabled:text-[var(--text-secondary)]"
                     />
                   </div>
                   {sendAdminId && !addName && (
-                    <p className="mt-1 text-xs font-medium text-emerald-600">
-                      Name auto-fetched from registered user
+                    <p className="mt-1.5 inline-flex rounded-full bg-emerald-50 px-2 py-0.5 text-[11px] font-semibold text-emerald-700">
+                      Auto-fetched
                     </p>
                   )}
                 </div>
@@ -453,50 +470,54 @@ const Settings = ({ auctionId, isTrialType }) => {
             </div>
 
             <div className={panelClass}>
-              <div className={panelHeaderClass}>
+              <div className="border-b border-[var(--border-card)] bg-[var(--bg-card)] px-4 py-3">
                 <div className="flex items-center justify-between gap-3">
                   <div className="flex items-center gap-3">
                     <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[var(--accent-light)] text-[var(--primary)]">
                       <Users className="h-4 w-4" />
                     </div>
                     <div>
-                      <h3 className="text-sm font-semibold text-[var(--text-primary)]">
+                      <h3 className="text-sm font-bold text-[var(--text-primary)]">
                         Existing Selectors
                       </h3>
-                      <p className="mt-0.5 text-xs text-[var(--text-secondary)]">
-                        {selectorList.length} selector
-                        {selectorList.length !== 1 ? "s" : ""} added
-                      </p>
                     </div>
                   </div>
+                  <span className="rounded-full border border-[var(--border-card)] bg-[var(--bg-main)] px-3 py-1 text-xs font-bold text-[var(--text-primary)]">
+                    {selectorList.length}
+                  </span>
                 </div>
               </div>
 
-              <div className="max-h-[400px] overflow-y-auto p-4 [scrollbar-color:var(--border-primary)_var(--bg-main)] [scrollbar-width:thin] [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-[var(--border-primary)] [&::-webkit-scrollbar-track]:bg-[var(--bg-main)] [&::-webkit-scrollbar]:w-2">
+              <div className="max-h-[360px] overflow-y-auto p-4 [scrollbar-color:var(--border-primary)_var(--bg-main)] [scrollbar-width:thin] [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-[var(--border-primary)] [&::-webkit-scrollbar-track]:bg-[var(--bg-main)] [&::-webkit-scrollbar]:w-2">
                 {selectorList.length === 0 ? (
-                  <p className="rounded-lg border border-dashed border-[var(--border-card)] bg-[var(--bg-main)] py-8 text-center text-sm text-[var(--text-secondary)]">
-                    No selectors added yet
-                  </p>
+                  <div className="rounded-lg border border-dashed border-[var(--border-card)] bg-[var(--bg-main)] px-4 py-7 text-center">
+                    <div className="mx-auto mb-2 flex h-10 w-10 items-center justify-center rounded-lg bg-[var(--accent-light)] text-[var(--primary)]">
+                      <Users className="h-5 w-5" />
+                    </div>
+                    <p className="text-sm font-semibold text-[var(--text-primary)]">
+                      No selectors added yet
+                    </p>
+                  </div>
                 ) : (
-                  <div className="space-y-2">
+                  <div className="grid gap-2">
                     {selectorList.map((selector) => (
                       <div
                         key={selector._id}
                         className="flex items-center justify-between rounded-lg border border-[var(--border-card)] bg-[var(--bg-main)] p-3 transition hover:border-[var(--border-primary)] hover:bg-[var(--bg-card)]"
                       >
-                        <div className="flex items-center gap-3 flex-1 min-w-0">
-                          <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg bg-[var(--accent-light)] text-sm font-bold uppercase text-[var(--primary)]">
-                            {selector?.name?.substring(0, 2)}
+                        <div className="flex min-w-0 flex-1 items-center gap-3">
+                          <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg bg-[var(--accent-light)] text-sm font-bold uppercase text-[var(--primary)]">
+                            {selector?.name?.substring(0, 2) || "SE"}
                           </div>
-                          <div className="flex-1 min-w-0">
-                            <p className="font-medium text-[var(--text-primary)] text-sm truncate">
+                          <div className="min-w-0 flex-1">
+                            <p className="truncate text-sm font-semibold text-[var(--text-primary)]">
                               {selector.name}
                             </p>
                           </div>
                         </div>
                         <button
                           onClick={() => handleRemoveSelector(selector._id)}
-                          className="ml-2 flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg border border-red-200 bg-[var(--bg-card)] text-red-500 transition hover:bg-red-50"
+                          className="ml-2 flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg border border-red-200 bg-[var(--bg-card)] text-red-500 transition hover:bg-red-50"
                           title="Remove selector"
                         >
                           <Trash2 className="h-4 w-4" />
@@ -903,7 +924,7 @@ const Settings = ({ auctionId, isTrialType }) => {
   };
 
   return (
-    <div className="mx-auto w-full max-w-7xl space-y-4 px-3 py-4 text-[var(--text-primary)] sm:px-4 lg:px-5">
+    <div className="mx-auto w-full space-y-4 px-3 py-4 text-[var(--text-primary)] sm:px-4 lg:px-5">
       {/* Header Section */}
       <div className="rounded-lg border border-[var(--border-card)] bg-[var(--bg-card)] p-4 shadow-[var(--shadow-card)]">
         <div className="flex items-start gap-3">

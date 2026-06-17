@@ -123,10 +123,10 @@ const PlayerDetailsModal = ({
 
       <div className="relative h-full w-full overflow-y-auto mt-10 mb-10">
         <div className="min-h-full flex justify-center items-start p-4 pt-16 pb-10">
-          <div className="relative w-full max-w-2xl bg-[var(--bg-card)] rounded-2xl shadow-2xl">
+          <div className="relative w-full max-w-2xl overflow-hidden rounded-2xl border border-[var(--border-card)] bg-[var(--bg-card)] shadow-2xl">
             {showRemoveConfirm && (
               <div className="absolute inset-0 z-30 bg-black/40 flex items-center justify-center p-4 rounded-2xl">
-                <div className="w-full max-w-sm rounded-xl bg-[var(--bg-card)] p-4 shadow-2xl border border-red-100">
+                <div className="w-full max-w-sm rounded-xl bg-[var(--bg-card)] p-4 shadow-2xl border border-[var(--border-card)]">
                   <h4 className="text-base font-semibold text-[var(--text-primary)]">
                     Confirm Remove Rating
                   </h4>
@@ -144,7 +144,7 @@ const PlayerDetailsModal = ({
                     <button
                       type="button"
                       onClick={confirmRemoveRating}
-                      className="px-3 py-2 rounded-lg bg-red-600 text-white text-sm font-medium hover:bg-red-700"
+                      className="px-3 py-2 rounded-lg border border-red-500 bg-red-600 text-white text-sm font-medium hover:bg-red-700"
                     >
                       Remove
                     </button>
@@ -161,7 +161,7 @@ const PlayerDetailsModal = ({
               <X className="w-4 h-4 text-[var(--text-primary)]" />
             </button>
 
-            <div className="p-6 max-h-[85vh] overflow-y-auto">
+            <div className="max-h-[85vh] overflow-y-auto bg-[var(--bg-card)] p-6">
               <div className="flex items-center gap-4 mb-6">
                 <div className="w-20 h-20 rounded-full bg-[var(--secondary-lighter)] overflow-hidden">
                   {player?.player?.logo && !isDummyImage(player?.player?.logo) ? (
@@ -186,7 +186,7 @@ const PlayerDetailsModal = ({
                     {player?.player?.batchId}
                   </h2>
                   <div className="flex flex-wrap gap-2 mt-2">
-                    <span className="inline-block px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium">
+                    <span className="inline-block rounded-full border border-[var(--border-primary)] bg-[var(--accent-light)] px-3 py-1 text-sm font-medium text-[var(--primary)]">
                       {formatRole(player?.rating?.playerType || player?.player?.playerType)}
                     </span>
                     {grade && (
@@ -195,7 +195,7 @@ const PlayerDetailsModal = ({
                       </span>
                     )}
                     {session?.lockStatus && (
-                      <span className="inline-block px-3 py-1 bg-amber-100 text-amber-800 rounded-full text-sm font-medium capitalize">
+                      <span className="inline-block rounded-full border border-[var(--border-primary)] bg-[var(--accent-light)] px-3 py-1 text-sm font-medium capitalize text-[var(--primary)]">
                         {session.lockStatus}
                       </span>
                     )}
@@ -203,13 +203,13 @@ const PlayerDetailsModal = ({
                 </div>
               </div>
 
-              <div className="mb-6 bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl p-4">
+              <div className="mb-6 rounded-xl border border-[var(--border-card)] bg-[var(--bg-main)] p-4">
                 <h3 className="font-semibold text-[var(--text-primary)] mb-3 text-lg">
                   Trial Session Details
                 </h3>
 
                 <div className="space-y-3 text-sm text-[var(--text-primary)]">
-                  <div className="bg-[var(--bg-card)] rounded-lg p-3 shadow-sm">
+                  <div className="rounded-lg border border-[var(--border-card)] bg-[var(--bg-card)] p-3 shadow-sm">
                     <p className="font-medium">Session: {session?.name || "-"}</p>
                     <p>Slot: {session?.slot?.slotName || "-"}</p>
                     <p>
@@ -220,19 +220,19 @@ const PlayerDetailsModal = ({
               </div>
 
               {hasSelectorRated && showRatings && !hideRatingFeatures && (
-                <div className="mb-6 bg-gradient-to-r from-amber-50 to-yellow-50 rounded-xl p-4 border border-yellow-100">
+                <div className="mb-6 rounded-xl border border-[var(--border-card)] bg-[var(--bg-main)] p-4">
                   <h3 className="font-semibold text-[var(--text-primary)] mb-3 text-lg">
                     Your Rating Details
                   </h3>
 
                   <div className="space-y-3">
                     {player.rating.ratings.map((ratingItem, idx) => (
-                      <div key={idx} className="bg-[var(--bg-card)] rounded-lg p-3 shadow-sm border border-yellow-100">
+                      <div key={idx} className="bg-[var(--bg-card)] rounded-lg p-3 shadow-sm border border-[var(--border-card)]">
                         <div className="flex items-center justify-between">
                           <p className="text-sm font-medium text-[var(--text-primary)]">
                             Rating #{idx + 1}
                           </p>
-                          <div className="inline-flex items-center gap-1 text-sm font-semibold text-amber-700 bg-amber-100 px-2 py-1 rounded-full">
+                          <div className="inline-flex items-center gap-1 rounded-full border border-[var(--border-primary)] bg-[var(--accent-light)] px-2 py-1 text-sm font-semibold text-[var(--primary)]">
                             <Star className="w-3.5 h-3.5 fill-current" />
                             {ratingItem?.rating ?? 0}
                           </div>
@@ -249,7 +249,7 @@ const PlayerDetailsModal = ({
                             {ratingItem.field.map((fieldItem, fieldIndex) => (
                               <span
                                 key={`${fieldItem?.label || fieldIndex}`}
-                                className="text-xs bg-yellow-100 text-yellow-900 px-2 py-1 rounded-full border border-yellow-200"
+                                className="rounded-full border border-[var(--border-primary)] bg-[var(--accent-light)] px-2 py-1 text-xs text-[var(--primary)]"
                               >
                                 {fieldItem?.label || "Field"}: {fieldItem?.numberValue ?? fieldItem?.stringValue ?? "-"}
                               </span>
@@ -275,7 +275,7 @@ const PlayerDetailsModal = ({
                   <button
                     type="button"
                     onClick={() => setShowRatings((prev) => !prev)}
-                    className="px-4 py-2 rounded-lg font-medium text-[var(--text-primary)] bg-amber-100 hover:bg-amber-200 transition-all shadow-sm"
+                    className="px-4 py-2 rounded-lg border border-[var(--border-primary)] bg-[var(--accent-light)] font-medium text-[var(--primary)] transition-all shadow-sm hover:bg-[var(--secondary-lighter)]"
                   >
                     {showRatings ? "Hide Rating" : "View Rating"}
                   </button>
@@ -297,7 +297,7 @@ const PlayerDetailsModal = ({
                   <button
                     type="button"
                     onClick={openBallByBall}
-                    className="flex-1 px-4 py-2 rounded-lg font-medium text-[var(--text-dark)] bg-yellow-500 hover:bg-yellow-600 transition-all shadow-sm flex items-center justify-center gap-2"
+                    className="flex-1 px-4 py-2 rounded-lg font-medium text-[#102033] bg-[var(--secondary)] hover:bg-[var(--secondary-strong)] transition-all shadow-sm flex items-center justify-center gap-2"
                   >
                     <Star className="w-4 h-4" />
                     Rating
@@ -390,7 +390,7 @@ const SelectorPlayerCard = ({
       >
         {hasSelectorRated && !hideRatingFeatures && (
           <div
-            className="absolute top-1 left-1 z-30 px-1.5 py-1 rounded-full shadow bg-yellow-400 text-[var(--text-primary)] flex items-center justify-center"
+            className="absolute top-1 left-1 z-30 px-1.5 py-1 rounded-full shadow bg-[var(--secondary)] text-[#102033] flex items-center justify-center"
             title="Rated by selector"
           >
             <Star className="w-3 h-3 fill-current" />

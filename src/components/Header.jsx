@@ -105,7 +105,7 @@ const Header = ({ theme = "light", onToggleTheme }) => {
           </motion.button>
 
           <nav
-            className="ml-auto flex min-h-[46px] items-center gap-1 bg-transparent p-1 text-[13px] font-bold max-lg:hidden"
+            className="ml-auto flex min-h-[46px] items-center gap-1 bg-transparent p-1 text-[15px] font-bold max-lg:hidden"
             aria-label="Primary navigation"
           >
             {navOptions.map((item) => {
