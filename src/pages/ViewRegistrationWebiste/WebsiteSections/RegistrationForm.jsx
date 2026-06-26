@@ -529,6 +529,60 @@ const RegisterationForm = ({
     }
   };
 
+  const scrollToRegistrationForm = () => {
+    const target = formRef.current;
+    if (!target) return;
+
+    const headerOffset = 96;
+    const getScrollParent = (element) => {
+      let parent = element.parentElement;
+
+      while (parent && parent !== document.body) {
+        const style = window.getComputedStyle(parent);
+        const canScroll = /(auto|scroll|overlay)/.test(
+          `${style.overflow}${style.overflowY}`,
+        );
+
+        if (canScroll && parent.scrollHeight > parent.clientHeight) {
+          return parent;
+        }
+
+        parent = parent.parentElement;
+      }
+
+      return document.scrollingElement || document.documentElement;
+    };
+
+    const scrollParent = getScrollParent(target);
+    const isPageScroller =
+      scrollParent === document.documentElement ||
+      scrollParent === document.body;
+
+    if (isPageScroller) {
+      const targetTop =
+        target.getBoundingClientRect().top + window.scrollY - headerOffset;
+
+      window.scrollTo({
+        top: Math.max(targetTop, 0),
+        behavior: "smooth",
+      });
+
+      return;
+    }
+
+    const parentTop = scrollParent.getBoundingClientRect().top;
+    const targetTop =
+      target.getBoundingClientRect().top -
+      parentTop +
+      scrollParent.scrollTop -
+      headerOffset;
+
+    scrollParent.scrollTo({
+      top: Math.max(targetTop, 0),
+      behavior: "smooth",
+    });
+  };
+
   const focusFirstInvalidField = (validationErrors) => {
     const priority = [
       "mobile",
@@ -1136,24 +1190,28 @@ const RegisterationForm = ({
           </div>
 
           {/* Right Form - Compact with multi-column layout */}
-          {isAlreadyRegistered ? (
-            <AlreadyRegisteredCard
-              profile={profileForRegisteredCard}
-              auctionId={auctionId}
-              onViewDetails={() => setShowRegistrationDetails(true)}
-            />
-          ) : (
-            <div
-              ref={formRef}
-              className="registration-form-card quick-form-card w-full max-w-2xl mx-auto rounded-3xl p-4 sm:p-5 md:p-6 border shadow-xl"
-              style={{
-                // background:
-                //   "radial-gradient(circle at 12% 8%, rgba(96, 165, 250, 0.2), transparent 30%), radial-gradient(circle at 88% 12%, rgba(14, 165, 233, 0.16), transparent 26%), linear-gradient(145deg, #020617 0%, #082f49 42%, #0b4a7a 100%)",
-                borderColor: "rgba(125, 211, 252, 0.24)",
-                boxShadow:
-                  "0 24px 60px rgba(2, 6, 23, 0.36), inset 0 1px 0 rgba(125, 211, 252, 0.18)",
-              }}
-            >
+          <div
+            id="registration-form"
+            ref={formRef}
+            className="scroll-mt-24 w-full max-w-2xl mx-auto"
+          >
+            {isAlreadyRegistered ? (
+              <AlreadyRegisteredCard
+                profile={profileForRegisteredCard}
+                auctionId={auctionId}
+                onViewDetails={() => setShowRegistrationDetails(true)}
+              />
+            ) : (
+              <div
+                className="registration-form-card quick-form-card w-full rounded-3xl p-4 sm:p-5 md:p-6 border shadow-xl"
+                style={{
+                  // background:
+                  //   "radial-gradient(circle at 12% 8%, rgba(96, 165, 250, 0.2), transparent 30%), radial-gradient(circle at 88% 12%, rgba(14, 165, 233, 0.16), transparent 26%), linear-gradient(145deg, #020617 0%, #082f49 42%, #0b4a7a 100%)",
+                  borderColor: "rgba(125, 211, 252, 0.24)",
+                  boxShadow:
+                    "0 24px 60px rgba(2, 6, 23, 0.36), inset 0 1px 0 rgba(125, 211, 252, 0.18)",
+                }}
+              >
               <div className="mb-4 flex items-center justify-between gap-3">
                 <div>
                   {/* <p className="text-xs font-bold uppercase tracking-[0.18em] text-blue-100">
@@ -1755,20 +1813,17 @@ const RegisterationForm = ({
                   </div>
                 </div>
               </form>
-            </div>
-          )}
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
       {/* Floating Register Button */}
       <div className="fixed bottom-5 right-3 md:right-6 z-40">
-        <button
-          onClick={() => {
-            formRef.current?.scrollIntoView({
-              behavior: "smooth",
-              block: "start",
-            });
-          }}
+        <a
+          href="#registration-form"
+          onClick={scrollToRegistrationForm}
           className="px-4 md:px-5 py-2.5 md:py-3 rounded-full font-bold text-xs md:text-sm flex items-center gap-2 transition-all hover:-translate-y-0.5 shadow-xl"
           style={{
             backgroundColor: "var(--rf-primary)",
@@ -1777,7 +1832,7 @@ const RegisterationForm = ({
         >
           <span>⚡</span>
           REGISTER NOW
-        </button>
+        </a>
       </div>
 
       <style>{`

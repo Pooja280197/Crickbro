@@ -1,5 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { createPortal } from "react-dom";
+import { Pencil, Trash2 } from "lucide-react";
 import CreateCategory from "./CreateCategory";
 import {
   createCategory,
@@ -12,6 +13,9 @@ import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import DeleteConfirmModal from "../../../../../../components/DeleteConfirmModal";
 import CategoryPlayers from "./CategoryPlayers";
+import Pagination from "../../../../../../components/Pagination";
+
+const CATEGORIES_PER_PAGE = 10;
 
 const Categories = ({ auctionId }) => {
   const [categoryPopup, setCategoryPopup] = useState(false);
@@ -22,10 +26,12 @@ const Categories = ({ auctionId }) => {
   const [categoryId, setCategoryId] = useState("");
   const [playersPopup, setPlayersPopup] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
   
-  const categoryLoading = useSelector((state) => state?.loading?.categories);
   const categoryDetails = useSelector((state) => state?.data?.categories);
-  const categories = categoryDetails?.data;
+  const categories = Array.isArray(categoryDetails?.data)
+    ? categoryDetails.data
+    : [];
   const dispatch = useDispatch();
 
   const tournamentId = useSelector((state) => state.tournamentId);
@@ -46,6 +52,20 @@ const Categories = ({ auctionId }) => {
     dispatch(fetchAuctionDetails(auctionId));
     dispatch(getCategories(auctionId));
   }, [auctionId]);
+
+  const totalPages = Math.max(
+    1,
+    Math.ceil(categories.length / CATEGORIES_PER_PAGE)
+  );
+
+  const paginatedCategories = useMemo(() => {
+    const startIndex = (currentPage - 1) * CATEGORIES_PER_PAGE;
+    return categories.slice(startIndex, startIndex + CATEGORIES_PER_PAGE);
+  }, [categories, currentPage]);
+
+  useEffect(() => {
+    setCurrentPage((page) => Math.min(page, totalPages));
+  }, [totalPages]);
 
   const handleCreateCategory = async (categoryData) => {
     const data = {
@@ -101,9 +121,9 @@ const Categories = ({ auctionId }) => {
   // Card/Grid View Component (for mobile & tablet)
   const CardView = () => (
     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-5">
-      {categories?.map((category) => (
+      {paginatedCategories.map((category) => (
         <div
-          key={category.id}
+          key={category._id || category.id}
           className="bg-[var(--bg-card)] rounded-xl border border-[var(--border-card)] shadow-sm hover:shadow-md transition-shadow duration-200 overflow-hidden"
         >
           <div className="p-4 md:p-5">
@@ -191,36 +211,40 @@ const Categories = ({ auctionId }) => {
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-200">
-            {categories?.map((category) => (
-              <tr key={category.id} className="hover:bg-[var(--bg-soft)] transition">
-                <td className="px-6 py-4 text-sm">
+            {paginatedCategories.map((category) => (
+              <tr key={category._id || category.id} className="hover:bg-[var(--bg-soft)] transition">
+                <td className="px-6 py-2.5 text-sm">
                   {category.name}
                 </td>
-                <td className="px-6 py-4 text-sm">
+                <td className="px-6 py-2.5 text-sm">
                   ₹{category.baseAmount}
                 </td>
-                <td className="px-6 py-4 text-sm">
+                <td className="px-6 py-2.5 text-sm">
                   ₹{category.biddingIncrement}
                 </td>
-                <td className="px-6 py-4 text-sm">
+                <td className="px-6 py-2.5 text-sm">
                   ₹{category.maxBid}
                 </td>
-                <td className="px-6 py-4">
+                <td className="px-6 py-2.5">
                   <div className="flex gap-2">
                     <button
                       onClick={() => handleEditCategory(category)}
-                      className="px-3 py-1 text-xs bg-blue-50 text-blue-600 rounded hover:bg-blue-100 transition"
+                      className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-blue-200 bg-blue-50 text-blue-600 transition hover:bg-blue-100"
+                      title="Edit"
+                      aria-label={`Edit ${category.name}`}
                     >
-                      Edit
+                      <Pencil size={15} />
                     </button>
                     <button
                       onClick={() => {
                         setDeletePopup(true);
                         setDeleteId(category._id);
                       }}
-                      className="inline-flex h-8 items-center justify-center rounded-lg border border-red-200 bg-[var(--bg-card)] px-3 text-xs font-semibold text-red-500 transition hover:bg-red-50 hover:text-red-600"
+                      className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-red-200 bg-[var(--bg-card)] text-red-500 transition hover:bg-red-50 hover:text-red-600"
+                      title="Delete"
+                      aria-label={`Delete ${category.name}`}
                     >
-                      Delete
+                      <Trash2 size={15} />
                     </button>
                     <button
                       onClick={() => {
@@ -262,7 +286,7 @@ const Categories = ({ auctionId }) => {
         </div>
 
         {/* Content Section - Automatic view switching based on screen size */}
-        {categories?.length === 0 ? (
+        {categories.length === 0 ? (
           <div className="text-center py-12 px-4 bg-[var(--bg-card)] rounded-xl border border-[var(--border-card)] shadow-sm">
             <div className="text-[var(--text-secondary)] mb-2">No categories available</div>
             <div className="text-sm text-[var(--text-muted)]">
@@ -280,6 +304,16 @@ const Categories = ({ auctionId }) => {
             <div className={`${isMobile ? 'block' : 'hidden'}`}>
               <CardView />
             </div>
+
+            {totalPages > 1 && (
+              <Pagination
+                className="mt-5"
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={setCurrentPage}
+                summaryPrefix="Categories page"
+              />
+            )}
           </>
         )}
       </div>

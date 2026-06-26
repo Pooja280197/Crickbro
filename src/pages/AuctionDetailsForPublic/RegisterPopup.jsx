@@ -122,6 +122,10 @@ const RegisterPopup = ({
   const registrationFieldConfig = {
     ...DEFAULT_PLAYER_REGISTRATION_FIELDS,
     ...(playerRegistrationFiels || {}),
+    profilePicture: true,
+    name: true,
+    mobileNumber: true,
+    role: true,
   };
   const isFieldEnabled = (field) => !!registrationFieldConfig?.[field];
   const isRoleBasedFee = feeType === "roleBased";
@@ -138,6 +142,16 @@ const RegisterPopup = ({
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const availableSessions = Array.isArray(sessions) ? sessions : [];
+  const isSessionRequired = Boolean(
+    isTrialType && selectedSlot && availableSessions.length > 0,
+  );
+  const isConfirmDisabled = Boolean(
+    isTrialType &&
+      (!selectedSlot ||
+        sessionLoading ||
+        (isSessionRequired && !selectedSession)),
+  );
 
   // const slotLoading = loading?.slotList;
 
@@ -272,10 +286,9 @@ const RegisterPopup = ({
       newErrors.email = "Please enter a valid email address";
     }
 
-    if (isFieldEnabled("jerseyNumber") && !form.jerseyNumber) {
-      newErrors.jerseyNumber = "Jersey number is required";
-    } else if (
+    if (
       isFieldEnabled("jerseyNumber") &&
+      form.jerseyNumber &&
       (Number(form.jerseyNumber) < 0 || Number(form.jerseyNumber) > 999)
     ) {
       newErrors.jerseyNumber = "Jersey number must be between 0 and 999";
@@ -283,14 +296,13 @@ const RegisterPopup = ({
 
     if (
       isFieldEnabled("jerseyName") &&
-      (!form.jerseyName || form.jerseyName.trim().length < 2)
+      form.jerseyName &&
+      form.jerseyName.trim().length < 2
     ) {
-      newErrors.jerseyName = "Jersey name is required";
+      newErrors.jerseyName = "Jersey name must be at least 2 characters";
     }
 
-    if (isFieldEnabled("jerseySize") && !form.jerseySize) {
-      newErrors.jerseySize = "Jersey size is required";
-    } else if (
+    if (
       isFieldEnabled("jerseySize") &&
       form.jerseySize &&
       !isValidJerseySize(form.jerseySize)
@@ -302,8 +314,7 @@ const RegisterPopup = ({
       if (!selectedSlot) {
         newErrors.selectedSlot = "Please select a trial location";
       }
-      const hasSessions = Array.isArray(sessions) && sessions.length > 0;
-      if (selectedSlot && hasSessions && !selectedSession) {
+      if (isSessionRequired && !selectedSession) {
         newErrors.selectedSession = "Please select a trial time slot";
       }
     }
@@ -368,9 +379,15 @@ const RegisterPopup = ({
     if (isFieldEnabled("email")) basePayload.email = String(form.email || "");
     if (isFieldEnabled("dateOfBirth")) basePayload.dateOfBirth = String(form.dateOfBirth || "");
     if (isFieldEnabled("gender")) basePayload.gender = String(form.gender || "");
-    if (isFieldEnabled("jerseyNumber")) basePayload.jerseyNumber = String(form.jerseyNumber || "");
-    if (isFieldEnabled("jerseyName")) basePayload.jerseyName = String(form.jerseyName || "");
-    if (isFieldEnabled("jerseySize")) basePayload.jerseySize = normalizeJerseySize(form.jerseySize);
+    if (isFieldEnabled("jerseyNumber") && form.jerseyNumber) {
+      basePayload.jerseyNumber = String(form.jerseyNumber);
+    }
+    if (isFieldEnabled("jerseyName") && form.jerseyName?.trim()) {
+      basePayload.jerseyName = String(form.jerseyName);
+    }
+    if (isFieldEnabled("jerseySize") && form.jerseySize) {
+      basePayload.jerseySize = normalizeJerseySize(form.jerseySize);
+    }
     if (isFieldEnabled("lowerSize")) basePayload.lowerSize = String(form.lowerSize || "");
 
     if (
@@ -391,7 +408,9 @@ const RegisterPopup = ({
 
     if (isTrialType) {
       basePayload.slotId = selectedSlot;
-      basePayload.sessionId = selectedSession;
+      if (selectedSession) {
+        basePayload.sessionId = selectedSession;
+      }
     }
 
     if (hasAnyFileUpload) {
@@ -883,6 +902,7 @@ const RegisterPopup = ({
                   <div className="relative">
                     {/* Input */}
                     <input
+                      ref={registerFieldRef("selectedSlot")}
                       type="text"
                       placeholder="Choose or search location..."
                       value={search}
@@ -976,11 +996,11 @@ const RegisterPopup = ({
                         ? "Select location first"
                         : sessionLoading
                           ? "Loading available times..."
-                          : sessions?.length > 0
+                            : availableSessions.length > 0
                             ? "Choose trial time"
                             : "No times available"}
                     </option>
-                    {sessions?.map((session) => (
+                    {availableSessions.map((session) => (
                       <option key={session._id} value={session._id}>
                         {session.name} - {formatDate(session.slotDate)} (
                         {formatTime(session.slotStartTime)} -{" "}
@@ -1009,7 +1029,7 @@ const RegisterPopup = ({
 
                   {selectedSlot &&
                     !sessionLoading &&
-                    sessions?.length === 0 && (
+                    availableSessions.length === 0 && (
                       <div className="flex items-center gap-2 mt-3 p-3 bg-red-50 border border-red-200 rounded-lg">
                         <AlertCircle className="w-4 h-4 text-red-500 flex-shrink-0" />
                         <p className="text-sm text-red-600">
@@ -1032,22 +1052,10 @@ const RegisterPopup = ({
                 Cancel
               </button>
               <button
-                disabled={
-                  isTrialType &&
-                  (!selectedSlot ||
-                    sessionLoading ||
-                    (Array.isArray(sessions) &&
-                      sessions.length > 0 &&
-                      !selectedSession))
-                }
-                className={`flex-1 px-4 py-2.5 rounded-lg font-medium transition-all ${isTrialType &&
-                    (!selectedSlot ||
-                      sessionLoading ||
-                      (Array.isArray(sessions) &&
-                        sessions.length > 0 &&
-                        !selectedSession))
+                disabled={isConfirmDisabled}
+                className={`flex-1 rounded-lg px-4 py-2.5 font-semibold transition-all ${isConfirmDisabled
                     ? "cursor-not-allowed bg-[var(--bg-main)] text-[var(--text-muted)]"
-                    : "bg-[var(--primary)] text-white hover:bg-[var(--primary-dark)] shadow-md hover:shadow-lg"
+                    : "bg-[var(--primary)] text-white shadow-md hover:bg-[var(--primary-strong)] hover:shadow-lg"
                   }`}
                 onClick={handleSubmit}
               >

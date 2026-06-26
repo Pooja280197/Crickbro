@@ -32,7 +32,7 @@ const outlineButtonClass =
   "inline-flex h-10 items-center justify-center gap-2 rounded-lg border border-[var(--border-card)] bg-[var(--bg-main)] px-4 text-sm font-semibold text-[var(--text-primary)] transition hover:border-[var(--border-primary)] hover:bg-[var(--accent-light)]";
 const iconTileClass =
   "flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-[var(--border-primary)] bg-[var(--accent-light)] text-[var(--primary)]";
-const optionClass = "bg-[var(--bg-card)] text-[var(--text-primary)]";
+const optionClass = "bg-[var(--bg-main)] text-[var(--text-primary)]";
 const optionStyle = {
   backgroundColor: "var(--bg-card)",
   color: "var(--text-primary)",
@@ -61,6 +61,8 @@ const AuctionOverview = ({ auctionId }) => {
   const [editTeamId, setEditTeamId] = useState("");
   const [editingPlayer, setEditingPlayer] = useState(null);
   const [editLoading, setEditLoading] = useState(false);
+  const [editTeamSearch, setEditTeamSearch] = useState("");
+  const [showEditTeamDropdown, setShowEditTeamDropdown] = useState(false);
   const [teamSearch, setTeamSearch] = useState("");
   const [showTeamDropdown, setShowTeamDropdown] = useState(false);
   const [viewMode, setViewMode] = useState("card");
@@ -289,6 +291,12 @@ const AuctionOverview = ({ auctionId }) => {
   const filteredTeams = teams.filter((team) =>
     getTeamDisplayName(team).toLowerCase().includes(teamSearch.toLowerCase()),
   );
+  const filteredEditTeams = teams.filter((team) =>
+    getTeamDisplayName(team).toLowerCase().includes(editTeamSearch.toLowerCase()),
+  );
+  const selectedEditTeam = teams.find((team) => team.teamId === editTeamId);
+  const selectedEditTeamName =
+    selectedEditTeam ? getTeamDisplayName(selectedEditTeam) : "";
 
   const statusOptions = [
     { value: "", label: "All Players" },
@@ -518,26 +526,30 @@ const AuctionOverview = ({ auctionId }) => {
               <button
                 type="button"
                 onClick={() => setViewMode("card")}
-                className={`inline-flex items-center justify-center gap-2 px-3 text-xs font-semibold transition ${
+                className={`inline-flex min-w-[82px] items-center justify-center gap-2 px-3 text-xs font-semibold transition ${
                   viewMode === "card"
                     ? "bg-[var(--secondary)] text-[#102033]"
                     : "text-[var(--text-secondary)] hover:bg-[var(--accent-light)] hover:text-[var(--text-primary)]"
                 }`}
+                title="Grid view"
+                aria-pressed={viewMode === "card"}
               >
                 <LayoutGrid className="h-4 w-4" />
-                
+                <span>Grid</span>
               </button>
               <button
                 type="button"
                 onClick={() => setViewMode("table")}
-                className={`inline-flex items-center justify-center gap-2 border-l border-[var(--border-card)] px-3 text-xs font-semibold transition ${
+                className={`inline-flex min-w-[82px] items-center justify-center gap-2 border-l border-[var(--border-card)] px-3 text-xs font-semibold transition ${
                   viewMode === "table"
                     ? "bg-[var(--secondary)] text-[#102033]"
                     : "text-[var(--text-secondary)] hover:bg-[var(--accent-light)] hover:text-[var(--text-primary)]"
                 }`}
+                title="Table view"
+                aria-pressed={viewMode === "table"}
               >
                 <Table2 className="h-4 w-4" />
-                
+                <span>Table</span>
               </button>
             </div>
             <button
@@ -1153,7 +1165,7 @@ const AuctionOverview = ({ auctionId }) => {
       {viewingPlayer && 
       createPortal(
          <div
-          className="fixed inset-0 z-[2147483647] flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm"
+          className="fixed inset-0 z-[10000] flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm"
           onClick={() => setViewingPlayer(null)}
         >
           <div
@@ -1195,6 +1207,8 @@ const AuctionOverview = ({ auctionId }) => {
                         viewingPlayer.basePrice,
                       );
                       setEditTeamId(viewingPlayer.soldTo?.id || "");
+                      setEditTeamSearch("");
+                      setShowEditTeamDropdown(false);
                       setShowEditModal(true);
                     }}
                     disabled={!viewingPlayer.isSold}
@@ -1405,16 +1419,22 @@ const AuctionOverview = ({ auctionId }) => {
   typeof document !== "undefined" &&
   createPortal(
     <div
-      className="fixed inset-0 z-[2147483647] flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm"
-      onClick={() => setShowEditModal(false)}
+      className="fixed inset-0 z-[10000] flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm"
+      onClick={() => {
+        setShowEditTeamDropdown(false);
+        setShowEditModal(false);
+      }}
     >
       <div
-        className="relative w-full max-w-md overflow-hidden rounded-2xl border border-[var(--border-card)] bg-[var(--bg-card)] shadow-[0_28px_80px_rgba(0,0,0,0.35)]"
+        className="relative w-full max-w-md overflow-visible rounded-2xl border border-[var(--border-card)] bg-[var(--bg-card)] shadow-[0_28px_80px_rgba(0,0,0,0.35)]"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="relative border-b border-[var(--border-card)] bg-[var(--bg-main)] px-5 py-4">
+        <div className="relative rounded-t-2xl border-b border-[var(--border-card)] bg-[var(--bg-main)] px-5 py-4">
           <button
-            onClick={() => setShowEditModal(false)}
+            onClick={() => {
+              setShowEditTeamDropdown(false);
+              setShowEditModal(false);
+            }}
             className="absolute right-4 top-4 flex h-9 w-9 items-center justify-center rounded-lg border border-[var(--border-card)] bg-[var(--bg-card)] text-[var(--text-primary)] transition hover:bg-[var(--accent-light)]"
           >
             <X className="h-5 w-5" />
@@ -1475,26 +1495,88 @@ const AuctionOverview = ({ auctionId }) => {
             </label>
 
             <div className="relative">
-              <Users className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[var(--text-muted)]" />
+              <Users className="absolute left-4 top-1/2 z-10 h-5 w-5 -translate-y-1/2 text-[var(--text-muted)]" />
 
-              <select
-                value={editTeamId}
-                onChange={(e) => setEditTeamId(e.target.value)}
-                className={`${inputClass} w-full pl-12 pr-4`}
+              <input
+                type="text"
+                value={showEditTeamDropdown ? editTeamSearch : selectedEditTeamName}
+                onChange={(e) => {
+                  setEditTeamSearch(e.target.value);
+                  setShowEditTeamDropdown(true);
+                }}
+                onFocus={() => {
+                  setEditTeamSearch("");
+                  setShowEditTeamDropdown(true);
+                }}
+                placeholder="Choose Team"
+                className={`${inputClass} w-full pl-12 pr-12`}
+              />
+
+              <button
+                type="button"
+                onClick={() => {
+                  setEditTeamSearch("");
+                  setShowEditTeamDropdown((open) => !open);
+                }}
+                className="absolute bottom-0 right-2 top-0 my-auto flex h-7 w-7 items-center justify-center rounded-md bg-[var(--bg-card)] text-[var(--text-secondary)] transition hover:bg-[var(--accent-light)] hover:text-[var(--primary)]"
+                aria-label="Toggle team dropdown"
               >
-                <option value="" className={optionClass} style={optionStyle}>Choose Team</option>
+                {showEditTeamDropdown ? (
+                  <ChevronUp className="h-4 w-4" />
+                ) : (
+                  <ChevronDown className="h-4 w-4" />
+                )}
+              </button>
 
-                {teams.map((team) => (
-                  <option
-                    key={team.teamId}
-                    value={team.teamId}
-                    className={optionClass}
-                    style={optionStyle}
+              {showEditTeamDropdown && (
+                <div className="professional-scrollbar absolute z-[90] mt-1 max-h-52 w-full overflow-y-auto rounded-lg border border-[var(--border-card)] bg-[var(--bg-card)] p-1 shadow-[0_18px_42px_rgba(0,0,0,0.22)]">
+                  <button
+                    type="button"
+                    className={`w-full rounded-md px-3 py-2 text-left text-sm font-medium transition hover:bg-[var(--accent-light)] ${
+                      !editTeamId
+                        ? "bg-[var(--accent-light)] text-[var(--primary)]"
+                        : "text-[var(--text-primary)]"
+                    }`}
+                    onClick={() => {
+                      setEditTeamId("");
+                      setEditTeamSearch("");
+                      setShowEditTeamDropdown(false);
+                    }}
                   >
-                    {team.teamName}
-                  </option>
-                ))}
-              </select>
+                    Choose Team
+                  </button>
+
+                  {filteredEditTeams.map((team) => {
+                    const teamName = getTeamDisplayName(team);
+                    const isSelected = editTeamId === team.teamId;
+
+                    return (
+                      <button
+                        type="button"
+                        key={team.teamId}
+                        className={`w-full rounded-md px-3 py-2 text-left text-sm font-medium transition hover:bg-[var(--accent-light)] ${
+                          isSelected
+                            ? "bg-[var(--accent-light)] text-[var(--primary)]"
+                            : "text-[var(--text-primary)]"
+                        }`}
+                        onClick={() => {
+                          setEditTeamId(team.teamId);
+                          setEditTeamSearch("");
+                          setShowEditTeamDropdown(false);
+                        }}
+                      >
+                        {teamName}
+                      </button>
+                    );
+                  })}
+
+                  {filteredEditTeams.length === 0 && (
+                    <div className="px-3 py-2 text-sm text-[var(--text-secondary)]">
+                      No teams found
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
           </div>
 
@@ -1530,9 +1612,12 @@ const AuctionOverview = ({ auctionId }) => {
         </div>
 
         {/* Footer */}
-        <div className="flex gap-3 border-t border-[var(--border-card)] bg-[var(--bg-main)] px-6 py-5">
+        <div className="flex gap-3 rounded-b-2xl border-t border-[var(--border-card)] bg-[var(--bg-main)] px-6 py-5">
           <button
-            onClick={() => setShowEditModal(false)}
+            onClick={() => {
+              setShowEditTeamDropdown(false);
+              setShowEditModal(false);
+            }}
             className={`${outlineButtonClass} flex-1`}
           >
             Cancel

@@ -168,7 +168,7 @@ const AuctionDetailModal = ({
     .join(", ");
 
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto">
+    <div className="my-performance-modal fixed inset-0 z-50 overflow-y-auto">
       <div className="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
         <div
           className="fixed inset-0 bg-slate-900/70 backdrop-blur-sm transition-opacity"
@@ -299,8 +299,7 @@ const AuctionDetailModal = ({
 
               {!canShowRating ? (
                 <p className="text-xs text-slate-500">
-                  Rating session complete hone ke baad selector ratings visible
-                  hongi.
+                  Ratings will be available once the session is completed. Please check back later for detailed selector feedback and performance insights.
                 </p>
               ) : selectorRatings.length > 0 ? (
                 <div className="space-y-2">

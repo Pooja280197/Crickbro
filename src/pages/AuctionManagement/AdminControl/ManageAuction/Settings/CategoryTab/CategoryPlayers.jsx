@@ -118,7 +118,7 @@ const CategoryPlayers = ({ open, onClose, categoryId, auctionId }) => {
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-[2147483647] flex items-center justify-center overflow-y-auto bg-black/70 p-3 pt-5 backdrop-blur-sm sm:p-5">
+    <div className="fixed inset-0 z-[10000] flex items-center justify-center overflow-y-auto bg-black/70 p-3 pt-5 backdrop-blur-sm sm:p-5">
       <div className="flex max-h-[calc(100vh-2.5rem)] w-full max-w-6xl flex-col overflow-hidden rounded-2xl border border-[var(--border-card)] bg-[var(--bg-card)] shadow-[0_28px_80px_rgba(0,0,0,0.35)]">
         {/* Header */}
         <div className="border-b border-[var(--border-card)] bg-[var(--bg-main)] px-4 py-4 sm:px-5">
@@ -322,7 +322,7 @@ const CategoryPlayers = ({ open, onClose, categoryId, auctionId }) => {
 
       {/* -------- Order Change Modal -------- */}
       {selectedPlayer && (
-        <div className="fixed inset-0 z-[2147483647] flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm">
+        <div className="fixed inset-0 z-[10000] flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm">
           <div className="w-full max-w-md overflow-hidden rounded-2xl border border-[var(--border-card)] bg-[var(--bg-card)] shadow-[0_28px_80px_rgba(0,0,0,0.35)]">
             {/* Modal Header */}
             <div className="border-b border-[var(--border-card)] bg-[var(--bg-main)] px-5 py-4">

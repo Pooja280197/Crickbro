@@ -114,6 +114,105 @@ const StatusBadge = ({ status }) => (
   </span>
 );
 
+const MobileMetric = ({ label, value, highlight = false }) => (
+  <div className="rounded-lg border border-[var(--border-card)] bg-[var(--bg-main)] px-3 py-2">
+    <p className="text-[10px] font-bold uppercase tracking-wide text-[var(--text-secondary)]">
+      {label}
+    </p>
+    <p
+      className={`mt-1 truncate text-sm font-semibold ${
+        highlight ? "text-[var(--primary)]" : "text-[var(--text-primary)]"
+      }`}
+    >
+      {value}
+    </p>
+  </div>
+);
+
+const CategoryMobileCard = ({ category }) => {
+  const soldPercentage = getPercentage(
+    category?.soldPlayers,
+    category?.totalPlayers,
+  );
+
+  return (
+    <div className="rounded-lg border border-[var(--border-card)] bg-[var(--secondary-lighter)] p-3">
+      <div className="flex items-start justify-between gap-3">
+        <div className="min-w-0">
+          <p className="truncate text-sm font-bold text-[var(--text-primary)]">
+            {category?.categoryName || "Unnamed Category"}
+          </p>
+          <p className="mt-1 text-xs font-medium text-[var(--text-secondary)]">
+            {category?.soldPlayers || 0} of {category?.totalPlayers || 0} sold
+          </p>
+        </div>
+        <StatusBadge status={category?.status} />
+      </div>
+
+      <div className="mt-3 grid grid-cols-2 gap-2">
+        <MobileMetric label="Base" value={formatCurrency(category?.baseAmount)} />
+        <MobileMetric
+          label="Max Bid"
+          value={formatCurrency(category?.maxBid)}
+          highlight
+        />
+        <MobileMetric label="Total" value={category?.totalPlayers || 0} />
+        <MobileMetric label="Sold" value={`${category?.soldPlayers || 0} (${soldPercentage}%)`} highlight />
+      </div>
+
+      <div className="mt-3">
+        <ProgressBar
+          value={category?.soldPlayers}
+          max={category?.totalPlayers}
+        />
+      </div>
+    </div>
+  );
+};
+
+const TeamMobileCard = ({ team }) => {
+  const utilization = getPercentage(team?.purseSpent, team?.initialBudget);
+
+  return (
+    <div className="rounded-lg border border-[var(--border-card)] bg-[var(--secondary-lighter)] p-3">
+      <div className="flex items-start justify-between gap-3">
+        <div className="min-w-0">
+          <p className="truncate text-sm font-bold text-[var(--text-primary)]">
+            {team?.teamName || "Unnamed Team"}
+          </p>
+          <p className="mt-1 text-xs font-medium text-[var(--text-secondary)]">
+            Squad: {team?.currentSquadSize || 0}
+          </p>
+        </div>
+        <span className="shrink-0 rounded-full border border-[var(--border-primary)] bg-[var(--accent-light)] px-2.5 py-1 text-[11px] font-semibold text-[var(--primary)]">
+          {utilization}%
+        </span>
+      </div>
+
+      <div className="mt-3 grid grid-cols-2 gap-2">
+        <MobileMetric
+          label="Initial"
+          value={formatCurrency(team?.initialBudget)}
+        />
+        <MobileMetric
+          label="Spent"
+          value={formatCurrency(team?.purseSpent)}
+        />
+        <MobileMetric
+          label="Remaining"
+          value={formatCurrency(team?.remainingBudget)}
+          highlight
+        />
+        <MobileMetric label="Squad" value={team?.currentSquadSize || 0} />
+      </div>
+
+      <div className="mt-3">
+        <ProgressBar value={team?.purseSpent} max={team?.initialBudget} />
+      </div>
+    </div>
+  );
+};
+
 const Dashboard = () => {
   const { auctionId } = useParams();
   const dispatch = useDispatch();
@@ -290,7 +389,22 @@ const Dashboard = () => {
 
         <div className="grid grid-cols-1 gap-5 ">
             <SectionCard title="Category Overview" icon={PieChart}>
-              <div className="overflow-x-auto">
+              <div className="space-y-3 md:hidden">
+                {categories.length > 0 ? (
+                  categories.map((cat, idx) => (
+                    <CategoryMobileCard
+                      key={cat.categoryId || idx}
+                      category={cat}
+                    />
+                  ))
+                ) : (
+                  <p className="rounded-lg border border-[var(--border-card)] bg-[var(--secondary-lighter)] p-4 text-center text-sm font-medium text-[var(--text-secondary)]">
+                    No categories found.
+                  </p>
+                )}
+              </div>
+
+              <div className="hidden overflow-x-auto md:block">
                 <table className="w-full min-w-[620px] text-left sm:min-w-[720px]">
                   <thead>
                     <tr className="border-b border-[var(--border-card)] text-xs font-semibold uppercase tracking-wide text-[var(--text-secondary)]">
@@ -345,7 +459,22 @@ const Dashboard = () => {
             </SectionCard>
 
             <SectionCard title="Team Performance" icon={Award}>
-              <div className="overflow-x-auto">
+              <div className="space-y-3 md:hidden">
+                {paginatedTeams.length > 0 ? (
+                  paginatedTeams.map((team, idx) => (
+                    <TeamMobileCard
+                      key={team.teamId || idx}
+                      team={team}
+                    />
+                  ))
+                ) : (
+                  <p className="rounded-lg border border-[var(--border-card)] bg-[var(--secondary-lighter)] p-4 text-center text-sm font-medium text-[var(--text-secondary)]">
+                    No teams found.
+                  </p>
+                )}
+              </div>
+
+              <div className="hidden overflow-x-auto md:block">
                 <table className="w-full min-w-[680px] text-left sm:min-w-[760px]">
                   <thead>
                     <tr className="border-b border-[var(--border-card)] text-xs font-semibold uppercase tracking-wide text-[var(--text-secondary)]">

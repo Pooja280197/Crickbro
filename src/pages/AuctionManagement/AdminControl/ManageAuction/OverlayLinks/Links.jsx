@@ -251,7 +251,7 @@ const Links = ({ auctionId, panelOnly = false }) => {
       {previewImage &&
         createPortal(
           <div
-            className="player-details-overlay font-poppins !items-center p-4"
+            className="player-details-overlay font-poppins items-center p-4 sm:p-5 z-[1000] bg-black/75 backdrop-blur-sm flex fixed inset-0 cursor-zoom-out"
             onClick={(e) => e.target === e.currentTarget && setPreviewImage(null)}
             role="presentation"
           >

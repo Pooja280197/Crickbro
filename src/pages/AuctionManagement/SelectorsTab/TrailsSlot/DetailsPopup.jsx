@@ -41,7 +41,7 @@ const DetailsPopup = ({ slot, onClose }) => {
 
   return createPortal(
     <div
-      className="fixed inset-0 z-[2147483647] isolate flex items-center justify-center overflow-y-auto bg-black/70 p-3 backdrop-blur-sm sm:p-5"
+      className="fixed inset-0 z-[10000] isolate flex items-center justify-center overflow-y-auto bg-black/70 p-3 backdrop-blur-sm sm:p-5"
       onClick={onClose}
     >
       <div

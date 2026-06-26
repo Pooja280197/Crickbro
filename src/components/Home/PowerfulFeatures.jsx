@@ -14,8 +14,11 @@ const features = [
 
 const PowerfulFeatures = () => {
   return (
-    <section className="power-bg py-[72px]">
-      <div className="container">
+    <section className="power-bg relative overflow-hidden py-[72px]">
+      <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-[linear-gradient(90deg,transparent,rgba(8,186,247,0.82),rgba(255,196,0,0.66),transparent)]" />
+      <div className="pointer-events-none absolute -left-24 bottom-8 h-80 w-80 rounded-full bg-[radial-gradient(circle,rgba(8,186,247,0.18),transparent_68%)] blur-2xl" />
+      <div className="pointer-events-none absolute right-[-140px] top-24 h-96 w-96 rounded-full bg-[radial-gradient(circle,rgba(255,196,0,0.13),transparent_66%)] blur-2xl" />
+      <div className="container relative">
         <SectionHeading
           eyebrow="All-in-one Platform"
           title="Powerful"
@@ -25,10 +28,11 @@ const PowerfulFeatures = () => {
         <div className="grid grid-cols-3 gap-[18px] max-md:grid-cols-1">
           {features.map(([title, text], index) => (
             <article
-              className="grid min-h-[106px] grid-cols-[42px_1fr] gap-4 rounded-lg border border-[var(--border-card)] bg-[var(--bg-card)] p-5 text-[var(--text-primary)] shadow-[var(--shadow-card)]"
+              className="modern-card-lift modern-surface grid min-h-[106px] grid-cols-[42px_1fr] gap-4 overflow-hidden rounded-lg border border-[var(--border-card)] bg-[var(--bg-card)] p-5 text-[var(--text-primary)] shadow-[var(--shadow-card)]"
               key={title}
             >
-              <span className="grid h-[34px] w-[34px] place-items-center rounded-md border border-[var(--border-primary)] bg-[var(--accent-light)] text-xs font-black text-[var(--primary)]">
+              <div className="pointer-events-none absolute inset-x-5 top-0 h-px bg-[linear-gradient(90deg,transparent,rgba(8,186,247,0.76),rgba(255,196,0,0.58),transparent)]" />
+              <span className="modern-icon-pop grid h-[34px] w-[34px] place-items-center rounded-md border border-[var(--border-primary)] bg-[var(--accent-light)] text-xs font-black text-[var(--primary)]">
                 {index + 1}
               </span>
               <div>

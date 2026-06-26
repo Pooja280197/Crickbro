@@ -49,9 +49,7 @@ const Section = ({ title, icon, children }) => (
       <span>{title}</span>
     </h4>
 
-    <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
-      {children}
-    </div>
+    <div className="grid grid-cols-1 gap-3 md:grid-cols-2">{children}</div>
   </div>
 );
 
@@ -344,51 +342,57 @@ const RegistrationOverview = ({ auctionId: auctionIdProp }) => {
   return (
     <div className="space-y-5 p-3 text-[var(--text-primary)] lg:p-5">
       <div className="rounded-lg border border-[var(--border-card)] bg-[var(--bg-card)] p-4 shadow-[var(--shadow-card)]">
-      <div className=" flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <p className="text-xs font-semibold uppercase tracking-wide text-[var(--text-secondary)]">
-            Registration
-          </p>
-          <h2 className="mt-1 flex items-center gap-2 text-xl font-bold leading-7 text-[var(--text-primary)]">
-            Registration Report
-          </h2>
-          <p className="mt-1 text-xs font-medium text-[var(--text-secondary)]">
-            Track player and team registration payments in one place.
-          </p>
-        </div>
-
-        {showTeamReportSwitch && (
-          <div className="flex w-full items-center gap-2 rounded-lg border border-[var(--border-card)] bg-[var(--bg-main)] p-1 sm:w-auto">
-            <button
-              type="button"
-              onClick={() => setReportMode("player")}
-              className={`rounded-lg px-3 py-1.5 text-xs font-semibold transition ${
-                !isTeamMode
-                  ? "bg-[var(--secondary)] text-[#102033]"
-                  : "text-[var(--text-secondary)] hover:bg-[var(--secondary-lighter)] hover:text-[var(--text-primary)]"
-              }`}
-            >
-              Player Report
-            </button>
-            <button
-              type="button"
-              onClick={() => setReportMode("team")}
-              className={`rounded-lg px-3 py-1.5 text-xs font-semibold transition ${
-                isTeamMode
-                  ? "bg-[var(--secondary)] text-[#102033]"
-                  : "text-[var(--text-secondary)] hover:bg-[var(--secondary-lighter)] hover:text-[var(--text-primary)]"
-              }`}
-            >
-              Team Report
-            </button>
+        <div className=" flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-wide text-[var(--text-secondary)]">
+              Registration
+            </p>
+            <h2 className="mt-1 flex items-center gap-2 text-xl font-bold leading-7 text-[var(--text-primary)]">
+              Registration Report
+            </h2>
+            <p className="mt-1 text-xs font-medium text-[var(--text-secondary)]">
+              Track player and team registration payments in one place.
+            </p>
           </div>
-        )}
-      </div>
+
+          {showTeamReportSwitch && (
+            <div className="flex w-full items-center gap-2 rounded-lg border border-[var(--border-card)] bg-[var(--bg-main)] p-1 sm:w-auto">
+              <button
+                type="button"
+                onClick={() => setReportMode("player")}
+                className={`rounded-lg px-3 py-1.5 text-xs font-semibold transition ${
+                  !isTeamMode
+                    ? "bg-[var(--secondary)] text-[#102033]"
+                    : "text-[var(--text-secondary)] hover:bg-[var(--secondary-lighter)] hover:text-[var(--text-primary)]"
+                }`}
+              >
+                Player Report
+              </button>
+              <button
+                type="button"
+                onClick={() => setReportMode("team")}
+                className={`rounded-lg px-3 py-1.5 text-xs font-semibold transition ${
+                  isTeamMode
+                    ? "bg-[var(--secondary)] text-[#102033]"
+                    : "text-[var(--text-secondary)] hover:bg-[var(--secondary-lighter)] hover:text-[var(--text-primary)]"
+                }`}
+              >
+                Team Report
+              </button>
+            </div>
+          )}
+        </div>
       </div>
 
       <div
         className={`grid auto-rows-fr grid-cols-1 gap-3 sm:grid-cols-2 ${
-          isTeamMode ? "lg:grid-cols-4" : gstData.enabled ?"lg:grid-cols-6": "lg:grid-cols-5"
+          isTeamMode
+            ? gstData.enabled
+              ? "lg:grid-cols-5"
+              : "lg:grid-cols-4"
+            : gstData.enabled
+              ? "lg:grid-cols-6"
+              : "lg:grid-cols-5"
         }`}
       >
         {cards.map((card, i) => (
@@ -419,176 +423,173 @@ const RegistrationOverview = ({ auctionId: auctionIdProp }) => {
       </div>
 
       <div className="space-y-3 rounded-lg border border-[var(--border-card)] bg-[var(--bg-card)] p-4 shadow-[var(--shadow-card)]">
-  {/* TOP BAR */}
-  <div className="grid grid-cols-1 gap-3 lg:grid-cols-[minmax(0,1fr)_auto_auto_auto] lg:items-center">
-    
-    {/* SEARCH */}
-    <div className="relative">
-      <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--text-secondary)]" />
-      <input
-        type="text"
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-        placeholder={isTeamMode ? "Search team..." : "Search player..."}
-        className="h-10 w-full rounded-lg border border-[var(--border-card)] bg-[var(--bg-main)] pl-10 pr-4 text-sm font-medium text-[var(--text-primary)] outline-none transition placeholder:text-[var(--text-secondary)] focus:border-[var(--border-primary)] focus:bg-[var(--bg-card)]"
-      />
-    </div>
-
-    {/* ACTIONS */}
-    <div className="contents">
-      
-      {/* LIMIT */}
-      <select
-        value={limit}
-        onChange={(e) => setLimit(Number(e.target.value))}
-        className="h-10 rounded-lg border border-[var(--border-card)] bg-[var(--bg-main)] px-3 text-xs font-semibold text-[var(--text-primary)] outline-none transition focus:border-[var(--border-primary)]"
-      >
-        <option value={10}>10</option>
-        <option value={20}>20</option>
-        <option value={50}>50</option>
-      </select>
-
-      {/* FILTER BUTTON */}
-      <button
-        onClick={() => setShowFilters((prev) => !prev)}
-        className={`inline-flex h-10 items-center justify-center gap-2 rounded-lg border px-3 text-xs font-semibold transition ${
-          showFilters
-            ? "border-[var(--border-primary)] bg-[var(--accent-light)] text-[var(--primary)]"
-            : "border-[var(--border-card)] bg-[var(--bg-main)] text-[var(--text-primary)] hover:border-[var(--border-primary)] hover:bg-[var(--accent-light)]"
-        }`}
-      >
-        <Filter className="h-4 w-4" />
-        Filters
-      </button>
-
-      {/* RESET */}
-      <button
-        onClick={resetFilters}
-        className="inline-flex h-10 items-center justify-center gap-2 rounded-lg border border-[var(--border-card)] bg-[var(--bg-main)] px-3 text-xs font-semibold text-[var(--text-primary)] transition hover:border-[var(--border-primary)] hover:bg-[var(--accent-light)]"
-        title="Reset Filters"
-      >
-        <RotateCcw className="h-4 w-4 text-[var(--primary)]" />
-        Reset
-      </button>
-    </div>
-  </div>
-
-  {/* FILTER SECTION */}
-  {showFilters && (
-    <div className="grid grid-cols-1 gap-3 border-t border-[var(--border-card)] pt-3 md:grid-cols-2 lg:grid-cols-5">
-      
-      {/* REGISTRATION TYPE */}
-      <select
-        value={registrationType}
-        onChange={(e) => {
-          setRegistrationType(e.target.value);
-          setPage(1);
-        }}
-        className="h-10 rounded-lg border border-[var(--border-card)] bg-[var(--bg-main)] px-3 text-sm font-medium text-[var(--text-primary)] outline-none transition focus:border-[var(--border-primary)]"
-      >
-        <option value="all">All Types</option>
-        <option value="paid">Paid</option>
-        <option value="direct">Direct</option>
-      </select>
-
-      {/* SLOT */}
-      {!isTeamMode && (
-        <div className="relative">
-          <div
-            className="h-10 cursor-pointer rounded-lg border border-[var(--border-card)] bg-[var(--bg-main)] px-3 py-2 text-sm font-medium text-[var(--text-primary)]"
-            onClick={() => setOpenSlotDropdown((prev) => !prev)}
-          >
-            {selectedSlot?.slotName || "All Slots"}
+        {/* TOP BAR */}
+        <div className="grid grid-cols-1 gap-3 lg:grid-cols-[minmax(0,1fr)_auto_auto_auto] lg:items-center">
+          {/* SEARCH */}
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--text-secondary)]" />
+            <input
+              type="text"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder={isTeamMode ? "Search team..." : "Search player..."}
+              className="h-10 w-full rounded-lg border border-[var(--border-card)] bg-[var(--bg-main)] pl-10 pr-4 text-sm font-medium text-[var(--text-primary)] outline-none transition placeholder:text-[var(--text-secondary)] focus:border-[var(--border-primary)] focus:bg-[var(--bg-card)]"
+            />
           </div>
 
-          {openSlotDropdown && (
-            <div
-              className="absolute z-50 mt-1 max-h-60 w-full overflow-y-auto rounded-lg border border-[var(--border-card)] bg-[var(--bg-card)] shadow-[var(--shadow-card)]"
-              onScroll={handleScroll}
+          {/* ACTIONS */}
+          <div className="contents">
+            {/* LIMIT */}
+            <select
+              value={limit}
+              onChange={(e) => setLimit(Number(e.target.value))}
+              className="h-10 rounded-lg border border-[var(--border-card)] bg-[var(--bg-main)] px-3 text-xs font-semibold text-[var(--text-primary)] outline-none transition focus:border-[var(--border-primary)]"
             >
-              <input
-                type="text"
-                placeholder="Search slot..."
-                value={searchSlot}
-                onChange={(e) => setSearchSlot(e.target.value)}
-                className="w-full border-b border-[var(--border-card)] bg-[var(--bg-main)] px-3 py-2 text-sm font-medium outline-none"
-              />
+              <option value={10}>10</option>
+              <option value={20}>20</option>
+              <option value={50}>50</option>
+            </select>
 
-              <div
-                onClick={() => {
-                  setSlotId("");
-                  setSessionId("");
-                  setPage(1);
-                  setOpenSlotDropdown(false);
-                }}
-                className="px-3 py-2 hover:bg-[var(--secondary-lighter)] cursor-pointer text-sm"
-              >
-                All Slots
-              </div>
+            {/* FILTER BUTTON */}
+            <button
+              onClick={() => setShowFilters((prev) => !prev)}
+              className={`inline-flex h-10 items-center justify-center gap-2 rounded-lg border px-3 text-xs font-semibold transition ${
+                showFilters
+                  ? "border-[var(--border-primary)] bg-[var(--accent-light)] text-[var(--primary)]"
+                  : "border-[var(--border-card)] bg-[var(--bg-main)] text-[var(--text-primary)] hover:border-[var(--border-primary)] hover:bg-[var(--accent-light)]"
+              }`}
+            >
+              <Filter className="h-4 w-4" />
+              Filters
+            </button>
 
-              {allSlots.map((s) => (
-                <div
-                  key={s._id}
-                  onClick={() => {
-                    setSlotId(s._id);
-                    setSessionId("");
-                    setPage(1);
-                    setOpenSlotDropdown(false);
-                  }}
-                  className="px-3 py-2 hover:bg-[var(--secondary-lighter)] cursor-pointer text-sm"
-                >
-                  {s.slotName}
-                </div>
-              ))}
-
-              {hasMoreSlots && (
-                <div className="text-center py-2 text-xs text-[var(--text-muted)]">
-                  Loading more...
-                </div>
-              )}
-            </div>
-          )}
+            {/* RESET */}
+            <button
+              onClick={resetFilters}
+              className="inline-flex h-10 items-center justify-center gap-2 rounded-lg border border-[var(--border-card)] bg-[var(--bg-main)] px-3 text-xs font-semibold text-[var(--text-primary)] transition hover:border-[var(--border-primary)] hover:bg-[var(--accent-light)]"
+              title="Reset Filters"
+            >
+              <RotateCcw className="h-4 w-4 text-[var(--primary)]" />
+              Reset
+            </button>
+          </div>
         </div>
-      )}
 
-      {/* SESSION */}
-      {!isTeamMode && (
-        <select
-          value={sessionId}
-          onChange={(e) => {
-            setSessionId(e.target.value);
-            setPage(1);
-          }}
-          className="h-10 rounded-lg border border-[var(--border-card)] bg-[var(--bg-main)] px-3 text-sm font-medium text-[var(--text-primary)] outline-none transition focus:border-[var(--border-primary)] disabled:opacity-60"
-          disabled={!slotId}
-        >
-          <option value="">All Sessions</option>
-          {slotSessions.map((s) => (
-            <option key={s._id} value={s._id}>
-              {s.name}
-            </option>
-          ))}
-        </select>
-      )}
+        {/* FILTER SECTION */}
+        {showFilters && (
+          <div className="grid grid-cols-1 gap-3 border-t border-[var(--border-card)] pt-3 md:grid-cols-2 lg:grid-cols-5">
+            {/* REGISTRATION TYPE */}
+            <select
+              value={registrationType}
+              onChange={(e) => {
+                setRegistrationType(e.target.value);
+                setPage(1);
+              }}
+              className="h-10 rounded-lg border border-[var(--border-card)] bg-[var(--bg-main)] px-3 text-sm font-medium text-[var(--text-primary)] outline-none transition focus:border-[var(--border-primary)]"
+            >
+              <option value="all">All Types</option>
+              <option value="paid">Paid</option>
+              <option value="direct">Direct</option>
+            </select>
 
-      {/* DATE FROM */}
-      <input
-        type="date"
-        value={dateFrom}
-        onChange={(e) => setDateFrom(e.target.value)}
-        className="h-10 rounded-lg border border-[var(--border-card)] bg-[var(--bg-main)] px-3 text-sm font-medium text-[var(--text-primary)] outline-none transition focus:border-[var(--border-primary)]"
-      />
+            {/* SLOT */}
+            {!isTeamMode && (
+              <div className="relative">
+                <div
+                  className="h-10 cursor-pointer rounded-lg border border-[var(--border-card)] bg-[var(--bg-main)] px-3 py-2 text-sm font-medium text-[var(--text-primary)]"
+                  onClick={() => setOpenSlotDropdown((prev) => !prev)}
+                >
+                  {selectedSlot?.slotName || "All Slots"}
+                </div>
 
-      {/* DATE TO */}
-      <input
-        type="date"
-        value={dateTo}
-        onChange={(e) => setDateTo(e.target.value)}
-        className="h-10 rounded-lg border border-[var(--border-card)] bg-[var(--bg-main)] px-3 text-sm font-medium text-[var(--text-primary)] outline-none transition focus:border-[var(--border-primary)]"
-      />
-    </div>
-  )}
-</div>
+                {openSlotDropdown && (
+                  <div
+                    className="absolute z-50 mt-1 max-h-60 w-full overflow-y-auto rounded-lg border border-[var(--border-card)] bg-[var(--bg-card)] shadow-[var(--shadow-card)]"
+                    onScroll={handleScroll}
+                  >
+                    <input
+                      type="text"
+                      placeholder="Search slot..."
+                      value={searchSlot}
+                      onChange={(e) => setSearchSlot(e.target.value)}
+                      className="w-full border-b border-[var(--border-card)] bg-[var(--bg-main)] px-3 py-2 text-sm font-medium outline-none"
+                    />
+
+                    <div
+                      onClick={() => {
+                        setSlotId("");
+                        setSessionId("");
+                        setPage(1);
+                        setOpenSlotDropdown(false);
+                      }}
+                      className="px-3 py-2 hover:bg-[var(--secondary-lighter)] cursor-pointer text-sm"
+                    >
+                      All Slots
+                    </div>
+
+                    {allSlots.map((s) => (
+                      <div
+                        key={s._id}
+                        onClick={() => {
+                          setSlotId(s._id);
+                          setSessionId("");
+                          setPage(1);
+                          setOpenSlotDropdown(false);
+                        }}
+                        className="px-3 py-2 hover:bg-[var(--secondary-lighter)] cursor-pointer text-sm"
+                      >
+                        {s.slotName}
+                      </div>
+                    ))}
+
+                    {hasMoreSlots && (
+                      <div className="text-center py-2 text-xs text-[var(--text-muted)]">
+                        Loading more...
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* SESSION */}
+            {!isTeamMode && (
+              <select
+                value={sessionId}
+                onChange={(e) => {
+                  setSessionId(e.target.value);
+                  setPage(1);
+                }}
+                className="h-10 rounded-lg border border-[var(--border-card)] bg-[var(--bg-main)] px-3 text-sm font-medium text-[var(--text-primary)] outline-none transition focus:border-[var(--border-primary)] disabled:opacity-60"
+                disabled={!slotId}
+              >
+                <option value="">All Sessions</option>
+                {slotSessions.map((s) => (
+                  <option key={s._id} value={s._id}>
+                    {s.name}
+                  </option>
+                ))}
+              </select>
+            )}
+
+            {/* DATE FROM */}
+            <input
+              type="date"
+              value={dateFrom}
+              onChange={(e) => setDateFrom(e.target.value)}
+              className="h-10 rounded-lg border border-[var(--border-card)] bg-[var(--bg-main)] px-3 text-sm font-medium text-[var(--text-primary)] outline-none transition focus:border-[var(--border-primary)]"
+            />
+
+            {/* DATE TO */}
+            <input
+              type="date"
+              value={dateTo}
+              onChange={(e) => setDateTo(e.target.value)}
+              className="h-10 rounded-lg border border-[var(--border-card)] bg-[var(--bg-main)] px-3 text-sm font-medium text-[var(--text-primary)] outline-none transition focus:border-[var(--border-primary)]"
+            />
+          </div>
+        )}
+      </div>
 
       <div className="overflow-x-auto rounded-lg border border-[var(--border-card)] bg-[var(--bg-card)] shadow-[var(--shadow-card)]">
         <table className="w-full min-w-[900px] text-sm">
@@ -658,12 +659,16 @@ const RegistrationOverview = ({ auctionId: auctionIdProp }) => {
 
                 {/* SLOT */}
                 {isTrailAuction && (
-                  <td className="px-3 py-1 text-[var(--text-secondary)]">{item?.slot?.slotName || "-"}</td>
+                  <td className="px-3 py-1 text-[var(--text-secondary)]">
+                    {item?.slot?.slotName || "-"}
+                  </td>
                 )}
 
                 {/* SESSION */}
                 {isTrailAuction && (
-                  <td className="px-3 py-1 text-[var(--text-secondary)]">{item?.session?.name || "-"}</td>
+                  <td className="px-3 py-1 text-[var(--text-secondary)]">
+                    {item?.session?.name || "-"}
+                  </td>
                 )}
 
                 {isTeamMode && (
@@ -750,348 +755,353 @@ const RegistrationOverview = ({ auctionId: auctionIdProp }) => {
 
       {selectedRegistration &&
         createPortal(
-        <div className="fixed inset-0 z-[2147483647] flex items-start justify-center overflow-y-auto bg-black/70 p-3 pt-5 backdrop-blur-sm sm:p-5">
-          <div className="w-full max-w-3xl overflow-hidden rounded-2xl border border-[var(--border-card)] bg-[var(--bg-card)] shadow-[0_28px_80px_rgba(0,0,0,0.35)]">
-            {/* HEADER */}
-            <div className="border-b border-[var(--border-card)] bg-[var(--bg-main)] px-4 py-4 sm:px-5">
-              <div className="flex items-start justify-between gap-3">
-                <div className="flex min-w-0 items-start gap-3">
-                  <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-[var(--border-primary)] bg-[var(--accent-light)] text-[var(--primary)]">
-                    {isTeamMode ? <Users size={18} /> : <User size={18} />}
+          <div className="fixed inset-0 z-[10000] flex items-start justify-center overflow-y-auto bg-black/70 p-3 pt-5 backdrop-blur-sm sm:p-5">
+            <div className="w-full max-w-3xl overflow-hidden rounded-2xl border border-[var(--border-card)] bg-[var(--bg-card)] shadow-[0_28px_80px_rgba(0,0,0,0.35)]">
+              {/* HEADER */}
+              <div className="border-b border-[var(--border-card)] bg-[var(--bg-main)] px-4 py-4 sm:px-5">
+                <div className="flex items-start justify-between gap-3">
+                  <div className="flex min-w-0 items-start gap-3">
+                    <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-[var(--border-primary)] bg-[var(--accent-light)] text-[var(--primary)]">
+                      {isTeamMode ? <Users size={18} /> : <User size={18} />}
+                    </div>
+
+                    <div className="min-w-0">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <h3 className="text-base font-semibold text-[var(--text-primary)]">
+                          Registration Details
+                        </h3>
+                        <span className="rounded-full border border-[var(--border-primary)] bg-[var(--bg-card)] px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-[var(--primary)]">
+                          {isTeamMode ? "Team" : "Player"}
+                        </span>
+                      </div>
+                      <p className="mt-1 truncate text-sm font-medium text-[var(--text-secondary)]">
+                        {isTeamMode
+                          ? selectedRegistration?.teamName ||
+                            "Team registration"
+                          : selectedRegistration?.player?.name ||
+                            "Player registration"}
+                      </p>
+                    </div>
                   </div>
 
-                  <div className="min-w-0">
-                    <div className="flex flex-wrap items-center gap-2">
-                      <h3 className="text-base font-semibold text-[var(--text-primary)]">
-                        Registration Details
-                      </h3>
-                      <span className="rounded-full border border-[var(--border-primary)] bg-[var(--bg-card)] px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-[var(--primary)]">
-                        {isTeamMode ? "Team" : "Player"}
-                      </span>
-                    </div>
-                    <p className="mt-1 truncate text-sm font-medium text-[var(--text-secondary)]">
-                      {isTeamMode
-                        ? selectedRegistration?.teamName || "Team registration"
-                        : selectedRegistration?.player?.name ||
-                          "Player registration"}
+                  <button
+                    onClick={() => setSelectedRegistration(null)}
+                    className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-[var(--border-card)] bg-[var(--bg-card)] text-[var(--text-secondary)] transition hover:border-[var(--border-primary)] hover:bg-[var(--accent-light)] hover:text-[var(--text-primary)]"
+                    aria-label="Close registration details"
+                  >
+                    <X size={17} />
+                  </button>
+                </div>
+
+                <div className="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-4">
+                  <div className="rounded-lg border border-[var(--border-card)] bg-[var(--bg-card)] px-3 py-2">
+                    <p className="text-[10px] font-bold uppercase tracking-wide text-[var(--text-muted)]">
+                      Type
+                    </p>
+                    <p className="mt-1 text-sm font-semibold capitalize text-[var(--text-primary)]">
+                      {selectedRegistration?.registrationType || "-"}
+                    </p>
+                  </div>
+                  <div className="rounded-lg border border-[var(--border-card)] bg-[var(--bg-card)] px-3 py-2">
+                    <p className="text-[10px] font-bold uppercase tracking-wide text-[var(--text-muted)]">
+                      Status
+                    </p>
+                    <p className="mt-1 text-sm font-semibold capitalize text-[var(--text-primary)]">
+                      {selectedRegistration?.paymentDetails?.status || "direct"}
+                    </p>
+                  </div>
+                  <div className="rounded-lg border border-[var(--border-card)] bg-[var(--bg-card)] px-3 py-2">
+                    <p className="text-[10px] font-bold uppercase tracking-wide text-[var(--text-muted)]">
+                      Total
+                    </p>
+                    <p className="mt-1 text-sm font-semibold text-[var(--primary)]">
+                      ₹{selectedRegistration?.paymentDetails?.amount || 0}
+                    </p>
+                  </div>
+                  <div className="rounded-lg border border-[var(--border-card)] bg-[var(--bg-card)] px-3 py-2">
+                    <p className="text-[10px] font-bold uppercase tracking-wide text-[var(--text-muted)]">
+                      Mode
+                    </p>
+                    <p className="mt-1 text-sm font-semibold text-[var(--text-primary)]">
+                      {isTeamMode ? "Team" : "Individual"}
                     </p>
                   </div>
                 </div>
-
-                <button
-                  onClick={() => setSelectedRegistration(null)}
-                  className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-[var(--border-card)] bg-[var(--bg-card)] text-[var(--text-secondary)] transition hover:border-[var(--border-primary)] hover:bg-[var(--accent-light)] hover:text-[var(--text-primary)]"
-                  aria-label="Close registration details"
-                >
-                  <X size={17} />
-                </button>
               </div>
 
-              <div className="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-4">
-                <div className="rounded-lg border border-[var(--border-card)] bg-[var(--bg-card)] px-3 py-2">
-                  <p className="text-[10px] font-bold uppercase tracking-wide text-[var(--text-muted)]">
-                    Type
-                  </p>
-                  <p className="mt-1 text-sm font-semibold capitalize text-[var(--text-primary)]">
-                    {selectedRegistration?.registrationType || "-"}
-                  </p>
-                </div>
-                <div className="rounded-lg border border-[var(--border-card)] bg-[var(--bg-card)] px-3 py-2">
-                  <p className="text-[10px] font-bold uppercase tracking-wide text-[var(--text-muted)]">
-                    Status
-                  </p>
-                  <p className="mt-1 text-sm font-semibold capitalize text-[var(--text-primary)]">
-                    {selectedRegistration?.paymentDetails?.status || "direct"}
-                  </p>
-                </div>
-                <div className="rounded-lg border border-[var(--border-card)] bg-[var(--bg-card)] px-3 py-2">
-                  <p className="text-[10px] font-bold uppercase tracking-wide text-[var(--text-muted)]">
-                    Total
-                  </p>
-                  <p className="mt-1 text-sm font-semibold text-[var(--primary)]">
-                    ₹{selectedRegistration?.paymentDetails?.amount || 0}
-                  </p>
-                </div>
-                <div className="rounded-lg border border-[var(--border-card)] bg-[var(--bg-card)] px-3 py-2">
-                  <p className="text-[10px] font-bold uppercase tracking-wide text-[var(--text-muted)]">
-                    Mode
-                  </p>
-                  <p className="mt-1 text-sm font-semibold text-[var(--text-primary)]">
-                    {isTeamMode ? "Team" : "Individual"}
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            {/* CONTENT */}
-            <div className="max-h-[calc(100vh-13rem)] space-y-3 overflow-y-auto bg-[var(--bg-main)] p-3 [scrollbar-color:var(--border-primary)_transparent] [scrollbar-width:thin] sm:p-5">
-              {isTeamMode ? (
-                <>
-                  <Section title="Team Info" icon={<Users size={14} />}>
-                    <Field
-                      label="Team Name"
-                      value={selectedRegistration?.teamName}
-                    />
-                    <Field
-                      label="Owner"
-                      value={selectedRegistration?.teamOwner}
-                    />
-                    <Field
-                      label="Mobile"
-                      value={selectedRegistration?.mobileNumber}
-                    />
-                    <Field
-                      label="Email"
-                      value={selectedRegistration?.contactEmail}
-                    />
-                    <Field
-                      label="Location"
-                      value={selectedRegistration?.location}
-                    />
-                    <Field
-                      label="Logo"
-                      full
-                      value={
-                        selectedRegistration?.logo ? (
-                          <img
-                            src={selectedRegistration.logo}
-                            alt={selectedRegistration?.teamName || "Team logo"}
-                            className="h-20 w-20 rounded-lg border border-[var(--border-card)] object-cover"
-                          />
-                        ) : (
-                          "-"
-                        )
-                      }
-                    />
-                  </Section>
-                </>
-              ) : (
-                <>
-                  <Section title="Player Info" icon={<User size={14} />}>
-                    <Field
-                      label="Name"
-                      value={selectedRegistration?.player?.name}
-                    />
-                    <Field
-                      label="Mobile"
-                      value={selectedRegistration?.player?.mobile}
-                    />
-                    <Field
-                      label="Email"
-                      value={selectedRegistration?.player?.email}
-                    />
-                    <Field
-                      label="Location"
-                      value={selectedRegistration?.player?.location}
-                    />
-                    <Field
-                      label="Date of birth"
-                      value={
-                        selectedRegistration?.player?.dateOfBirth
-                          ? new Date(
-                              selectedRegistration.player.dateOfBirth,
-                            ).toLocaleDateString()
-                          : "-"
-                      }
-                    />
-                    <Field
-                      label="Aadhar card"
-                      full
-                      value={
-                        selectedRegistration?.player?.adharCard ? (
-                          <a
-                            href={selectedRegistration.player.adharCard}
-                            target="_blank"
-                            rel="noreferrer"
-                            className="inline-flex flex-col gap-2"
-                          >
-                            <img
-                              src={selectedRegistration.player.adharCard}
-                              alt="Aadhar card"
-                              className="max-h-52 w-full rounded-lg border border-[var(--border-card)] object-contain"
-                            />
-                            <span className="text-xs font-semibold text-[var(--primary)] underline">
-                              Open full image
-                            </span>
-                          </a>
-                        ) : (
-                          "-"
-                        )
-                      }
-                    />
-                    <Field
-                      label="Voter ID"
-                      full
-                      value={
-                        selectedRegistration?.player?.voterId ? (
-                          <a
-                            href={selectedRegistration.player.voterId}
-                            target="_blank"
-                            rel="noreferrer"
-                            className="inline-flex flex-col gap-2"
-                          >
-                            <img
-                              src={selectedRegistration.player.voterId}
-                              alt="Voter ID"
-                              className="max-h-52 w-full rounded-lg border border-[var(--border-card)] object-contain"
-                            />
-                            <span className="text-xs font-semibold text-[var(--primary)] underline">
-                              Open full image
-                            </span>
-                          </a>
-                        ) : (
-                          "-"
-                        )
-                      }
-                    />
-                  </Section>
-
-                  <Section
-                    title="Slot & Session"
-                    icon={<CalendarDays size={14} />}
-                  >
-                    <Field
-                      label="Slot"
-                      value={selectedRegistration?.slot?.slotName}
-                    />
-                    <Field
-                      label="Code"
-                      value={selectedRegistration?.slot?.slotCode}
-                    />
-                    <Field
-                      label="Type"
-                      value={selectedRegistration?.slot?.slotType}
-                    />
-                    <Field
-                      label="Session"
-                      value={selectedRegistration?.session?.name}
-                    />
-
-                    <Field
-                      label="Date"
-                      value={
-                        selectedRegistration?.session?.slotDate
-                          ? new Date(
-                              selectedRegistration.session.slotDate,
-                            ).toLocaleDateString()
-                          : "-"
-                      }
-                    />
-
-                    <Field
-                      label="Time"
-                      value={
-                        selectedRegistration?.session?.slotStartTime &&
-                        selectedRegistration?.session?.slotEndTime
-                          ? `${selectedRegistration.session.slotStartTime} - ${selectedRegistration.session.slotEndTime}`
-                          : "-"
-                      }
-                    />
-                  </Section>
-                </>
-              )}
-
-              <Section title="Payment" icon={<CreditCardIcon size={14} />}>
-                <Field
-                  label="Type"
-                  value={
-                    <span
-                    className={`rounded-full px-2 py-0.5 text-[10px] font-semibold ${
-                        selectedRegistration?.registrationType === "paid"
-                          ? "bg-[var(--accent-light)] text-[var(--primary)]"
-                          : "bg-[var(--secondary-lighter)] text-[var(--text-secondary)]"
-                      }`}
-                    >
-                      {selectedRegistration?.registrationType || "-"}
-                    </span>
-                  }
-                />
-
-                <Field
-                  label="Status"
-                  value={
-                    selectedRegistration?.paymentDetails?.status || "direct"
-                  }
-                />
-                <Field
-                  label="Fee"
-                  value={`₹${selectedRegistration?.paymentDetails?.registrationFee || 0}`}
-                />
-                <Field
-                  label="Platform"
-                  value={`₹${selectedRegistration?.paymentDetails?.platformFee || 0}`}
-                />
-                <Field
-                  label="Total"
-                  value={`₹${selectedRegistration?.paymentDetails?.amount || 0}`}
-                />
-                {/* ✅ GST SHOW */}
-                {selectedRegistration?.paymentDetails?.gstEnabled && (
+              {/* CONTENT */}
+              <div className="max-h-[calc(100vh-13rem)] space-y-3 overflow-y-auto bg-[var(--bg-main)] p-3 [scrollbar-color:var(--border-primary)_transparent] [scrollbar-width:thin] sm:p-5">
+                {isTeamMode ? (
                   <>
-                    <Field
-                      label="GST (%)"
-                      value={`${selectedRegistration?.paymentDetails?.gstPercentage || 0}%`}
-                    />
-                    <Field
-                      label="GST Amount"
-                      value={`₹${selectedRegistration?.paymentDetails?.gstAmount || 0}`}
-                    />
+                    <Section title="Team Info" icon={<Users size={14} />}>
+                      <Field
+                        label="Team Name"
+                        value={selectedRegistration?.teamName}
+                      />
+                      <Field
+                        label="Owner"
+                        value={selectedRegistration?.teamOwner}
+                      />
+                      <Field
+                        label="Mobile"
+                        value={selectedRegistration?.mobileNumber}
+                      />
+                      <Field
+                        label="Email"
+                        value={selectedRegistration?.contactEmail}
+                      />
+                      <Field
+                        label="Location"
+                        value={selectedRegistration?.location}
+                      />
+                      <Field
+                        label="Logo"
+                        full
+                        value={
+                          selectedRegistration?.logo ? (
+                            <img
+                              src={selectedRegistration.logo}
+                              alt={
+                                selectedRegistration?.teamName || "Team logo"
+                              }
+                              className="h-20 w-20 rounded-lg border border-[var(--border-card)] object-cover"
+                            />
+                          ) : (
+                            "-"
+                          )
+                        }
+                      />
+                    </Section>
+                  </>
+                ) : (
+                  <>
+                    <Section title="Player Info" icon={<User size={14} />}>
+                      <Field
+                        label="Name"
+                        value={selectedRegistration?.player?.name}
+                      />
+                      <Field
+                        label="Mobile"
+                        value={selectedRegistration?.player?.mobile}
+                      />
+                      <Field
+                        label="Email"
+                        value={selectedRegistration?.player?.email}
+                      />
+                      <Field
+                        label="Location"
+                        value={selectedRegistration?.player?.location}
+                      />
+                      <Field
+                        label="Date of birth"
+                        value={
+                          selectedRegistration?.player?.dateOfBirth
+                            ? new Date(
+                                selectedRegistration.player.dateOfBirth,
+                              ).toLocaleDateString()
+                            : "-"
+                        }
+                      />
+                      <Field
+                        label="Aadhar card"
+                        full
+                        value={
+                          selectedRegistration?.player?.adharCard ? (
+                            <a
+                              href={selectedRegistration.player.adharCard}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="inline-flex flex-col gap-2"
+                            >
+                              <img
+                                src={selectedRegistration.player.adharCard}
+                                alt="Aadhar card"
+                                className="max-h-52 w-full rounded-lg border border-[var(--border-card)] object-contain"
+                              />
+                              <span className="text-xs font-semibold text-[var(--primary)] underline">
+                                Open full image
+                              </span>
+                            </a>
+                          ) : (
+                            "-"
+                          )
+                        }
+                      />
+                      <Field
+                        label="Voter ID"
+                        full
+                        value={
+                          selectedRegistration?.player?.voterId ? (
+                            <a
+                              href={selectedRegistration.player.voterId}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="inline-flex flex-col gap-2"
+                            >
+                              <img
+                                src={selectedRegistration.player.voterId}
+                                alt="Voter ID"
+                                className="max-h-52 w-full rounded-lg border border-[var(--border-card)] object-contain"
+                              />
+                              <span className="text-xs font-semibold text-[var(--primary)] underline">
+                                Open full image
+                              </span>
+                            </a>
+                          ) : (
+                            "-"
+                          )
+                        }
+                      />
+                    </Section>
+
+                    <Section
+                      title="Slot & Session"
+                      icon={<CalendarDays size={14} />}
+                    >
+                      <Field
+                        label="Slot"
+                        value={selectedRegistration?.slot?.slotName}
+                      />
+                      <Field
+                        label="Code"
+                        value={selectedRegistration?.slot?.slotCode}
+                      />
+                      <Field
+                        label="Type"
+                        value={selectedRegistration?.slot?.slotType}
+                      />
+                      <Field
+                        label="Session"
+                        value={selectedRegistration?.session?.name}
+                      />
+
+                      <Field
+                        label="Date"
+                        value={
+                          selectedRegistration?.session?.slotDate
+                            ? new Date(
+                                selectedRegistration.session.slotDate,
+                              ).toLocaleDateString()
+                            : "-"
+                        }
+                      />
+
+                      <Field
+                        label="Time"
+                        value={
+                          selectedRegistration?.session?.slotStartTime &&
+                          selectedRegistration?.session?.slotEndTime
+                            ? `${selectedRegistration.session.slotStartTime} - ${selectedRegistration.session.slotEndTime}`
+                            : "-"
+                        }
+                      />
+                    </Section>
                   </>
                 )}
-                {isTeamMode && (
+
+                <Section title="Payment" icon={<CreditCardIcon size={14} />}>
                   <Field
-                    label="Payment ID"
+                    label="Type"
                     value={
-                      selectedRegistration?.paymentDetails?.paymentId || "-"
+                      <span
+                        className={`rounded-full px-2 py-0.5 text-[10px] font-semibold ${
+                          selectedRegistration?.registrationType === "paid"
+                            ? "bg-[var(--accent-light)] text-[var(--primary)]"
+                            : "bg-[var(--secondary-lighter)] text-[var(--text-secondary)]"
+                        }`}
+                      >
+                        {selectedRegistration?.registrationType || "-"}
+                      </span>
                     }
                   />
-                )}
-                {isTeamMode && (
-                  <Field
-                    label="Order ID"
-                    value={selectedRegistration?.paymentDetails?.orderId || "-"}
-                  />
-                )}
 
-                {isTeamMode && selectedRegistration?.paymentScreenshot && (
                   <Field
-                    label="Payment Screenshot"
+                    label="Status"
+                    value={
+                      selectedRegistration?.paymentDetails?.status || "direct"
+                    }
+                  />
+                  <Field
+                    label="Fee"
+                    value={`₹${selectedRegistration?.paymentDetails?.registrationFee || 0}`}
+                  />
+                  <Field
+                    label="Platform"
+                    value={`₹${selectedRegistration?.paymentDetails?.platformFee || 0}`}
+                  />
+                  <Field
+                    label="Total"
+                    value={`₹${selectedRegistration?.paymentDetails?.amount || 0}`}
+                  />
+                  {/* ✅ GST SHOW */}
+                  {selectedRegistration?.paymentDetails?.gstEnabled && (
+                    <>
+                      <Field
+                        label="GST (%)"
+                        value={`${selectedRegistration?.paymentDetails?.gstPercentage || 0}%`}
+                      />
+                      <Field
+                        label="GST Amount"
+                        value={`₹${selectedRegistration?.paymentDetails?.gstAmount || 0}`}
+                      />
+                    </>
+                  )}
+                  {isTeamMode && (
+                    <Field
+                      label="Payment ID"
+                      value={
+                        selectedRegistration?.paymentDetails?.paymentId || "-"
+                      }
+                    />
+                  )}
+                  {isTeamMode && (
+                    <Field
+                      label="Order ID"
+                      value={
+                        selectedRegistration?.paymentDetails?.orderId || "-"
+                      }
+                    />
+                  )}
+
+                  {isTeamMode && selectedRegistration?.paymentScreenshot && (
+                    <Field
+                      label="Payment Screenshot"
+                      full
+                      value={
+                        <a
+                          href={selectedRegistration.paymentScreenshot}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="inline-flex flex-col gap-2"
+                        >
+                          <img
+                            src={selectedRegistration.paymentScreenshot}
+                            alt="Payment screenshot"
+                            className="max-h-52 w-full rounded-lg border border-[var(--border-card)] object-contain"
+                          />
+                          <span className="text-xs font-semibold text-[var(--primary)] underline">
+                            Open full screenshot
+                          </span>
+                        </a>
+                      }
+                    />
+                  )}
+
+                  <Field
+                    label="Date"
                     full
                     value={
-                      <a
-                        href={selectedRegistration.paymentScreenshot}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="inline-flex flex-col gap-2"
-                      >
-                        <img
-                          src={selectedRegistration.paymentScreenshot}
-                          alt="Payment screenshot"
-                          className="max-h-52 w-full rounded-lg border border-[var(--border-card)] object-contain"
-                        />
-                        <span className="text-xs font-semibold text-[var(--primary)] underline">
-                          Open full screenshot
-                        </span>
-                      </a>
+                      selectedRegistration?.registrationDate
+                        ? new Date(
+                            selectedRegistration.registrationDate,
+                          ).toLocaleString()
+                        : "-"
                     }
                   />
-                )}
-
-                <Field
-                  label="Date"
-                  full
-                  value={
-                    selectedRegistration?.registrationDate
-                      ? new Date(
-                          selectedRegistration.registrationDate,
-                        ).toLocaleString()
-                      : "-"
-                  }
-                />
-              </Section>
+                </Section>
+              </div>
             </div>
-          </div>
-        </div>,
+          </div>,
           document.body,
         )}
     </div>

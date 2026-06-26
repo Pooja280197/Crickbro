@@ -20,6 +20,7 @@ import api from "../../../../../../utils/api";
 import { useDebounce } from "../../../../../../components/useDebounce";
 import { useDispatch, useSelector } from "react-redux";
 import {
+  bulkToggleSupercampPlayers,
   deletePlayer,
   getAssignedinCategory,
   getAssignedPlayers,
@@ -95,6 +96,7 @@ const SelectedAuctionManager = ({
   });
 
   const [assignModalOpen, setAssignModalOpen] = useState(false);
+  const [supercampLoading, setSupercampLoading] = useState(false);
   const [deleteCandidate, setDeleteCandidate] = useState(null);
   const [bulkDeleteConfirmOpen, setBulkDeleteConfirmOpen] = useState(false);
   const [toast, setToast] = useState(null);
@@ -108,9 +110,6 @@ const SelectedAuctionManager = ({
   const [searchAssign, setSearchAssign] = useState("");
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [deleting, setDeleting] = useState(false);
-
-  // const [auctionTotalPages, setAuctionTotalPages] = useState(1);
-  // const [auctionTotal, setAuctionTotal] = useState(0);
   const [playerTypes, setPlayerTypes] = useState([
     { label: "Batsman", value: "batsman", color: "text-cyan-400" },
     { label: "Bowler", value: "bowler", color: "text-emerald-400" },
@@ -168,7 +167,7 @@ const SelectedAuctionManager = ({
         title="Grid view"
       >
         <LayoutGrid className="h-4 w-4" />
-        Grid
+        
       </button>
       <button
         type="button"
@@ -181,7 +180,7 @@ const SelectedAuctionManager = ({
         title="Table view"
       >
         <Table2 className="h-4 w-4" />
-        Table
+        
       </button>
     </div>
   );
@@ -261,62 +260,89 @@ const SelectedAuctionManager = ({
     }
   };
 
-  const fetchUnassignedPlayers = (page = 1) => {
+  const fetchUnassignedPlayers = (page = 1, overrides = {}) => {
+    const filters = {
+      itemsPerPage,
+      debouncedUnassignPlayer,
+      typeFilter,
+      fromRating,
+      toRating,
+      slotFilter,
+      slotSessionFilter,
+      directSelectedCheckbox,
+      directSelectedGradeFilter,
+      ...overrides,
+    };
+
     dispatch(
       isTrialType
         ? getSelectedPlayers({
             auctionId,
             page,
-            itemsPerPage: itemsPerPage,
-            debouncedUnassignPlayer,
-            typeFilter,
-            fromRating,
-            toRating,
-            slotFilter,
-            slotSessionFilter,
-            directSelectedCheckbox,
-            directSelectedGradeFilter,
+            itemsPerPage: filters.itemsPerPage,
+            debouncedUnassignPlayer: filters.debouncedUnassignPlayer,
+            typeFilter: filters.typeFilter,
+            fromRating: filters.fromRating,
+            toRating: filters.toRating,
+            slotFilter: filters.slotFilter,
+            slotSessionFilter: filters.slotSessionFilter,
+            directSelectedCheckbox: filters.directSelectedCheckbox,
+            directSelectedGradeFilter: filters.directSelectedGradeFilter,
           })
         : getUnassignedinCategory({
             auctionId,
             page,
-            itemsPerPage: itemsPerPage,
-            debouncedUnassignPlayer,
-            typeFilter,
+            itemsPerPage: filters.itemsPerPage,
+            debouncedUnassignPlayer: filters.debouncedUnassignPlayer,
+            typeFilter: filters.typeFilter,
           }),
     );
   };
 
-  const fetchAssignedPlayers = (page = 1) => {
+  const fetchAssignedPlayers = (page = 1, overrides = {}) => {
+    const filters = {
+      itemsPerPage,
+      debouncedAssignPlayer,
+      typeFilter: typeFilterA,
+      fromRating: fromRatingA,
+      toRating: toRatingA,
+      categorySearchId,
+      slotFilter: slotFilterA,
+      slotSessionFilter: slotSessionFilterA,
+      directSelectedCheckbox: directSelectedCheckboxA,
+      directSelectedGradeFilter: directSelectedGradeFilterA,
+      ...overrides,
+    };
+
     dispatch(
       isTrialType
         ? getAssignedinCategory({
             auctionId,
             page,
-            itemsPerPage: itemsPerPage,
-            debouncedAssignPlayer,
-            typeFilter: typeFilterA,
-            fromRating: fromRatingA,
-            toRating: toRatingA,
-            categorySearchId,
-            slotFilter: slotFilterA,
-            slotSessionFilter: slotSessionFilterA,
-            directSelectedCheckbox: directSelectedCheckboxA,
-            directSelectedGradeFilter: directSelectedGradeFilterA,
+            itemsPerPage: filters.itemsPerPage,
+            debouncedAssignPlayer: filters.debouncedAssignPlayer,
+            typeFilter: filters.typeFilter,
+            fromRating: filters.fromRating,
+            toRating: filters.toRating,
+            categorySearchId: filters.categorySearchId,
+            slotFilter: filters.slotFilter,
+            slotSessionFilter: filters.slotSessionFilter,
+            directSelectedCheckbox: filters.directSelectedCheckbox,
+            directSelectedGradeFilter: filters.directSelectedGradeFilter,
           })
         : getAssignedPlayers({
             auctionId,
             page,
-            itemsPerPage: itemsPerPage,
-            debouncedAssignPlayer,
-            typeFilter: typeFilterA,
-            fromRating: fromRatingA,
-            toRating: toRatingA,
-            categorySearchId,
-            slotFilter: slotFilterA,
-            slotSessionFilter: slotSessionFilterA,
-            directSelectedCheckbox: directSelectedCheckboxA,
-            directSelectedGradeFilter: directSelectedGradeFilterA,
+            itemsPerPage: filters.itemsPerPage,
+            debouncedAssignPlayer: filters.debouncedAssignPlayer,
+            typeFilter: filters.typeFilter,
+            fromRating: filters.fromRating,
+            toRating: filters.toRating,
+            categorySearchId: filters.categorySearchId,
+            slotFilter: filters.slotFilter,
+            slotSessionFilter: filters.slotSessionFilter,
+            directSelectedCheckbox: filters.directSelectedCheckbox,
+            directSelectedGradeFilter: filters.directSelectedGradeFilter,
           }),
     );
   };
@@ -443,24 +469,16 @@ const SelectedAuctionManager = ({
     setShowResetUnassigned(false);
     setSelectedIds([]);
     setSelectedSlotSessions([]);
-
-    const params = new URLSearchParams({
-      categoryFilter: "notassignincategory",
-      page: "1",
-      limit: "8",
+    fetchUnassignedPlayers(1, {
+      debouncedUnassignPlayer: "",
+      typeFilter: "",
+      fromRating: "",
+      toRating: "",
+      slotFilter: "",
+      slotSessionFilter: "",
+      directSelectedCheckbox: false,
+      directSelectedGradeFilter: "",
     });
-
-    api
-      .get(
-        `/webSiteApi/auction/getSelectPlayers/${auctionId}?${params.toString()}`,
-      )
-      .catch((err) => {
-        console.error("Error resetting unassigned", err);
-        showToast({
-          type: "error",
-          message: "Failed to reset filters.",
-        });
-      });
   };
 
   const handleResetAuction = () => {
@@ -486,8 +504,17 @@ const SelectedAuctionManager = ({
     setShowResetAuction(false);
     setShowBulkActions(false);
     setSelectedAuctionIds([]);
-
-    fetchAssignedPlayers(1);
+    fetchAssignedPlayers(1, {
+      debouncedAssignPlayer: "",
+      typeFilter: "",
+      fromRating: "",
+      toRating: "",
+      categorySearchId: "",
+      slotFilter: "",
+      slotSessionFilter: "",
+      directSelectedCheckbox: false,
+      directSelectedGradeFilter: "",
+    });
   };
 
   useEffect(() => {
@@ -502,20 +529,39 @@ const SelectedAuctionManager = ({
     setAssignModalOpen(true);
   };
 
-  const handleAuctionPlayerSelect = (playerId) => {
-    if (!enableBulkMode) return;
+  const handleAddToSupercamp = async () => {
+    if (!selectedIds.length) return;
 
-    if (categorySearchId === "") {
-      setSelectedAuctionIds((prev) =>
-        prev.includes(playerId) ? [] : [playerId],
+    try {
+      setSupercampLoading(true);
+      const response = await dispatch(
+        bulkToggleSupercampPlayers(auctionId, selectedIds, true),
       );
-    } else {
-      setSelectedAuctionIds((prev) =>
-        prev.includes(playerId)
-          ? prev.filter((id) => id !== playerId)
-          : [...prev, playerId],
-      );
+      const updated = response?.data?.data?.updated ?? selectedIds.length;
+      showToast({
+        type: "success",
+        message: `${updated} player(s) added to Supercamp`,
+      });
+      setSelectedIds([]);
+      fetchUnassignedPlayers(unassignedPage);
+    } catch (error) {
+      showToast({
+        type: "error",
+        message:
+          error?.response?.data?.message ||
+          "Failed to add players to Supercamp",
+      });
+    } finally {
+      setSupercampLoading(false);
     }
+  };
+
+  const handleAuctionPlayerSelect = (playerId) => {
+    setSelectedAuctionIds((prev) =>
+      prev.includes(playerId)
+        ? prev.filter((id) => id !== playerId)
+        : [...prev, playerId],
+    );
 
     const selectedPlayer = auctionPlayers.find(
       (p) => p.player._id === playerId,
@@ -644,15 +690,6 @@ const SelectedAuctionManager = ({
   };
 
   const handleSelectAllAuctionVisible = () => {
-    if (!categorySearchId || categorySearchId === "") {
-      showToast({
-        type: "error",
-        message:
-          "Cannot select multiple players when viewing all categories. Please select a specific category first.",
-      });
-      return;
-    }
-
     const currentPageIds = auctionPlayers.map((p) => p.player._id);
     const allSelected = currentPageIds.every((id) =>
       selectedAuctionIds.includes(id),
@@ -832,6 +869,16 @@ const SelectedAuctionManager = ({
               >
                 <Users className="h-4 w-4" />
                 Assign to Auction ({selectedIds.length})
+              </button>
+              <button
+                type="button"
+                disabled={selectedIds.length === 0 || supercampLoading}
+                onClick={handleAddToSupercamp}
+                className="inline-flex h-9 items-center justify-center gap-2 rounded-lg border border-[var(--border-primary)] bg-[var(--accent-light)] px-3 text-xs font-semibold text-[var(--primary)] transition hover:bg-[var(--secondary)] hover:text-[#102033] disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                {supercampLoading
+                  ? "Adding..."
+                  : `Add to Supercamp (${selectedIds.length})`}
               </button>
             </>
           )}
@@ -1079,6 +1126,7 @@ const SelectedAuctionManager = ({
               <th className="px-3 py-3">Batch ID</th>
               <th className="px-3 py-3">Role</th>
               <th className="px-3 py-3">{isTrialType ? "Rating" : "Status"}</th>
+              {!isUnassigned && <th className="px-3 py-3">Base Price</th>}
               {!isUnassigned && <th className="px-3 py-3">Category</th>}
               {isTrialType && <th className="px-3 py-3">Slot / Session</th>}
               <th className="px-3 py-3 text-right">Actions</th>
@@ -1106,6 +1154,14 @@ const SelectedAuctionManager = ({
                 core?.category?.name ||
                 item?.categoryName ||
                 "-";
+              const basePrice = item?.basePrice ?? core?.basePrice;
+              const formattedBasePrice =
+                basePrice !== undefined &&
+                basePrice !== null &&
+                basePrice !== "" &&
+                Number.isFinite(Number(basePrice))
+                  ? `₹${Number(basePrice).toLocaleString("en-IN")}`
+                  : "-";
 
               return (
                 <tr
@@ -1175,6 +1231,11 @@ const SelectedAuctionManager = ({
                     {isTrialType ? getRatingLabel(item) : item?.status || "Selected"}
                   </td>
                   {!isUnassigned && (
+                    <td className="whitespace-nowrap px-3 py-3 font-semibold text-[var(--text-primary)]">
+                      {formattedBasePrice}
+                    </td>
+                  )}
+                  {!isUnassigned && (
                     <td className="px-3 py-3 text-[var(--text-secondary)]">
                       {categoryName}
                     </td>
@@ -1197,19 +1258,21 @@ const SelectedAuctionManager = ({
                           setSelectedPlayerDetails(item);
                           setIsPlayerDetailsOpen(true);
                         }}
-                        className="inline-flex h-8 items-center gap-1.5 rounded-lg border border-[var(--border-card)] bg-[var(--bg-main)] px-2.5 text-xs font-semibold text-[var(--text-primary)] transition hover:border-[var(--border-primary)] hover:bg-[var(--accent-light)]"
+                        className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-[var(--border-card)] bg-[var(--bg-main)] text-[var(--text-primary)] transition hover:border-[var(--border-primary)] hover:bg-[var(--accent-light)] hover:text-[var(--primary)]"
+                        title="View player details"
+                        aria-label={`View ${name}`}
                       >
                         <Eye className="h-3.5 w-3.5" />
-                        View
                       </button>
                       {!isUnassigned && (
                         <button
                           type="button"
                           onClick={() => setDeleteCandidate(item)}
-                          className="inline-flex h-8 items-center gap-1.5 rounded-lg border border-red-200 bg-[var(--bg-card)] px-2.5 text-xs font-semibold text-red-500 transition hover:bg-red-50"
+                          className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-red-500/30 bg-red-500/10 text-red-500 transition hover:bg-red-500/20"
+                          title="Remove player"
+                          aria-label={`Remove ${name}`}
                         >
                           <Trash2 className="h-3.5 w-3.5" />
-                          Remove
                         </button>
                       )}
                     </div>
@@ -1343,46 +1406,42 @@ const SelectedAuctionManager = ({
               {renderFilterRow("auction")}
 
               <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-[var(--border-card)] bg-[var(--bg-main)] px-3 py-2">
-                <div className="flex items-center gap-3">
-                  {enableBulkMode && (
-                    <>
-                      <button
-                        onClick={handleSelectAllAuctionVisible}
-                        className="inline-flex h-9 items-center justify-center gap-2 rounded-lg border border-[var(--border-primary)] bg-[var(--accent-light)] px-3 text-sm font-semibold text-[var(--primary)] transition hover:bg-[var(--secondary-lighter)]"
-                      >
-                        {auctionPlayers.every((p) =>
-                          selectedAuctionIds.includes(p.player._id),
-                        ) && auctionPlayers.length > 0 ? (
-                          <>
-                            <CheckSquare className="h-4 w-4" />
-                            Deselect All
-                          </>
-                        ) : (
-                          <>
-                            <Square className="h-4 w-4" />
-                            Select All (Visible)
-                          </>
-                        )}
-                      </button>
+                <div className="flex flex-wrap items-center gap-3">
+                  <button
+                    onClick={handleSelectAllAuctionVisible}
+                    className="inline-flex h-9 items-center justify-center gap-2 rounded-lg border border-[var(--border-primary)] bg-[var(--accent-light)] px-3 text-sm font-semibold text-[var(--primary)] transition hover:bg-[var(--secondary-lighter)]"
+                  >
+                    {auctionPlayers.every((p) =>
+                      selectedAuctionIds.includes(p.player._id),
+                    ) && auctionPlayers.length > 0 ? (
+                      <>
+                        <CheckSquare className="h-4 w-4" />
+                        Deselect All
+                      </>
+                    ) : (
+                      <>
+                        <Square className="h-4 w-4" />
+                        Select All (Visible)
+                      </>
+                    )}
+                  </button>
 
-                      <button
-                        disabled={
-                          selectedAuctionIds.length === 0 ||
-                          categorySearchId === ""
-                        }
-                        onClick={() => setBulkDeleteConfirmOpen(true)}
-                        className={`inline-flex h-9 items-center justify-center gap-2 rounded-lg px-4 text-sm font-semibold shadow-sm transition disabled:cursor-not-allowed disabled:opacity-50 ${
-                          selectedAuctionIds.length > 0 &&
-                          categorySearchId !== ""
-                            ? "bg-red-500 text-white hover:bg-red-600"
-                            : "border border-[var(--border-card)] bg-[var(--bg-main)] text-[var(--text-secondary)]"
-                        }`}
-                      >
-                        <Trash2 className="h-4 w-4" />
-                        Delete Selected ({selectedAuctionIds.length})
-                      </button>
-                    </>
-                  )}
+                  <button
+                    disabled={
+                      selectedAuctionIds.length === 0 ||
+                      categorySearchId === ""
+                    }
+                    onClick={() => setBulkDeleteConfirmOpen(true)}
+                    className={`inline-flex h-9 items-center justify-center gap-2 rounded-lg px-4 text-sm font-semibold shadow-sm transition disabled:cursor-not-allowed disabled:opacity-50 ${
+                      selectedAuctionIds.length > 0 &&
+                      categorySearchId !== ""
+                        ? "bg-red-500 text-white hover:bg-red-600"
+                        : "border border-[var(--border-card)] bg-[var(--bg-main)] text-[var(--text-secondary)]"
+                    }`}
+                  >
+                    <Trash2 className="h-4 w-4" />
+                    Delete Selected ({selectedAuctionIds.length})
+                  </button>
                 </div>
 
                 <div className="flex flex-col items-end gap-2">
@@ -1397,13 +1456,7 @@ const SelectedAuctionManager = ({
 
                   {!enableBulkMode && (
                     <div className="rounded-lg border border-[var(--border-card)] bg-[var(--bg-main)] px-3 py-1.5 text-xs font-medium text-[var(--text-secondary)]">
-                      Select a category to enable bulk actions
-                    </div>
-                  )}
-
-                  {enableBulkMode && categorySearchId === "" && (
-                    <div className="rounded-lg border border-[var(--border-card)] bg-[var(--bg-main)] px-3 py-1.5 text-xs font-medium text-[var(--text-secondary)]">
-                      Single selection only in "All Categories"
+                      Select a category to remove selected players
                     </div>
                   )}
                 </div>

@@ -8,6 +8,7 @@ import Testimonals from "../components/Home/Testimonals";
 import PowerfulFeatures from "../components/Home/PowerfulFeatures";
 import CTASection from "../components/Home/CTASection";
 import Footer from "../components/Footer";
+import ChatBot from "../components/ChatBot";
 
 const HotAuctions = lazy(() => import("../components/Home/HotAuctions"));
 
@@ -56,6 +57,7 @@ const Home = ({ theme, onToggleTheme }) => {
         <Testimonals />
         <PowerfulFeatures />
         <CTASection />
+        <ChatBot/>
       </main>
       <Footer />
     </div>

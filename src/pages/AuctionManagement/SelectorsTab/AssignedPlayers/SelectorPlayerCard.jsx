@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { createPortal } from "react-dom";
 import { Eye, MapPin, Clock, X, Star, CalendarCheck, Trash2 } from "lucide-react";
 import { toast } from "react-toastify";
 
@@ -68,6 +69,9 @@ const PlayerDetailsModal = ({
   onRemoveSelection,
   onEditSelection,
 }) => {
+  const [showRatings, setShowRatings] = useState(true);
+  const [showRemoveConfirm, setShowRemoveConfirm] = useState(false);
+
   if (!isOpen || !player) return null;
 
   const session = player.session;
@@ -75,8 +79,6 @@ const PlayerDetailsModal = ({
   const hasSelectorRated =
     Array.isArray(player?.rating?.ratings) && player.rating.ratings.length > 0;
   const grade = player?.directSelectedGrade || player?.rating?.directSelectedGrade || null;
-  const [showRatings, setShowRatings] = useState(true);
-  const [showRemoveConfirm, setShowRemoveConfirm] = useState(false);
 
   const openBallByBall = () => {
     if (locked) {
@@ -114,18 +116,17 @@ const PlayerDetailsModal = ({
     }
   };
 
-  return (
-    <div className="fixed inset-0 z-50">
+  const modalContent = (
+    <div className="fixed inset-0 z-[9999]">
       <div
         className="absolute inset-0 bg-black/60 backdrop-blur-sm"
         onClick={onClose}
       />
 
-      <div className="relative h-full w-full overflow-y-auto mt-10 mb-10">
-        <div className="min-h-full flex justify-center items-start p-4 pt-16 pb-10">
-          <div className="relative w-full max-w-2xl overflow-hidden rounded-2xl border border-[var(--border-card)] bg-[var(--bg-card)] shadow-2xl">
+      <div className="relative flex h-full w-full items-end justify-center overflow-hidden p-3 sm:items-center sm:p-4">
+        <div className="relative flex max-h-[calc(100dvh-1.5rem)] w-full max-w-2xl flex-col overflow-hidden rounded-2xl border border-[var(--border-card)] bg-[var(--bg-card)] shadow-2xl sm:max-h-[calc(100dvh-2rem)]">
             {showRemoveConfirm && (
-              <div className="absolute inset-0 z-30 bg-black/40 flex items-center justify-center p-4 rounded-2xl">
+              <div className="absolute inset-0 z-30 flex items-center justify-center rounded-t-2xl bg-black/40 p-3 sm:rounded-2xl sm:p-4">
                 <div className="w-full max-w-sm rounded-xl bg-[var(--bg-card)] p-4 shadow-2xl border border-[var(--border-card)]">
                   <h4 className="text-base font-semibold text-[var(--text-primary)]">
                     Confirm Remove Rating
@@ -133,11 +134,11 @@ const PlayerDetailsModal = ({
                   <p className="text-sm text-[var(--text-secondary)] mt-2">
                     Are you sure? This player's rating will be removed.
                   </p>
-                  <div className="mt-4 flex justify-end gap-2">
+                  <div className="mt-4 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
                     <button
                       type="button"
                       onClick={() => setShowRemoveConfirm(false)}
-                      className="px-3 py-2 rounded-lg border border-[var(--border-primary)] text-sm font-medium text-[var(--text-primary)] hover:bg-[var(--secondary-lighter)]"
+                      className="rounded-lg border border-[var(--border-primary)] px-3 py-2 text-sm font-medium text-[var(--text-primary)] hover:bg-[var(--secondary-lighter)]"
                     >
                       Cancel
                     </button>
@@ -156,14 +157,14 @@ const PlayerDetailsModal = ({
             <button
               type="button"
               onClick={onClose}
-              className="absolute top-4 right-4 z-20 w-8 h-8 flex items-center justify-center bg-[var(--secondary-lighter)] hover:bg-[var(--secondary-lighter)] rounded-full"
+              className="absolute right-3 top-3 z-20 flex h-9 w-9 items-center justify-center rounded-full bg-[var(--secondary-lighter)] hover:bg-[var(--secondary-lighter)] sm:right-4 sm:top-4"
             >
               <X className="w-4 h-4 text-[var(--text-primary)]" />
             </button>
 
-            <div className="max-h-[85vh] overflow-y-auto bg-[var(--bg-card)] p-6">
-              <div className="flex items-center gap-4 mb-6">
-                <div className="w-20 h-20 rounded-full bg-[var(--secondary-lighter)] overflow-hidden">
+            <div className="min-h-0 flex-1 overflow-y-auto bg-[var(--bg-card)] p-4 pt-12 sm:p-6">
+              <div className="mb-5 flex flex-col gap-4 sm:mb-6 sm:flex-row sm:items-center">
+                <div className="h-20 w-20 shrink-0 overflow-hidden rounded-full bg-[var(--secondary-lighter)]">
                   {player?.player?.logo && !isDummyImage(player?.player?.logo) ? (
                     <img
                       src={player?.player?.logo}
@@ -181,8 +182,8 @@ const PlayerDetailsModal = ({
                   )}
                 </div>
 
-                <div className="flex-1">
-                  <h2 className="text-xl font-bold text-[var(--text-primary)]">
+                <div className="min-w-0 flex-1 pr-8 sm:pr-10">
+                  <h2 className="break-words text-lg font-bold text-[var(--text-primary)] sm:text-xl">
                     {player?.player?.batchId}
                   </h2>
                   <div className="flex flex-wrap gap-2 mt-2">
@@ -203,8 +204,8 @@ const PlayerDetailsModal = ({
                 </div>
               </div>
 
-              <div className="mb-6 rounded-xl border border-[var(--border-card)] bg-[var(--bg-main)] p-4">
-                <h3 className="font-semibold text-[var(--text-primary)] mb-3 text-lg">
+              <div className="mb-5 rounded-xl border border-[var(--border-card)] bg-[var(--bg-main)] p-3 sm:mb-6 sm:p-4">
+                <h3 className="mb-3 text-base font-semibold text-[var(--text-primary)] sm:text-lg">
                   Trial Session Details
                 </h3>
 
@@ -212,7 +213,7 @@ const PlayerDetailsModal = ({
                   <div className="rounded-lg border border-[var(--border-card)] bg-[var(--bg-card)] p-3 shadow-sm">
                     <p className="font-medium">Session: {session?.name || "-"}</p>
                     <p>Slot: {session?.slot?.slotName || "-"}</p>
-                    <p>
+                    <p className="break-words">
                       Time: {formatTime(session?.slotStartTime)} - {formatTime(session?.slotEndTime)}
                     </p>
                   </div>
@@ -220,15 +221,15 @@ const PlayerDetailsModal = ({
               </div>
 
               {hasSelectorRated && showRatings && !hideRatingFeatures && (
-                <div className="mb-6 rounded-xl border border-[var(--border-card)] bg-[var(--bg-main)] p-4">
-                  <h3 className="font-semibold text-[var(--text-primary)] mb-3 text-lg">
+                <div className="mb-5 rounded-xl border border-[var(--border-card)] bg-[var(--bg-main)] p-3 sm:mb-6 sm:p-4">
+                  <h3 className="mb-3 text-base font-semibold text-[var(--text-primary)] sm:text-lg">
                     Your Rating Details
                   </h3>
 
                   <div className="space-y-3">
                     {player.rating.ratings.map((ratingItem, idx) => (
                       <div key={idx} className="bg-[var(--bg-card)] rounded-lg p-3 shadow-sm border border-[var(--border-card)]">
-                        <div className="flex items-center justify-between">
+                        <div className="flex items-center justify-between gap-3">
                           <p className="text-sm font-medium text-[var(--text-primary)]">
                             Rating #{idx + 1}
                           </p>
@@ -262,11 +263,13 @@ const PlayerDetailsModal = ({
                 </div>
               )}
 
-              <div className="flex gap-3 pt-2 border-t border-[var(--border-card)]">
+            </div>
+
+            <div className="grid shrink-0 grid-cols-2 gap-2 border-t border-[var(--border-card)] bg-[var(--bg-main)] p-3 sm:flex sm:justify-end sm:gap-3 sm:p-4">
                 <button
                   type="button"
                   onClick={onClose}
-                  className="flex-1 px-4 py-2 rounded-lg font-medium text-[var(--text-primary)] bg-[var(--secondary-lighter)] hover:bg-[var(--secondary-lighter)] border border-[var(--border-primary)] transition-all shadow-sm"
+                  className="inline-flex h-10 items-center justify-center rounded-lg border border-[var(--border-primary)] bg-[var(--secondary-lighter)] px-3 text-sm font-semibold text-[var(--text-primary)] transition-all hover:bg-[var(--secondary-lighter)] sm:min-w-28"
                 >
                   Close
                 </button>
@@ -275,7 +278,7 @@ const PlayerDetailsModal = ({
                   <button
                     type="button"
                     onClick={() => setShowRatings((prev) => !prev)}
-                    className="px-4 py-2 rounded-lg border border-[var(--border-primary)] bg-[var(--accent-light)] font-medium text-[var(--primary)] transition-all shadow-sm hover:bg-[var(--secondary-lighter)]"
+                    className="inline-flex h-10 items-center justify-center rounded-lg border border-[var(--border-primary)] bg-[var(--accent-light)] px-3 text-sm font-semibold text-[var(--primary)] transition-all hover:bg-[var(--secondary-lighter)] sm:min-w-28"
                   >
                     {showRatings ? "Hide Rating" : "View Rating"}
                   </button>
@@ -286,7 +289,7 @@ const PlayerDetailsModal = ({
                     type="button"
                     onClick={handleRemoveRating}
                     disabled={isRemovingRating}
-                    className="px-4 py-2 rounded-lg font-medium text-white bg-red-500 hover:bg-red-600 transition-all shadow-sm flex items-center justify-center gap-2 disabled:opacity-60"
+                    className="inline-flex h-10 items-center justify-center gap-2 rounded-lg bg-red-500 px-3 text-sm font-semibold text-white transition-all hover:bg-red-600 disabled:opacity-60 sm:min-w-32"
                   >
                     <Trash2 className="w-4 h-4" />
                     {isRemovingRating ? "Removing..." : "Remove Rating"}
@@ -297,7 +300,7 @@ const PlayerDetailsModal = ({
                   <button
                     type="button"
                     onClick={openBallByBall}
-                    className="flex-1 px-4 py-2 rounded-lg font-medium text-[#102033] bg-[var(--secondary)] hover:bg-[var(--secondary-strong)] transition-all shadow-sm flex items-center justify-center gap-2"
+                    className="inline-flex h-10 items-center justify-center gap-2 rounded-lg bg-[var(--secondary)] px-3 text-sm font-semibold text-[#102033] transition-all hover:bg-[var(--secondary-strong)] sm:min-w-28"
                   >
                     <Star className="w-4 h-4" />
                     Rating
@@ -312,7 +315,7 @@ const PlayerDetailsModal = ({
                         if (onRemoveSelection) onRemoveSelection(player.player._id);
                         onClose();
                       }}
-                      className="px-4 py-2 rounded-lg font-medium text-white bg-red-500 hover:bg-red-600 transition-all shadow-sm"
+                      className="inline-flex h-10 items-center justify-center rounded-lg bg-red-500 px-3 text-sm font-semibold text-white transition-all hover:bg-red-600 sm:min-w-36"
                     >
                       Remove Selection
                     </button>
@@ -323,19 +326,21 @@ const PlayerDetailsModal = ({
                         if (onEditSelection) onEditSelection(player);
                         onClose();
                       }}
-                      className="px-4 py-2 rounded-lg font-medium text-white bg-blue-500 hover:bg-blue-700 transition-all shadow-sm"
+                      className="inline-flex h-10 items-center justify-center rounded-lg bg-blue-500 px-3 text-sm font-semibold text-white transition-all hover:bg-blue-700 sm:min-w-32"
                     >
                       Edit Selection
                     </button>
                   </>
                 )}
               </div>
-            </div>
           </div>
-        </div>
+          </div>
       </div>
-    </div>
   );
+
+  return typeof document === "undefined"
+    ? modalContent
+    : createPortal(modalContent, document.body);
 };
 
 const SelectorPlayerCard = ({
@@ -386,7 +391,7 @@ const SelectorPlayerCard = ({
       <div
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
-        className="relative bg-[var(--color-primary)] rounded-xl shadow-md hover:shadow-lg transition-all duration-300 border border-[var(--border-card)] overflow-hidden flex w-full max-w-sm p-3 gap-3"
+        className="relative flex w-full overflow-hidden rounded-xl border border-[var(--border-card)] bg-[var(--color-primary)] p-3 shadow-md transition-all duration-300 hover:shadow-lg sm:max-w-sm"
       >
         {hasSelectorRated && !hideRatingFeatures && (
           <div
@@ -429,7 +434,7 @@ const SelectorPlayerCard = ({
 
         <div
           onClick={handleViewDetails}
-          className="relative w-20 h-20 rounded-lg overflow-hidden flex-shrink-0 cursor-pointer bg-gradient-to-br from-blue-500 to-blue-600"
+          className="relative h-20 w-20 flex-shrink-0 cursor-pointer overflow-hidden rounded-lg bg-gradient-to-br from-blue-500 to-blue-600"
         >
           {!imageError &&
             player?.player?.logo &&
@@ -459,10 +464,10 @@ const SelectorPlayerCard = ({
 
         <div
           onClick={handleViewDetails}
-          className="flex flex-col justify-center flex-grow cursor-pointer"
+          className="ml-3 flex min-w-0 flex-grow cursor-pointer flex-col justify-center"
         >
           <div className="flex justify-between items-start gap-2">
-            <h3 className="font-semibold text-[var(--text-primary)] text-sm">
+            <h3 className="min-w-0 break-words text-sm font-semibold text-[var(--text-primary)]">
               {player?.player?.batchId}
             </h3>
             {/* {grade && (

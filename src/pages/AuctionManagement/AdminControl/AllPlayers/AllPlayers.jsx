@@ -35,9 +35,12 @@ import {
   Menu,
   LayoutGrid,
   Table2,
+  Eye,
 } from "lucide-react";
 import PlayerAssign from "../../../../components/PlayerAssign";
-import PlayerCard from "../../../../components/PlayerCard";
+import PlayerCard, {
+  PlayerDetailsModal,
+} from "../../../../components/PlayerCard";
 import { useDebounce } from "../../../../components/useDebounce";
 import { toast } from "react-toastify";
 import { useDispatch, useSelector } from "react-redux";
@@ -46,19 +49,19 @@ import {
   fetchSlotList,
   getAuctionPlayers,
 } from "../../../../redux/actions";
-import { useParams } from "react-router-dom";
+import { useParams, useSearchParams } from "react-router-dom";
 import ImportPlayers from "./ImportPlayers";
 import AddPlayerManually from "./AddPlayerManually";
 import api from "../../../../utils/api";
 import { createPortal } from "react-dom";
 import Pagination from "../../../../components/Pagination";
 
-
 const tabClass = (active) =>
   `inline-flex min-h-10 items-center gap-2 rounded-lg border border-[var(--border-soft)] bg-[var(--bg-card)] px-4 text-sm font-bold text-[var(--text-secondary)] transition hover:border-[var(--border-primary)] hover:bg-[var(--accent-light)] hover:text-[var(--text-primary)] ${active ? "bg-[var(--secondary)] text-[#102033] shadow-[0_8px_20px_rgba(244,180,0,0.16)]" : ""}`;
 
 const AllPlayers = () => {
   const { auctionId } = useParams();
+  const [searchParams] = useSearchParams();
   const dispatch = useDispatch();
 
   const loading = useSelector((state) => state?.loading?.auctionPlayers);
@@ -102,13 +105,27 @@ const AllPlayers = () => {
   const [selectedSlotLabel, setSelectedSlotLabel] = useState("");
   const [slotPage, setSlotPage] = useState(1);
   const [viewMode, setViewMode] = useState("card");
+  const [tableDetailsPlayer, setTableDetailsPlayer] = useState(null);
+  const [tableDetailsType, setTableDetailsType] = useState("");
+  const [tableAction, setTableAction] = useState("");
+  const [tableModalSaving, setTableModalSaving] = useState(false);
+  const [tableModalRemoving, setTableModalRemoving] = useState(false);
+  const isAllPlayersVisible = searchParams.get("tab") === "allPlayers";
   // const hasRating = !!localStorage.getItem(`playerRating${auctionId}`);
   const debouncedSearch = useDebounce(searchQuery, 400);
-  const playerList = auctionPlayersData?.list || [];
-  const totalPages = auctionPlayersData?.pages || 0;
-  const totalPlayers = auctionPlayersData?.total || 0;
-  const currentPage = auctionPlayersData?.page || 1;
-  const isPlayersLoading = loading || (!auctionPlayersData && !playersError);
+  const playersRequest = auctionPlayersData?.request;
+  const hasCurrentPlayersData =
+    playersRequest?.auctionId === auctionId &&
+    playersRequest?.activePlayerTab === activePlayerTab;
+  const playerList = hasCurrentPlayersData
+    ? auctionPlayersData?.list || []
+    : [];
+  const totalPages = hasCurrentPlayersData ? auctionPlayersData?.pages || 0 : 0;
+  const totalPlayers = hasCurrentPlayersData
+    ? auctionPlayersData?.total || 0
+    : 0;
+  const currentPage = hasCurrentPlayersData ? auctionPlayersData?.page || 1 : 1;
+  const isPlayersLoading = loading || (!hasCurrentPlayersData && !playersError);
   const slots = useSelector((state) => state?.data?.slotList);
   const slotDetail = slots?.data;
   const dropdownRef = useRef();
@@ -217,7 +234,7 @@ const AllPlayers = () => {
     }
   }, [auctionId, slotPage, slotSearch]);
 
-  const fetchPlayers = (activePlayerTab, page = 1) => {
+  const fetchPlayers = (activePlayerTab, page = currentPageState) => {
     return dispatch(
       getAuctionPlayers({
         auctionId: auctionId,
@@ -232,6 +249,12 @@ const AllPlayers = () => {
       }),
     );
   };
+
+  useEffect(() => {
+    if (!auctionId || !isAllPlayersVisible) return;
+    setCurrentPageState(1);
+    fetchPlayers(activePlayerTab, 1);
+  }, [auctionId, isAllPlayersVisible]);
 
   useEffect(() => {
     if (
@@ -276,7 +299,7 @@ const AllPlayers = () => {
   ]);
 
   const handleAssignmentSuccess = () => {
-    fetchPlayers(activePlayerTab);
+    fetchPlayers(activePlayerTab, currentPageState);
     setSelectedPlayers([]);
   };
 
@@ -375,7 +398,26 @@ const AllPlayers = () => {
   };
 
   const formatRole = (role) =>
-    role ? String(role).replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase()) : "-";
+    role
+      ? String(role)
+          .replace(/-/g, " ")
+          .replace(/\b\w/g, (c) => c.toUpperCase())
+      : "-";
+
+  const getStatusBadgeClass = (status) => {
+    switch (String(status || "").trim().toLowerCase()) {
+      case "available":
+        return "border-emerald-500/35 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400";
+      case "unsold":
+        return "border-red-500/35 bg-red-500/10 text-red-600 dark:text-red-400";
+      case "sold":
+        return "border-blue-500/35 bg-blue-500/10 text-blue-600 dark:text-blue-400";
+      case "bidding":
+        return "border-amber-500/40 bg-amber-500/10 text-amber-600 dark:text-amber-400";
+      default:
+        return "border-[var(--border-card)] bg-[var(--bg-main)] text-[var(--text-primary)]";
+    }
+  };
 
   const getPlayerInfo = (item) => {
     const playerData = item?.player || item || {};
@@ -400,7 +442,10 @@ const AllPlayers = () => {
       currentBid: item?.currentBid,
       slotName: item?.slot?.slotName || item?.slot?.location?.venue || "",
       sessionName: item?.session?.name || "",
-      rating: item?.playersRatings?.avgRating?.overall || item?.playersRatings?.overallRating || "",
+      rating:
+        item?.playersRatings?.avgRating?.overall ||
+        item?.playersRatings?.overallRating ||
+        "",
     };
   };
 
@@ -409,6 +454,60 @@ const AllPlayers = () => {
     if (!words.length) return "NA";
     if (words.length === 1) return words[0].slice(0, 2).toUpperCase();
     return `${words[0][0]}${words[words.length - 1][0]}`.toUpperCase();
+  };
+
+  const getPlayerId = (item) =>
+    item?.player?._id || item?.playerId || item?.id || item?._id || "";
+
+  const handleOpenTableDetails = (item, action = "") => {
+    const info = getPlayerInfo(item);
+    setTableDetailsPlayer(item);
+    setTableDetailsType(info.role);
+    setTableAction(action);
+  };
+
+  const handleCloseTableDetails = () => {
+    setTableDetailsPlayer(null);
+    setTableAction("");
+  };
+
+  const handleTableEditPlayer = async (payload) => {
+    try {
+      setTableModalSaving(true);
+      await api.put("/webSiteApi/players/editPlayer", payload);
+      toast.success("Player updated successfully");
+      handleCloseTableDetails();
+      fetchPlayers(activePlayerTab, currentPageState);
+      return true;
+    } catch (error) {
+      toast.error(error?.response?.data?.message || "Failed to update player");
+      return false;
+    } finally {
+      setTableModalSaving(false);
+    }
+  };
+
+  const handleTableRemovePlayer = async () => {
+    const playerId = getPlayerId(tableDetailsPlayer);
+
+    if (!auctionId || !playerId) {
+      toast.error("Missing auction or player id");
+      return;
+    }
+
+    try {
+      setTableModalRemoving(true);
+      await api.delete(
+        `/webSiteApi/auction/removePlayer/${auctionId}/${playerId}`,
+      );
+      toast.success("Player removed successfully");
+      handleCloseTableDetails();
+      fetchPlayers(activePlayerTab, currentPageState);
+    } catch (error) {
+      toast.error(error?.response?.data?.message || "Failed to remove player");
+    } finally {
+      setTableModalRemoving(false);
+    }
   };
 
   const tableHeadCellClass = "sticky top-0 z-30 bg-[var(--bg-main)] px-4 py-3";
@@ -448,6 +547,9 @@ const AllPlayers = () => {
                   <th className={tableHeadCellClass}>Rating</th>
                 </>
               )}
+              <th className={`${tableHeadCellClass} w-36 text-right`}>
+                Actions
+              </th>
             </tr>
           </thead>
           <tbody className="divide-y divide-[var(--border-card)]">
@@ -501,7 +603,6 @@ const AllPlayers = () => {
                         <p className="truncate font-semibold text-[var(--text-primary)]">
                           {info.name}
                         </p>
-                       
                       </div>
                     </div>
                   </td>
@@ -515,12 +616,16 @@ const AllPlayers = () => {
                     {formatText(info.location)}
                   </td>
                   <td className="px-4 py-1">
-                    <span className="inline-flex rounded-full border border-[var(--border-card)] bg-[var(--bg-main)] px-2.5 py-1 text-xs font-semibold text-[var(--text-primary)]">
+                    <span
+                      className={`inline-flex rounded-full border px-2.5 py-1 text-xs font-semibold capitalize ${getStatusBadgeClass(info.status)}`}
+                    >
                       {formatText(info.status)}
                     </span>
                   </td>
                   <td className="px-4 py-1 font-semibold text-[var(--text-primary)]">
-                    {info.basePrice ? `₹${Number(info.basePrice).toLocaleString("en-IN")}` : "-"}
+                    {info.basePrice
+                      ? `₹${Number(info.basePrice).toLocaleString("en-IN")}`
+                      : "-"}
                   </td>
                   {activePlayerTab === "assigned" && (
                     <>
@@ -535,6 +640,37 @@ const AllPlayers = () => {
                       </td>
                     </>
                   )}
+                  <td className="px-4 py-1 text-right">
+                    <div className="inline-flex items-center justify-end gap-1.5">
+                      <button
+                        type="button"
+                        onClick={() => handleOpenTableDetails(item)}
+                        className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-[var(--border-card)] bg-[var(--bg-main)] text-[var(--text-secondary)] transition hover:border-[var(--border-primary)] hover:bg-[var(--accent-light)] hover:text-[var(--primary)]"
+                        title="View player details"
+                        aria-label={`View ${info.name}`}
+                      >
+                        <Eye className="h-3.5 w-3.5" />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleOpenTableDetails(item, "edit")}
+                        className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-[var(--border-primary)] bg-[var(--accent-light)] text-[var(--primary)] transition hover:opacity-80"
+                        title="Edit player"
+                        aria-label={`Edit ${info.name}`}
+                      >
+                        <Pencil className="h-3.5 w-3.5" />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleOpenTableDetails(item, "delete")}
+                        className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-red-500/30 bg-red-500/10 text-red-500 transition hover:bg-red-500/20"
+                        title="Remove player"
+                        aria-label={`Remove ${info.name}`}
+                      >
+                        <Trash2 className="h-3.5 w-3.5" />
+                      </button>
+                    </div>
+                  </td>
                 </tr>
               );
             })}
@@ -545,33 +681,33 @@ const AllPlayers = () => {
   );
 
   return (
-    <div className="mx-auto flex h-[calc(100vh-96px)] min-h-[560px] w-full flex-col px-3 py-4 sm:px-4 lg:px-5">
-      <div className="flex min-h-0 flex-1 flex-col gap-4">
+    <div className="mx-auto flex h-[calc(100vh-96px)] min-h-[560px] w-full flex-col px-2 py-2 sm:px-4 sm:py-4 lg:px-5">
+      <div className="flex min-h-0 flex-1 flex-col gap-3 sm:gap-4">
         {(activePlayerTab === "all" ||
           (auctionTypeTrial &&
             (activePlayerTab === "unassigned" ||
               activePlayerTab === "assigned"))) && (
           <>
-            <div className="sticky top-4 z-40 shrink-0 rounded-lg border border-[var(--border-card)] bg-[var(--bg-card)] p-4 shadow-[var(--shadow-card)]">
-              <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+            <div className="sticky top-2 z-40 shrink-0 rounded-lg border border-[var(--border-card)] bg-[var(--bg-card)] p-3 shadow-[var(--shadow-card)] sm:top-4 sm:p-4">
+              <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
                 <div className="min-w-0">
-                
-                  <h1 className="mt-1 text-xl font-bold leading-7 text-[var(--text-primary)]">
+                  <h1 className="text-lg font-bold leading-6 text-[var(--text-primary)] sm:mt-1 sm:text-xl sm:leading-7">
                     Registered Players
                   </h1>
-                  <p className="mt-1 text-xs font-medium text-[var(--text-secondary)]">
-                    Total {totalPlayers || 0} players registered in this auction.
+                  <p className="mt-0.5 text-[11px] font-medium leading-4 text-[var(--text-secondary)] sm:mt-1 sm:text-xs">
+                    Total {totalPlayers || 0} players registered in this
+                    auction.
                   </p>
                 </div>
 
                 {activePlayerTab === "all" && (
-                  <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+                  <div className="grid grid-cols-2 gap-2 sm:flex sm:items-center [&>button]:w-full sm:[&>button]:w-auto">
                     <ImportPlayers
                       auctionId={auctionId}
                       onImportSuccess={handleImportSuccess}
                     />
                     <button
-                      className="inline-flex h-9 items-center justify-center gap-2 rounded-lg border border-[var(--border-primary)] bg-[var(--secondary)] px-3 text-xs font-semibold text-[#102033] shadow-sm transition hover:bg-[var(--secondary-strong)]"
+                      className="inline-flex h-9 items-center justify-center gap-1.5 rounded-lg border border-[var(--border-primary)] bg-[var(--secondary)] px-3 text-xs font-semibold text-[#102033] shadow-sm transition hover:bg-[var(--secondary-strong)]"
                       onClick={() => setIsAddPlayerOpen(true)}
                     >
                       <Plus className="h-3.5 w-3.5" />
@@ -581,78 +717,81 @@ const AllPlayers = () => {
                 )}
               </div>
 
-              <div className="mt-4 grid grid-cols-1 gap-3 lg:grid-cols-[minmax(0,1fr)_auto_auto_auto] lg:items-center">
-                <div className="relative">
+              <div className="mt-3 grid grid-cols-[minmax(0,1fr)_auto] gap-2 lg:grid-cols-[minmax(0,1fr)_auto_auto_auto] lg:items-center">
+                <div className="relative col-span-2 lg:col-span-1">
                   <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--text-secondary)]" />
                   <input
                     type="text"
                     placeholder="Search player..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="h-10 w-full rounded-lg border border-[var(--border-card)] bg-[var(--bg-main)] pl-10 pr-4 text-sm font-medium text-[var(--text-primary)] outline-none transition placeholder:text-[var(--text-secondary)] focus:border-[var(--border-primary)] focus:bg-[var(--bg-card)]"
+                    className="h-9 w-full rounded-lg border border-[var(--border-card)] bg-[var(--bg-main)] pl-10 pr-3 text-sm font-medium text-[var(--text-primary)] outline-none transition placeholder:text-[var(--text-secondary)] focus:border-[var(--border-primary)] focus:bg-[var(--bg-card)] sm:h-10 sm:pr-4"
                   />
                 </div>
 
-                <div className="relative">
-                  <button
-                    onClick={() => setIsItemsDropdownOpen(!isItemsDropdownOpen)}
-                    className="inline-flex h-10 w-full items-center justify-center gap-2 rounded-lg border border-[var(--border-card)] bg-[var(--bg-main)] px-3 text-xs font-semibold text-[var(--text-primary)] transition hover:border-[var(--border-primary)] hover:bg-[var(--accent-light)] lg:w-auto"
-                  >
-                    <span>Showing {itemsPerPage}</span>
-                    <ChevronDown
-                      className={`h-4 w-4 transition-transform duration-300 ${
-                        isItemsDropdownOpen ? "rotate-180" : ""
-                      }`}
-                    />
-                  </button>
-                  {isItemsDropdownOpen && (
-                    <div className="absolute right-0 top-full z-20 mt-1 w-36 overflow-hidden rounded-lg border border-[var(--border-card)] bg-[var(--bg-card)] shadow-[var(--shadow-card)]">
-                      {[16, 32, 64, 96].map((num) => (
-                        <button
-                          key={num}
-                          onClick={() => {
-                            setItemsPerPage(num);
-                            setCurrentPageState(1);
-                            setIsItemsDropdownOpen(false);
-                          }}
-                          className={`w-full px-3 py-2 text-left text-xs font-semibold transition ${
-                            itemsPerPage === num
-                              ? "bg-[var(--accent-light)] text-[var(--primary)]"
-                              : "text-[var(--text-secondary)] hover:bg-[var(--secondary-lighter)] hover:text-[var(--text-primary)]"
-                          }`}
-                        >
-                          Showing {num}
-                        </button>
-                      ))}
-                    </div>
-                  )}
-                </div>
+                <div className="flex w-full items-center gap-2">
+                  <div className="relative">
+                    <button
+                      onClick={() =>
+                        setIsItemsDropdownOpen(!isItemsDropdownOpen)
+                      }
+                      className="inline-flex h-9 w-full items-center justify-center gap-1.5 rounded-lg border border-[var(--border-card)] bg-[var(--bg-main)] px-3 text-xs font-semibold text-[var(--text-primary)] transition hover:border-[var(--border-primary)] hover:bg-[var(--accent-light)] sm:h-10 lg:w-auto"
+                    >
+                      <span className="hidden sm:inline">Showing {itemsPerPage}</span>
+                      <span className="sm:hidden">{itemsPerPage}</span>
+                      <ChevronDown
+                        className={`h-4 w-4 transition-transform duration-300 ${
+                          isItemsDropdownOpen ? "rotate-180" : ""
+                        }`}
+                      />
+                    </button>
+                    {isItemsDropdownOpen && (
+                      <div className="absolute left-0 top-full z-20 mt-1 w-36 overflow-hidden rounded-lg border border-[var(--border-card)] bg-[var(--bg-card)] shadow-[var(--shadow-card)]">
+                        {[16, 32, 64, 96].map((num) => (
+                          <button
+                            key={num}
+                            onClick={() => {
+                              setItemsPerPage(num);
+                              setCurrentPageState(1);
+                              setIsItemsDropdownOpen(false);
+                            }}
+                            className={`w-full px-3 py-2 text-left text-xs font-semibold transition ${
+                              itemsPerPage === num
+                                ? "bg-[var(--accent-light)] text-[var(--primary)]"
+                                : "text-[var(--text-secondary)] hover:bg-[var(--secondary-lighter)] hover:text-[var(--text-primary)]"
+                            }`}
+                          >
+                            Showing {num}
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
 
-                <div className="inline-flex h-10 overflow-hidden rounded-lg border border-[var(--border-card)] bg-[var(--bg-main)]">
-                  <button
-                    type="button"
-                    onClick={() => setViewMode("card")}
-                    className={`inline-flex items-center justify-center gap-2 px-3 text-xs font-semibold transition ${
-                      viewMode === "card"
-                        ? "bg-[var(--secondary)] text-[#102033]"
-                        : "text-[var(--text-secondary)] hover:bg-[var(--accent-light)] hover:text-[var(--text-primary)]"
-                    }`}
-                  >
-                    <LayoutGrid className="h-4 w-4" />
-                    
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setViewMode("table")}
-                    className={`inline-flex items-center justify-center gap-2 border-l border-[var(--border-card)] px-3 text-xs font-semibold transition ${
-                      viewMode === "table"
-                        ? "bg-[var(--secondary)] text-[#102033]"
-                        : "text-[var(--text-secondary)] hover:bg-[var(--accent-light)] hover:text-[var(--text-primary)]"
-                    }`}
-                  >
-                    <Table2 className="h-4 w-4" />
-                    
-                  </button>
+                  <div className="inline-flex h-9 overflow-hidden rounded-lg border border-[var(--border-card)] bg-[var(--bg-main)] sm:h-10">
+                    <button
+                      type="button"
+                      onClick={() => setViewMode("card")}
+                      className={`inline-flex items-center justify-center gap-2 px-3 text-xs font-semibold transition ${
+                        viewMode === "card"
+                          ? "bg-[var(--secondary)] text-[#102033]"
+                          : "text-[var(--text-secondary)] hover:bg-[var(--accent-light)] hover:text-[var(--text-primary)]"
+                      }`}
+                    >
+                      <LayoutGrid className="h-4 w-4" />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setViewMode("table")}
+                      className={`inline-flex items-center justify-center gap-2 border-l border-[var(--border-card)] px-3 text-xs font-semibold transition ${
+                        viewMode === "table"
+                          ? "bg-[var(--secondary)] text-[#102033]"
+                          : "text-[var(--text-secondary)] hover:bg-[var(--accent-light)] hover:text-[var(--text-primary)]"
+                      }`}
+                    >
+                      <Table2 className="h-4 w-4" />
+                    </button>
+                  </div>
                 </div>
 
                 {(activePlayerTab === "all" ||
@@ -660,20 +799,25 @@ const AllPlayers = () => {
                   <button
                     onClick={handleDownloadExcel}
                     disabled={downloadLoading}
-                    className="inline-flex h-10 items-center justify-center gap-2 rounded-lg border border-[var(--border-card)] bg-[var(--bg-main)] px-3 text-xs font-semibold text-[var(--text-primary)] transition hover:border-[var(--border-primary)] hover:bg-[var(--accent-light)] disabled:cursor-not-allowed disabled:opacity-60"
+                    className="inline-flex h-9 items-center justify-center gap-1.5 rounded-lg border border-[var(--border-card)] bg-[var(--bg-main)] px-3 text-xs font-semibold text-[var(--text-primary)] transition hover:border-[var(--border-primary)] hover:bg-[var(--accent-light)] disabled:cursor-not-allowed disabled:opacity-60 sm:h-10 sm:gap-2"
                   >
                     <Download className="h-4 w-4 text-[var(--primary)]" />
-                    {downloadLoading
-                      ? "Downloading..."
-                      : activePlayerTab === "all"
-                        ? "Download Excel"
-                        : "Download Trials Excel"}
+                    <span className="hidden sm:inline">
+                      {downloadLoading
+                        ? "Downloading..."
+                        : activePlayerTab === "all"
+                          ? "Download Excel"
+                          : "Download Trials Excel"}
+                    </span>
+                    <span className="sm:hidden">
+                      {downloadLoading ? "..." : "Excel"}
+                    </span>
                   </button>
                 )}
 
                 {/* Filters only for assigned */}
                 {activePlayerTab === "assigned" && (
-                  <div className="flex flex-col sm:flex-row w-full md:w-auto gap-3">
+                  <div className="col-span-2 flex w-full flex-col gap-2 sm:flex-row md:w-auto lg:col-span-1 lg:gap-3">
                     {/* <select
                       className="w-full sm:w-40 px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-purple-500 bg-[var(--bg-card)] text-[var(--text-primary)]"
                       value={slot}
@@ -707,7 +851,7 @@ const AllPlayers = () => {
                           setSlot(""); // reset selection
                           setSelectedSlotLabel("");
                         }}
-                         className="ui-input"
+                        className="ui-input"
                       />
 
                       <div
@@ -743,7 +887,7 @@ const AllPlayers = () => {
                     {/* Session Filter - Only show when slot is selected and has sessions */}
                     {slot && selectedSlotSessions.length > 0 && (
                       <select
-                         className="ui-input sm:w-40"
+                        className="ui-input sm:w-40"
                         value={slotSession}
                         onChange={(e) => setSlotSession(e.target.value)}
                       >
@@ -776,7 +920,7 @@ const AllPlayers = () => {
                     {(statusSort === "select" ||
                       statusSort === "not select") && (
                       <select
-                         className="ui-input sm:w-40"
+                        className="ui-input sm:w-40"
                         value={typeSort}
                         onChange={(e) => setTypeSort(e.target.value)}
                       >
@@ -831,6 +975,22 @@ const AllPlayers = () => {
               auctionId={auctionId}
             />
 
+            <PlayerDetailsModal
+              player={tableDetailsPlayer}
+              isOpen={Boolean(tableDetailsPlayer)}
+              onClose={handleCloseTableDetails}
+              onEdit={tableAction === "edit" ? handleTableEditPlayer : undefined}
+              onDelete={
+                tableAction === "delete" ? handleTableRemovePlayer : undefined
+              }
+              isSaving={tableModalSaving}
+              isRemoving={tableModalRemoving}
+              type={tableDetailsType}
+              initialAction={tableAction}
+              actionOnly={tableAction === "delete"}
+              showAllDetails={tableAction === ""}
+            />
+
             <div className="professional-scrollbar min-h-0 flex-1 overflow-y-auto pr-1">
               {/* Players Grid */}
               <div className="mx-auto max-w-7xl pb-6">
@@ -878,7 +1038,9 @@ const AllPlayers = () => {
                                   : "view"
                             }
                             isSelected={selectedPlayers?.includes(info.id)}
-                            onRemove={() => fetchPlayers("assigned")}
+                            onRemove={() =>
+                              fetchPlayers("assigned", currentPageState)
+                            }
                             onSelect={(id) => {
                               if (selectedPlayers?.includes(id)) {
                                 setSelectedPlayers(

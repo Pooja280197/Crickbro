@@ -49,14 +49,15 @@ import { logoUrl } from "../../config/env";
 import RegistrationDetails from "../../components/RegistrationDetails";
 import TeamRegistrationPopup from "./TeamRegistrationPopup";
 import { useNavigate } from "react-router-dom";
+import api from "../../utils/api";
 
 const StatCard = ({ icon: Icon, label, value }) => (
   <motion.div
     whileHover={{ y: -2 }}
-    className="min-w-0 overflow-hidden rounded-lg border border-[var(--border-card)] bg-[var(--bg-card)] p-3 shadow-[var(--shadow-card)] transition-all hover:border-[var(--border-primary)]"
+    className="modern-card-lift modern-surface min-w-0 overflow-hidden rounded-lg border border-[var(--border-card)] bg-[var(--bg-card)] p-3 shadow-[var(--shadow-card)]"
   >
     <div className="flex items-center gap-3 min-w-0">
-      <div className="rounded-lg bg-[var(--accent-light)] p-2 shrink-0">
+      <div className="modern-icon-pop rounded-lg bg-[var(--accent-light)] p-2 shrink-0">
         <Icon className="h-4 w-4 text-[var(--primary)]" />
       </div>
       <div className="min-w-0 flex-1">
@@ -97,16 +98,26 @@ const TABS = {
   BIDDING: "bidding",
 };
 
+const getEntityId = (value) => {
+  if (!value) return "";
+  if (typeof value === "string") return value;
+  return value._id || value.id || value.tournamentId || "";
+};
+
 const panelClass =
-  "rounded-xl border border-[var(--border-card)] bg-[var(--bg-card)] shadow-[var(--shadow-card)]";
+  "modern-card-lift modern-surface rounded-xl border border-[var(--border-card)] bg-[var(--bg-card)] shadow-[var(--shadow-card)]";
 const tileClass =
-  "rounded-lg border border-[var(--border-card)] bg-[var(--bg-main)] p-2.5";
+  "modern-card-lift rounded-lg border border-[var(--border-card)] bg-[var(--bg-main)] p-2.5";
 const primaryButtonClass =
   "inline-flex items-center justify-center gap-2 rounded-lg bg-[var(--primary)] px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-[var(--primary-dark)]";
 const heroPrimaryButtonClass =
-  "inline-flex items-center justify-center gap-2 rounded-lg border border-white/20 bg-[var(--primary)] px-4 py-2 text-sm font-bold text-white shadow-[0_10px_24px_rgba(0,0,0,0.22)] transition hover:bg-[var(--color-button-primary-hover)]";
+  "inline-flex items-center justify-center gap-2 rounded-lg border border-cyan-200/45 bg-gradient-to-b from-[#11d3ff] to-[#008df2] px-4 py-2 text-sm font-bold text-white shadow-[0_10px_24px_rgba(0,148,255,0.24)] transition-all hover:-translate-y-0.5 hover:from-[#38dcff] hover:to-[#006fd6] hover:shadow-[0_14px_30px_rgba(0,148,255,0.34)]";
+const viewRegistrationButtonClass =
+  "inline-flex items-center justify-center gap-2 rounded-lg border border-cyan-200/45 bg-white/95 px-4 py-2 text-sm font-bold text-[#08203d] shadow-[0_10px_24px_rgba(0,0,0,0.22)] transition-all hover:-translate-y-0.5 hover:border-cyan-100 hover:bg-cyan-50 hover:text-[#001f44] hover:shadow-[0_14px_30px_rgba(8,186,247,0.28)]";
+const teamRegisterButtonClass =
+  "inline-flex items-center justify-center gap-2 rounded-lg border border-amber-200/70 bg-gradient-to-b from-[#ffe27a] to-[#ffb000] px-4 py-2 text-sm font-bold text-[#102033] shadow-[0_10px_24px_rgba(255,176,0,0.24)] transition-all hover:-translate-y-0.5 hover:from-[#fff0a6] hover:to-[#ff9500] hover:shadow-[0_14px_30px_rgba(255,176,0,0.34)]";
 const outlineButtonClass =
-  "inline-flex items-center justify-center gap-2 rounded-lg border border-[var(--border-card)] bg-[var(--bg-card)] px-5 py-2.5 text-sm font-semibold text-[var(--text-primary)] shadow-sm transition hover:border-[var(--border-primary)] hover:bg-[var(--accent-light)]";
+  "inline-flex items-center justify-center gap-2 rounded-lg border border-[var(--border-card)] bg-[var(--bg-card)] px-5 py-2.5 text-sm font-semibold text-[var(--text-primary)] shadow-sm transition hover:border-[var(--border-primary)] hover:bg-[var(--accent-dark)] hover:text-[var(--text-primary)]";
 
 const DetailTile = ({ icon: Icon, label, value, className = "" }) => (
   <div className={`${tileClass} ${className}`}>
@@ -275,6 +286,7 @@ export default function AuctionDetailsPage({ theme, onToggleTheme }) {
   const [currentPageState, setCurrentPageState] = useState(1);
   const [activeTab, setActiveTab] = useState(TABS.TOURNAMENT);
   const [showDetails, setShowDetails] = useState(false);
+  const [landingPageAvailable, setLandingPageAvailable] = useState(false);
   const debouncedSearch = useDebounce(searchQuery, 400);
 
   const { openLoginPopup } = useLoginPopup();
@@ -292,6 +304,13 @@ export default function AuctionDetailsPage({ theme, onToggleTheme }) {
   const totalPages = auctionPlayersData?.pages;
   const totalPlayers = auctionPlayersData?.total;
   const currentPage = auctionPlayersData?.page;
+  const landingTournamentId =
+    getEntityId(auctionData?.tournamentId) ||
+    getEntityId(auctionData?.tournament);
+  const landingPageUrl =
+    landingTournamentId && auctionId
+      ? `/viewlanding-page/${landingTournamentId}/${auctionId}`
+      : "";
 
   const sortPlayers = [
     { value: "all", label: "All" },
@@ -366,6 +385,37 @@ export default function AuctionDetailsPage({ theme, onToggleTheme }) {
       }
     }
   }, [dispatch, auctionId]);
+
+  useEffect(() => {
+    let isActive = true;
+
+    const checkLandingPage = async () => {
+      if (!landingTournamentId || !auctionId) {
+        setLandingPageAvailable(false);
+        return;
+      }
+
+      try {
+        const response = await api.get(
+          `/webSiteApi/auctionLandingPage/auctionLandingPage?tournamentId=${landingTournamentId}&auctionId=${auctionId}`,
+        );
+
+        if (isActive) {
+          setLandingPageAvailable(Boolean(response?.data?.data?.landingPage));
+        }
+      } catch (error) {
+        if (isActive) {
+          setLandingPageAvailable(false);
+        }
+      }
+    };
+
+    checkLandingPage();
+
+    return () => {
+      isActive = false;
+    };
+  }, [landingTournamentId, auctionId]);
 
   const enrollPlayer = async (formData) => {
     const playerId = localStorage.getItem("playerId");
@@ -545,6 +595,28 @@ export default function AuctionDetailsPage({ theme, onToggleTheme }) {
     // If already logged in
     dispatch(fetchUserRole(auctionId, playerId));
     setRegisterPopupOpen(true);
+  };
+
+  const navigateToLandingRegistration = (type) => {
+    navigate(`${landingPageUrl}?registration=${type}`);
+  };
+
+  const handlePlayerRegisterClick = () => {
+    if (landingPageAvailable && landingPageUrl) {
+      navigateToLandingRegistration("player");
+      return;
+    }
+
+    handleRegisterClick();
+  };
+
+  const handleTeamRegisterClick = () => {
+    if (landingPageAvailable && landingPageUrl) {
+      navigateToLandingRegistration("team");
+      return;
+    }
+
+    setTeamRegisterPopupOpen(true);
   };
 
   const handleViewDetails = () => {
@@ -1152,7 +1224,7 @@ export default function AuctionDetailsPage({ theme, onToggleTheme }) {
   };
 
   return (
-    <div className="min-h-screen bg-[var(--bg-main)] text-[var(--text-primary)]">
+    <div className="public-auction-page min-h-screen bg-[var(--bg-main)] text-[var(--text-primary)]">
       <Header theme={theme} onToggleTheme={onToggleTheme} />
       <div className="mx-auto max-w-6xl space-y-4 px-3 py-4 pb-28 sm:px-5 sm:py-5 lg:pb-5">
         {/* Hero Section */}
@@ -1204,16 +1276,16 @@ export default function AuctionDetailsPage({ theme, onToggleTheme }) {
               <div className="hidden items-center gap-2 lg:flex">
                 {auctionData?.showRegistrationForm && (
                   <button
-                    onClick={userRole?.auctionPlayer ? handleViewDetails : handleRegisterClick}
-                    className={userRole?.auctionPlayer ? outlineButtonClass : heroPrimaryButtonClass}
+                    onClick={userRole?.auctionPlayer ? handleViewDetails : handlePlayerRegisterClick}
+                    className={userRole?.auctionPlayer ? viewRegistrationButtonClass : heroPrimaryButtonClass}
                   >
                     {userRole?.auctionPlayer ? "View Registration" : "Register as Player"}
                   </button>
                 )}
                 {auctionData?.teamRegistration?.showTeamRegistration && (
                   <button
-                    onClick={() => setTeamRegisterPopupOpen(true)}
-                    className="inline-flex items-center justify-center rounded-lg bg-white px-4 py-2 text-sm font-semibold text-[var(--primary)] shadow-sm transition hover:bg-[var(--accent-light)]"
+                    onClick={handleTeamRegisterClick}
+                    className={teamRegisterButtonClass}
                   >
                     Register Team
                   </button>
@@ -1332,19 +1404,16 @@ export default function AuctionDetailsPage({ theme, onToggleTheme }) {
           <div className="mx-auto flex max-w-6xl flex-col gap-2">
           {auctionData?.showRegistrationForm && (
             <button
-              onClick={userRole?.auctionPlayer ? handleViewDetails : handleRegisterClick}
-              className={`w-full rounded-lg px-5 py-3 text-sm font-bold shadow-sm transition-all ${userRole?.auctionPlayer
-                  ? "border border-[var(--border-primary)] bg-[var(--secondary)] text-[#102033] hover:bg-[var(--secondary-strong)]"
-                  : "bg-[var(--primary)] text-white hover:bg-[var(--color-button-primary-hover)]"
-                }`}
+              onClick={userRole?.auctionPlayer ? handleViewDetails : handlePlayerRegisterClick}
+              className={`w-full px-5 py-3 ${userRole?.auctionPlayer ? viewRegistrationButtonClass : heroPrimaryButtonClass}`}
             >
               {userRole?.auctionPlayer ? "✓ View Registration" : "Register as Player"}
             </button>
           )}
           {auctionData?.teamRegistration?.showTeamRegistration && (
             <button
-              onClick={() => setTeamRegisterPopupOpen(true)}
-              className="w-full rounded-lg border border-[var(--border-card)] bg-[var(--bg-card)] px-8 py-3 font-semibold text-[var(--text-primary)] shadow-sm transition-all hover:border-[var(--border-primary)] hover:bg-[var(--accent-light)]"
+              onClick={handleTeamRegisterClick}
+              className={`w-full px-8 py-3 ${teamRegisterButtonClass}`}
             >
               Register Team
             </button>

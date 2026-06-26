@@ -1,6 +1,6 @@
 import React from "react";
 import { motion, useScroll, useSpring, useTransform } from "framer-motion";
-import { ArrowRight, BadgeCheck, Layers3, Sparkles, Trophy, Users } from "lucide-react";
+import { BadgeCheck, Layers3, Sparkles, Trophy, Users } from "lucide-react";
 import bg_1 from "../assets/Images/bg_1.jpg";
 import AboutUsImageLight from "../assets/Images/AboutUsImageLight.png";
 import AboutUsImageDark from "../assets/Images/AboutUsImageDark.png";
@@ -138,9 +138,9 @@ const stagger = {
 };
 
 const sectionLabelClass =
-  "inline-flex items-center gap-2 rounded-full border border-[var(--border-primary)] bg-[var(--accent-light)] px-3 py-1 text-xs font-bold uppercase tracking-wide text-[var(--primary)]";
+  "inline-flex items-center gap-2 rounded-full border border-[var(--border-primary)] bg-[var(--accent-light)] px-3 py-1 text-xs font-bold uppercase tracking-wide text-[var(--primary)] shadow-[0_0_22px_rgba(8,186,247,0.18)]";
 const panelClass =
-  "rounded-xl border border-[var(--border-card)] bg-[var(--bg-card)] shadow-[var(--shadow-card)]";
+  "modern-card-lift rounded-xl border border-[var(--border-card)] bg-[var(--bg-card)] shadow-[var(--shadow-card)]";
 
 function SectionHeader({ eyebrow, title, children }) {
   return (
@@ -168,6 +168,12 @@ function SectionHeader({ eyebrow, title, children }) {
 }
 
 export default function AboutUs({ theme, onToggleTheme }) {
+  const isDarkTheme = theme === "dark";
+  const neonPanelClass = `modern-card-lift relative overflow-hidden rounded-xl border border-[rgba(8,186,247,0.34)] ${
+    isDarkTheme
+      ? "bg-[linear-gradient(145deg,rgba(8,186,247,0.14),rgba(4,20,42,0.9)_42%,rgba(255,196,0,0.09))] shadow-[0_18px_48px_rgba(0,0,0,0.42),0_0_34px_rgba(8,186,247,0.18)]"
+      : "bg-[linear-gradient(145deg,rgba(255,255,255,0.98),rgba(235,247,255,0.96)_52%,rgba(255,249,224,0.92))] shadow-[0_18px_42px_rgba(17,64,105,0.12),0_0_28px_rgba(8,186,247,0.1)]"
+  }`;
   const { scrollYProgress } = useScroll();
   const smoothProgress = useSpring(scrollYProgress, {
     stiffness: 110,
@@ -178,7 +184,15 @@ export default function AboutUs({ theme, onToggleTheme }) {
   const heroScale = useTransform(scrollYProgress, [0, 0.35], [1, 1.08]);
 
   return (
-    <div className="min-h-screen overflow-x-hidden bg-[var(--bg-main)] text-[var(--text-primary)]">
+    <div className="relative min-h-screen overflow-x-hidden bg-[var(--bg-main)] text-[var(--text-primary)]">
+      <div
+        className="pointer-events-none fixed inset-0 z-0 opacity-70"
+        aria-hidden="true"
+      >
+        <div className="absolute -left-32 top-28 h-80 w-80 rounded-full bg-[radial-gradient(circle,rgba(8,186,247,0.22),transparent_68%)] blur-2xl" />
+        <div className="absolute right-[-120px] top-[36rem] h-96 w-96 rounded-full bg-[radial-gradient(circle,rgba(255,196,0,0.15),transparent_66%)] blur-2xl" />
+        <div className="absolute bottom-32 left-1/3 h-80 w-80 rounded-full bg-[radial-gradient(circle,rgba(0,148,255,0.18),transparent_68%)] blur-2xl" />
+      </div>
       <motion.div
         className="fixed left-0 top-0 z-[70] h-1 origin-left bg-[var(--secondary)]"
         style={{ scaleX: smoothProgress, width: "100%" }}
@@ -186,7 +200,7 @@ export default function AboutUs({ theme, onToggleTheme }) {
       />
       <Header theme={theme} onToggleTheme={onToggleTheme} />
 
-      <main>
+      <main className="relative z-10">
         <section className="relative overflow-hidden border-b border-[var(--border-card)]">
           <motion.div
             style={{ y: heroY, scale: heroScale }}
@@ -280,14 +294,18 @@ export default function AboutUs({ theme, onToggleTheme }) {
           </div>
         </section>
 
-        <section className="px-4 py-16 sm:px-6 lg:px-8">
+        <section className="relative px-4 py-16 sm:px-6 lg:px-8">
+          <div
+            className="pointer-events-none absolute inset-x-0 top-0 h-48 bg-[radial-gradient(circle_at_50%_0%,rgba(8,186,247,0.14),transparent_62%)]"
+            aria-hidden="true"
+          />
           <div className="mx-auto max-w-7xl">
             <SectionHeader eyebrow="Founders" title="Leadership with product taste and field reality">
               Our founders combine execution, technology, and a deep understanding of how cricket tournaments actually run.
             </SectionHeader>
 
             <div className="grid gap-5 lg:grid-cols-2">
-              {leaders.map((leader, index) => (
+              {leaders.map((leader) => (
                 <motion.article
                   key={leader.name}
                   variants={fadeUp}
@@ -295,8 +313,9 @@ export default function AboutUs({ theme, onToggleTheme }) {
                   whileInView="visible"
                   viewport={{ once: true, margin: "-80px" }}
                   whileHover={{ y: -6 }}
-                  className={`${panelClass} overflow-hidden p-4 transition`}
+                  className={`${neonPanelClass} p-4 transition`}
                 >
+                  <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-[linear-gradient(90deg,transparent,rgba(8,186,247,0.9),rgba(255,196,0,0.75),transparent)]" />
                   <div className="grid gap-5 sm:grid-cols-[180px_1fr]">
                     <div className="overflow-hidden rounded-lg border border-[var(--border-card)] bg-[var(--bg-main)]">
                       <motion.img
@@ -332,10 +351,24 @@ export default function AboutUs({ theme, onToggleTheme }) {
           </div>
         </section>
 
-        <section className="border-y border-[var(--border-card)] bg-[var(--bg-soft)] px-4 py-16 sm:px-6 lg:px-8">
-          <div className="mx-auto max-w-7xl">
-            <SectionHeader eyebrow="Departments" title="Specialists across product, operations, and growth">
-              The team behind CrickBro works across engineering, operations, sales, marketing, and people systems.
+        <section
+          className={`relative overflow-hidden border-y border-[var(--border-card)] px-4 py-16 sm:px-6 lg:px-8 ${
+            isDarkTheme
+              ? "bg-[linear-gradient(180deg,rgba(6,29,58,0.86),rgba(0,31,68,0.74))]"
+              : "bg-[linear-gradient(180deg,rgba(235,247,255,0.88),rgba(246,251,255,0.96))]"
+          }`}
+        >
+          <div
+            className="pointer-events-none absolute inset-0"
+            aria-hidden="true"
+          >
+            <div className="absolute left-1/2 top-0 h-px w-[min(900px,80vw)] -translate-x-1/2 bg-[linear-gradient(90deg,transparent,rgba(8,186,247,0.85),rgba(255,196,0,0.7),transparent)]" />
+            <div className="absolute -left-28 top-20 h-72 w-72 rounded-full bg-[radial-gradient(circle,rgba(8,186,247,0.24),transparent_68%)] blur-2xl" />
+            <div className="absolute -right-24 bottom-10 h-80 w-80 rounded-full bg-[radial-gradient(circle,rgba(255,196,0,0.16),transparent_66%)] blur-2xl" />
+          </div>
+          <div className="relative mx-auto max-w-7xl">
+            <SectionHeader eyebrow="HODs" title="Department heads powering every match-day detail">
+              The leaders behind CrickBro's engineering, operations, sales, marketing, and people systems.
             </SectionHeader>
 
             <motion.div
@@ -343,30 +376,33 @@ export default function AboutUs({ theme, onToggleTheme }) {
               initial="hidden"
               whileInView="visible"
               viewport={{ once: true, margin: "-80px" }}
-              className="grid gap-4 md:grid-cols-2 xl:grid-cols-4"
+              className="grid gap-5 md:grid-cols-2 xl:grid-cols-4"
             >
               {hods.map((hod) => (
                 <motion.article
                   key={hod.name}
                   variants={fadeUp}
-                  whileHover={{ y: -6, rotate: -0.35 }}
+                  whileHover={{ y: -8, rotate: -0.25 }}
                   transition={{ type: "spring", stiffness: 260, damping: 20 }}
-                  className={`${panelClass} overflow-hidden transition`}
+                  className={`${neonPanelClass} group transition`}
                 >
-                  <div className="aspect-[4/3] overflow-hidden bg-[var(--bg-main)]">
+                  <div className="pointer-events-none absolute inset-x-4 top-0 h-px bg-[linear-gradient(90deg,transparent,rgba(8,186,247,0.92),rgba(255,196,0,0.68),transparent)]" />
+                  <div className="relative m-3 aspect-[4/5] overflow-hidden rounded-lg border border-[rgba(8,186,247,0.28)] bg-[var(--bg-main)] shadow-[0_0_24px_rgba(8,186,247,0.12)] sm:aspect-[3/4] xl:aspect-[4/5]">
+                    <div className="pointer-events-none absolute inset-0 z-10 bg-[linear-gradient(180deg,rgba(8,186,247,0.05),transparent_48%,rgba(0,10,24,0.18))]" />
+                    <div className="pointer-events-none absolute -right-12 -top-12 z-10 h-28 w-28 rounded-full bg-[rgba(255,196,0,0.18)] blur-xl transition group-hover:bg-[rgba(8,186,247,0.24)]" />
                     <motion.img
                       src={hod.image}
                       alt={hod.name}
-                      className="h-full w-full object-cover object-top transition duration-500 hover:scale-105"
-                      whileHover={{ scale: 1.06 }}
+                      className="h-full w-full object-contain object-top transition duration-500 sm:object-cover"
+                      whileHover={{ scale: 1.045 }}
                       transition={{ duration: 0.45 }}
                     />
                   </div>
-                  <div className="p-4">
-                    <p className="text-xs font-bold uppercase tracking-wide text-[var(--primary)]">
+                  <div className="px-4 pb-4 pt-1">
+                    <p className="line-clamp-2 min-h-[32px] text-[11px] font-black uppercase leading-4 tracking-wide text-[var(--primary)]">
                       {hod.role}
                     </p>
-                    <h3 className="mt-2 text-lg font-black text-[var(--text-primary)]">
+                    <h3 className="mt-2 text-xl font-black leading-tight text-[var(--text-primary)]">
                       {hod.name}
                     </h3>
                     <p className="mt-2 min-h-[72px] text-sm font-medium leading-6 text-[var(--text-secondary)]">
@@ -377,7 +413,7 @@ export default function AboutUs({ theme, onToggleTheme }) {
                         <motion.span
                           key={tag}
                           whileHover={{ y: -2 }}
-                          className="rounded-full border border-[var(--border-card)] bg-[var(--bg-main)] px-2.5 py-1 text-[10px] font-bold text-[var(--text-secondary)]"
+                          className="rounded-full border border-[rgba(8,186,247,0.28)] bg-[rgba(8,186,247,0.08)] px-2.5 py-1 text-[10px] font-bold text-[var(--text-secondary)] shadow-[0_0_14px_rgba(8,186,247,0.08)]"
                         >
                           {tag}
                         </motion.span>
@@ -390,7 +426,11 @@ export default function AboutUs({ theme, onToggleTheme }) {
           </div>
         </section>
 
-        <section className="px-4 py-16 sm:px-6 lg:px-8">
+        <section className="relative px-4 py-16 sm:px-6 lg:px-8">
+          <div
+            className="pointer-events-none absolute inset-x-0 top-0 h-56 bg-[radial-gradient(circle_at_50%_0%,rgba(255,196,0,0.09),transparent_62%)]"
+            aria-hidden="true"
+          />
           <div className="mx-auto max-w-7xl">
             <SectionHeader eyebrow="Team" title="The people turning match-day complexity into clean software">
               Our engineering, creative, and media teams work together to make cricket management feel dependable and modern.

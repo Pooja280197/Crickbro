@@ -87,6 +87,11 @@ const AddPlayerManually = ({ isOpen, onClose, auctionId, auctionTypeTrial }) => 
   const sessionsdata = useSelector((state) => state?.data?.sessions);
   const auctionSlots = slotsdata?.data;
   const sessions = sessionsdata?.sessions;
+  const hasAvailableSessions =
+    Boolean(selectedSlot) &&
+    !sessionLoading &&
+    Array.isArray(sessions) &&
+    sessions.length > 0;
   const dispatch = useDispatch();
 
   // useEffect(() => {
@@ -314,7 +319,7 @@ const AddPlayerManually = ({ isOpen, onClose, auctionId, auctionTypeTrial }) => 
     if (!form.mobile || form.mobile.length !== 10)
       newErrors.mobile = "10-digit mobile required";
     if (!form.name) newErrors.name = "Name required";
-    if (auctionTypeTrial && form.slotId && !form.sessionId) {
+    if (auctionTypeTrial && form.slotId && hasAvailableSessions && !form.sessionId) {
       newErrors.selectedSession = "Select a session";
     }
     setErrors(newErrors);
@@ -744,6 +749,7 @@ const AddPlayerManually = ({ isOpen, onClose, auctionId, auctionTypeTrial }) => 
                   <Clock className="w-4 h-4 text-[var(--primary)]" />
                   <label className="block text-sm font-medium text-[var(--text-secondary)]">
                     Preferred Time
+                    {hasAvailableSessions && <span className="text-red-500"> *</span>}
                   </label>
                 </div>
 
@@ -814,9 +820,9 @@ const AddPlayerManually = ({ isOpen, onClose, auctionId, auctionTypeTrial }) => 
             </button>
             <button
               onClick={handleSubmit}
-              disabled={loading}
+              disabled={loading || (auctionTypeTrial && selectedSlot && sessionLoading)}
               className={`flex-1 rounded-lg px-4 py-2.5 text-xs font-semibold transition disabled:cursor-not-allowed disabled:opacity-60 ${
-                loading
+                loading || (auctionTypeTrial && selectedSlot && sessionLoading)
                   ? "bg-[var(--secondary-lighter)] text-[var(--text-secondary)]"
                   : "bg-[var(--secondary)] text-[#102033] hover:bg-[var(--secondary-strong)]"
               }`}

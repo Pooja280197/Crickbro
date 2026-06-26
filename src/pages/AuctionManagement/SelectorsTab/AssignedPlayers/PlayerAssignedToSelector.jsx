@@ -145,7 +145,7 @@ function PlayersAssignedToSelector({ auctionId }) {
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+              <div className="grid grid-cols-1 gap-2 min-[420px]:grid-cols-3">
                 <div className="rounded-lg border border-[var(--border-card)] bg-[var(--bg-card)] px-3 py-2">
                   <p className="text-[10px] font-bold uppercase text-[var(--text-muted)]">
                     Total
@@ -174,8 +174,8 @@ function PlayersAssignedToSelector({ auctionId }) {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
-            <div className="md:col-span-1 relative w-full">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
+            <div className="relative w-full sm:col-span-2 xl:col-span-1">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--text-muted)]" />
               <input
                 type="text"
@@ -216,21 +216,21 @@ function PlayersAssignedToSelector({ auctionId }) {
               ))}
             </select>
 
-             <div className="flex items-center gap-3">
-                  <label className="text-sm font-medium text-[var(--text-secondary)]">
-                    Players per page:
-                  </label>
-                  <select
-                    value={itemsPerPage}
-                    onChange={(e) => setItemsPerPage(Number(e.target.value))}
-                    className="ui-input w-auto"
-                  >
-                    <option value="16">16</option>
-                    <option value="32">32</option>
-                    <option value="64">64</option>
-                    <option value="96">96</option>
-                  </select>
-                </div>
+            <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:gap-3">
+              <label className="text-sm font-medium text-[var(--text-secondary)]">
+                Players per page:
+              </label>
+              <select
+                value={itemsPerPage}
+                onChange={(e) => setItemsPerPage(Number(e.target.value))}
+                className="ui-input w-full sm:w-auto"
+              >
+                <option value="16">16</option>
+                <option value="32">32</option>
+                <option value="64">64</option>
+                <option value="96">96</option>
+              </select>
+            </div>
           </div>
 
           {selectorPlayers?.length === 0 ? (
@@ -239,7 +239,7 @@ function PlayersAssignedToSelector({ auctionId }) {
             </div>
           ) : (
             <>
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
                 {selectorPlayers?.map((item) => (
                   <div key={item._id}>
                     <SelectorPlayerCard

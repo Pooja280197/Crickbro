@@ -1,277 +1,240 @@
 import {
-  CalendarDays,
   ClipboardList,
+  Check,
   Gavel,
   Gauge,
   Layers3,
   RadioTower,
-  ShieldCheck,
   Star,
   Trophy,
-  Users,
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import BatImage from "../assets/Images/BatImage.png";
+import Footer from "../components/Footer";
+import Header from "../components/Header";
 
 const workflowSteps = [
   {
     number: "01",
     title: "Create Tournament",
     icon: Trophy,
-    accent: "Tournament base",
-    description:
-      "Create your tournament with teams, venue, format, dates, rules, and important setup details.",
+    description: "Create your tournament and configure all essential details",
     points: [
-      "Add complete tournament details",
-      "Manage teams and setup",
-      "Prepare auction and match base",
+      "Add tournament details (name, format, venue, dates)",
+      "Register participating teams",
+      "Configure awards and prize details",
+      "Set tournament rules and settings",
     ],
   },
   {
     number: "02",
     title: "Create Auction",
     icon: Gavel,
-    accent: "Auction setup",
-    description:
-      "Select the tournament and choose a trial-based or direct auction flow with registration options.",
+    description: "Configure your auction setup",
     points: [
-      "Choose trial or direct auction",
-      "Enable player registration",
-      "Set free or paid registration",
-      "Add rules and GST if needed",
+      "Choose Trial-Based or Direct Auction",
+      "Set bidding rules and increments",
+      "Configure team budgets",
+      "Customize player registration form",
+      "Define auction settings",
     ],
   },
   {
     number: "03",
-    title: "Trial & Player Selection",
+    title: "Trial Management & Player Selection (Optional)",
     icon: Star,
-    accent: "Selection flow",
-    description:
-      "Create trial slots, assign selectors, rate players, and move qualified players forward automatically.",
+    description: "Conduct trials and shortlist players",
     points: [
-      "Create slots and sessions",
-      "Assign selectors",
-      "Set minimum rating criteria",
-      "Auto-add qualified players",
+      "Create trial slots across multiple locations",
+      "Assign selectors for player evaluation",
+      "Configure selection criteria and rules",
+      "Rate player performances",
+      "Automatically qualify selected players for auction",
     ],
   },
   {
     number: "04",
     title: "Create Player Categories",
     icon: Layers3,
-    accent: "Auction lots",
-    description:
-      "Organize selected players into categories or lots so the live auction feels clear and structured.",
+    description: "Organize players for the auction",
     points: [
-      "Create categories or lots",
-      "Assign selected players",
-      "Organize auction order",
+      "Create player categories",
+      "Assign players based on performance and ratings",
+      "Organize auction lots",
+      "Prepare players for live bidding",
     ],
   },
   {
     number: "05",
     title: "Start Live Auction",
     icon: RadioTower,
-    accent: "Live bidding",
-    description:
-      "Start bidding by category, status, and order. Teams bid live while admins manage the flow.",
+    description: "Run your auction in real time",
     points: [
-      "Choose category and player status",
-      "Use sequence or random order",
-      "Teams place live bids",
-      "Auto-assign sold players",
+      "Live bidding by team owners",
+      "Real-time wallet and budget tracking",
+      "Monitor player bidding activity",
+      "Public auction display overlays for screens",
+      "Automatic player assignment to winning teams",
     ],
   },
   {
     number: "06",
-    title: "Manage Matches & Live Scoring",
+    title: "Matches & Live Scoring",
     icon: Gauge,
-    accent: "Match day",
-    description:
-      "After auction, schedule fixtures, assign teams, track matches, and score live in CrickBro.",
+    description: "Manage matches after the auction",
     points: [
-      "Schedule fixtures",
-      "Assign teams",
-      "Track match progress",
-      "Use live scoring",
+      "Schedule matches between teams",
+      "Manage squads and fixtures",
+      "Live scoring through CrickBro App",
+      "Real-time scorecards and statistics",
+      "Track tournament standings and results",
     ],
   },
 ];
 
-const miniStats = [
-  { label: "Tournament", icon: CalendarDays },
-  { label: "Players", icon: Users },
-  { label: "Rules", icon: ClipboardList },
-  { label: "Secure", icon: ShieldCheck },
-];
+const TimelineStep = ({ step, side }) => {
+  const Icon = step.icon;
+  const isLeft = side === "left";
 
-const AuctionWorkflow = () => {
   return (
-    <section className="relative overflow-hidden border-y border-[var(--border-card)] bg-[var(--bg-main)] px-4 py-16 text-[var(--text-primary)] sm:px-6 lg:px-8">
-      <div className="pointer-events-none absolute left-0 top-0 h-72 w-72 -translate-x-1/2 rounded-full bg-[var(--accent-light)] opacity-70 blur-3xl" />
-      <div className="pointer-events-none absolute bottom-0 right-0 h-72 w-72 translate-x-1/3 rounded-full bg-[var(--accent-light)] opacity-60 blur-3xl" />
+    <div
+      className={`hiw-step group relative w-full py-3 ${
+        isLeft ? "hiw-step-left" : "hiw-step-right"
+      }`}
+    >
+      <div
+        className={`hiw-connector absolute top-[47px] hidden h-px w-10 bg-gradient-to-r ${
+          isLeft
+            ? "right-0 from-cyan-200/10 to-cyan-100/80"
+            : "left-0 from-cyan-100/80 to-cyan-200/10"
+        }`}
+      />
+      <span
+        className={`hiw-dot absolute top-[40px] hidden h-[15px] w-[15px] rounded-full border border-cyan-100/70 bg-[#111044] shadow-[0_0_12px_rgba(103,232,249,0.3)] ${
+          isLeft ? "right-0" : "left-0"
+        }`}
+      >
+        <span className="absolute inset-[4px] rounded-full bg-cyan-300" />
+      </span>
 
-      <div className="relative mx-auto max-w-7xl">
-        <div className="mx-auto mb-12 max-w-3xl text-center">
-          <span className="inline-flex items-center gap-2 rounded-full border border-[var(--border-primary)] bg-[var(--accent-light)] px-3 py-1 text-xs font-bold uppercase tracking-wide text-[var(--primary)]">
-            <Gavel size={14} />
-            Complete Auction Flow
+      <div className="rounded-2xl border border-cyan-200/15 bg-white/[0.055] px-4 py-4 shadow-[0_16px_36px_rgba(0,0,0,0.16)] backdrop-blur-sm transition duration-300 group-hover:-translate-y-0.5 group-hover:border-cyan-200/30 group-hover:bg-white/[0.075]">
+        <div
+          className="hiw-step-heading flex items-center gap-3"
+        >
+          <span className="grid h-11 w-11 shrink-0 place-items-center rounded-xl border border-cyan-200/30 bg-cyan-300/[0.08] text-cyan-300 shadow-[inset_0_0_18px_rgba(34,211,238,0.08)] transition group-hover:border-cyan-200/60 group-hover:bg-cyan-300/[0.13]">
+            <Icon size={19} strokeWidth={1.8} />
           </span>
-
-          <h2 className="mt-4 font-heading text-3xl font-black leading-tight text-[var(--text-primary)] md:text-5xl">
-            How CrickBro Auction Works
-          </h2>
-
-          <p className="mx-auto mt-4 max-w-2xl text-sm font-medium leading-6 text-[var(--text-secondary)] md:text-base">
-            From tournament creation to live scoring, CrickBro manages the
-            complete cricket auction journey in one powerful platform.
-          </p>
-
-          <div className="mt-6 grid grid-cols-2 gap-2 sm:grid-cols-4">
-            {miniStats.map((item) => {
-              const Icon = item.icon;
-
-              return (
-                <div
-                  key={item.label}
-                  className="rounded-lg border border-[var(--border-card)] bg-[var(--bg-card)] px-3 py-2 shadow-sm"
-                >
-                  <Icon size={16} className="mx-auto text-[var(--primary)]" />
-                  <p className="mt-1 text-xs font-bold text-[var(--text-secondary)]">
-                    {item.label}
-                  </p>
-                </div>
-              );
-            })}
+          <div>
+            <p className="text-[10px] font-extrabold uppercase tracking-[0.22em] text-cyan-200/65">
+              Step {step.number}
+            </p>
+            <h2 className="font-heading text-lg font-black leading-tight text-white sm:text-xl">
+              {step.title}
+            </h2>
           </div>
         </div>
 
-        <div className="relative overflow-hidden rounded-[28px] border border-[var(--border-card)] bg-[radial-gradient(circle_at_18%_35%,rgba(8,186,247,0.18),transparent_30%),linear-gradient(135deg,#102b5e_0%,#170a44_46%,#060f2f_100%)] px-4 py-8 shadow-[0_30px_90px_rgba(0,0,0,0.28)] sm:px-6 xl:px-10">
-          <div className="pointer-events-none absolute inset-y-0 left-[22%] hidden w-[22%] rounded-[50%] bg-white/5 blur-sm xl:block" />
+        <p className="mt-3 border-t border-white/10 pt-3 text-[13px] font-bold leading-5 text-cyan-100/90">
+          {step.description}
+        </p>
 
-          <div className="pointer-events-none absolute left-1/2 top-1/2 z-[2] hidden -translate-x-1/2 -translate-y-1/2 xl:block">
-            <img
-              src={BatImage}
-              alt="Cricket bat"
-              className="h-[760px] w-auto object-contain drop-shadow-[0_28px_48px_rgba(0,0,0,0.42)]"
-            />
-          </div>
-
-          <div className="relative z-[3] grid gap-5 xl:grid-cols-[minmax(0,1fr)_220px_minmax(0,1fr)]">
-            {workflowSteps.map((step, index) => {
-              const Icon = step.icon;
-              const isRight = index % 2 === 1;
-
-              return (
-                <article
-                  key={step.number}
-                  className={`relative xl:col-span-3 xl:grid xl:grid-cols-[minmax(0,1fr)_220px_minmax(0,1fr)] ${
-                    isRight ? "" : ""
-                  }`}
-                >
-                  <div
-                    className={`group relative rounded-2xl border border-white/10 bg-white/[0.06] p-4 text-white backdrop-blur-md transition hover:-translate-y-1 hover:bg-white/[0.1] xl:max-w-[430px] ${
-                      isRight
-                        ? "xl:col-start-3 xl:ml-auto"
-                        : "xl:col-start-1 xl:mr-auto xl:text-right"
-                    }`}
-                  >
-                    <div
-                      className={`absolute top-10 hidden h-px bg-white/55 xl:block ${
-                        isRight
-                          ? "right-full w-[110px]"
-                          : "left-full w-[110px]"
-                      }`}
-                    />
-                    <div
-                      className={`absolute top-[34px] hidden h-4 w-4 rounded-full border border-white/70 bg-[#102b5e] xl:block ${
-                        isRight ? "-left-[122px]" : "-right-[122px]"
-                      }`}
-                    />
-
-                    <div
-                      className={`mb-3 flex items-center gap-3 ${
-                        isRight ? "" : "xl:flex-row-reverse"
-                      }`}
-                    >
-                      <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-white/20 bg-black/25 text-[#31d4ff]">
-                        <Icon size={18} />
-                      </span>
-                      <div>
-                        <p className="text-[11px] font-black uppercase tracking-[0.18em] text-[#9fc7e8]">
-                          Step {step.number}
-                        </p>
-                        <h3 className="font-heading text-2xl font-black leading-none text-white">
-                          {step.title}
-                        </h3>
-                      </div>
-                    </div>
-
-                    <p className="text-sm font-medium leading-6 text-white/80">
-                      {step.description}
-                    </p>
-
-                    <div
-                      className={`mt-3 flex flex-wrap gap-2 ${
-                        isRight ? "" : "xl:justify-end"
-                      }`}
-                    >
-                      {step.points.slice(0, 3).map((point) => (
-                        <span
-                          key={point}
-                          className="rounded-full border border-white/10 bg-black/20 px-2.5 py-1 text-[10px] font-bold text-white/75"
-                        >
-                          {point}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                </article>
-              );
-            })}
-          </div>
-        </div>
-
-        <div className="mt-12 overflow-hidden rounded-xl border border-[var(--border-card)] bg-[var(--bg-card)] p-5 shadow-[var(--shadow-card)]">
-          <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
-            <div className="max-w-2xl">
-              <span className="inline-flex items-center gap-2 rounded-full border border-[var(--border-primary)] bg-[var(--accent-light)] px-3 py-1 text-xs font-bold uppercase tracking-wide text-[var(--primary)]">
-                <Trophy size={14} />
-                Ready for match day
+        <ul className="mt-3 space-y-2">
+          {step.points.map((point) => (
+            <li
+              key={point}
+              className={`flex items-start gap-2 text-[12px] font-medium leading-[1.45] text-slate-300/85 ${
+                isLeft ? "flex-row-reverse text-right" : "text-left"
+              }`}
+            >
+              <span className="mt-0.5 grid h-4 w-4 shrink-0 place-items-center rounded-full bg-emerald-400/15 text-emerald-300">
+                <Check size={10} strokeWidth={3} />
               </span>
-
-              <h3 className="mt-3 font-heading text-2xl font-black text-[var(--text-primary)]">
-                Ready to run your next cricket auction?
-              </h3>
-
-              <p className="mt-2 text-sm font-medium leading-6 text-[var(--text-secondary)]">
-                Create tournaments, manage trials, conduct live auctions, assign
-                players, and score matches — all from one platform.
-              </p>
-            </div>
-
-            <div className="flex flex-col gap-3 sm:flex-row">
-              <Link
-                to="/createAuction"
-                aria-label="Start Auction"
-                className="ui-btn-primary justify-center"
-              >
-                Start Auction
-              </Link>
-
-              <a
-                href="/auction"
-                aria-label="View Demo"
-                className="ui-btn-ghost justify-center"
-              >
-                View Demo
-              </a>
-            </div>
-          </div>
-        </div>
+              <span>{point}</span>
+            </li>
+          ))}
+        </ul>
       </div>
-    </section>
+    </div>
   );
 };
 
-export default AuctionWorkflow;
+const HowItWorks = ({ theme, onToggleTheme }) => {
+  return (
+    <div className="site-shell">
+      <Header theme={theme} onToggleTheme={onToggleTheme} />
+
+      <main className="overflow-hidden bg-[var(--bg-main)] text-[var(--text-primary)]">
+        <section className="relative px-4 pb-16 pt-14 sm:px-6 lg:px-8 lg:pb-24 lg:pt-20">
+          <div className="pointer-events-none absolute left-1/2 top-0 h-72 w-[38rem] -translate-x-1/2 rounded-full bg-[rgba(8,186,247,0.13)] blur-[100px]" />
+
+          <div className="relative mx-auto max-w-6xl">
+            <header className="mx-auto mb-10 max-w-3xl text-center lg:mb-14">
+              <span className="inline-flex items-center gap-2 rounded-full border border-[var(--border-primary)] bg-[var(--accent-light)] px-4 py-1.5 text-[11px] font-extrabold uppercase tracking-[0.2em] text-[var(--primary)]">
+                <Gavel size={14} /> The complete journey
+              </span>
+              <h1 className="mt-5 font-heading text-4xl font-black leading-[1.05] sm:text-5xl lg:text-6xl">
+                How CrickBro Auction <span className="text-[var(--primary)]">Works</span>
+              </h1>
+              <p className="mx-auto mt-4 max-w-2xl text-sm leading-7 text-[var(--text-secondary)] sm:text-base">
+                One connected workflow—from creating your tournament to the final ball of match day.
+              </p>
+            </header>
+
+            <div className="relative overflow-hidden rounded-[2rem] border border-cyan-300/15 bg-[linear-gradient(135deg,#07366c_0%,#17104d_44%,#09042b_100%)] px-5 py-10 shadow-[0_35px_100px_rgba(0,0,0,0.4)] sm:px-8 lg:px-12 lg:py-14">
+              <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_18%_45%,rgba(31,106,174,0.35),transparent_42%),radial-gradient(ellipse_at_90%_85%,rgba(34,67,139,0.28),transparent_38%)]" />
+              <div className="pointer-events-none absolute -left-32 top-[-10%] hidden h-[120%] w-[52%] rotate-[8deg] rounded-[50%] bg-white/[0.035] lg:block" />
+
+              <div className="hiw-timeline-bat pointer-events-none absolute left-1/2 top-1/2 z-10 hidden -translate-x-1/2 -translate-y-1/2">
+                <div className="absolute inset-x-8 bottom-0 h-12 rounded-full bg-black/50 blur-2xl" />
+                <img
+                  src={BatImage}
+                  alt="CrickBro cricket bat"
+                  className="hiw-bat-image relative h-[830px] w-auto max-w-none object-contain drop-shadow-[0_22px_30px_rgba(0,0,0,0.55)]"
+                />
+              </div>
+
+              <div className="hiw-timeline relative z-20 ml-5 border-l border-cyan-100/20 pl-7">
+                {workflowSteps.map((step, index) => {
+                  const isRight = index % 2 === 1;
+
+                  return (
+                    <article
+                      key={step.number}
+                      className="hiw-timeline-row relative min-h-[230px]"
+                    >
+                      <span className="hiw-mobile-node absolute -left-[37px] top-1/2 grid h-5 w-5 -translate-y-1/2 place-items-center rounded-full border border-cyan-100/70 bg-[#141047] text-cyan-200 shadow-[0_0_12px_rgba(103,232,249,0.2)]">
+                        <span className="h-1.5 w-1.5 rounded-full bg-current" />
+                      </span>
+
+                      <div className="hiw-left-slot min-w-0">
+                        {!isRight && <TimelineStep step={step} side="left" />}
+                      </div>
+                      <div className="hiw-center-slot" aria-hidden="true" />
+                      <div className="hiw-right-slot min-w-0">
+                        {isRight && <TimelineStep step={step} side="right" />}
+                      </div>
+                    </article>
+                  );
+                })}
+              </div>
+            </div>
+
+            <div className="mt-10 flex flex-col items-center justify-between gap-5 rounded-2xl border border-[var(--border-card)] bg-[var(--bg-card)] p-6 text-center shadow-[var(--shadow-card)] sm:flex-row sm:text-left lg:px-8">
+              <div>
+                <p className="text-xs font-extrabold uppercase tracking-[0.18em] text-[var(--primary)]">Ready to begin?</p>
+                <h2 className="mt-1 font-heading text-2xl font-black">Create your first auction today.</h2>
+              </div>
+              <Link to="/createAuction" className="ui-btn-primary shrink-0 justify-center">
+                Start Creating <ClipboardList size={17} />
+              </Link>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <Footer />
+    </div>
+  );
+};
+
+export default HowItWorks;

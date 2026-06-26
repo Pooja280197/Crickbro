@@ -1223,7 +1223,10 @@ const TournamentAdminForm = ({ tournamentId, auctionId, TrialType }) => {
         .lp-grid-2 {
           display: grid; grid-template-columns: 1fr 1fr; gap: 16px;
         }
-        @media (max-width: 640px) { .lp-grid-2 { grid-template-columns: 1fr; } }
+        @media (max-width: 640px) { 
+          .lp-grid-2 { grid-template-columns: 1fr; }
+          .lp-section-header { flex-direction: column; }
+        }
 
         /* Toggle cards */
         .lp-toggle-grid {
@@ -1599,6 +1602,7 @@ const TournamentAdminForm = ({ tournamentId, auctionId, TrialType }) => {
           padding: 18px;
         }
         .lp-section-header {
+          
           margin-bottom: 16px;
           gap: 12px;
         }

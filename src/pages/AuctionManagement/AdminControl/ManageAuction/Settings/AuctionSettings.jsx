@@ -43,7 +43,7 @@ const tabs = [
   { key: "addAdmin", label: "Add Organizers", icon: UserCog },
   { key: "addOwner", label: "Add Team Owner", icon: UserCheck },
   { key: "category", label: "Lot category/Bid Slab", icon: SettingsIcon },
-  { key: "rules", label: "Edit Auction Rules", icon: SettingsIcon },
+  { key: "rules", label: "Auction Rules", icon: SettingsIcon },
 ];
 
 const panelClass =

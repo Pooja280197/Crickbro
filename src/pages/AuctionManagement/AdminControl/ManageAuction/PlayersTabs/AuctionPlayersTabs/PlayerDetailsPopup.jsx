@@ -1,4 +1,5 @@
 import { X, Trophy, User, MapPin, Phone, Mail, Calendar } from "lucide-react";
+import { createPortal } from "react-dom";
 
 const DUMMY_IMAGE_URL =
   "https://crickbro.s3.ap-south-1.amazonaws.com/uploads/dummyImage.png";
@@ -36,13 +37,13 @@ const formatRoleLabel = (role) => {
 };
 
 const COLOR_TONE = {
-  blue: { bg: "bg-blue-100", text: "text-blue-600" },
-  green: { bg: "bg-green-100", text: "text-green-600" },
-  orange: { bg: "bg-orange-100", text: "text-orange-600" },
-  red: { bg: "bg-red-100", text: "text-red-600" },
-  purple: { bg: "bg-purple-100", text: "text-purple-600" },
-  cyan: { bg: "bg-cyan-100", text: "text-cyan-600" },
-  emerald: { bg: "bg-emerald-100", text: "text-emerald-700" },
+  blue: { bg: "bg-[rgba(0,187,255,0.12)]", text: "text-[var(--primary)]" },
+  green: { bg: "bg-emerald-500/10", text: "text-emerald-300" },
+  orange: { bg: "bg-[rgba(255,190,0,0.14)]", text: "text-[var(--secondary)]" },
+  red: { bg: "bg-red-500/10", text: "text-red-300" },
+  purple: { bg: "bg-violet-500/10", text: "text-violet-300" },
+  cyan: { bg: "bg-cyan-500/10", text: "text-cyan-300" },
+  emerald: { bg: "bg-emerald-500/10", text: "text-emerald-300" },
 };
 
 export default function PlayerDetailsPopup({
@@ -54,6 +55,7 @@ export default function PlayerDetailsPopup({
   activeSubTab,
 }) {
   if (!isOpen || !player) return null;
+  if (typeof document === "undefined") return null;
 
   const playerDoc = player?.player || {};
   const rating = player?.playersRatings?.avgRating || 0;
@@ -217,50 +219,58 @@ export default function PlayerDetailsPopup({
 
   const allRatings = getAllRatings();
 
-  return (
-    <div className="fixed inset-0 z-[200000] bg-black/50 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4">
-      <div className="relative w-full max-w-lg bg-[var(--bg-card)] rounded-2xl shadow-2xl overflow-hidden max-h-[92vh] flex flex-col">
+  return createPortal(
+    <div
+      className="fixed inset-0 z-[200000] flex items-center justify-center overflow-y-auto bg-black/70 p-3 backdrop-blur-sm sm:p-4"
+      onClick={onClose}
+    >
+      <div
+        className="relative flex max-h-[calc(100dvh-1.5rem)] w-full max-w-2xl flex-col overflow-hidden rounded-lg border border-[var(--border-card)] bg-[var(--bg-card)] shadow-[0_28px_90px_rgba(0,0,0,0.55)] before:absolute before:inset-x-0 before:top-0 before:h-px before:bg-gradient-to-r before:from-[var(--primary)] before:via-[var(--secondary)] before:to-transparent sm:max-h-[calc(100dvh-2rem)]"
+        onClick={(event) => event.stopPropagation()}
+      >
+        <div className="pointer-events-none absolute -right-16 -top-20 h-44 w-44 rounded-full bg-[var(--primary)]/15 blur-3xl" />
+        <div className="pointer-events-none absolute -bottom-20 left-10 h-40 w-40 rounded-full bg-[var(--secondary)]/10 blur-3xl" />
         {/* Header */}
-        <div className="relative bg-gradient-to-r from-violet-600 to-fuchsia-500 px-4 py-5 sm:px-5">
+        <div className="relative border-b border-[var(--border-card)] bg-[linear-gradient(135deg,rgba(0,187,255,0.14),rgba(3,17,34,0.96)_45%,rgba(255,190,0,0.10))] px-4 py-5 sm:px-5">
           <button
             onClick={onClose}
-            className="absolute top-3 right-3 p-1.5 rounded-full bg-white/20 hover:bg-white/30 transition"
+            className="absolute right-3 top-3 rounded-lg border border-[var(--border-card)] bg-[var(--bg-main)] p-1.5 text-[var(--text-secondary)] transition hover:border-[var(--border-primary)] hover:text-[var(--text-primary)]"
           >
-            <X className="w-4 h-4 text-[var(--text-dark)]" />
+            <X className="h-4 w-4" />
           </button>
 
           <div className="flex items-center gap-4">
             {/* Profile */}
             <div
-              className={`w-16 h-16 sm:w-20 sm:h-20 rounded-2xl overflow-hidden border-2 border-white shadow-md bg-gradient-to-br ${getGradientByName(
+              className={`flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-lg border border-[var(--border-primary)] bg-gradient-to-br shadow-[0_0_28px_rgba(0,187,255,0.22)] sm:h-20 sm:w-20 ${getGradientByName(
                 playerDoc?.name,
-              )} flex items-center justify-center shrink-0`}
+              )}`}
             >
               {isDummyImage ? (
-                <span className="text-[var(--text-dark)] text-xl sm:text-2xl font-bold">
+                <span className="text-xl font-bold text-white sm:text-2xl">
                   {getInitials(playerDoc?.name)}
                 </span>
               ) : (
                 <img
                   src={playerDoc?.profilePicture}
                   alt={playerDoc?.name}
-                  className="w-full h-full object-cover"
+                  className="h-full w-full object-cover"
                 />
               )}
             </div>
 
             {/* Info */}
-            <div className="text-[var(--text-dark)] min-w-0">
-              <h2 className="text-lg sm:text-xl font-bold truncate">
+            <div className="min-w-0 pr-8 text-[var(--text-primary)]">
+              <h2 className="truncate text-lg font-bold sm:text-xl">
                 {playerDoc?.name}
               </h2>
 
               {playerRole && (
-                <p className="text-white/90 text-sm truncate">{playerRole}</p>
+                <p className="truncate text-sm font-semibold text-[var(--primary)]">{playerRole}</p>
               )}
 
               {isTrialType && (
-                <div className="mt-2 inline-flex items-center gap-1 bg-white/20 px-3 py-1 rounded-full text-xs font-medium">
+                <div className="mt-2 inline-flex items-center gap-1 rounded-full border border-[var(--secondary)]/50 bg-[var(--secondary)] px-3 py-1 text-xs font-bold text-[#102033] shadow-[0_0_20px_rgba(255,190,0,0.28)]">
                   ⭐ {rating.toFixed(2)} Rating
                 </div>
               )}
@@ -269,7 +279,7 @@ export default function PlayerDetailsPopup({
         </div>
 
         {/* Content */}
-        <div className="flex-1 overflow-y-auto p-4 space-y-4">
+        <div className="professional-scrollbar relative flex-1 space-y-4 overflow-y-auto p-4">
           {/* Details Grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             {[...basicDetails, ...additionalDetails].map((detail) => (
@@ -289,8 +299,8 @@ export default function PlayerDetailsPopup({
             trialDate ||
             trialTime ||
             categoryName) && (
-            <div className="bg-[var(--bg-soft)] border rounded-2xl p-4">
-              <h3 className="font-semibold text-sm mb-3">Trial Details</h3>
+            <div className="rounded-lg border border-[var(--border-card)] bg-[var(--bg-main)] p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.03)]">
+              <h3 className="mb-3 text-sm font-bold text-[var(--text-primary)]">Trial Details</h3>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {trialSlotName && (
@@ -334,18 +344,18 @@ export default function PlayerDetailsPopup({
 
           {/* Ratings */}
           {allRatings.length > 0 && (
-            <div className="bg-[var(--bg-soft)] border rounded-2xl p-4">
-              <div className="flex items-center gap-2 mb-3">
-                <Trophy className="w-4 h-4 text-yellow-500" />
-                <h3 className="font-semibold text-sm">Ratings</h3>
+            <div className="rounded-lg border border-[var(--border-card)] bg-[var(--bg-main)] p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.03)]">
+              <div className="mb-3 flex items-center gap-2">
+                <Trophy className="h-4 w-4 text-[var(--secondary)]" />
+                <h3 className="text-sm font-bold text-[var(--text-primary)]">Ratings</h3>
               </div>
 
               <div className="space-y-3">
                 {allRatings.map((r, idx) => (
-                  <div key={idx} className="bg-[var(--bg-card)] border rounded-xl p-3">
-                    <div className="flex items-start justify-between mb-3 gap-3">
+                  <div key={idx} className="rounded-lg border border-[var(--border-card)] bg-[var(--bg-card)] p-3">
+                    <div className="mb-3 flex items-start justify-between gap-3">
                       <div className="min-w-0">
-                        <p className="font-semibold text-sm truncate">
+                        <p className="truncate text-sm font-semibold text-[var(--text-primary)]">
                           {r.slotName}
                         </p>
 
@@ -355,8 +365,8 @@ export default function PlayerDetailsPopup({
                       <span
                         className={`text-[10px] px-2 py-1 rounded-full whitespace-nowrap ${
                           r.selectionStatus === "select"
-                            ? "bg-green-100 text-green-700"
-                            : "bg-yellow-100 text-yellow-700"
+                            ? "border border-emerald-500/30 bg-emerald-500/10 text-emerald-300"
+                            : "border border-[var(--secondary)]/30 bg-[var(--secondary)]/10 text-[var(--secondary)]"
                         }`}
                       >
                         {r.selectionStatus}
@@ -379,8 +389,8 @@ export default function PlayerDetailsPopup({
 
           {/* About */}
           {playerDoc?.description && (
-            <div className="bg-[var(--bg-soft)] border rounded-2xl p-4">
-              <h3 className="font-semibold text-sm mb-2">About</h3>
+            <div className="rounded-lg border border-[var(--border-card)] bg-[var(--bg-main)] p-4">
+              <h3 className="mb-2 text-sm font-bold text-[var(--text-primary)]">About</h3>
 
               <p className="text-sm text-[var(--text-secondary)] leading-relaxed">
                 {playerDoc.description}
@@ -390,11 +400,11 @@ export default function PlayerDetailsPopup({
         </div>
 
         {/* Footer */}
-        <div className="border-t bg-[var(--bg-card)] p-4 flex gap-3">
+        <div className="relative flex gap-3 border-t border-[var(--border-card)] bg-[var(--bg-main)] p-4">
           {activeSubTab === "auctionPlayers" && (
             <button
               onClick={onDelete}
-              className="flex-1 h-11 rounded-xl bg-red-500 hover:bg-red-600 text-white font-medium transition"
+              className="h-11 flex-1 rounded-lg border border-red-500/40 bg-red-500/12 font-bold text-red-200 transition hover:bg-red-500/20"
             >
               Remove
             </button>
@@ -402,13 +412,14 @@ export default function PlayerDetailsPopup({
 
           <button
             onClick={onClose}
-            className="flex-1 h-11 rounded-xl border border-[var(--border-primary)] hover:bg-[var(--secondary-lighter)] font-medium transition"
+            className="h-11 flex-1 rounded-lg border border-[var(--border-primary)] bg-[rgba(0,187,255,0.08)] font-bold text-[var(--primary)] transition hover:bg-[rgba(0,187,255,0.14)]"
           >
             Close
           </button>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }
 
@@ -417,12 +428,12 @@ const CompactDetailCard = ({ icon, label, value, color }) => {
   const tone = COLOR_TONE[color] || COLOR_TONE.blue;
 
   return (
-    <div className="flex items-start gap-3 p-3 rounded-xl border bg-[var(--bg-card)]">
+    <div className="flex items-start gap-3 rounded-lg border border-[var(--border-card)] bg-[var(--bg-card)] p-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.03)] transition hover:border-[var(--border-primary)]">
       
       <div
-        className={`w-9 h-9 rounded-lg shrink-0 flex items-center justify-center ${tone.bg} ${tone.text}`}
+        className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-current/15 ${tone.bg} ${tone.text}`}
       >
-        {icon}
+        <span className="[&_svg]:h-4 [&_svg]:w-4">{icon}</span>
       </div>
 
       <div className="min-w-0">
@@ -441,7 +452,7 @@ const CompactDetailCard = ({ icon, label, value, color }) => {
 const renderMiniRating = (label, value, color) =>
   value !== undefined && (
     <div
-      className={`rounded-xl p-2 text-center ${
+      className={`rounded-lg border border-[var(--border-card)] p-2 text-center ${
         (COLOR_TONE[color] || COLOR_TONE.blue).bg
       }`}
     >

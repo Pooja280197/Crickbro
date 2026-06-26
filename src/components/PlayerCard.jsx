@@ -92,6 +92,7 @@ export const PlayerDetailsModal = ({
   onGradePlayer,
   initialAction = "",
   actionOnly = false,
+  showAllDetails = false,
 }) => {
   const [showMoreDetails, setShowMoreDetails] = useState(false);
   const [showTrialDetails, setShowTrialDetails] = useState(false);
@@ -116,15 +117,15 @@ export const PlayerDetailsModal = ({
 
   useEffect(() => {
     if (isOpen) {
-      setShowMoreDetails(false);
-      setShowTrialDetails(false);
+      setShowMoreDetails(showAllDetails);
+      setShowTrialDetails(showAllDetails);
       setIsEditing(initialAction === "edit");
       setShowDeleteConfirm(initialAction === "delete");
       setSessionShowDeleteConfirm(initialAction === "removeSession")
       setProfileFile(null);
       setProfilePreview(playerData?.profilePicture || "");
     }
-  }, [isOpen, player?._id, player?.player?._id, initialAction]);
+  }, [isOpen, player?._id, player?.player?._id, initialAction, showAllDetails]);
 
   const playerName = playerData?.name || "";
   const playerImage = playerData?.profilePicture || "";
@@ -492,7 +493,7 @@ export const PlayerDetailsModal = ({
                   </div>
                 ))}
 
-              {showMoreDetails &&
+              {(showMoreDetails || showAllDetails) &&
                 additionalDetails
                   .filter((detail) => detail.value !== "" && detail.value !== null && detail.value !== undefined)
                   .map((detail) => (
@@ -510,7 +511,7 @@ export const PlayerDetailsModal = ({
                   ))}
             </div>
 
-            {additionalDetails.some(
+            {!showAllDetails && additionalDetails.some(
               (detail) => detail.value !== "" && detail.value !== null && detail.value !== undefined,
             ) && (
               <button
@@ -601,20 +602,22 @@ export const PlayerDetailsModal = ({
             )}
           </div>
 
-          {(slotName || sessionName || sessionDate || (sessionStart && sessionEnd)) && (
+          {(showAllDetails || slotName || sessionName || sessionDate || (sessionStart && sessionEnd)) && (
             <div className="mb-4 rounded-lg border border-[var(--border-card)] bg-[var(--secondary-lighter)] p-3">
               <div className="flex items-center justify-between gap-3 mb-1">
                 <h3 className="text-xs font-semibold text-[var(--text-primary)] uppercase tracking-wide">Trial Details</h3>
-                <button
-                  type="button"
-                  onClick={() => setShowTrialDetails((prev) => !prev)}
-                  className="text-xs font-semibold text-[var(--primary)] hover:text-[var(--secondary)]"
-                >
-                  {showTrialDetails ? "Hide" : "Show"}
-                </button>
+                {!showAllDetails && (
+                  <button
+                    type="button"
+                    onClick={() => setShowTrialDetails((prev) => !prev)}
+                    className="text-xs font-semibold text-[var(--primary)] hover:text-[var(--secondary)]"
+                  >
+                    {showTrialDetails ? "Hide" : "Show"}
+                  </button>
+                )}
               </div>
 
-              {showTrialDetails && (
+              {(showTrialDetails || showAllDetails) && (
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm">
                   {slotName && (
                     <div className="rounded-lg border border-[var(--border-card)] bg-[var(--bg-card)] px-3 py-2">
@@ -648,13 +651,18 @@ export const PlayerDetailsModal = ({
                       </p>
                     </div>
                   )}
+                  {!slotName && !sessionName && !sessionDate && !(sessionStart && sessionEnd) && (
+                    <p className="text-sm text-[var(--text-secondary)] sm:col-span-2">
+                      No trial slot or session details available.
+                    </p>
+                  )}
                 </div>
               )}
             </div>
           )}
 
           {/* Auction Details */}
-          {(basePrice > 0 || currentBid > 0) && (
+          {(showAllDetails || basePrice > 0 || currentBid > 0) && (
             <div className="mb-4 rounded-lg border border-[var(--border-card)] bg-[var(--secondary-lighter)] p-3">
               <h3 className="text-sm font-semibold text-[var(--text-primary)] mb-3">
                 Auction Details
@@ -662,7 +670,7 @@ export const PlayerDetailsModal = ({
 
               <div className="grid grid-cols-2 gap-4 text-sm">
 
-                {basePrice > 0 && (
+                {(showAllDetails || basePrice > 0) && (
                   <div>
                     <div className="text-[var(--text-secondary)] text-xs">Base Price</div>
                     <div className="text-lg font-semibold text-[var(--text-primary)]">
@@ -671,7 +679,7 @@ export const PlayerDetailsModal = ({
                   </div>
                 )}
 
-                {currentBid > 0 && (
+                {(showAllDetails || currentBid > 0) && (
                   <div>
                     <div className="text-[var(--text-secondary)] text-xs">Current Bid</div>
                     <div className="text-lg font-semibold text-[var(--primary)]">
@@ -832,7 +840,6 @@ const PlayerCard = ({
 }) => {
   const [imageError, setImageError] = useState(false);
   const [detailsModalOpen, setDetailsModalOpen] = useState(false);
-  const [isHovered, setIsHovered] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [isRemoving, setIsRemoving] = useState(false);
   const [showAssignSession, setShowAssignSession] = useState(false);
@@ -850,8 +857,6 @@ const PlayerCard = ({
 
   const initials = getInitials(playerName);
   const role = formatRole(type || playerData?.playerRole);
-
-  console.log(playerData,"player")
 
   const handleViewDetails = (e) => {
     e?.stopPropagation();
@@ -1097,165 +1102,216 @@ const PlayerCard = ({
   if (mode === "assigned") {
     const assign = player?.session || {};
     const location = player?.slot?.location || {};
-    const rating = player?.playersRatings?.avgRating || {};
+    const rating = Number(player?.playersRatings?.avgRating || 0);
     const canAssignSession = !hasAssignedSession && !!playerSlotId;
 
     return (
       <>
-        <div
-          onMouseEnter={() => setIsHovered(true)}
-          onMouseLeave={() => setIsHovered(false)}
-          className="relative bg-[var(--bg-card)] rounded-xl shadow-md hover:shadow-lg transition-all duration-300 border border-[var(--border-card)] overflow-hidden flex w-full max-w-sm p-3 gap-3"
-        >
-          <div
-            onClick={handleViewDetails}
-            className="relative w-20 h-20 rounded-lg overflow-hidden flex-shrink-0 cursor-pointer"
-          >
-            {!imageError && playerImage && !isDummyImage(playerImage) ? (
-              <img
-                loading="lazy"
-                decoding="async"
-                src={playerImage}
-                alt={playerName}
-                className="w-full h-full object-cover"
-                onError={() => setImageError(true)}
-              />
-            ) : (
-              <div
-                className={`w-full h-full flex items-center justify-center text-[var(--text-dark)] text-xl font-bold bg-gradient-to-br ${getGradientByName(
-                  playerName,
-                )}`}
-              >
-                {initials}
-              </div>
-            )}
-
-            {role && (
-              <span
-                className={`absolute bottom-1 right-1 px-2 py-0.5 rounded-full text-[9px] font-semibold shadow ${
-                  role?.toLowerCase() === "batsman"
-                    ? "bg-blue-600 text-[var(--text-dark)]"
-                    : role?.toLowerCase() === "bowler"
-                      ? "bg-red-600 text-[var(--text-dark)]"
-                      : role?.toLowerCase() === "allrounder"
-                        ? "bg-orange-500 text-[var(--text-dark)]"
-                        : "bg-purple-500 text-[var(--text-dark)]"
-                }`}
-              >
-                {role}
-              </span>
-            )}
-          </div>
-
-          <div className="flex flex-col justify-center flex-grow">
-            <h3 className="font-semibold text-[var(--text-primary)] text-sm leading-tight">
-              {playerName}
-            </h3>
-
-            {location?.venue && (
-              <div className="flex items-center gap-1 mt-1">
-                <MapPin className="w-3 h-3 text-pink-500" />
-                <span className="text-xs text-[var(--text-primary)] truncate">
-                  {location.venue}
-                </span>
-              </div>
-            )}
-
-            {assign?.slotStartTime && (
-              <div className="flex items-center gap-1 mt-1">
-                <Clock className="w-3 h-3 text-green-600" />
-                <span className="text-xs text-[var(--text-secondary)]">
-                  {formatTime(assign.slotStartTime)}-
-                  {formatTime(assign.slotEndTime)}
-                </span>
-              </div>
-            )}
-
-            {rating?.avgRating > 0 && (
-              <div className="flex items-center gap-1 mt-1">
-                <Star className="w-3 h-3 text-yellow-500" />
-                <span className="text-xs font-semibold text-[var(--text-primary)]">
-                  Rating: {rating}
-                </span>
-              </div>
-            )}
-          </div>
-
-          {isHovered && (
-            <div className="absolute inset-0 bg-black/50 flex items-center justify-center transition-all duration-200">
-              <button
-                type="button"
-                onClick={handleViewDetails}
-                className="bg-[var(--bg-card)] px-4 py-2 rounded-lg shadow-lg flex items-center gap-2 hover:bg-[var(--secondary-lighter)]"
-              >
-                <Eye className="w-4 h-4 text-[var(--text-primary)]" />
-                <span className="text-sm font-medium text-[var(--text-primary)]">View</span>
-              </button>
-            </div>
-          )}
-
-          {canAssignSession && (
-            <div className="absolute bottom-2 left-2 right-2 z-10">
-              {!showAssignSession ? (
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setShowAssignSession(true);
-                  }}
-                  className="w-full rounded-md bg-amber-500 text-[var(--text-dark)] text-xs font-semibold px-2 py-1.5 hover:bg-amber-600"
-                >
-                  Assign Session
-                </button>
+        <div className={`group flex w-full max-w-sm flex-col overflow-hidden rounded-xl border bg-[var(--bg-card)] shadow-md transition-all duration-300 hover:shadow-lg ${
+          isSelected
+            ? "border-emerald-500 ring-2 ring-emerald-500/25"
+            : "border-[var(--border-card)] hover:border-[var(--border-primary)]"
+        }`}>
+          <div className="flex gap-3 p-3">
+            <button
+              type="button"
+              onClick={handleViewDetails}
+              className="relative h-20 w-20 flex-shrink-0 overflow-hidden rounded-lg border border-[var(--border-card)] text-left transition group-hover:border-[var(--border-primary)]"
+              title="View player details"
+            >
+              {!imageError && playerImage && !isDummyImage(playerImage) ? (
+                <img
+                  loading="lazy"
+                  decoding="async"
+                  src={playerImage}
+                  alt={playerName}
+                  className="h-full w-full object-cover"
+                  onError={() => setImageError(true)}
+                />
               ) : (
                 <div
-                  className="bg-[var(--bg-card)] rounded-lg border border-amber-200 shadow p-2 space-y-2"
-                  onClick={(e) => e.stopPropagation()}
+                  className={`flex h-full w-full items-center justify-center bg-gradient-to-br text-xl font-bold text-[var(--text-dark)] ${getGradientByName(
+                    playerName,
+                  )}`}
                 >
-                  <select
-                    value={assignSessionId}
-                    onChange={(e) => setAssignSessionId(e.target.value)}
-                    className="w-full text-xs border border-[var(--border-primary)] rounded-md px-2 py-1.5"
-                  >
-                    <option value="">Select Session</option>
-                    {availableSessions.map((session) => (
-                      <option key={session?._id} value={session?._id}>
-                        {session?.name}
-                      </option>
-                    ))}
-                  </select>
-
-                  <div className="flex items-center justify-end gap-2">
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setShowAssignSession(false);
-                        setAssignSessionId("");
-                      }}
-                      className="text-xs px-2 py-1 rounded border border-[var(--border-primary)] text-[var(--text-primary)] hover:bg-[var(--secondary-lighter)]"
-                    >
-                      Cancel
-                    </button>
-                    <button
-                      type="button"
-                      onClick={handleUpdateSessionAssignment}
-                      disabled={isAssigningSession || !assignSessionId}
-                      className="text-xs px-2 py-1 rounded bg-emerald-600 text-white hover:bg-emerald-700 disabled:opacity-60"
-                    >
-                      {isAssigningSession ? "Saving..." : "Save"}
-                    </button>
-                  </div>
-
-                  {availableSessions.length === 0 && (
-                    <p className="text-[11px] text-red-600">
-                      No sessions found for this slot.
-                    </p>
-                  )}
+                  {initials}
                 </div>
               )}
+
+              {role && (
+                <span
+                  className={`absolute bottom-1 right-1 max-w-[calc(100%-0.5rem)] truncate rounded-full px-2 py-0.5 text-[9px] font-semibold shadow ${
+                    role?.toLowerCase() === "batsman"
+                      ? "bg-blue-600 text-[var(--text-dark)]"
+                      : role?.toLowerCase() === "bowler"
+                        ? "bg-red-600 text-[var(--text-dark)]"
+                        : role?.toLowerCase() === "all-rounder" ||
+                            role?.toLowerCase() === "allrounder"
+                          ? "bg-orange-500 text-[var(--text-dark)]"
+                          : "bg-purple-500 text-[var(--text-dark)]"
+                  }`}
+                >
+                  {role}
+                </span>
+              )}
+            </button>
+
+            <div className="min-w-0 flex-1">
+              <div className="flex items-start justify-between gap-2">
+                <h3 className="min-w-0 truncate text-sm font-semibold leading-tight text-[var(--text-primary)]">
+                  {playerName}
+                </h3>
+                <div className="flex shrink-0 items-center gap-1">
+                  {onSelect && (
+                    <button
+                      type="button"
+                      onClick={handleSelect}
+                      className={`inline-flex h-8 w-8 items-center justify-center rounded-lg border transition ${
+                        isSelected
+                          ? "border-emerald-500 bg-emerald-500 text-white"
+                          : "border-[var(--border-card)] bg-[var(--bg-main)] text-[var(--text-secondary)] hover:border-emerald-500 hover:text-emerald-500"
+                      }`}
+                      title={isSelected ? "Deselect player" : "Select player"}
+                      aria-label={isSelected ? "Deselect player" : "Select player"}
+                    >
+                      <Check className="h-4 w-4" />
+                    </button>
+                  )}
+                  {canAssignSession && (
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setShowAssignSession(true);
+                      }}
+                      className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-amber-300 bg-amber-400 text-[#102033] transition hover:bg-amber-500"
+                      title="Assign session"
+                      aria-label="Assign session"
+                    >
+                      <Calendar className="h-4 w-4" />
+                    </button>
+                  )}
+                  <button
+                    type="button"
+                    onClick={handleViewDetails}
+                    className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-[var(--border-card)] bg-[var(--bg-main)] text-[var(--text-primary)] transition hover:border-[var(--border-primary)] hover:bg-[var(--accent-light)]"
+                    title="View player details"
+                    aria-label="View player details"
+                  >
+                    <Eye className="h-4 w-4" />
+                  </button>
+                </div>
+              </div>
+
+              {location?.venue && (
+                <div className="mt-1 flex min-w-0 items-center gap-1">
+                  <MapPin className="h-3 w-3 shrink-0 text-pink-500" />
+                  <span className="truncate text-xs text-[var(--text-primary)]">
+                    {location.venue}
+                  </span>
+                </div>
+              )}
+
+              {assign?.slotStartTime ? (
+                <div className="mt-1 flex min-w-0 items-center gap-1">
+                  <Clock className="h-3 w-3 shrink-0 text-green-600" />
+                  <span className="truncate text-xs text-[var(--text-secondary)]">
+                    {formatTime(assign.slotStartTime)} -{" "}
+                    {formatTime(assign.slotEndTime)}
+                  </span>
+                </div>
+              ) : canAssignSession ? (
+                <div className="mt-1 flex min-w-0 items-center gap-1">
+                  <Calendar className="h-3 w-3 shrink-0 text-amber-500" />
+                  <span className="truncate text-xs font-medium text-amber-600">
+                    Session not assigned
+                  </span>
+                </div>
+              ) : null}
+
+              {rating > 0 && (
+                <div className="mt-1 flex items-center gap-1">
+                  <Star className="h-3 w-3 text-yellow-500" />
+                  <span className="text-xs font-semibold text-[var(--text-primary)]">
+                    Rating: {rating.toFixed(2)}
+                  </span>
+                </div>
+              )}
+
             </div>
-          )}
+          </div>
         </div>
+
+        {canAssignSession &&
+          showAssignSession &&
+          typeof document !== "undefined" &&
+          createPortal(
+            <div className="fixed inset-0 z-[120000] flex items-center justify-center bg-black/60 p-4">
+              <div className="w-full max-w-sm rounded-lg border border-[var(--border-card)] bg-[var(--bg-card)] p-4 shadow-[var(--shadow-card)]">
+                <div className="mb-3 flex items-center justify-between gap-3">
+                  <div className="min-w-0">
+                    <h3 className="truncate text-base font-bold text-[var(--text-primary)]">
+                      Assign Session
+                    </h3>
+                    <p className="truncate text-xs text-[var(--text-secondary)]">
+                      {playerName}
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowAssignSession(false);
+                      setAssignSessionId("");
+                    }}
+                    className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-[var(--border-card)] bg-[var(--bg-main)] text-[var(--text-primary)] transition hover:border-[var(--border-primary)] hover:bg-[var(--accent-light)]"
+                    aria-label="Close"
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
+                </div>
+
+                <select
+                  value={assignSessionId}
+                  onChange={(e) => setAssignSessionId(e.target.value)}
+                  className="h-10 w-full rounded-lg border border-[var(--border-card)] bg-[var(--bg-main)] px-3 text-sm font-semibold text-[var(--text-primary)] outline-none transition focus:border-[var(--border-primary)]"
+                >
+                  <option value="">Select Session</option>
+                  {availableSessions.map((session) => (
+                    <option key={session?._id} value={session?._id}>
+                      {session?.name}
+                    </option>
+                  ))}
+                </select>
+
+                {availableSessions.length === 0 && (
+                  <p className="mt-2 text-xs font-medium text-red-500">
+                    No sessions found for this slot.
+                  </p>
+                )}
+                <div className="mt-4 flex justify-end gap-2">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowAssignSession(false);
+                      setAssignSessionId("");
+                    }}
+                    className="inline-flex h-9 items-center justify-center rounded-lg border border-[var(--border-card)] px-3 text-xs font-semibold text-[var(--text-primary)] transition hover:border-[var(--border-primary)] hover:bg-[var(--accent-light)]"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleUpdateSessionAssignment}
+                    disabled={isAssigningSession || !assignSessionId}
+                    className="inline-flex h-9 items-center justify-center rounded-lg bg-emerald-600 px-3 text-xs font-semibold text-white transition hover:bg-emerald-700 disabled:cursor-not-allowed disabled:opacity-60"
+                  >
+                    {isAssigningSession ? "Saving..." : "Save"}
+                  </button>
+                </div>
+              </div>
+            </div>,
+            document.body,
+          )}
 
         <PlayerDetailsModal
           player={player}

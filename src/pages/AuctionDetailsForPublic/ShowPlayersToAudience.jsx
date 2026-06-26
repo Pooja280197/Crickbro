@@ -38,6 +38,11 @@ const isDummyImage = (logoUrl) => {
   return logoUrl === DUMMY_IMAGE_URL;
 };
 
+const getPositiveAmount = (value) => {
+  const amount = Number(String(value ?? "").replace(/[^\d.]/g, ""));
+  return Number.isFinite(amount) && amount > 0 ? amount : 0;
+};
+
 export default function ShowPlayersToAudience({
   player,
   selected,
@@ -54,6 +59,7 @@ export default function ShowPlayersToAudience({
   const isPlaceholder = isDummyImage(playerLogo);
   const initials = getInitials(playerName);
   const gradientClass = getGradientByName(playerName);
+  const basePrice = getPositiveAmount(player?.basePrice);
 
   return (
     <div
@@ -123,9 +129,9 @@ export default function ShowPlayersToAudience({
             Batch ID-{player.player.batchId}
           </div>
         )}
-        {player?.basePrice && player?.basePrice > 0 && (
+        {basePrice > 0 && (
           <div className="mt-1 truncate text-[11px] text-[var(--text-secondary)]">
-            Base Price -₹{player.basePrice}
+            Base Price -₹{basePrice.toLocaleString("en-IN")}
           </div>
         )}
 

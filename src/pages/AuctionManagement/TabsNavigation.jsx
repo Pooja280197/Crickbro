@@ -31,6 +31,10 @@ import {
   Briefcase,
   FileText,
   Link2,
+  Image,
+  Link2Icon,
+  Medal,
+  Star,
 } from "lucide-react";
 
 // TAB CONTENT COMPONENTS
@@ -58,6 +62,13 @@ import { useDispatch, useSelector } from "react-redux";
 // import TrialSlot from "../../pages/AuctionDetailsTabs/TrialSlotTab/TrialSlot";
 import { toast } from "react-toastify";
 import Links from "../../pages/AuctionManagement/AdminControl/ManageAuction/OverlayLinks/Links.jsx";
+import CreatePoster from "./AdminControl/PostersCreation/CreatePoster.jsx";
+import SupercampRounds from "./AdminControl/Trials&Selection/SuperCampRoundsTab/SupercampRounds.jsx";
+import SupercampLeaderboard from "./AdminControl/Trials&Selection/SupercampLeaderboardTab/SupercampLeaderboard.jsx";
+const SupercampSelectorPoints = lazy(
+  () =>
+    import("./SelectorsTab/SupercampPointsTab/SupercampSelectorPoints.jsx"),
+);
 const TeamsTab = lazy(
   () =>
     import("../../pages/AuctionManagement/AdminControl/ManageAuction/ManageTeams/TeamsTab.jsx"),
@@ -198,6 +209,8 @@ const tabStructure = [
       { key: "slot", label: "Slot and Session", icon: CalendarDays },
       { key: "trialSettings", label: "Trial Settings", icon: Wrench },
       { key: "trialPlayers", label: "Trial Players", icon: Users },
+      { key: "supercampRounds", label: "Supercamp rounds", icon: Trophy },
+      { key: "supercampLeaderboard", label: "Supercamp leaderboard", icon: Medal },
     ],
   },
   {
@@ -212,6 +225,7 @@ const tabStructure = [
       { key: "players", label: "Manage Players", icon: Users },
       { key: "overlayLinks", label: "Live Links", icon: Link2 },
       { key: "biddingPanel", label: "Auction Room", icon: Gavel },
+      { key: "createPosters", label: "Create Posters", icon:Link2Icon},
     ],
   },
   {
@@ -222,6 +236,7 @@ const tabStructure = [
       { key: "trialSlot", label: "Trial Slot", icon: CalendarClock },
       { key: "assignedPlayers", label: "Assigned Players", icon: UserCheck },
       { key: "directSelect", label: "Direct Select", icon: CheckSquare },
+      { key: "supercampPoints", label: "Supercamp points", icon: Star },
     ],
   },
   {
@@ -242,6 +257,7 @@ const AuctionDetails = ({ theme, onToggleTheme }) => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [collapsedFlyoutKey, setCollapsedFlyoutKey] = useState(null);
   const [expandedMenus, setExpandedMenus] = useState({
     trialsAndSelection: false,
     manageAuction: false,
@@ -249,7 +265,7 @@ const AuctionDetails = ({ theme, onToggleTheme }) => {
   const playerId = localStorage.getItem("playerId");
   const userRole = useSelector((state) => state.data?.userRole);
   const [activeTab, setActiveTab] = useState(
-    () => searchParams.get("tab") || "dashboard",
+    () => searchParams.get("tab") || "info",
   );
   const [activeSubTab, setActiveSubTab] = useState(
     () => searchParams.get("subTab") || null,
@@ -260,7 +276,6 @@ const AuctionDetails = ({ theme, onToggleTheme }) => {
     (state) => state?.data?.auctionDetails?.trailTypeAuction,
   );
 
-  // Check if user is logged in, if not redirect to /auction
   useEffect(() => {
     if (!playerId) {
       navigate("/auction");
@@ -296,10 +311,32 @@ const AuctionDetails = ({ theme, onToggleTheme }) => {
     return getAllAllowedTabs(userRoles);
   }, [userRoles]);
 
+  const trialOnlyTabKeys = useMemo(
+    () =>
+      new Set([
+        "trialsAndSelection",
+        "slot",
+        "trialSettings",
+        "trialPlayers",
+        "supercampRounds",
+        "supercampLeaderboard",
+        "trialSlot",
+        "supercampPoints",
+      ]),
+    [],
+  );
+
+  const shouldShowTabKey = (tabKey) => {
+    if (!trialOnlyTabKeys.has(tabKey)) return true;
+    return Boolean(isTrialType);
+  };
+
   // Filter visible tabs based on role
   const visibleTabs = useMemo(() => {
-    return tabStructure.filter((tab) => allowedParentTabKeys.includes(tab.key));
-  }, [allowedParentTabKeys]);
+    return tabStructure.filter(
+      (tab) => allowedParentTabKeys.includes(tab.key) && shouldShowTabKey(tab.key),
+    );
+  }, [allowedParentTabKeys, isTrialType, trialOnlyTabKeys]);
 
   // Check if a subTab is allowed for the current role
   const isSubTabAllowed = (parentKey, subTabKey) => {
@@ -314,8 +351,10 @@ const AuctionDetails = ({ theme, onToggleTheme }) => {
   // Filter subTabs based on role
   const getFilteredSubTabs = (parentTab) => {
     if (!parentTab.subTabs || parentTab.subTabs.length === 0) return [];
-    return parentTab.subTabs.filter((subTab) =>
-      isSubTabAllowed(parentTab.key, subTab.key),
+    return parentTab.subTabs.filter(
+      (subTab) =>
+        shouldShowTabKey(subTab.key) &&
+        isSubTabAllowed(parentTab.key, subTab.key),
     );
   };
 
@@ -340,6 +379,12 @@ const AuctionDetails = ({ theme, onToggleTheme }) => {
     }));
   };
 
+  useEffect(() => {
+    if (!sidebarCollapsed) {
+      setCollapsedFlyoutKey(null);
+    }
+  }, [sidebarCollapsed]);
+
   /* ===============================
      TAB CONTENT RENDER
   ================================ */
@@ -347,6 +392,9 @@ const AuctionDetails = ({ theme, onToggleTheme }) => {
   const currentSubTab = currentParentTab?.subTabs?.find(
     (sub) => sub.key === activeSubTab,
   );
+  const currentParentSubTabs = currentParentTab
+    ? getFilteredSubTabs(currentParentTab)
+    : [];
   const effectiveTab = currentSubTab
     ? currentSubTab.key
     : currentParentTab
@@ -444,6 +492,18 @@ const AuctionDetails = ({ theme, onToggleTheme }) => {
 
       case "trialSlot":
         return <SelectorSlots auctionId={auctionId} />;
+
+      case "supercampRounds":
+        return <SupercampRounds auctionId={auctionId} />;  
+
+      case "supercampLeaderboard":
+        return <SupercampLeaderboard auctionId={auctionId} />;  
+
+      case "supercampPoints":
+        return <SupercampSelectorPoints auctionId={auctionId} />;
+
+      case "createPosters":
+        return <CreatePoster auctionId={auctionId} />;  
 
       default:
         return null;
@@ -608,9 +668,9 @@ const AuctionDetails = ({ theme, onToggleTheme }) => {
             }`}
           >
             <div
-              className={`fixed left-4 top-[92px] bottom-4 flex flex-col overflow-hidden rounded-xl border border-[var(--border-card)] bg-[var(--bg-card)] text-[var(--text-primary)] shadow-[var(--shadow-card)] transition-all duration-300 ${
+              className={`fixed bottom-4 left-4 top-[92px] z-40 flex flex-col rounded-xl border border-[var(--border-card)] bg-[var(--bg-card)] text-[var(--text-primary)] shadow-[var(--shadow-card)] transition-all duration-300 ${
                 sidebarCollapsed ? "w-16" : "w-64"
-              }`}
+              } ${sidebarCollapsed ? "overflow-visible" : "overflow-hidden"}`}
             >
               <div className="border-b border-[var(--border-card)] p-3 ">
                 {/* {!sidebarCollapsed && (
@@ -647,7 +707,11 @@ const AuctionDetails = ({ theme, onToggleTheme }) => {
                 </button>
               </div>
 
-              <nav className="min-h-0 flex-1 overflow-y-auto px-3 py-3 pr-2">
+              <nav
+                className={`min-h-0 flex-1 px-3 py-3 pr-2 ${
+                  sidebarCollapsed ? "overflow-visible" : "overflow-y-auto"
+                }`}
+              >
                 {visibleTabs.map((tab) => {
                   const Icon = tab.icon;
                   const isParentActive = activeTab === tab.key;
@@ -656,16 +720,29 @@ const AuctionDetails = ({ theme, onToggleTheme }) => {
 
                   if (sidebarCollapsed) {
                     // Collapsed view - icons only
+                    const isFlyoutOpen = collapsedFlyoutKey === tab.key;
+
                     return (
                       <div key={tab.key} className="group relative mb-2">
                         <div
                           onClick={() => {
                             if (filteredSubTabs.length > 0) {
-                              toggleMenu(tab.key);
                               setActiveTab(tab.key);
+                              setCollapsedFlyoutKey((currentKey) =>
+                                currentKey === tab.key ? null : tab.key,
+                              );
+                              if (
+                                activeTab !== tab.key ||
+                                !filteredSubTabs.some(
+                                  (subTab) => subTab.key === activeSubTab,
+                                )
+                              ) {
+                                setActiveSubTab(filteredSubTabs[0].key);
+                              }
                             } else {
                               setActiveTab(tab.key);
                               setActiveSubTab(null);
+                              setCollapsedFlyoutKey(null);
                             }
                           }}
                           className={`w-full flex items-center justify-center rounded-lg border px-2 py-1 transition cursor-pointer ${
@@ -677,10 +754,47 @@ const AuctionDetails = ({ theme, onToggleTheme }) => {
                         >
                           <Icon className="w-5 h-5" />
                         </div>
-                        {/* Tooltip for collapsed mode */}
-                        <div className="absolute left-full ml-2 top-1/2 z-50 -translate-y-1/2 rounded bg-gray-800 px-2 py-1 text-xs text-white opacity-0 transition pointer-events-none whitespace-nowrap group-hover:opacity-100">
-                          {tab.label}
-                        </div>
+                        {filteredSubTabs.length > 0 ? (
+                          isFlyoutOpen && (
+                            <div className="absolute left-full top-1/2 z-[10000] ml-2 flex max-h-[calc(100vh-132px)] min-w-56 -translate-y-1/2 flex-col rounded-lg border border-[var(--border-card)] bg-[var(--bg-card)] p-2 shadow-[var(--shadow-card)]">
+                              <p className="mb-1 shrink-0 px-2 py-1 text-xs font-bold text-[var(--text-primary)]">
+                                {tab.label}
+                              </p>
+                              <div className="min-h-0 space-y-1 overflow-y-auto pr-1 scrollbar-hide">
+                                {filteredSubTabs.map((subTab) => {
+                                  const SubIcon = subTab.icon;
+                                  const isSubActive =
+                                    activeSubTab === subTab.key &&
+                                    activeTab === tab.key;
+
+                                  return (
+                                    <button
+                                      key={subTab.key}
+                                      type="button"
+                                      onClick={() => {
+                                        setActiveTab(tab.key);
+                                        setActiveSubTab(subTab.key);
+                                        setCollapsedFlyoutKey(null);
+                                      }}
+                                      className={`flex w-full items-center gap-2 rounded-lg border px-2.5 py-2 text-left text-xs font-semibold transition ${
+                                        isSubActive
+                                          ? "border-[var(--border-primary)] bg-[var(--accent-light)] text-[var(--primary)]"
+                                          : "border-transparent text-[var(--text-secondary)] hover:border-[var(--border-card)] hover:bg-[var(--secondary-lighter)] hover:text-[var(--primary)]"
+                                      }`}
+                                    >
+                                      <SubIcon className="h-3.5 w-3.5 shrink-0" />
+                                      <span className="truncate">{subTab.label}</span>
+                                    </button>
+                                  );
+                                })}
+                              </div>
+                            </div>
+                          )
+                        ) : (
+                          <div className="pointer-events-none absolute left-full top-1/2 z-[9999] ml-2 -translate-y-1/2 whitespace-nowrap rounded-lg border border-[var(--border-card)] bg-[var(--bg-card)] px-2.5 py-1.5 text-xs font-semibold text-[var(--text-primary)] opacity-0 shadow-[var(--shadow-card)] transition group-hover:opacity-100">
+                            {tab.label}
+                          </div>
+                        )}
                       </div>
                     );
                   }
@@ -772,11 +886,43 @@ const AuctionDetails = ({ theme, onToggleTheme }) => {
 
           {/* CONTENT */}
           <section
-            className={`min-h-0 transition-all duration-300 md:fixed md:bottom-4 md:right-4 md:top-[92px] ${
+            className={`z-0 min-h-0 transition-all duration-300 md:fixed md:bottom-4 md:right-4 md:top-[92px] ${
               sidebarCollapsed ? "md:left-20" : "md:left-72"
             }`}
           >
             <div className="min-h-[calc(100vh-108px)] overflow-visible rounded-xl border border-[var(--border-card)] bg-[var(--bg-main)] text-[var(--text-primary)] shadow-[var(--shadow-card)] scrollbar-hide md:h-full md:min-h-0 md:overflow-y-auto">
+              {sidebarCollapsed && currentParentSubTabs.length > 0 && (
+                <div className="hidden border-b border-[var(--border-card)] bg-[var(--bg-card)] px-3 py-2 md:block">
+                  <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide">
+                    <span className="shrink-0 text-xs font-bold text-[var(--text-secondary)]">
+                      {currentParentTab.label}
+                    </span>
+                    {currentParentSubTabs.map((subTab) => {
+                      const SubIcon = subTab.icon;
+                      const isSubActive = activeSubTab === subTab.key;
+
+                      return (
+                        <button
+                          key={subTab.key}
+                          type="button"
+                          onClick={() => {
+                            setActiveTab(currentParentTab.key);
+                            setActiveSubTab(subTab.key);
+                          }}
+                          className={`flex shrink-0 items-center gap-2 rounded-lg border px-3 py-2 text-xs font-semibold transition ${
+                            isSubActive
+                              ? "border-[var(--border-primary)] bg-[var(--accent-light)] text-[var(--primary)]"
+                              : "border-transparent text-[var(--text-secondary)] hover:border-[var(--border-card)] hover:bg-[var(--secondary-lighter)] hover:text-[var(--primary)]"
+                          }`}
+                        >
+                          <SubIcon className="h-3.5 w-3.5" />
+                          <span>{subTab.label}</span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
               <Suspense
                 fallback={
                   <div className="flex min-h-[320px] items-center justify-center">

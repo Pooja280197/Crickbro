@@ -1,4 +1,5 @@
 import React from "react";
+import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
 
 const DeleteConfirmModal = ({
@@ -13,7 +14,7 @@ const DeleteConfirmModal = ({
 }) => {
   if (!open) return null;
 
-  return (
+  return createPortal(
     <AnimatePresence>
       <motion.div
         className="fixed inset-0 z-[200000] flex items-center justify-center bg-black/40"
@@ -22,16 +23,16 @@ const DeleteConfirmModal = ({
         exit={{ opacity: 0 }}
       >
         <motion.div
-          className="bg-[var(--bg-card)] rounded-2xl w-full max-w-md p-6 shadow-xl font-main"
+          className="w-full max-w-md rounded-xl border border-[var(--border-card)] bg-[var(--bg-card)] p-6 font-main shadow-2xl"
           initial={{ scale: 0.9, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           exit={{ scale: 0.9, opacity: 0 }}
         >
-          <h2 className="text-lg font-heading font-bold text-[var(--secondary-dark)]">
+          <h2 className="text-lg font-heading font-bold text-[var(--text-primary)]">
             {title}
           </h2>
 
-          <p className="text-sm text-[var(--secondary-dark)] mt-2">
+          <p className="mt-2 text-sm text-[var(--text-secondary)]">
             {description}
           </p>
 
@@ -39,7 +40,7 @@ const DeleteConfirmModal = ({
             <button
               onClick={onClose}
               disabled={loading}
-              className="px-4 py-2 rounded-lg text-sm text-[var(--accent)] border border-[var(--accent)] hover:bg-[var(--accent-light)] hover:text-[var(--secondary-dark)] disabled:opacity-50 font-semibold transition-colors"
+              className="rounded-lg border border-[var(--border-card)] bg-[var(--bg-main)] px-4 py-2 text-sm font-semibold text-[var(--text-primary)] transition-colors hover:border-[var(--border-primary)] hover:bg-[var(--accent-light)] disabled:opacity-50"
             >
               {cancelText}
             </button>
@@ -47,14 +48,15 @@ const DeleteConfirmModal = ({
             <button
               onClick={onConfirm}
               disabled={loading}
-              className="px-4 py-2 rounded-lg text-sm bg-[var(--accent)] text-white hover:bg-[var(--primary)] disabled:opacity-50 font-semibold transition-colors"
+              className="rounded-lg bg-red-500 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-red-600 disabled:opacity-50"
             >
               {loading ? "Deleting..." : confirmText}
             </button>
           </div>
         </motion.div>
       </motion.div>
-    </AnimatePresence>
+    </AnimatePresence>,
+    document.body,
   );
 };
 

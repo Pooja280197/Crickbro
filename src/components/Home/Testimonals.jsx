@@ -33,11 +33,12 @@ const reviews = [
 
 const Testimonals = () => {
   return (
-    <section className="bg-[var(--bg-main)] px-4 py-14 text-[var(--text-primary)] sm:px-6 lg:px-8">
-      <div className="mx-auto max-w-7xl">
+    <section className="relative overflow-hidden bg-[var(--bg-main)] px-4 py-14 text-[var(--text-primary)] sm:px-6 lg:px-8">
+      <div className="pointer-events-none absolute left-1/2 top-0 h-56 w-[min(780px,86vw)] -translate-x-1/2 rounded-full bg-[radial-gradient(circle,rgba(8,186,247,0.14),transparent_68%)] blur-2xl" />
+      <div className="mx-auto max-w-7xl relative">
         <div className="mb-7 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
           <div className="max-w-2xl">
-            <span className="inline-flex items-center gap-2 rounded-full border border-[var(--border-primary)] bg-[var(--accent-light)] px-3 py-1 text-xs font-bold uppercase tracking-wide text-[var(--primary)]">
+            <span className="inline-flex items-center gap-2 rounded-full border border-[var(--border-primary)] bg-[var(--accent-light)] px-3 py-1 text-xs font-bold uppercase tracking-wide text-[var(--primary)] shadow-[0_0_22px_rgba(8,186,247,0.16)]">
               <Sparkles size={14} />
               Testimonials
             </span>
@@ -54,13 +55,14 @@ const Testimonals = () => {
           {reviews.map((review) => (
             <article
               key={review.name}
-              className="group relative overflow-hidden rounded-xl border border-[var(--border-card)] bg-[var(--bg-card)] p-4 shadow-[var(--shadow-card)] transition duration-300 hover:-translate-y-1 hover:border-[var(--border-primary)]"
+              className="modern-card-lift modern-surface group relative overflow-hidden rounded-xl border border-[var(--border-card)] bg-[var(--bg-card)] p-4 shadow-[var(--shadow-card)]"
             >
+              <div className="pointer-events-none absolute inset-x-4 top-0 h-px bg-[linear-gradient(90deg,transparent,rgba(8,186,247,0.78),rgba(255,196,0,0.58),transparent)]" />
               <div className="absolute -right-8 -top-8 h-24 w-24 rounded-full bg-[var(--accent-light)] opacity-70 blur-2xl transition group-hover:opacity-100" />
 
               <div className="relative mb-4 flex items-start justify-between gap-3">
                 <div className="flex items-center gap-3">
-                  <span className="grid h-11 w-11 place-items-center rounded-xl border border-[var(--border-primary)] bg-[var(--accent-light)] text-sm font-black text-[var(--primary)]">
+                  <span className="modern-icon-pop grid h-11 w-11 place-items-center rounded-xl border border-[var(--border-primary)] bg-[var(--accent-light)] text-sm font-black text-[var(--primary)]">
                     {review.initial}
                   </span>
                   <div>

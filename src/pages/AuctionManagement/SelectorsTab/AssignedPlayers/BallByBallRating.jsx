@@ -1542,7 +1542,7 @@ const BallByBallRating = ({ auctionId, slot, session, onBack }) => {
                   type="button"
                   onClick={handleSubmit}
                   disabled={submitting || !events.length}
-                  className="w-full sm:w-auto md:w-full lg:w-auto flex-shrink-0 px-5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 disabled:opacity-40 disabled:cursor-not-allowed text-[var(--text-dark)] font-semibold text-sm transition"
+                  className="w-full sm:w-auto md:w-full lg:w-auto flex-shrink-0 px-5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 disabled:opacity-40 disabled:cursor-not-allowed text-[var(--text-primary)] font-semibold text-sm transition"
                 >
                   {submitting ? "Saving…" : `Submit ${events.length} Ball${events.length !== 1 ? "s" : ""}`}
                 </button>

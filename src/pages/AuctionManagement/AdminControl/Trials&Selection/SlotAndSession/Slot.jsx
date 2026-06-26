@@ -464,7 +464,7 @@ const Slot = ({ auctionId }) => {
                   <div className="mt-3 border-t border-[var(--border-card)] pt-3">
                     <button
                       onClick={() => openCreateSession(slot._id)}
-                      className="mb-3 inline-flex w-full items-center justify-center gap-2 rounded-lg border border-[var(--border-primary)] bg-[var(--bg-card)] px-3 py-2 text-sm font-semibold text-[var(--primary)] shadow-sm transition hover:bg-[var(--accent-light)]"
+                      className="mb-3 inline-flex w-full items-center justify-center gap-2 rounded-lg border border-yellow-400 bg-yellow-500 px-3 py-2 text-sm font-semibold text-black shadow-sm transition hover:bg-yellow-400"
                     >
                       <Plus className="h-4 w-4" />
                       Create Session
@@ -659,7 +659,7 @@ const Slot = ({ auctionId }) => {
                                 <div className="flex items-center gap-3">
                                   <button
                                     onClick={() => openCreateSession(slot._id)}
-                                    className="inline-flex items-center gap-2 rounded-lg border border-[var(--border-primary)] bg-[var(--bg-card)] px-3 py-1.5 text-sm font-semibold text-[var(--primary)] shadow-sm transition-all duration-200 hover:bg-[var(--accent-light)]"
+                                    className="inline-flex items-center gap-2 rounded-lg border border-yellow-400 bg-yellow-500 px-3 py-1.5 text-sm font-semibold text-black shadow-sm transition-all duration-200 hover:bg-yellow-400"
                                   >
                                     <Plus className="h-4 w-4" />
                                     Create Session

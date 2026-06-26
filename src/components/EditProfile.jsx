@@ -23,6 +23,13 @@ const normalizeGenderValue = (value) => {
   return raw.charAt(0).toUpperCase() + raw.slice(1).toLowerCase();
 };
 
+const numericFields = new Set(["countryCode", "mobile", "jerseyNumber"]);
+
+const sanitizeNumericInput = (name, value) => {
+  const digits = String(value || "").replace(/\D/g, "");
+  return name === "countryCode" ? `+${digits}` : digits;
+};
+
 const EditProfile = ({ isOpen, onClose, onSubmit, editData, profile }) => {
   const [formData, setFormData] = useState({
     profilePicture: null,
@@ -93,7 +100,11 @@ const EditProfile = ({ isOpen, onClose, onSubmit, editData, profile }) => {
 
   const handleChange = (event) => {
     const { name, value } = event.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    const nextValue = numericFields.has(name)
+      ? sanitizeNumericInput(name, value)
+      : value;
+
+    setFormData((prev) => ({ ...prev, [name]: nextValue }));
   };
 
   const handleFileChange = (key, setPreviewFn) => (event) => {
@@ -196,7 +207,7 @@ const EditProfile = ({ isOpen, onClose, onSubmit, editData, profile }) => {
   );
 
   return (
-    <div className="fixed inset-0 z-[2147483647] flex items-center justify-center overflow-y-auto bg-black/70 p-3 backdrop-blur-sm sm:p-5">
+    <div className="fixed inset-0 z-[10000] flex items-center justify-center overflow-y-auto bg-black/70 p-3 backdrop-blur-sm sm:p-5">
       <div className={`${panelClass} w-full max-w-3xl overflow-hidden`}>
         <div className="flex items-start justify-between gap-3 border-b border-[var(--border-card)] bg-[var(--bg-main)] px-4 py-4 sm:px-5">
           <div className="flex min-w-0 items-center gap-3">
@@ -274,7 +285,8 @@ const EditProfile = ({ isOpen, onClose, onSubmit, editData, profile }) => {
                   name="countryCode"
                   value={formData.countryCode}
                   onChange={handleChange}
-                  className={`${inputClass} w-20`}
+                  inputMode="numeric"
+                  className={`${inputClass} !w-20 shrink-0 text-center sm:!w-24`}
                 />
                 <input
                   type="tel"
@@ -282,6 +294,7 @@ const EditProfile = ({ isOpen, onClose, onSubmit, editData, profile }) => {
                   placeholder="Mobile Number"
                   value={formData.mobile}
                   readOnly
+                  inputMode="numeric"
                   className={`${inputClass} flex-1`}
                 />
               </div>
@@ -352,11 +365,12 @@ const EditProfile = ({ isOpen, onClose, onSubmit, editData, profile }) => {
             <div>
               <label className={labelClass}>Jersey Number</label>
               <input
-                type="number"
+                type="text"
                 name="jerseyNumber"
                 placeholder="e.g. 10"
                 value={formData.jerseyNumber}
                 onChange={handleChange}
+                inputMode="numeric"
                 className={inputClass}
               />
             </div>

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { toast } from "react-toastify";
-import { X } from "lucide-react";
+import { Save, Settings } from "lucide-react";
 import { useDispatch } from "react-redux";
 import { EditRules } from "../../../../../redux/actions";
 
@@ -54,19 +54,29 @@ const EditAuctionRules = ({ currentRules, auctionId }) => {
   };
 
   return (
-    <div className="min-h-screen bg-[var(--color-primary)] flex justify-center px-2 py-3">
-      <div className="w-full card-glass flex flex-col">
+    <div className="w-full">
+      <div className="overflow-hidden rounded-lg border border-[var(--border-card)] bg-[var(--bg-card)] shadow-[var(--shadow-card)]">
         {/* HEADER */}
-        <div className="py-3 text-center border-b border-gray-500/80">
-          <h1 className="text-base font-oswald tracking-wide text-crickbroYellow">
-            Auction Rules
-          </h1>
+        <div className="border-b border-[var(--border-card)] bg-[var(--bg-main)] px-4 py-3">
+          <div className="flex items-center gap-3">
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-[var(--border-primary)] bg-[var(--accent-light)] text-[var(--primary)]">
+              <Settings className="h-4 w-4" />
+            </div>
+            <div>
+              <h1 className="text-sm font-semibold text-[var(--text-primary)]">
+                Auction Rules
+              </h1>
+              <p className="mt-0.5 text-xs text-[var(--text-secondary)]">
+                Configure team limits, bidding increments and auction options.
+              </p>
+            </div>
+          </div>
         </div>
 
         {/* CONTENT */}
-        <div className="flex-1 overflow-y-auto px-4 py-3 font-inter">
+        <div className="px-4 py-4">
           {/* INPUT GRID */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             {[
               { key: "budgetCap", label: "Team Budget Cap" },
               { key: "maxPlayersPerTeam", label: "Max Players / Team" },
@@ -91,9 +101,9 @@ const EditAuctionRules = ({ currentRules, auctionId }) => {
             ].map((item) => (
               <div
                 key={item.key}
-                className="px-3 py-2 rounded-lg bg-white/5 border border-gray-500/40 focus-within:border-crickbroPurple transition"
+                className="group rounded-lg border border-[var(--border-card)] bg-[var(--bg-main)] px-3 py-2 transition focus-within:border-[var(--border-primary)] focus-within:bg-[var(--bg-card)] focus-within:ring-2 focus-within:ring-[var(--accent-light)]"
               >
-                <label className="block text-[11px] text-[var(--text-primary)] mb-1">
+                <label className="mb-1 block text-[11px] font-semibold text-[var(--text-secondary)]">
                   {item.label}
                 </label>
 
@@ -102,7 +112,7 @@ const EditAuctionRules = ({ currentRules, auctionId }) => {
                   inputMode="numeric"
                   pattern="[0-9]*"
                   placeholder="Enter value"
-                  className="w-full bg-transparent outline-none text-sm text-[var(--text-secondary)] placeholder-white/30"
+                  className="w-full bg-transparent text-sm font-medium text-[var(--text-primary)] outline-none placeholder:text-[var(--text-secondary)]"
                   value={form[item.key] ?? ""}
                   onChange={(e) =>
                     handleInput(item.key, e.target.value.replace(/\D/g, ""))
@@ -113,26 +123,26 @@ const EditAuctionRules = ({ currentRules, auctionId }) => {
           </div>
 
           {/* SWITCHES */}
-          <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
             {/* RTM */}
-            <div className="flex items-center justify-between px-3 py-2 rounded-lg bg-white/5 border border-white/10">
-              <span className="text-sm text-[var(--text-primary)]">RTM Enabled</span>
+            <div className="flex min-h-11 items-center justify-between rounded-lg border border-[var(--border-card)] bg-[var(--bg-main)] px-3 py-2">
+              <span className="text-sm font-medium text-[var(--text-primary)]">RTM Enabled</span>
               <input
                 type="checkbox"
-                className="accent-crickbroPurple"
+                className="h-4 w-4 accent-[var(--primary)]"
                 checked={form.rtmEnabled}
                 onChange={(e) => handleInput("rtmEnabled", e.target.checked)}
               />
             </div>
 
             {/* Unsold */}
-            <div className="flex items-center justify-between px-3 py-2 rounded-lg bg-white/5 border border-white/10">
-              <span className="text-sm text-[var(--text-primary)]">
+            <div className="flex min-h-11 items-center justify-between rounded-lg border border-[var(--border-card)] bg-[var(--bg-main)] px-3 py-2">
+              <span className="text-sm font-medium text-[var(--text-primary)]">
                 Unsold Re-entry Allowed
               </span>
               <input
                 type="checkbox"
-                className="accent-crickbroPurple"
+                className="h-4 w-4 accent-[var(--primary)]"
                 checked={form.unsoldPlayerReEntry}
                 onChange={(e) =>
                   handleInput("unsoldPlayerReEntry", e.target.checked)
@@ -143,11 +153,12 @@ const EditAuctionRules = ({ currentRules, auctionId }) => {
         </div>
 
         {/* CTA */}
-        <div className="p-3 border-t border-white/10">
+        <div className="border-t border-[var(--border-card)] bg-[var(--bg-main)] p-3">
           <button
             onClick={handleSubmit}
-            className="w-full ui-btn-secondary py-2 text-sm"
+            className="inline-flex h-10 w-full items-center justify-center gap-2 rounded-lg bg-[var(--secondary)] px-4 text-sm font-semibold text-[#102033] shadow-sm transition hover:bg-[var(--secondary-strong)]"
           >
+            <Save className="h-4 w-4" />
             Save Auction Rules
           </button>
         </div>

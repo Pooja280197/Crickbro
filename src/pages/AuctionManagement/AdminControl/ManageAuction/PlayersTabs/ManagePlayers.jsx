@@ -318,10 +318,6 @@ const AuctionPlayers = () => {
           </div>
         </div>
 
-     
-
-       
-
         {activePlayerTab === "selected" &&
           (selectedManagerTab === "unassignedSelected" ||
             selectedManagerTab === "auctionPlayers") && (

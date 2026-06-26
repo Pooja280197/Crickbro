@@ -17,10 +17,10 @@ const PaymentConfirmationModal = ({
     <>
       <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 transition-opacity duration-300" />
 
-      <div className="fixed inset-0 flex items-center justify-center z-50 p-4">
-        <div className="w-full max-w-md max-h-[90vh] overflow-y-auto rounded-2xl border border-[var(--border-card)] bg-[var(--bg-card)] shadow-[var(--shadow-card)]">
+      <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4">
+        <div className="flex max-h-[92vh] w-full max-w-md flex-col overflow-hidden rounded-2xl border border-[var(--border-card)] bg-[var(--bg-card)] shadow-[var(--shadow-card)]">
           {/* Header */}
-          <div className="sticky top-0 z-10 flex items-center justify-between rounded-t-2xl border-b border-[var(--border-card)] bg-[var(--bg-card)] p-5">
+          <div className="flex shrink-0 items-center justify-between border-b border-[var(--border-card)] bg-[var(--bg-card)] p-4 sm:p-5">
             <h2 className="text-xl font-bold text-[var(--text-primary)]">
               Confirm Payment
             </h2>
@@ -33,7 +33,7 @@ const PaymentConfirmationModal = ({
           </div>
 
           {/* Content */}
-          <div className="p-5 space-y-5">
+          <div className="professional-scrollbar min-h-0 flex-1 space-y-5 overflow-y-auto overscroll-contain bg-[var(--bg-main)] p-4 [scrollbar-gutter:stable] sm:p-5">
             {/* Player Info */}
             {player && (
               <div className="rounded-lg border border-[var(--border-card)] bg-[var(--bg-main)] p-4">
@@ -72,7 +72,7 @@ const PaymentConfirmationModal = ({
           </div>
 
           {/* Footer Actions */}
-          <div className="sticky bottom-0 rounded-b-2xl border-t border-[var(--border-card)] bg-[var(--bg-card)] p-5">
+          <div className="shrink-0 border-t border-[var(--border-card)] bg-[var(--bg-card)] p-4 sm:p-5">
             <div className="flex gap-3">
               <button
                 onClick={onClose}
@@ -84,7 +84,7 @@ const PaymentConfirmationModal = ({
               <button
                 onClick={onConfirm}
                 disabled={isLoading}
-                className="flex-1 rounded-lg bg-[var(--primary)] px-4 py-2.5 font-semibold text-white transition-colors hover:bg-[var(--primary-dark)] disabled:cursor-not-allowed disabled:opacity-50"
+                className="flex-1 rounded-lg bg-[var(--primary)] px-4 py-2.5 font-semibold text-white transition-colors hover:bg-[var(--primary-strong)] disabled:cursor-not-allowed disabled:opacity-50"
               >
                 {isLoading ? "Processing..." : "Proceed to Payment"}
               </button>

@@ -6,6 +6,7 @@ import { useParams } from "react-router-dom";
 
 import { useDebounce } from "../../../../../components/useDebounce";
 import {
+  bulkToggleSupercampPlayers,
   fetchAuctionDetails,
   fetchSlotList,
   getAuctionPlayers,
@@ -60,11 +61,20 @@ const ManagePlayerTabs = () => {
   const [slotSearch, setSlotSearch] = useState("");
   const [selectedSlotLabel, setSelectedSlotLabel] = useState("");
   const [slotPage, setSlotPage] = useState(1);
+  const [supercampLoading, setSupercampLoading] = useState(false);
 
   const debouncedSearch = useDebounce(searchQuery, 400);
-  const playerList = auctionPlayersData?.list || [];
-  const totalPages = auctionPlayersData?.pages || 0;
-  const totalPlayers = auctionPlayersData?.total || 0;
+  const playersRequest = auctionPlayersData?.request;
+  const hasCurrentPlayersData =
+    playersRequest?.auctionId === auctionId &&
+    playersRequest?.activePlayerTab === activePlayerTab;
+  const playerList = hasCurrentPlayersData
+    ? auctionPlayersData?.list || []
+    : [];
+  const totalPages = hasCurrentPlayersData ? auctionPlayersData?.pages || 0 : 0;
+  const totalPlayers = hasCurrentPlayersData
+    ? auctionPlayersData?.total || 0
+    : 0;
   const slotDetail = slots?.data;
   const dropdownRef = useRef();
 
@@ -74,6 +84,9 @@ const ManagePlayerTabs = () => {
     { value: "pending", label: "Pending" },
     { value: "not reached", label: "Not Reached" },
   ];
+
+  const isValidTrialPlayerTab =
+    activePlayerTab === "unassigned" || activePlayerTab === "assigned";
 
   const fetchSessionsForSlot = (slotId) => {
     const selectedSlot = slotDetail?.find((s) => s._id === slotId);
@@ -99,6 +112,12 @@ const ManagePlayerTabs = () => {
   useEffect(() => {
     dispatch(fetchAuctionDetails(auctionId));
   }, []);
+
+  useEffect(() => {
+    if (auctionTypeTrial && !isValidTrialPlayerTab) {
+      handlePlayerTabChange("unassigned");
+    }
+  }, [auctionTypeTrial, isValidTrialPlayerTab]);
 
   useEffect(() => {
     if (auctionId) {
@@ -135,8 +154,8 @@ const ManagePlayerTabs = () => {
     }
   }, [auctionId, slotPage, slotSearch]);
 
-  const fetchPlayers = (activeTab, page = 1) => {
-    dispatch(
+  const fetchPlayers = (activeTab, page = currentPageState) => {
+    return dispatch(
       getAuctionPlayers({
         auctionId,
         activePlayerTab: activeTab,
@@ -162,19 +181,19 @@ const ManagePlayerTabs = () => {
   }, [statusSort, typeSort]);
 
   useEffect(() => {
-    if (
-      auctionTypeTrial &&
-      (activePlayerTab === "unassigned" || activePlayerTab === "assigned")
-    ) {
+    if (auctionTypeTrial && isValidTrialPlayerTab) {
       fetchPlayers(activePlayerTab, 1);
     }
-  }, [activePlayerTab, auctionTypeTrial]);
+  }, [activePlayerTab, auctionTypeTrial, isValidTrialPlayerTab]);
 
   useEffect(() => {
+    if (auctionTypeTrial && !isValidTrialPlayerTab) return;
     setCurrentPageState(1);
     fetchPlayers(activePlayerTab, 1);
   }, [
+    auctionTypeTrial,
     activePlayerTab,
+    isValidTrialPlayerTab,
     statusSort,
     typeSort,
     debouncedSearch,
@@ -184,7 +203,7 @@ const ManagePlayerTabs = () => {
   ]);
 
   const handleAssignmentSuccess = () => {
-    fetchPlayers(activePlayerTab);
+    fetchPlayers(activePlayerTab, currentPageState);
     setSelectedPlayers([]);
   };
 
@@ -209,6 +228,29 @@ const ManagePlayerTabs = () => {
       return;
     }
     setAssignmentModalOpen(true);
+  };
+
+  const handleAddToSupercamp = async () => {
+    if (selectedPlayers.length === 0) {
+      toast.info("Please select at least one player");
+      return;
+    }
+    try {
+      setSupercampLoading(true);
+      const response = await dispatch(
+        bulkToggleSupercampPlayers(auctionId, selectedPlayers, true),
+      );
+      const updated = response?.data?.data?.updated ?? selectedPlayers.length;
+      toast.success(`${updated} player(s) added to supercamp`);
+      setSelectedPlayers([]);
+      fetchPlayers(activePlayerTab, currentPageState);
+    } catch (error) {
+      toast.error(
+        error?.response?.data?.message || "Failed to add players to supercamp",
+      );
+    } finally {
+      setSupercampLoading(false);
+    }
   };
 
   const getFileNameFromHeaders = (headers) => {
@@ -273,41 +315,40 @@ const ManagePlayerTabs = () => {
   };
 
   return (
-    <div className="mx-auto w-full px-3 py-4 sm:px-4 lg:px-5">
-      <div className="space-y-4">
-        <div className="rounded-lg border border-[var(--border-card)] bg-[var(--bg-card)] p-4 shadow-[var(--shadow-card)]">
-          <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+    <div className="mx-auto flex h-full min-h-0 w-full flex-col px-2 py-2 sm:px-4 sm:py-4 lg:px-5">
+      <div className="flex min-h-0 flex-1 flex-col gap-3 sm:gap-4">
+        <div className="sticky top-0 z-40 shrink-0 rounded-lg border border-[var(--border-card)] bg-[var(--bg-card)] p-3 shadow-[var(--shadow-card)] sm:p-4">
+          <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
             <div className="min-w-0">
-          
-              <h1 className="mt-1 text-xl font-bold leading-7 text-[var(--text-primary)]">
+              <h1 className="text-lg font-bold leading-6 text-[var(--text-primary)] sm:mt-1 sm:text-xl sm:leading-7">
                 Players for Trials
               </h1>
-              <p className="mt-1 text-xs font-medium text-[var(--text-secondary)]">
+              <p className="mt-0.5 text-[11px] font-medium leading-4 text-[var(--text-secondary)] sm:mt-1 sm:text-xs">
                 Manage unassigned and assigned trial players.
               </p>
             </div>
 
             <div className="overflow-x-auto scrollbar-hide">
               <div className="flex min-w-max gap-2">
-                  {auctionTypeTrial && (
-                    <button
-                      onClick={() => handlePlayerTabChange("unassigned")}
-                      className={tabClass(activePlayerTab === "unassigned")}
-                    >
-                      <Users className="h-3.5 w-3.5" />
-                      Unassigned to Trials
-                    </button>
-                  )}
+                {auctionTypeTrial && (
+                  <button
+                    onClick={() => handlePlayerTabChange("unassigned")}
+                    className={tabClass(activePlayerTab === "unassigned")}
+                  >
+                    <Users className="h-3.5 w-3.5" />
+                    Unassigned to Trials
+                  </button>
+                )}
 
-                  {auctionTypeTrial && (
-                    <button
-                      onClick={() => handlePlayerTabChange("assigned")}
-                      className={tabClass(activePlayerTab === "assigned")}
-                    >
-                      <UserCheck className="h-3.5 w-3.5" />
-                      Assigned to Trials
-                    </button>
-                  )}
+                {auctionTypeTrial && (
+                  <button
+                    onClick={() => handlePlayerTabChange("assigned")}
+                    className={tabClass(activePlayerTab === "assigned")}
+                  >
+                    <UserCheck className="h-3.5 w-3.5" />
+                    Assigned to Trials
+                  </button>
+                )}
               </div>
             </div>
           </div>
@@ -328,6 +369,8 @@ const ManagePlayerTabs = () => {
             getFilteredPlayers={getFilteredPlayers}
             handleSelectAll={handleSelectAll}
             handleAssignPlayers={handleAssignPlayers}
+            handleAddToSupercamp={handleAddToSupercamp}
+            supercampLoading={supercampLoading}
             handleAssignmentSuccess={handleAssignmentSuccess}
             fetchPlayers={fetchPlayers}
             currentPageState={currentPageState}
@@ -386,9 +429,10 @@ const ManagePlayerTabs = () => {
             auctionId={auctionId}
             viewMode={assignedViewMode}
             setViewMode={setAssignedViewMode}
+            handleAddToSupercamp={handleAddToSupercamp}
+            supercampLoading={supercampLoading}
           />
         )}
-  
       </div>
     </div>
   );

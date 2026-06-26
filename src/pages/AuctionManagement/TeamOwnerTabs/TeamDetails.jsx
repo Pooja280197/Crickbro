@@ -449,7 +449,7 @@ const TeamDetails = ({ auctionId, playerId }) => {
   };
 
   return (
-    <div className="mx-auto min-h-[calc(100vh-108px)] max-w-7xl space-y-4 bg-[var(--bg-main)] p-3 text-[var(--text-primary)] sm:p-4 lg:p-5">
+    <div className="mx-auto min-h-[calc(100vh-108px)] space-y-4 bg-[var(--bg-main)] p-3 text-[var(--text-primary)] sm:p-4 lg:p-5">
       {/* Team Selector */}
       {TeamSelector()}
 

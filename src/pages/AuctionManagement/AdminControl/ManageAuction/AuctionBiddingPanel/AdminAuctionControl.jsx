@@ -1,11 +1,30 @@
 import api from "../../../../../utils/api";
-import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
+import { createPortal } from "react-dom";
 import { useParams } from "react-router-dom";
-import { connectAuctionSocket, disconnectSocket } from "../../../../../utils/SocketClient";
+import {
+  connectAuctionSocket,
+  disconnectSocket,
+} from "../../../../../utils/SocketClient";
 import { toast } from "react-toastify";
 import ConfirmDialog from "../../../../../components/ConfirmDialog";
 import profile from "../../../../../assets/Images/profile-icon.jpg";
-import { ChevronLeft, ChevronRight, Eye, Filter, Maximize2, Minimize2, Search, Settings } from "lucide-react";
+import {
+  ChevronLeft,
+  ChevronRight,
+  Eye,
+  Filter,
+  Maximize2,
+  Minimize2,
+  Search,
+  Settings,
+} from "lucide-react";
 import { computeCategoryLockReserveForTeam } from "./categoryBudgetLockUtils";
 
 /* ================= CONSTANTS ================= */
@@ -32,8 +51,7 @@ const formatBidTime = (val) => {
 const formatMoney = (amount) => {
   const n = Number(amount);
   if (!Number.isFinite(n)) return "0";
-  if (n >= 10000000)
-    return `${parseFloat((n / 10000000).toFixed(2))}Cr`;
+  if (n >= 10000000) return `${parseFloat((n / 10000000).toFixed(2))}Cr`;
   if (n >= 100000) return `${parseFloat((n / 100000).toFixed(2))}L`;
   if (n >= 1000) return `${parseFloat((n / 1000).toFixed(1))}k`;
   return n.toString();
@@ -104,7 +122,7 @@ const AdminAuctionControl = () => {
     open: false,
     title: "",
     message: "",
-    onConfirm: () => { },
+    onConfirm: () => {},
     danger: false,
   });
 
@@ -144,7 +162,9 @@ const AdminAuctionControl = () => {
 
   useEffect(() => {
     const syncFullscreenState = () => {
-      setIsRoomFullscreen(document.fullscreenElement === auctionRoomRef.current);
+      setIsRoomFullscreen(
+        document.fullscreenElement === auctionRoomRef.current,
+      );
     };
 
     document.addEventListener("fullscreenchange", syncFullscreenState);
@@ -270,8 +290,6 @@ const AdminAuctionControl = () => {
     if (searchPlayerPopup) setSelectedPlayerId(null);
   }, [searchPlayerPopup]);
 
-
-
   /* ========== PRE-POPULATE MODAL WHEN OPENING ========== */
   const getTeamShortName = (name) => {
     if (!name) return "";
@@ -338,14 +356,14 @@ const AdminAuctionControl = () => {
       if (payload?.currentPlayer) {
         setCurrentBid(
           payload.currentPlayer.currentBid ??
-          payload.currentPlayer.basePrice ??
-          null,
+            payload.currentPlayer.basePrice ??
+            null,
         );
 
         setCurrentWinnerName(
           payload.currentPlayer.highestBidderName ||
-          payload.currentPlayer.highestBidder ||
-          null,
+            payload.currentPlayer.highestBidder ||
+            null,
         );
 
         if (payload.currentPlayer.highestBidder) {
@@ -586,12 +604,9 @@ const AdminAuctionControl = () => {
   /* ---------- TEAM SETTINGS HANDLER ---------- */
   const handleSaveAllTeams = async () => {
     try {
-      await api.put(
-        `/webSiteApi/auction/updateAllTeamSettings/${auctionId}`,
-        {
-          teams: teamSettingsList,
-        }
-      );
+      await api.put(`/webSiteApi/auction/updateAllTeamSettings/${auctionId}`, {
+        teams: teamSettingsList,
+      });
 
       toast.success("All team settings saved!");
       setTeamSettingsOpen(false);
@@ -600,7 +615,6 @@ const AdminAuctionControl = () => {
       toast.error("Failed to save");
     }
   };
-
 
   /* ---------- SOLD / UNSOLD ---------- */
 
@@ -650,8 +664,9 @@ const AdminAuctionControl = () => {
       open: true,
       title: "Confirm Sale",
       danger: false, // SOLD positive action hai
-      message: `Are you sure you want to sell ${currentPlayer.name} to ${teams.find((t) => t.teamId === selectedTeamId)?.teamName
-        } for ${formatMoney(currentBid)}?`,
+      message: `Are you sure you want to sell ${currentPlayer.name} to ${
+        teams.find((t) => t.teamId === selectedTeamId)?.teamName
+      } for ${formatMoney(currentBid)}?`,
       onConfirm: async () => {
         setConfirmState((p) => ({ ...p, open: false }));
         await handleMarkSold(); // existing SOLD logic reuse
@@ -727,15 +742,14 @@ const AdminAuctionControl = () => {
     if (teamSearch) {
       const search = teamSearch.toLowerCase();
 
-      data = data.filter((t) =>
-        // team name
-        t.teamName?.toLowerCase().includes(search) ||
-
-        // custom text (MI, RCB)
-        t.teamCustomText?.toLowerCase().includes(search) ||
-
-        // order number (convert to string)
-        String(t.teamCustomOrder || "").includes(search)
+      data = data.filter(
+        (t) =>
+          // team name
+          t.teamName?.toLowerCase().includes(search) ||
+          // custom text (MI, RCB)
+          t.teamCustomText?.toLowerCase().includes(search) ||
+          // order number (convert to string)
+          String(t.teamCustomOrder || "").includes(search),
       );
     }
 
@@ -814,7 +828,8 @@ const AdminAuctionControl = () => {
         !currentPlayer ||
         currentPlayer.status !== "bidding" ||
         socketData?.auctionStatus !== "ongoing"
-      ) return;
+      )
+        return;
 
       const key = e.key.toLowerCase();
       if (!/^[a-z0-9]$/.test(key)) return;
@@ -857,14 +872,14 @@ const AdminAuctionControl = () => {
     };
   }, [filteredTeams, currentPlayer, socketData]);
 
-
   return (
     <div
       ref={auctionRoomRef}
-      className={`admin-auction-control bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 text-slate-50 px-4 py-2 ${isRoomFullscreen
-        ? "fixed inset-0 z-[9999] min-h-screen overflow-y-auto"
-        : "min-h-screen"
-        }`}
+      className={`admin-auction-control bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 text-slate-50 px-4 py-2 ${
+        isRoomFullscreen
+          ? "fixed inset-0 z-[9999] min-h-screen overflow-y-auto"
+          : "min-h-screen"
+      }`}
     >
       <div className="w-full mx-auto space-y-2">
         {/* <div className="flex justify-center items-center font-bold text-yellow-400">
@@ -1038,10 +1053,11 @@ const AdminAuctionControl = () => {
                 type="button"
                 onClick={handlePlayPause}
                 disabled={!selectedCategoryId}
-                className={`w-full sm:w-auto px-4 py-2 rounded-full text-sm font-semibold transition ${!selectedCategoryId
-                  ? "bg-slate-700 text-slate-400 cursor-not-allowed"
-                  : "bg-emerald-500 text-slate-950 hover:bg-emerald-600"
-                  }`}
+                className={`w-full sm:w-auto px-4 py-2 rounded-full text-sm font-semibold transition ${
+                  !selectedCategoryId
+                    ? "bg-slate-700 text-slate-400 cursor-not-allowed"
+                    : "bg-emerald-500 text-slate-950 hover:bg-emerald-600"
+                }`}
               >
                 {buttonText}
               </button>
@@ -1153,7 +1169,8 @@ const AdminAuctionControl = () => {
                           </span>
                           <div className="flex items-baseline gap-2 mt-1">
                             <div className="text-3xl font-bold text-emerald-400">
-                              {formatMoney(finalPrice)||formatMoney(currentBid)}
+                              {formatMoney(finalPrice) ||
+                                formatMoney(currentBid)}
                             </div>
                           </div>
                           {currentWinnerName && (
@@ -1257,9 +1274,10 @@ const AdminAuctionControl = () => {
                           onClick={openSoldConfirm}
                           disabled={!canMarkDecision}
                           className={`px-3 py-2 rounded-full text-xs font-semibold transition 
-                            ${!canMarkDecision
-                              ? "bg-slate-700 text-slate-400 cursor-not-allowed"
-                              : "bg-emerald-500 text-slate-950 hover:bg-emerald-600"
+                            ${
+                              !canMarkDecision
+                                ? "bg-slate-700 text-slate-400 cursor-not-allowed"
+                                : "bg-emerald-500 text-slate-950 hover:bg-emerald-600"
                             }
                           `}
                         >
@@ -1272,9 +1290,10 @@ const AdminAuctionControl = () => {
                           onClick={openUnsoldConfirm}
                           disabled={!canMarkDecision}
                           className={`px-3 py-2 rounded-full text-xs font-semibold transition 
-                            ${!canMarkDecision
-                              ? "bg-slate-700 text-slate-400 cursor-not-allowed"
-                              : "bg-red-500 text-slate-50 hover:bg-red-600"
+                            ${
+                              !canMarkDecision
+                                ? "bg-slate-700 text-slate-400 cursor-not-allowed"
+                                : "bg-red-500 text-slate-50 hover:bg-red-600"
                             }
                           `}
                         >
@@ -1288,11 +1307,12 @@ const AdminAuctionControl = () => {
                             !currentPlayer ||
                             !["sold", "unsold"].includes(currentPlayer.status)
                           }
-                          className={`px-3 py-2 rounded-full text-xs font-semibold transition ${!currentPlayer ||
+                          className={`px-3 py-2 rounded-full text-xs font-semibold transition ${
+                            !currentPlayer ||
                             !["sold", "unsold"].includes(currentPlayer.status)
-                            ? "bg-slate-700 text-slate-400 cursor-not-allowed"
-                            : "bg-slate-200 text-slate-900 hover:bg-white"
-                            }`}
+                              ? "bg-slate-700 text-slate-900 cursor-not-allowed"
+                              : "bg-slate-200 text-slate-400 hover:bg-white"
+                          }`}
                         >
                           Next Player
                         </button>
@@ -1302,9 +1322,10 @@ const AdminAuctionControl = () => {
                           onClick={openUndoLastBidConfirm}
                           disabled={!canMarkDecision}
                           className={`px-3 py-2 rounded-full text-xs font-semibold transition 
-                            ${!canMarkDecision
-                              ? "bg-slate-700 text-slate-400 cursor-not-allowed"
-                              : "bg-amber-500 text-slate-900 hover:bg-amber-600"
+                            ${
+                              !canMarkDecision
+                                ? "bg-slate-700 text-slate-400 cursor-not-allowed"
+                                : "bg-amber-500 text-slate-900 hover:bg-amber-600"
                             }
                           `}
                         >
@@ -1318,9 +1339,10 @@ const AdminAuctionControl = () => {
                           }}
                           // disabled={!canMarkDecision}
                           className={`px-3 py-2 rounded-full text-xs font-semibold transition 
-                            ${!canMarkDecision
-                              ? "bg-slate-700 text-slate-400 cursor-not-allowed"
-                              : "bg-amber-500 text-slate-900 hover:bg-amber-600"
+                            ${
+                              !canMarkDecision
+                                ? "bg-slate-700 text-slate-400 cursor-not-allowed"
+                                : "bg-amber-500 text-slate-900 hover:bg-amber-600"
                             }
                           `}
                         >
@@ -1337,12 +1359,15 @@ const AdminAuctionControl = () => {
                             )
                           }
                           className={`px-3 py-2 rounded-full text-xs font-semibold transition 
-                            ${!(
-                              currentPlayer &&
-                              ["sold", "unsold"].includes(currentPlayer.status)
-                            )
-                              ? "bg-slate-700 text-slate-400 cursor-not-allowed"
-                              : "bg-indigo-500 text-slate-50 hover:bg-indigo-600"
+                            ${
+                              !(
+                                currentPlayer &&
+                                ["sold", "unsold"].includes(
+                                  currentPlayer.status,
+                                )
+                              )
+                                ? "bg-slate-700 text-slate-400 cursor-not-allowed"
+                                : "bg-indigo-500 text-slate-50 hover:bg-indigo-600"
                             }
                           `}
                         >
@@ -1407,10 +1432,11 @@ const AdminAuctionControl = () => {
                     {biddingHistory.map((entry, idx) => (
                       <div
                         key={idx}
-                        className={`bidding-history-row flex items-center justify-between px-4 py-3 rounded-lg transition-colors ${idx === 0
-                          ? "bg-amber-500/20 border border-amber-500/40 ring-2 ring-amber-400/30 animate-pulse shadow-lg shadow-amber-400/20"
-                          : "bg-slate-800/50 border border-slate-700/30 hover:bg-slate-800/70"
-                          }`}
+                        className={`bidding-history-row flex items-center justify-between px-4 py-3 rounded-lg transition-colors ${
+                          idx === 0
+                            ? "bg-amber-500/20 border border-amber-500/40 ring-2 ring-amber-400/30 animate-pulse shadow-lg shadow-amber-400/20"
+                            : "bg-slate-800/50 border border-slate-700/30 hover:bg-slate-800/70"
+                        }`}
                       >
                         <div className="flex items-center gap-3 min-w-0 flex-1">
                           {idx === 0 && (
@@ -1419,18 +1445,25 @@ const AdminAuctionControl = () => {
                             </span>
                           )}
                           <span
-                            className={`text-sm font-semibold truncate ${idx === 0 ? "text-amber-100" : "text-slate-200"
-                              }`}
+                            className={`text-sm font-semibold truncate ${
+                              idx === 0 ? "text-amber-100" : "text-slate-200"
+                            }`}
                           >
-                            {entry.teamName}
+                            {/* {entry.teamName} */}
+
+                            {entry.teamName ||
+                              (currentPlayer.status === "sold"
+                                ? currentPlayer.highestBidderName
+                                : "—")}
                           </span>
                         </div>
                         <div className="flex items-center gap-4">
                           <span
-                            className={`font-bold min-w-20 text-right ${idx === 0
-                              ? "text-amber-300 text-base"
-                              : "text-emerald-400 text-sm"
-                              }`}
+                            className={`font-bold min-w-20 text-right ${
+                              idx === 0
+                                ? "text-amber-300 text-base"
+                                : "text-emerald-400 text-sm"
+                            }`}
                           >
                             {formatMoney(entry.amount)}
                           </span>
@@ -1454,16 +1487,16 @@ const AdminAuctionControl = () => {
                 <p className="text-sm font-semibold text-slate-200 self-center">
                   Teams &amp; Purses
                 </p>
-                <button
-                  onClick={() => setTeamSettingsOpen(true)}
-                >
+                <button onClick={() => setTeamSettingsOpen(true)}>
                   <Settings />
                 </button>
               </div>
 
               {teams.length > 4 && (
                 <div className="sm:col-span-1">
-                  <label className="text-xs text-slate-400 mb-1 block">Search Team</label>
+                  <label className="text-xs text-slate-400 mb-1 block">
+                    Search Team
+                  </label>
                   <input
                     type="text"
                     value={teamSearch}
@@ -1477,7 +1510,9 @@ const AdminAuctionControl = () => {
               <div className="h-6 w-px bg-slate-600 self-center hidden" />
 
               <div className="sm:col-span-1">
-                <label className="text-xs text-slate-400 mb-1 block">Select Team</label>
+                <label className="text-xs text-slate-400 mb-1 block">
+                  Select Team
+                </label>
                 <select
                   value={manualBidTeamId}
                   onChange={(e) => setManualBidTeamId(e.target.value)}
@@ -1493,7 +1528,9 @@ const AdminAuctionControl = () => {
               </div>
 
               <div className="sm:col-span-1">
-                <label className="text-xs text-slate-400 mb-1 block">Bid Amount (₹)</label>
+                <label className="text-xs text-slate-400 mb-1 block">
+                  Bid Amount (₹)
+                </label>
                 <input
                   type="text"
                   inputMode="numeric"
@@ -1519,11 +1556,14 @@ const AdminAuctionControl = () => {
                 onClick={async () => {
                   if (!currentPlayer || !auctionId) return;
                   try {
-                    await api.post(`/webSiteApi/auction/placeBid/${auctionId}`, {
-                      playerId: currentPlayer.playerId,
-                      teamId: manualBidTeamId,
-                      bidAmount: Number(manualBidAmount),
-                    });
+                    await api.post(
+                      `/webSiteApi/auction/placeBid/${auctionId}`,
+                      {
+                        playerId: currentPlayer.playerId,
+                        teamId: manualBidTeamId,
+                        bidAmount: Number(manualBidAmount),
+                      },
+                    );
                     setSelectedTeamId(manualBidTeamId);
                     setManualBidAmount("");
                     toast.success("Bid placed successfully");
@@ -1531,14 +1571,15 @@ const AdminAuctionControl = () => {
                     toast.error(err?.response?.data?.message || "Bid failed");
                   }
                 }}
-                className={`w-full sm:w-auto px-4 py-2 rounded-lg text-sm font-semibold transition self-stretch sm:self-end ${!manualBidTeamId ||
+                className={`w-full sm:w-auto px-4 py-2 rounded-lg text-sm font-semibold transition self-stretch sm:self-end ${
+                  !manualBidTeamId ||
                   !manualBidAmount ||
                   !currentPlayer ||
                   currentPlayer.status !== "bidding" ||
                   socketData?.auctionStatus !== "ongoing"
-                  ? "bg-slate-700 text-slate-400 cursor-not-allowed"
-                  : "bg-sky-500 text-white hover:bg-sky-600"
-                  }`}
+                    ? "bg-slate-700 text-slate-400 cursor-not-allowed"
+                    : "bg-sky-500 text-white hover:bg-sky-600"
+                }`}
               >
                 Place Bid
               </button>
@@ -1566,8 +1607,9 @@ const AdminAuctionControl = () => {
 
                 const lockCats = socketData?.categoryBudgetLocks || [];
                 const soldMap =
-                  socketData?.soldPlayersByTeamCategory?.[String(team.teamId)] ||
-                  {};
+                  socketData?.soldPlayersByTeamCategory?.[
+                    String(team.teamId)
+                  ] || {};
                 const remNum = Number(team.remainingBudget);
                 const showLockBidCap =
                   socketData?.auctionStatus === "ongoing" &&
@@ -1597,18 +1639,17 @@ const AdminAuctionControl = () => {
                     disabled={isDisabled}
                     onClick={() => handleTeamBid(team.teamId)}
                     className={`rounded-xl p-3 text-sm border transition 
-        ${isSelected
-                        ? "bg-sky-600 border-sky-400"
-                        : "bg-slate-900 border-slate-700"
-                      }
+        ${
+          isSelected
+            ? "bg-sky-600 border-sky-400"
+            : "bg-slate-900 border-slate-700"
+        }
         ${isDisabled ? "opacity-70 cursor-not-allowed" : "hover:border-sky-400"}
       `}
                   >
                     <div className="flex flex-col gap-1">
-
                       {/* TOP ROW → Order + Short Text */}
                       <div className="flex items-center justify-between">
-
                         {/* Order Badge */}
                         {team.teamCustomOrder && (
                           <span className="text-[10px] bg-sky-500/20 text-sky-400 px-2 py-0.5 rounded">
@@ -1620,14 +1661,12 @@ const AdminAuctionControl = () => {
                         <span className="font-bold text-white text-sm">
                           {team.teamCustomText || ""}
                         </span>
-
                       </div>
 
                       {/* TEAM NAME (Below) */}
                       <div className="text-xs text-slate-400 truncate">
                         {team.teamName}
                       </div>
-
                     </div>
                     <div className="text-xs text-slate-400">
                       ₹{displayBudget.toLocaleString()}
@@ -1673,7 +1712,6 @@ const AdminAuctionControl = () => {
       {/* ========== TEAM SETTINGS MODAL ========== */}
       {teamSettingsOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
-
           {/* Backdrop */}
           <div
             className="absolute inset-0 bg-black/60 backdrop-blur-sm"
@@ -1682,10 +1720,11 @@ const AdminAuctionControl = () => {
 
           {/* Modal */}
           <div className="relative z-10 bg-slate-900 border border-slate-700 rounded-2xl p-6 w-full max-w-2xl shadow-xl">
-
             {/* Header */}
             <div className="flex justify-between items-center mb-4">
-              <h2 className="text-lg font-semibold text-white">Team Settings</h2>
+              <h2 className="text-lg font-semibold text-white">
+                Team Settings
+              </h2>
               <button
                 onClick={() => setTeamSettingsOpen(false)}
                 className="text-slate-400 hover:text-white text-xl"
@@ -1749,238 +1788,245 @@ const AdminAuctionControl = () => {
                 Save All
               </button>
             </div>
-
           </div>
         </div>
       )}
-      {searchPlayerPopup && (
-        <div className="fixed inset-0 z-50">
-          {/* Backdrop */}
-          <div
-            className="absolute inset-0 bg-black/60 backdrop-blur-sm"
-            onClick={() => setSearchPlayerPopup(false)}
-          />
+      {searchPlayerPopup &&
+        createPortal(
+          <div className="fixed inset-0 z-[200000] flex items-center justify-center p-2 sm:p-5">
+            {/* Backdrop */}
+            <div
+              className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+              onClick={() => setSearchPlayerPopup(false)}
+            />
 
-          {/* Popup */}
-          <div
-            className="relative z-10 h-screen w-screen bg-slate-900 border-0 rounded-none flex flex-col px-8 py-4"
-          >
-            {/* Header */}
-            <div className="flex justify-between items-center mb-5 ">
-              <h2 className="text-lg font-semibold text-white">
-                Search Player
-              </h2>
-              <div className="flex items-center gap-2 bg-gray-800/50 rounded-lg px-3 py-2">
-                <Filter size={16} className="text-gray-400" />
-                <select
-                  value={limit}
-                  onChange={(e) => {
-                    setPage(1);
-                    setLimit(Number(e.target.value));
-                  }}
-                  className="bg-transparent text-white text-sm focus:outline-none"
-                >
-                  <option value={20} className="bg-gray-800">
-                    20 per page
-                  </option>
-                  <option value={50} className="bg-gray-800">
-                    50 per page
-                  </option>
-                  <option value={100} className="bg-gray-800">
-                    100 per page
-                  </option>
-                </select>
-              </div>
-              <button
-                onClick={() => setSearchPlayerPopup(false)}
-                className="text-slate-400 hover:text-white text-xl"
-              >
-                ✕
-              </button>
-            </div>
-
-            <div className="flex flex-row w-full gap-x-4">
-              {/* Search Input */}
-              <div className="mb-4 w-[60%] relative">
-                <label className="text-sm text-slate-400 mb-1 block">
-                  Select Player
-                </label>
-
-                <Search className="absolute left-3 top-8 w-4 h-4 text-slate-300" />
-
-                <input
-                  type="text"
-                  placeholder="Search player..."
-                  value={searchParticularPlayer}
-                  onChange={(e) => {
-                    setPage(1);
-                    setSearchParticularPlayer(e.target.value);
-                  }}
-                  className="w-full pl-10 pr-4 py-2 rounded-lg bg-slate-800 border border-slate-700 text-sm text-white outline-none focus:ring-2 focus:ring-sky-500"
-                />
-              </div>
-
-              <div className="mb-4">
-                <label className="text-sm text-slate-400 mb-1 block">
-                  Select Category
-                </label>
-                {/* Category Dropdown */}
-                <select
-                  value={selectedCategoryId}
-                  onChange={(e) => handleCategoryChange(e.target.value)}
-                  className="bg-slate-800 border border-slate-700 text-sm rounded-lg px-3 py-2 outline-none focus:ring-2 focus:ring-sky-500"
-                >
-                  <option value="">Select Category</option>
-                  {categories.map((cat) => (
-                    <option key={cat.id} value={cat.id}>
-                      {cat.name}
+            {/* Popup */}
+            <div className="relative z-10 flex h-[calc(100dvh-16px)] w-full max-w-6xl flex-col overflow-hidden rounded-2xl border border-slate-700 bg-slate-900 shadow-2xl sm:h-auto sm:max-h-[calc(100vh-40px)]">
+              {/* Header */}
+              <div className="flex shrink-0 flex-wrap items-center justify-between gap-3 border-b border-slate-800 px-3 py-2 sm:px-5 sm:py-3">
+                <h2 className="text-lg font-semibold text-white">
+                  Search Player
+                </h2>
+                <div className="flex items-center gap-2 bg-gray-800/50 rounded-lg px-3 py-2">
+                  <Filter size={16} className="text-gray-400" />
+                  <select
+                    value={limit}
+                    onChange={(e) => {
+                      setPage(1);
+                      setLimit(Number(e.target.value));
+                    }}
+                    className="bg-transparent text-white text-sm focus:outline-none"
+                  >
+                    <option value={20} className="bg-gray-800">
+                      20 per page
                     </option>
-                  ))}
-                </select>
-              </div>
-
-              {/* Status Dropdown */}
-              <div className="mb-6">
-                <label className="text-sm text-slate-400 mb-1 block">
-                  Status
-                </label>
-                <select
-                  value={selectedStatus}
-                  onChange={(e) => handleStatusChange(e.target.value)}
-                  className="bg-slate-800 border border-slate-700 text-sm rounded-lg px-3 py-2 outline-none focus:ring-2 focus:ring-sky-500"
+                    <option value={50} className="bg-gray-800">
+                      50 per page
+                    </option>
+                    <option value={100} className="bg-gray-800">
+                      100 per page
+                    </option>
+                  </select>
+                </div>
+                <button
+                  onClick={() => setSearchPlayerPopup(false)}
+                  className="flex h-9 w-9 items-center justify-center rounded-lg border border-slate-700 text-xl text-slate-400 transition hover:border-slate-500 hover:bg-slate-800 hover:text-white"
                 >
-                  <option value="available">Available</option>
-                  <option value="unsold">Unsold</option>
-                </select>
+                  ✕
+                </button>
               </div>
-            </div>
 
-            <div className="flex-1 overflow-y-auto p-2 custom-scrollbar">
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-4">
-                {searchPlayersLoading && (
-                  <div className="col-span-full text-center text-sm text-slate-300 py-6">
-                    Loading players...
-                  </div>
-                )}
+              <div className="grid w-full shrink-0 grid-cols-1 gap-2 px-3 pt-3 sm:grid-cols-[minmax(0,1fr)_auto_auto] sm:gap-3 sm:px-5 sm:pt-4">
+                {/* Search Input */}
+                <div className="relative">
+                  <label className="text-sm text-slate-400 mb-1 block">
+                    Select Player
+                  </label>
 
-                {!searchPlayersLoading && searchPlayers.length === 0 && (
-                  <div className="col-span-full text-center text-sm text-slate-400 py-6">
-                    No players found.
-                  </div>
-                )}
+                  <Search className="absolute left-3 top-8 w-4 h-4 text-slate-300" />
 
-                {!searchPlayersLoading && searchPlayers.map((player) => {
-                  const isSelected = selectedPlayerId === player.playerId;
+                  <input
+                    type="text"
+                    placeholder="Search player..."
+                    value={searchParticularPlayer}
+                    onChange={(e) => {
+                      setPage(1);
+                      setSearchParticularPlayer(e.target.value);
+                    }}
+                    className="w-full pl-10 pr-4 py-2 rounded-lg bg-slate-800 border border-slate-700 text-sm text-white outline-none focus:ring-2 focus:ring-sky-500"
+                  />
+                </div>
 
-                  return (
-                    <div
-                      key={player.playerId}
-                      onClick={() => setSelectedPlayerId(player.playerId)}
-                      className={`flex flex-col items-center gap-2 border rounded-xl p-3 min-h-[160px] cursor-pointer transition-all
-            ${isSelected
-                          ? "border-sky-500 bg-sky-500/10 ring-2 ring-sky-500/40"
-                          : "border-slate-700 bg-slate-900/60 hover:bg-slate-800/80 hover:border-slate-600"
-                        }`}
-                    >
-                      <div className="w-24 h-20 flex items-center justify-center bg-slate-800 rounded-md overflow-hidden">
-                        <img
-                          src={player.logo}
-                          alt={player.name}
-                          className="w-full h-full object-cover"
-                        />
-                      </div>
-
-                      <p className="text-sm font-semibold text-slate-200 truncate w-full text-center">
-                        {player.name}
-                      </p>
-
-                      <p className="text-xs text-amber-300 font-medium uppercase">
-                        {player.playerRole || "NA"}
-                      </p>
-
-                      <p className="text-[11px] text-slate-400">
-                        {player.batchId}
-                      </p>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-
-            <div className="border-t border-gray-200 bg-gray-800/90 px-6 py-4">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <button
-                    disabled={page === 1}
-                    onClick={() => setPage((p) => p - 1)}
-                    className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-900 hover:text-white disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                <div>
+                  <label className="text-sm text-slate-400 mb-1 block">
+                    Select Category
+                  </label>
+                  {/* Category Dropdown */}
+                  <select
+                    value={selectedCategoryId}
+                    onChange={(e) => handleCategoryChange(e.target.value)}
+                    className="w-full bg-slate-800 border border-slate-700 text-sm rounded-lg px-3 py-2 outline-none focus:ring-2 focus:ring-sky-500 sm:min-w-48"
                   >
-                    <ChevronLeft size={16} />
-                    <span>Previous</span>
-                  </button>
+                    <option value="">Select Category</option>
+                    {categories.map((cat) => (
+                      <option key={cat.id} value={cat.id}>
+                        {cat.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
 
-                  <div className="flex items-center gap-1">
-                    {[...Array(Math.min(5, searchPlayersTotalPages))].map((_, idx) => {
-                      const pageNum =
-                        page <= 3
-                          ? idx + 1
-                          : page >= searchPlayersTotalPages - 2
-                            ? searchPlayersTotalPages - 4 + idx
-                            : page - 2 + idx;
-                      if (pageNum < 1 || pageNum > searchPlayersTotalPages) return null;
-
-                      return (
-                        <button
-                          key={idx}
-                          onClick={() => setPage(pageNum)}
-                          className={`w-10 h-10 rounded-lg text-sm font-medium transition-colors
-                        ${page === pageNum
-                              ? "bg-blue-600 text-white"
-                              : "hover:bg-gray-900 text-white"
-                            }`}
-                        >
-                          {pageNum}
-                        </button>
-                      );
-                    })}
-                  </div>
-
-                  <button
-                    disabled={page === searchPlayersTotalPages}
-                    onClick={() => setPage((p) => p + 1)}
-                    className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-900 hover:text-white disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                {/* Status Dropdown */}
+                <div>
+                  <label className="text-sm text-slate-400 mb-1 block">
+                    Status
+                  </label>
+                  <select
+                    value={selectedStatus}
+                    onChange={(e) => handleStatusChange(e.target.value)}
+                    className="w-full bg-slate-800 border border-slate-700 text-sm rounded-lg px-3 py-2 outline-none focus:ring-2 focus:ring-sky-500 sm:min-w-36"
                   >
-                    <span>Next</span>
-                    <ChevronRight size={16} />
-                  </button>
+                    <option value="available">Available</option>
+                    <option value="unsold">Unsold</option>
+                  </select>
                 </div>
               </div>
-            </div>
 
-            {/* Actions */}
-            <div className="flex gap-3">
-              <button
-                className="flex-1 rounded-xl bg-slate-700 hover:bg-slate-600 text-white py-2"
-                onClick={() => setSearchPlayerPopup(false)}
-              >
-                Cancel
-              </button>
+              <div className="custom-scrollbar min-h-0 flex-1 overflow-y-auto px-3 py-3 sm:min-h-[260px] sm:px-5 sm:py-4">
+                <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
+                  {searchPlayersLoading && (
+                    <div className="col-span-full text-center text-sm text-slate-300 py-6">
+                      Loading players...
+                    </div>
+                  )}
 
-              <button
-                className="flex-1 rounded-xl bg-blue-600 hover:bg-blue-500 
-  text-white py-2 font-medium disabled:opacity-50"
-                disabled={!selectedPlayerId}
-                onClick={() => {
-                  handleSetCurrentPlayer(selectedPlayerId);
-                  setSearchPlayerPopup(false);
-                }}
-              >
-                Set as Current Player
-              </button>
+                  {!searchPlayersLoading && searchPlayers.length === 0 && (
+                    <div className="col-span-full text-center text-sm text-slate-400 py-6">
+                      No players found.
+                    </div>
+                  )}
+
+                  {!searchPlayersLoading &&
+                    searchPlayers.map((player) => {
+                      const isSelected = selectedPlayerId === player.playerId;
+
+                      return (
+                        <div
+                          key={player.playerId}
+                          onClick={() => setSelectedPlayerId(player.playerId)}
+                          className={`flex min-h-[145px] cursor-pointer flex-col items-center gap-2 rounded-xl border p-2.5 transition-all
+            ${
+              isSelected
+                ? "border-sky-500 bg-sky-500/10 ring-2 ring-sky-500/40"
+                : "border-slate-700 bg-slate-900/60 hover:bg-slate-800/80 hover:border-slate-600"
+            }`}
+                        >
+                          <div className="flex h-16 w-20 items-center justify-center overflow-hidden rounded-md bg-slate-800 sm:h-20 sm:w-24">
+                            <img
+                              src={player.logo}
+                              alt={player.name}
+                              className="w-full h-full object-cover"
+                            />
+                          </div>
+
+                          <p className="text-sm font-semibold text-slate-200 truncate w-full text-center">
+                            {player.name}
+                          </p>
+
+                          <p className="text-xs text-amber-300 font-medium uppercase">
+                            {player.playerRole || "NA"}
+                          </p>
+
+                          <p className="text-[11px] text-slate-400">
+                            {player.batchId}
+                          </p>
+                        </div>
+                      );
+                    })}
+                </div>
+              </div>
+
+              <div className="shrink-0 border-t border-slate-800 bg-slate-950/80 px-3 py-2 sm:px-5 sm:py-3">
+                <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+                  <div className="flex flex-wrap items-center justify-center gap-2 sm:justify-start">
+                    <button
+                      disabled={page === 1}
+                      onClick={() => setPage((p) => p - 1)}
+                      className="flex items-center gap-1.5 rounded-lg border border-gray-300 px-3 py-2 text-sm transition-colors hover:bg-gray-900 hover:text-white disabled:cursor-not-allowed disabled:opacity-40 sm:gap-2 sm:px-4"
+                    >
+                      <ChevronLeft size={16} />
+                      <span>Previous</span>
+                    </button>
+
+                    <div className="flex items-center gap-1">
+                      {[...Array(Math.min(5, searchPlayersTotalPages))].map(
+                        (_, idx) => {
+                          const pageNum =
+                            page <= 3
+                              ? idx + 1
+                              : page >= searchPlayersTotalPages - 2
+                                ? searchPlayersTotalPages - 4 + idx
+                                : page - 2 + idx;
+                          if (pageNum < 1 || pageNum > searchPlayersTotalPages)
+                            return null;
+
+                          return (
+                            <button
+                              key={idx}
+                              onClick={() => setPage(pageNum)}
+                              className={`h-9 w-9 rounded-lg text-sm font-medium transition-colors sm:h-10 sm:w-10
+                        ${
+                          page === pageNum
+                            ? "bg-blue-600 text-white"
+                            : "hover:bg-gray-900 text-white"
+                        }`}
+                            >
+                              {pageNum}
+                            </button>
+                          );
+                        },
+                      )}
+                    </div>
+
+                    <button
+                      disabled={page === searchPlayersTotalPages}
+                      onClick={() => setPage((p) => p + 1)}
+                      className="flex items-center gap-1.5 rounded-lg border border-gray-300 px-3 py-2 text-sm transition-colors hover:bg-gray-900 hover:text-white disabled:cursor-not-allowed disabled:opacity-40 sm:gap-2 sm:px-4"
+                    >
+                      <span>Next</span>
+                      <ChevronRight size={16} />
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              {/* Actions */}
+              <div className="flex shrink-0 flex-col gap-2 border-t border-slate-800 bg-slate-900 px-3 py-2 sm:flex-row sm:gap-3 sm:px-5 sm:py-3">
+                <button
+                  className="flex-1 rounded-xl bg-slate-700 py-2 text-white hover:bg-slate-600"
+                  onClick={() => setSearchPlayerPopup(false)}
+                >
+                  Cancel
+                </button>
+
+                <button
+                  className="flex-1 rounded-xl bg-blue-600 hover:bg-blue-500 
+  py-2 text-white font-medium disabled:opacity-50"
+                  disabled={!selectedPlayerId}
+                  onClick={() => {
+                    handleSetCurrentPlayer(selectedPlayerId);
+                    setSearchPlayerPopup(false);
+                  }}
+                >
+                  Set as Current Player
+                </button>
+              </div>
             </div>
-          </div>
-        </div>
-      )}
+          </div>,
+          isRoomFullscreen && auctionRoomRef.current
+            ? auctionRoomRef.current
+            : document.body,
+        )}
 
       {sellPlayerPopup && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">

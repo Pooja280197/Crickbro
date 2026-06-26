@@ -1,4 +1,5 @@
-import { Check, Eye, Trash2, UserRound } from "lucide-react";
+import { useState } from "react";
+import { Check, Eye, Trash2 } from "lucide-react";
 
 const DUMMY_IMAGE_URL =
   "https://crickbro.s3.ap-south-1.amazonaws.com/uploads/dummyImage.png";
@@ -9,6 +10,22 @@ const getInitials = (name = "") =>
     .map((word) => word.charAt(0).toUpperCase())
     .join("")
     .slice(0, 2) || "P";
+
+const avatarGradients = [
+  "from-violet-500 to-purple-600",
+  "from-sky-400 to-blue-600",
+  "from-fuchsia-500 to-pink-600",
+  "from-orange-500 to-red-500",
+  "from-emerald-400 to-teal-600",
+  "from-indigo-500 to-violet-600",
+];
+
+const getAvatarGradient = (name = "") => {
+  const hash = String(name)
+    .split("")
+    .reduce((total, character) => total + character.charCodeAt(0), 0);
+  return avatarGradients[hash % avatarGradients.length];
+};
 
 const isDummyImage = (logoUrl) => logoUrl === DUMMY_IMAGE_URL;
 
@@ -29,8 +46,8 @@ export default function PlayerCard({
   onSelect,
   onDelete,
   onViewDetails,
-  isTrialType,
 }) {
+  const [imageError, setImageError] = useState(false);
   const playerName = player?.player?.name || "Unknown";
   const playerLogo = player?.player?.profilePicture || DUMMY_IMAGE_URL;
   const isPlaceholder = isDummyImage(playerLogo);
@@ -40,18 +57,21 @@ export default function PlayerCard({
       player?.playerRole ||
       player?.playersRatings?.playerType,
   );
-  const ratingLabel = player?.directSelected
-    ? player?.directSelectedGrade || "N/A"
-    : (player?.playersRatings?.avgRating || 0).toFixed(2);
 
   return (
     <div
-      className={`group relative min-h-[154px] w-full overflow-hidden rounded-lg border p-2.5 shadow-[0_8px_22px_rgba(16,32,51,0.08)] transition duration-200 hover:-translate-y-0.5 hover:shadow-[0_16px_34px_rgba(16,32,51,0.14)] ${
+      onClick={() => {
+        if (selectable) onSelect?.();
+      }}
+      className={`group relative flex min-h-[136px] w-full flex-col items-center gap-1.5 overflow-hidden rounded-lg border p-1.5 shadow-[var(--shadow-card)] transition duration-200 before:absolute before:inset-x-0 before:top-0 before:h-px before:bg-gradient-to-r before:from-[var(--primary)] before:via-[var(--secondary)] before:to-transparent hover:-translate-y-0.5 hover:shadow-[0_18px_42px_rgba(0,187,255,0.14)] ${
         selected
-          ? "border-[var(--border-primary)] bg-[var(--accent-light)] ring-2 ring-[var(--primary)]/20"
+          ? "border-[var(--border-primary)] bg-[linear-gradient(180deg,rgba(0,187,255,0.12),rgba(3,17,34,0.96))] ring-2 ring-[var(--primary)]/20"
           : "border-[var(--border-card)] bg-[var(--bg-card)] hover:border-[var(--border-primary)]"
-      }`}
+      } ${selectable ? "cursor-pointer" : ""}`}
     >
+      <div className="pointer-events-none absolute -right-10 -top-10 h-24 w-24 rounded-full bg-[var(--primary)]/10 blur-2xl opacity-0 transition group-hover:opacity-100" />
+      <div className="pointer-events-none absolute -bottom-12 left-1/2 h-20 w-28 -translate-x-1/2 rounded-full bg-[var(--secondary)]/10 blur-2xl opacity-0 transition group-hover:opacity-100" />
+
       {selectable && (
         <button
           type="button"
@@ -61,8 +81,8 @@ export default function PlayerCard({
           }}
           className={`absolute right-2 top-2 z-20 flex h-7 w-7 items-center justify-center rounded-lg border text-[10px] shadow-sm transition ${
             selected
-              ? "border-[var(--primary)] bg-[var(--primary)] text-white"
-              : "border-[var(--border-card)] bg-[var(--bg-card)] text-[var(--text-secondary)] hover:border-[var(--border-primary)] hover:text-[var(--primary)]"
+              ? "border-[var(--secondary)] bg-[var(--secondary)] text-[#102033]"
+              : "border-[var(--border-card)] bg-[var(--bg-main)] text-[var(--text-secondary)] hover:border-[var(--border-primary)] hover:text-[var(--primary)]"
           }`}
           aria-label={selected ? "Deselect player" : "Select player"}
         >
@@ -77,87 +97,67 @@ export default function PlayerCard({
             event.stopPropagation();
             onDelete?.();
           }}
-          className="absolute left-2 top-2 z-20 hidden h-7 w-7 items-center justify-center rounded-lg border border-red-200 bg-[var(--bg-card)] text-red-500 shadow-sm transition hover:bg-red-50 hover:text-red-600 group-hover:flex"
+          className="absolute left-2 top-2 z-20 hidden h-7 w-7 items-center justify-center rounded-lg border border-red-500/40 bg-red-500/10 text-red-300 shadow-sm transition hover:border-red-400 hover:bg-red-500/20 hover:text-red-200 group-hover:flex"
           title="Delete"
         >
           <Trash2 size={14} />
         </button>
       )}
 
-      <div
-        onClick={(event) => {
-          event.stopPropagation();
-          if (selectable) onSelect?.();
-        }}
-        className={`relative mx-auto flex h-16 w-16 items-center justify-center overflow-hidden rounded-lg border ${
-          selected
-            ? "border-[var(--primary)] bg-[var(--bg-card)]"
-            : "border-[var(--border-card)] bg-[var(--bg-main)] group-hover:border-[var(--border-primary)]"
-        } ${selectable ? "cursor-pointer" : ""}`}
-      >
-        {isPlaceholder ? (
-          <div className="flex h-full w-full items-center justify-center bg-[var(--accent-light)] text-base font-bold text-[var(--primary)]">
-            {initials || <UserRound size={18} />}
-          </div>
-        ) : (
-          <img
-            src={playerLogo}
-            className="block h-full w-full object-cover"
-            alt={playerName}
-          />
-        )}
+      <div className="relative z-10">
+        <div
+          className={`flex h-20 w-20 shrink-0 cursor-pointer items-center justify-center overflow-hidden rounded-lg border transition-all ${
+            selected
+              ? "border-emerald-500 bg-[var(--bg-card)] ring-2 ring-emerald-400"
+              : "border-[var(--border-card)] bg-[var(--bg-main)] group-hover:border-[var(--border-primary)]"
+          }`}
+        >
+          {isPlaceholder || imageError ? (
+            <div
+              className={`flex h-full w-full items-center justify-center bg-gradient-to-br text-xl font-extrabold text-white ${getAvatarGradient(playerName)}`}
+            >
+              {initials}
+            </div>
+          ) : (
+            <img
+              src={playerLogo}
+              className="block h-full w-full object-cover"
+              alt={playerName}
+              onError={() => setImageError(true)}
+            />
+          )}
+        </div>
 
-        {isTrialType && (
-          <span className="absolute left-1 top-1 rounded bg-[var(--secondary)] px-1.5 py-0.5 text-[9px] font-bold leading-3 text-[#102033] shadow-sm">
-            {ratingLabel}
+        {displayRole && (
+          <span className="absolute bottom-1 left-1 max-w-[calc(100%-0.5rem)] truncate rounded bg-[var(--secondary)] px-1.5 py-0.5 text-[9px] font-bold leading-3 text-[#102033] shadow-[0_0_16px_rgba(255,190,0,0.25)]">
+            {displayRole}
           </span>
         )}
       </div>
 
-      <div className="mt-2 min-w-0 text-center">
-        <p className="truncate text-xs font-semibold leading-4 text-[var(--text-primary)]">
+      <div className="relative z-10 min-w-0 max-w-full text-center">
+        <p className="w-full truncate text-[11px] font-semibold leading-4 text-[var(--text-primary)]">
           {playerName}
         </p>
         {player?.player?.batchId && (
-          <p className="mt-0.5 truncate text-[10px] font-medium text-[var(--text-secondary)]">
+          <p className="truncate text-[10px] leading-3 text-[var(--text-secondary)]">
             {player.player.batchId}
           </p>
         )}
       </div>
 
-      <div className="mt-2 flex min-h-[22px] items-center justify-center">
-        {displayRole ? (
-          <span className="max-w-full truncate rounded-full border border-[var(--border-primary)] bg-[var(--accent-light)] px-2 py-1 text-[10px] font-bold text-[var(--primary)]">
-            {displayRole}
-          </span>
-        ) : (
-          <span className="text-[10px] font-medium text-[var(--text-muted)]">
-            Role not set
-          </span>
-        )}
-      </div>
-
-      {isTrialType && (
-        <div className="mt-2 space-y-0.5 text-center text-[10px] font-medium text-[var(--text-secondary)]">
-          <p className="truncate">{player?.session?.name || "Session"}</p>
-          <p className="truncate text-[var(--text-muted)]">
-            {player?.slot?.slotName || "Slot"}
-          </p>
-        </div>
-      )}
-
       {onViewDetails && (
-        <div className="pointer-events-none absolute inset-0 flex items-center justify-center bg-black/45 opacity-0 backdrop-blur-[1px] transition-opacity group-hover:opacity-100">
+        <div className="pointer-events-none absolute inset-0 z-20 flex items-center justify-center rounded-lg bg-black/45 opacity-0 transition-opacity group-hover:opacity-100">
           <button
             type="button"
             onClick={(event) => {
               event.stopPropagation();
               onViewDetails();
             }}
-            className="pointer-events-auto inline-flex h-9 items-center gap-2 rounded-lg bg-[var(--secondary)] px-3 text-xs font-semibold text-[#102033] shadow-sm transition hover:bg-[var(--secondary-strong)]"
+            className="pointer-events-auto flex h-9 w-9 items-center justify-center rounded-lg bg-[var(--bg-card)] text-[var(--primary)] shadow transition hover:bg-[var(--accent-light)]"
+            title="View player details"
           >
             <Eye size={14} />
-            View
           </button>
         </div>
       )}

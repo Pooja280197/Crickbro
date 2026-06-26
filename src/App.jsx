@@ -6,9 +6,13 @@ import { useLoginPopup } from "./context/LoginPopupContext";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import ProtectedRoute from "./components/ProtectedRoute";
+import ChatBot from "./components/ChatBot";
 import Home from "./pages/Home";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermsOfService from "./pages/TermsOfService";
+import EntryPass from "./pages/AuctionManagement/AdminControl/ManageAuction/Settings/EntryPass";
+import TeamWheel from "./pages/AuctionManagement/AdminControl/ManageAuction/OverlayLinks/TeamWheel";
+import CreatePoster from "./pages/AuctionManagement/AdminControl/PostersCreation/CreatePoster";
 
 const HotAuctions = lazy(() => import("./components/Home/HotAuctions"));
 const TabsNavigation = lazy(
@@ -31,33 +35,37 @@ const RegWebsite = lazy(
   () => import("./pages/ViewRegistrationWebiste/RegWebsite"),
 );
 const LiveAuctionForAudience = lazy(
-  () => import("./pages/AuctionManagement/AdminControl/ManageAuction/OverlayLinks/LiveAuctionForAudience"),
+  () =>
+    import("./pages/AuctionManagement/AdminControl/ManageAuction/OverlayLinks/LiveAuctionForAudience"),
 );
 const AuctionPlayerOverlay = lazy(
-  () => import("./pages/AuctionManagement/AdminControl/ManageAuction/OverlayLinks/AuctionPlayerOverlay"),
+  () =>
+    import("./pages/AuctionManagement/AdminControl/ManageAuction/OverlayLinks/AuctionPlayerOverlay"),
 );
 const AuctionPlayerOverlayV2 = lazy(
-  () => import("./pages/AuctionManagement/AdminControl/ManageAuction/OverlayLinks/AuctionPlayerOverlayV2"),
+  () =>
+    import("./pages/AuctionManagement/AdminControl/ManageAuction/OverlayLinks/AuctionPlayerOverlayV2"),
 );
 const AuctionPlayerOverlayV3 = lazy(
-  () => import("./pages/AuctionManagement/AdminControl/ManageAuction/OverlayLinks/AuctionPlayerOverlayV3"),
+  () =>
+    import("./pages/AuctionManagement/AdminControl/ManageAuction/OverlayLinks/AuctionPlayerOverlayV3"),
 );
 const TeamsOverlay = lazy(
-  () => import("./pages/AuctionManagement/AdminControl/ManageAuction/OverlayLinks/TeamsOverlay"),
+  () =>
+    import("./pages/AuctionManagement/AdminControl/ManageAuction/OverlayLinks/TeamsOverlay"),
 );
 const AuctionSplitOverlay = lazy(
-  () => import("./pages/AuctionManagement/AdminControl/ManageAuction/OverlayLinks/AuctionSplitOverlay"),
+  () =>
+    import("./pages/AuctionManagement/AdminControl/ManageAuction/OverlayLinks/AuctionSplitOverlay"),
 );
 const AuctionBroadcastBoardOverlay = lazy(
   () =>
-    import(
-      "./pages/AuctionManagement/AdminControl/ManageAuction/OverlayLinks/AuctionBroadcastBoardOverlay"
-    ),
+    import("./pages/AuctionManagement/AdminControl/ManageAuction/OverlayLinks/AuctionBroadcastBoardOverlay"),
 );
 
-const TeamBidding=lazy(
-  () => import("./pages/AuctionManagement/TeamOwnerTabs/TeamBiddingPanel")
-)
+const TeamBidding = lazy(
+  () => import("./pages/AuctionManagement/TeamOwnerTabs/TeamBiddingPanel"),
+);
 
 const PageLoader = () => (
   <div className="flex min-h-screen items-center justify-center bg-[var(--bg-main)]">
@@ -163,7 +171,7 @@ function AppContent({ theme, toggleTheme }) {
           />
 
           {/* Overlay screen routes */}
-         <Route
+          <Route
             exact
             path="/live-auction-audience/:auctionId"
             element={<LiveAuctionForAudience />}
@@ -197,10 +205,10 @@ function AppContent({ theme, toggleTheme }) {
             exact
             path="/auction-broadcast-board/:auctionId"
             element={<AuctionBroadcastBoardOverlay />}
-            />
+          />
 
           <Route
-            path="howItWorks"
+            path="/howItWorks"
             element={<HowItWorks theme={theme} onToggleTheme={toggleTheme} />}
           />
           <Route
@@ -219,10 +227,20 @@ function AppContent({ theme, toggleTheme }) {
             element={<RegWebsite />}
           />
 
-            <Route
+          <Route
             exact
             path="/team-bidding/:auctionId"
             element={<TeamBidding />}
+          />
+
+          <Route exact path="/entry-pass/:auctionId" element={<EntryPass />} />
+          
+          <Route exact path="/team-wheel/:auctionId" element={<TeamWheel />} />
+
+          <Route
+            exact
+            path="/players-posters/:auctionId"
+            element={<CreatePoster />}
           />
         </Routes>
       </Suspense>
@@ -277,6 +295,7 @@ const App = () => {
           </Suspense>
         )}
         <AppContent theme={theme} toggleTheme={toggleTheme} />
+      
       </div>
     </BrowserRouter>
   );

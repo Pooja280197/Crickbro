@@ -84,7 +84,7 @@ const Header = ({ theme = "light", onToggleTheme }) => {
 
   return (
     <>
-      <header className="fixed inset-x-0 top-0 z-50 bg-[color-mix(in_srgb,var(--header-bg)_92%,transparent)] shadow-[0_6px_18px_rgba(16,32,51,0.05)] backdrop-blur-[18px]">
+      <header className="fixed inset-x-0 top-0 z-50 bg-[color-mix(in_srgb,var(--header-bg)_92%,transparent)] shadow-[0_6px_18px_rgba(16,32,51,0.05)] backdrop-blur-[18px] after:pointer-events-none after:absolute after:inset-x-0 after:bottom-0 after:h-px after:bg-gradient-to-r after:from-transparent after:via-[rgba(8,186,247,0.72)] after:to-transparent after:shadow-[0_0_14px_rgba(8,186,247,0.58)]">
         <div className="container flex min-h-[76px] items-center justify-between gap-6 max-md:min-h-[68px] max-md:gap-3">
           <motion.button
             whileHover={{ y: -1 }}
@@ -99,7 +99,7 @@ const Header = ({ theme = "light", onToggleTheme }) => {
               src={logo}
               alt="CrickBro"
             />
-            <span className="font-heading text-lg font-black leading-none tracking-normal max-sm:hidden">
+            <span className="font-heading text-xl font-bold leading-none tracking-normal max-sm:hidden">
               CrickBro Auction
             </span>
           </motion.button>
@@ -113,7 +113,7 @@ const Header = ({ theme = "light", onToggleTheme }) => {
 
               return (
                 <button
-                  className={`relative inline-flex min-h-9 items-center justify-center overflow-hidden rounded-lg px-[13px] text-[var(--text-secondary)] transition hover:bg-[var(--accent-light)] hover:text-[var(--primary)] ${
+                  className={`public-nav-link relative inline-flex min-h-9 items-center font-semibold text-medium justify-center overflow-hidden rounded-lg px-[13px] text-[var(--text-secondary)] transition hover:bg-[var(--accent-light)] ${
                     isActive ? "bg-[var(--accent-light)] text-[var(--primary-strong)] after:absolute after:bottom-[5px] after:left-3 after:right-3 after:h-0.5 after:rounded-full after:bg-[var(--primary)]" : ""
                   }`}
                   type="button"
@@ -194,7 +194,7 @@ const Header = ({ theme = "light", onToggleTheme }) => {
                         <button
                           key={item.label}
                           onClick={() => handleNav(item.path)}
-                          className={`inline-flex min-h-11 items-center gap-2.5 rounded-[10px] px-3.5 text-left text-sm font-extrabold text-[var(--text-secondary)] transition hover:bg-[var(--accent-light)] hover:text-[var(--primary)] ${
+                          className={`public-nav-link inline-flex min-h-11 items-center gap-2.5 rounded-[10px] px-3.5 text-left text-sm font-extrabold text-[var(--text-secondary)] transition hover:bg-[var(--accent-light)] ${
                             isActive ? "bg-[var(--accent-light)] text-[var(--primary)]" : ""
                           }`}
                           type="button"

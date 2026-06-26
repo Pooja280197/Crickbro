@@ -1,5 +1,5 @@
 import React from "react";
-import { Apple, Download, Globe, Mail, MapPin, Phone } from "lucide-react";
+import { Globe, Mail, MapPin, Phone } from "lucide-react";
 import {
   FaFacebookF,
   FaInstagram,
@@ -85,45 +85,37 @@ const Footer = () => {
             </p>
 
             {/* DOWNLOAD BUTTONS */}
-            <div className="grid grid-cols-2 gap-2">
+            <div className="flex flex-wrap items-center gap-1">
               <a
                 href="https://play.google.com/store/apps/details?id=com.crickbroapp&hl=en_IN"
                 target="_blank"
                 rel="noreferrer"
-                className="flex min-w-0 items-center gap-2 rounded-lg border border-[var(--border-card)] bg-[var(--bg-card)] px-2.5 py-2 text-[var(--text-primary)] shadow-sm transition-all duration-200 hover:border-[var(--border-primary)] hover:bg-[var(--accent-light)]"
+                className="flex h-16 w-[144px] min-w-0 items-center justify-center overflow-hidden rounded-lg transition-all duration-200 hover:-translate-y-0.5 hover:brightness-110"
+                aria-label="Get CrickBro on Google Play"
               >
-                <Download
-                  size={15}
-                  className="flex-shrink-0 text-[var(--primary)]"
+                <img
+                  loading="lazy"
+                  decoding="async"
+                  src="https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png"
+                  alt="Get it on Google Play"
+                  className="h-full w-full object-fill"
                 />
-                <div className="leading-tight min-w-0">
-                  <div className="text-[10px] text-[var(--text-secondary)]">
-                    Get it on
-                  </div>
-                  <div className="text-[11px] font-semibold text-[var(--text-primary)] sm:text-sm">
-                    Google Play
-                  </div>
-                </div>
               </a>
 
               <a
                 href="https://apps.apple.com/in/app/crickbro-cricket-scoring-app/id6740860359"
                 target="_blank"
                 rel="noreferrer"
-                className="flex min-w-0 items-center gap-2 rounded-lg border border-[var(--border-card)] bg-[var(--bg-card)] px-2.5 py-2 text-[var(--text-primary)] shadow-sm transition-all duration-200 hover:border-[var(--border-primary)] hover:bg-[var(--accent-light)]"
+                className="flex h-11 w-[144px] min-w-0 items-center justify-center overflow-hidden rounded-lg transition-all duration-200 hover:-translate-y-0.5 hover:brightness-110"
+                aria-label="Download CrickBro on the App Store"
               >
-                <Apple
-                  size={15}
-                  className="flex-shrink-0 text-[var(--primary)]"
+                <img
+                  loading="lazy"
+                  decoding="async"
+                  src="https://developer.apple.com/assets/elements/badges/download-on-the-app-store.svg"
+                  alt="Download on the App Store"
+                  className="h-full w-full object-fill"
                 />
-                <div className="leading-tight min-w-0">
-                  <div className="text-[10px] text-[var(--text-secondary)]">
-                    Download on
-                  </div>
-                  <div className="text-[11px] font-semibold text-[var(--text-primary)] sm:text-sm">
-                    App Store
-                  </div>
-                </div>
               </a>
             </div>
           </div>

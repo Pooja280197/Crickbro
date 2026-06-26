@@ -30,6 +30,8 @@ const RegWebsite = () => {
   const showPlayerRegistration = !!pageData?.showRegistrationForm;
   const showTeamRegistration = !!pageData?.showTeamRegistration;
   const showRegistrationSwitcher = showPlayerRegistration && showTeamRegistration;
+  const requestedRegistrationTab =
+    new URLSearchParams(window.location.search).get("registration") || "";
   const resolvedAuctionId = pageData?.auctionId?._id || auctionId;
   const resolvedTournamentId = pageData?.tournamentId?._id || tournamentId;
   const teamRegistrationConfig = pageData?.auctionId?.teamRegistration || {};
@@ -58,6 +60,16 @@ const RegWebsite = () => {
   console.log("page", pageData);
 
   useEffect(() => {
+    if (requestedRegistrationTab === "team" && showTeamRegistration) {
+      setActiveRegistrationForm("team");
+      return;
+    }
+
+    if (requestedRegistrationTab === "player" && showPlayerRegistration) {
+      setActiveRegistrationForm("player");
+      return;
+    }
+
     if (showPlayerRegistration && showTeamRegistration) {
       setActiveRegistrationForm((prev) =>
         prev === "player" || prev === "team" ? prev : "player",
@@ -70,7 +82,7 @@ const RegWebsite = () => {
     } else {
       setActiveRegistrationForm("player");
     }
-  }, [showPlayerRegistration, showTeamRegistration]);
+  }, [requestedRegistrationTab, showPlayerRegistration, showTeamRegistration]);
 
   useEffect(() => {
     const queryParams = new URLSearchParams(window.location.search);

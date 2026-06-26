@@ -1,12 +1,14 @@
 import React, { useState } from "react";
 import {
   Award,
+  CheckSquare,
   ChevronDown,
   Download,
   Edit3,
   Filter,
   LayoutGrid,
   Search,
+  Square,
   Star,
   Table2,
   Trash2,
@@ -62,6 +64,8 @@ const AssignedTrialsTab = ({
   auctionId,
   viewMode,
   setViewMode,
+  handleAddToSupercamp,
+  supercampLoading,
 }) => {
   const players = getFilteredPlayers();
   const [showFilters, setShowFilters] = useState(false);
@@ -83,18 +87,71 @@ const AssignedTrialsTab = ({
     setIsSlotOpen(false);
   };
 
+  const handleSelectAllVisible = () => {
+    const visibleIds = players.map(getPlayerId).filter(Boolean);
+    const allSelected =
+      visibleIds.length > 0 &&
+      visibleIds.every((playerId) => selectedPlayers.includes(playerId));
+
+    setSelectedPlayers((prev) =>
+      allSelected
+        ? prev.filter((playerId) => !visibleIds.includes(playerId))
+        : [...new Set([...prev, ...visibleIds])],
+    );
+  };
+
   const getRole = (item) =>
     item?.playersRatings?.playerType ||
     item?.player?.playerRole ||
     item?.playerRole ||
     "Role not set";
 
-  const getRating = (item) =>
-    item?.directSelected
-      ? item?.directSelectedGrade || "N/A"
-      : item?.playersRatings?.avgRating
-        ? Number(item.playersRatings.avgRating).toFixed(2)
-        : "-";
+  const getRatingOrGrade = (item) => {
+    const grade =
+      item?.directSelectedGrade ||
+      item?.playersRatings?.grade ||
+      item?.grading;
+
+    if (grade !== undefined && grade !== null && grade !== "") {
+      return { label: "Grade", value: String(grade), isGrade: true };
+    }
+
+    const rawRating =
+      item?.playersRatings?.avgRating?.overall ??
+      item?.playersRatings?.avgRating ??
+      item?.playersRatings?.overallRating;
+    const numericRating = Number(rawRating);
+
+    return {
+      label: "Rating",
+      value: Number.isFinite(numericRating) && rawRating !== ""
+        ? numericRating.toFixed(2)
+        : "-",
+      isGrade: false,
+    };
+  };
+
+  const getStatusBadgeClass = (status) => {
+    switch (String(status || "").trim().toLowerCase()) {
+      case "select":
+      case "selected":
+      case "available":
+        return "border-emerald-500/35 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400";
+      case "not select":
+      case "not selected":
+      case "unsold":
+        return "border-red-500/35 bg-red-500/10 text-red-600 dark:text-red-400";
+      case "pending":
+      case "bidding":
+        return "border-amber-500/40 bg-amber-500/10 text-amber-600 dark:text-amber-400";
+      case "sold":
+        return "border-blue-500/35 bg-blue-500/10 text-blue-600 dark:text-blue-400";
+      case "not reached":
+        return "border-slate-400/40 bg-slate-500/10 text-slate-600 dark:text-slate-300";
+      default:
+        return "border-[var(--border-card)] bg-[var(--bg-main)] text-[var(--text-secondary)]";
+    }
+  };
 
   const getPlayerId = (item) => item?.player?._id || item?.playerId || item?._id || "";
 
@@ -265,52 +322,54 @@ const AssignedTrialsTab = ({
   };
 
   const ViewModeToggle = () => (
-    <div className="inline-flex h-10 overflow-hidden rounded-lg border border-[var(--border-card)] bg-[var(--bg-main)] p-0.5">
+    <div className="inline-flex h-9 overflow-hidden rounded-lg border border-[var(--border-card)] bg-[var(--bg-main)] p-0.5 sm:h-10">
       <button
         type="button"
         onClick={() => setViewMode("grid")}
-        className={`inline-flex h-9 items-center gap-1.5 rounded-md px-2.5 text-xs font-semibold transition ${
+        className={`inline-flex h-8 items-center gap-1.5 rounded-md px-2.5 text-xs font-semibold transition sm:h-9 ${
           viewMode === "grid"
             ? "bg-[var(--secondary)] text-[#102033]"
             : "text-[var(--text-secondary)] hover:bg-[var(--accent-light)]"
         }`}
       >
         <LayoutGrid className="h-4 w-4" />
-        Grid
+        
       </button>
       <button
         type="button"
         onClick={() => setViewMode("table")}
-        className={`inline-flex h-9 items-center gap-1.5 rounded-md px-2.5 text-xs font-semibold transition ${
+        className={`inline-flex h-8 items-center gap-1.5 rounded-md px-2.5 text-xs font-semibold transition sm:h-9 ${
           viewMode === "table"
             ? "bg-[var(--secondary)] text-[#102033]"
             : "text-[var(--text-secondary)] hover:bg-[var(--accent-light)]"
         }`}
       >
         <Table2 className="h-4 w-4" />
-        Table
+        
       </button>
     </div>
   );
 
   const renderPlayersTable = () => (
     <div className="overflow-hidden rounded-lg border border-[var(--border-card)] bg-[var(--bg-card)] shadow-[var(--shadow-card)]">
-      <div className="professional-scrollbar overflow-x-auto">
+      <div className="professional-scrollbar max-h-[calc(100vh-260px)] min-h-[260px] overflow-auto">
         <table className="min-w-[940px] w-full text-left text-sm">
-          <thead className="bg-[var(--bg-main)] text-[11px] font-bold uppercase tracking-wide text-[var(--text-secondary)]">
+          <thead className="bg-[var(--bg-main)] text-[11px] font-bold uppercase tracking-wide text-[var(--text-secondary)] shadow-sm">
             <tr className="border-b border-[var(--border-card)]">
-              <th className="px-3 py-3">Player</th>
-              <th className="px-3 py-3">Batch ID</th>
-              <th className="px-3 py-3">Role</th>
-              <th className="px-3 py-3">Rating</th>
-              <th className="px-3 py-3">Status</th>
-              <th className="px-3 py-3">Slot / Session</th>
-              <th className="px-3 py-3">Actions</th>
+              <th className="sticky top-0 z-20 w-12 px-3 py-3 bg-[var(--bg-main)]">Select</th>
+              <th className="sticky top-0 z-20 px-3 py-3 bg-[var(--bg-main)]">Player</th>            
+              <th className="sticky top-0 z-20 px-3 py-3 bg-[var(--bg-main)]">Role</th>
+              <th className="sticky top-0 z-20 px-3 py-3 bg-[var(--bg-main)]">Rating / Grading</th>
+              <th className="sticky top-0 z-20 px-3 py-3 bg-[var(--bg-main)]">Status</th>
+              <th className="sticky top-0 z-20 px-3 py-3 bg-[var(--bg-main)]">Slot / Session</th>
+              <th className="sticky top-0 z-20 px-3 py-3 bg-[var(--bg-main)]">Actions</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-[var(--border-card)]">
             {players.map((item) => {
               const core = item?.player || {};
+              const ratingOrGrade = getRatingOrGrade(item);
+              const playerStatus = item?.status || core?.status || "";
               const initials =
                 String(core?.name || "P")
                   .split(" ")
@@ -322,6 +381,31 @@ const AssignedTrialsTab = ({
 
               return (
                 <tr key={item?._id || core?._id} className="bg-[var(--bg-card)] transition hover:bg-[var(--accent-light)]/60">
+                  <td className="px-3 py-3">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const playerId = getPlayerId(item);
+                        setSelectedPlayers((prev) =>
+                          prev.includes(playerId)
+                            ? prev.filter((id) => id !== playerId)
+                            : [...prev, playerId],
+                        );
+                      }}
+                      className={`flex h-8 w-8 items-center justify-center rounded-lg border transition ${
+                        selectedPlayers.includes(getPlayerId(item))
+                          ? "border-[var(--primary)] bg-[var(--primary)] text-white"
+                          : "border-[var(--border-card)] bg-[var(--bg-main)] text-[var(--text-secondary)] hover:border-[var(--border-primary)]"
+                      }`}
+                      title="Select player"
+                    >
+                      {selectedPlayers.includes(getPlayerId(item)) ? (
+                        <CheckSquare className="h-4 w-4" />
+                      ) : (
+                        <Square className="h-4 w-4" />
+                      )}
+                    </button>
+                  </td>
                   <td className="px-3 py-3">
                     <div className="flex min-w-0 items-center gap-3">
                       <div className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-lg border border-[var(--border-card)] bg-[var(--accent-light)] text-xs font-bold text-[var(--primary)]">
@@ -337,14 +421,30 @@ const AssignedTrialsTab = ({
                       </div>
                     </div>
                   </td>
-                  <td className="px-3 py-3 text-[var(--text-secondary)]">{core?.batchId || "-"}</td>
                   <td className="px-3 py-3">
                     <span className="inline-flex rounded-full border border-[var(--border-primary)] bg-[var(--accent-light)] px-2.5 py-1 text-xs font-bold text-[var(--primary)]">
                       {getRole(item)}
                     </span>
                   </td>
-                  <td className="px-3 py-3 font-semibold text-[var(--text-primary)]">{getRating(item)}</td>
-                  <td className="px-3 py-3 text-[var(--text-secondary)]">{item?.status || core?.status || "-"}</td>
+                  <td className="px-3 py-3">
+                    <span
+                      className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-semibold ${
+                        ratingOrGrade.isGrade
+                          ? "border-violet-500/35 bg-violet-500/10 text-violet-600 dark:text-violet-400"
+                          : "border-[var(--border-primary)] bg-[var(--accent-light)] text-[var(--primary)]"
+                      }`}
+                    >
+                      <span className="opacity-75">{ratingOrGrade.label}:</span>
+                      {ratingOrGrade.value}
+                    </span>
+                  </td>
+                  <td className="px-3 py-3">
+                    <span
+                      className={`inline-flex rounded-full border px-2.5 py-1 text-xs font-semibold capitalize ${getStatusBadgeClass(playerStatus)}`}
+                    >
+                      {playerStatus || "-"}
+                    </span>
+                  </td>
                   <td className="px-3 py-3 text-[var(--text-secondary)]">
                     <div className="max-w-[180px] truncate">{item?.slot?.slotName || "-"}</div>
                     <div className="max-w-[180px] truncate text-xs text-[var(--text-muted)]">{item?.session?.name || "-"}</div>
@@ -408,25 +508,26 @@ const AssignedTrialsTab = ({
 
       {!ballRatingConfig && (
       <>
-      <div className="rounded-lg border border-[var(--border-card)] bg-[var(--bg-card)] p-4 shadow-[var(--shadow-card)]">
-        <div className="grid grid-cols-1 gap-3 lg:grid-cols-[minmax(0,1fr)_auto_auto_auto_auto] lg:items-center">
-          <div className="relative">
+      <div className="sticky top-[86px] z-30 rounded-lg border border-[var(--border-card)] bg-[var(--bg-card)] p-3 shadow-[var(--shadow-card)] sm:p-4">
+        <div className="grid grid-cols-[minmax(0,1fr)_auto] gap-2 lg:grid-cols-[minmax(0,1fr)_auto_auto_auto_auto_auto_auto] lg:items-center">
+          <div className="relative col-span-2 lg:col-span-1">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--text-secondary)]" />
             <input
               type="text"
               placeholder="Search player..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="h-10 w-full rounded-lg border border-[var(--border-card)] bg-[var(--bg-main)] pl-10 pr-4 text-sm font-medium text-[var(--text-primary)] outline-none transition placeholder:text-[var(--text-secondary)] focus:border-[var(--border-primary)] focus:bg-[var(--bg-card)]"
+              className="h-9 w-full rounded-lg border border-[var(--border-card)] bg-[var(--bg-main)] pl-10 pr-3 text-sm font-medium text-[var(--text-primary)] outline-none transition placeholder:text-[var(--text-secondary)] focus:border-[var(--border-primary)] focus:bg-[var(--bg-card)] sm:h-10 sm:pr-4"
             />
           </div>
 
           <div className="relative">
             <button
               onClick={() => setIsItemsDropdownOpen(!isItemsDropdownOpen)}
-              className="inline-flex h-10 w-full items-center justify-center gap-2 rounded-lg border border-[var(--border-card)] bg-[var(--bg-main)] px-3 text-xs font-semibold text-[var(--text-primary)] transition hover:border-[var(--border-primary)] hover:bg-[var(--accent-light)] xl:w-auto"
+              className="inline-flex h-9 w-full items-center justify-center gap-1.5 rounded-lg border border-[var(--border-card)] bg-[var(--bg-main)] px-3 text-xs font-semibold text-[var(--text-primary)] transition hover:border-[var(--border-primary)] hover:bg-[var(--accent-light)] sm:h-10 xl:w-auto"
             >
-              <span>Showing {itemsPerPage}</span>
+              <span className="hidden sm:inline">Showing {itemsPerPage}</span>
+              <span className="sm:hidden">{itemsPerPage}</span>
               <ChevronDown
                 className={`h-4 w-4 transition-transform duration-300 ${
                   isItemsDropdownOpen ? "rotate-180" : ""
@@ -460,30 +561,61 @@ const AssignedTrialsTab = ({
 
           <button
             type="button"
+            onClick={handleSelectAllVisible}
+            className="inline-flex h-9 items-center justify-center rounded-lg border border-[var(--border-card)] bg-[var(--bg-main)] px-3 text-xs font-semibold text-[var(--text-primary)] transition hover:border-[var(--border-primary)] hover:bg-[var(--accent-light)] sm:h-10"
+          >
+            <span className=" sm:inline">
+              {players.length > 0 &&
+              players.every((item) => selectedPlayers.includes(getPlayerId(item)))
+                ? "Deselect All"
+                : "Select All"}
+            </span>
+            {/* <span className="sm:hidden">Select</span> */}
+          </button>
+
+          <button
+            type="button"
+            disabled={selectedPlayers.length === 0 || supercampLoading}
+            onClick={handleAddToSupercamp}
+            className="inline-flex h-9 items-center justify-center rounded-lg border border-[var(--border-primary)] bg-[var(--accent-light)] px-3 text-xs font-semibold text-[var(--primary)] transition hover:bg-[var(--secondary)] hover:text-[#102033] disabled:cursor-not-allowed disabled:opacity-50 sm:h-10"
+          >
+            <span className="hidden sm:inline">
+              {supercampLoading ? "Adding..." : `Add to Supercamp (${selectedPlayers.length})`}
+            </span>
+            <span className="sm:hidden">
+              {supercampLoading ? "Adding..." : `Supercamp (${selectedPlayers.length})`}
+            </span>
+          </button>
+
+          <button
+            type="button"
             onClick={() => setShowFilters((prev) => !prev)}
-            className={`inline-flex h-10 items-center justify-center gap-2 rounded-lg border px-3 text-xs font-semibold transition ${
+            className={`inline-flex h-9 items-center justify-center gap-1.5 rounded-lg border px-3 text-xs font-semibold transition sm:h-10 sm:gap-2 ${
               showFilters
                 ? "border-[var(--border-primary)] bg-[var(--accent-light)] text-[var(--primary)]"
                 : "border-[var(--border-card)] bg-[var(--bg-main)] text-[var(--text-primary)] hover:border-[var(--border-primary)] hover:bg-[var(--accent-light)]"
             }`}
           >
             <Filter className="h-4 w-4" />
-            Filters
+            <span className="hidden sm:inline">Filters</span>
           </button>
 
           <button
             onClick={handleDownloadExcel}
             disabled={downloadLoading}
-            className="inline-flex h-10 items-center justify-center gap-2 rounded-lg border border-[var(--border-card)] bg-[var(--bg-main)] px-3 text-xs font-semibold text-[var(--text-primary)] transition hover:border-[var(--border-primary)] hover:bg-[var(--accent-light)] disabled:cursor-not-allowed disabled:opacity-60"
+            className="col-span-2 inline-flex h-9 items-center justify-center gap-1.5 rounded-lg border border-[var(--border-card)] bg-[var(--bg-main)] px-3 text-xs font-semibold text-[var(--text-primary)] transition hover:border-[var(--border-primary)] hover:bg-[var(--accent-light)] disabled:cursor-not-allowed disabled:opacity-60 sm:h-10 sm:gap-2 lg:col-span-1"
           >
             <Download className="h-4 w-4 text-[var(--primary)]" />
-            {downloadLoading ? "Downloading..." : "Download Trials Excel"}
+            <span className="hidden sm:inline">
+              {downloadLoading ? "Downloading..." : "Download Trials Excel"}
+            </span>
+            <span className="sm:hidden">{downloadLoading ? "..." : "Excel"}</span>
           </button>
         </div>
 
         {showFilters && (
-          <div className="mt-3 rounded-lg border border-[var(--border-card)] bg-[var(--secondary-lighter)] p-3">
-          <div className="flex flex-col gap-3 xl:col-span-3 sm:flex-row sm:flex-wrap">
+          <div className="mt-2 rounded-lg border border-[var(--border-card)] bg-[var(--secondary-lighter)] p-2 sm:mt-3 sm:p-3">
+          <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 xl:flex xl:flex-wrap xl:gap-3">
             <div ref={dropdownRef} className="relative w-full sm:w-40">
               <input
                 type="text"
@@ -644,7 +776,7 @@ const AssignedTrialsTab = ({
 
       {totalPages > 1 && (
         <Pagination
-          className="mx-auto max-w-7xl"
+          className="mx-auto max-w-7xl pb-2 "
           currentPage={currentPageState}
           totalPages={totalPages}
           summaryPrefix={`Total: ${totalPlayers} players | Page`}

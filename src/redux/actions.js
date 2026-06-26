@@ -1485,6 +1485,17 @@ export const getAuctionPlayers = ({
           pages: res?.data?.data?.pages || 0,
           total: res?.data?.data?.total || 0,
           page,
+          request: {
+            auctionId,
+            activePlayerTab,
+            page,
+            itemsPerPage,
+            statusSort: statusSort || "",
+            typeSort: typeSort || "",
+            debouncedSearch: debouncedSearch || "",
+            slot: slot || "",
+            slotSession: slotSession || "",
+          },
         },
       });
     } catch (error) {
@@ -2199,6 +2210,212 @@ export const updatePlayerDirectSelect = (auctionId, updates) => {
     }
   };
 };
+
+export const getSupercampRounds = (auctionId, status = "") => {
+  return async (dispatch) => {
+    dispatch({ type: "API_START", key: "supercampRounds" });
+    try {
+      const params = status ? { status } : {};
+      const response = await api.get(`/webSiteApi/auctionSupercamp/listRounds/${auctionId}`, { params });
+      dispatch({ type: "API_SUCCESS", key: "supercampRounds", payload: response?.data?.data });
+      return response;
+    } catch (error) {
+      dispatch({
+        type: "API_ERROR",
+        key: "supercampRounds",
+        payload: error?.response?.data?.message || "Failed to fetch rounds",
+      });
+      throw error;
+    }
+  };
+};
+
+export const createSupercampRound = (formData) => {
+  return async (dispatch) => {
+    dispatch({ type: "API_START", key: "createSupercampRound" });
+    try {
+      const response = await api.post("/webSiteApi/auctionSupercamp/createRound", formData);
+      dispatch({ type: "API_SUCCESS", key: "createSupercampRound", payload: response?.data?.data });
+      return response;
+    } catch (error) {
+      dispatch({
+        type: "API_ERROR",
+        key: "createSupercampRound",
+        payload: error?.response?.data?.message || "Failed to create round",
+      });
+      throw error;
+    }
+  };
+};
+
+export const updateSupercampRound = (roundId, formData) => {
+  return async (dispatch) => {
+    dispatch({ type: "API_START", key: "updateSupercampRound" });
+    try {
+      const response = await api.put(`/webSiteApi/auctionSupercamp/updateRound/${roundId}`, formData);
+      dispatch({ type: "API_SUCCESS", key: "updateSupercampRound", payload: response?.data?.data });
+      return response;
+    } catch (error) {
+      dispatch({
+        type: "API_ERROR",
+        key: "updateSupercampRound",
+        payload: error?.response?.data?.message || "Failed to update round",
+      });
+      throw error;
+    }
+  };
+};
+
+export const deleteSupercampRound = (roundId) => {
+  return async (dispatch) => {
+    dispatch({ type: "API_START", key: "deleteSupercampRound" });
+    try {
+      const response = await api.delete(`/webSiteApi/auctionSupercamp/deleteRound/${roundId}`);
+      dispatch({ type: "API_SUCCESS", key: "deleteSupercampRound", payload: response?.data?.data });
+      return response;
+    } catch (error) {
+      dispatch({
+        type: "API_ERROR",
+        key: "deleteSupercampRound",
+        payload: error?.response?.data?.message || "Failed to delete round",
+      });
+      throw error;
+    }
+  };
+};
+
+export const getSupercampPlayers = (auctionId, page = 1, limit = 50, filters = {}) => {
+  return async (dispatch) => {
+    dispatch({ type: "API_START", key: "supercampPlayers" });
+    try {
+      const params = {
+        page,
+        limit,
+        search: filters.search || "",
+        sortBy: filters.sortBy || "totalPoints",
+        sortOrder: filters.sortOrder || "desc",
+        ...(filters.slotId ? { slotId: filters.slotId } : {}),
+        ...(filters.sessionId ? { sessionId: filters.sessionId } : {}),
+        ...(filters.roundId ? { roundId: filters.roundId } : {}),
+        ...(filters.selectorId ? { selectorId: filters.selectorId } : {}),
+        ...(filters.categoryFilter ? { categoryFilter: filters.categoryFilter } : {}),
+        ...(filters.categoryId ? { categoryId: filters.categoryId } : {}),
+      };
+      const response = await api.get(`/webSiteApi/auctionSupercamp/getPlayers/${auctionId}`, { params });
+      dispatch({ type: "API_SUCCESS", key: "supercampPlayers", payload: response?.data?.data });
+      return response;
+    } catch (error) {
+      dispatch({
+        type: "API_ERROR",
+        key: "supercampPlayers",
+        payload: error?.response?.data?.message || "Failed to fetch players",
+      });
+      throw error;
+    }
+  };
+};
+
+export const assignSupercampBonusPenalty = (auctionId, payload) => {
+  return async (dispatch) => {
+    dispatch({ type: "API_START", key: "assignSupercampBonusPenalty" });
+    try {
+      const response = await api.post(
+        `/webSiteApi/auctionSupercamp/assignBonusPenalty/${auctionId}`,
+        payload
+      );
+      dispatch({ type: "API_SUCCESS", key: "assignSupercampBonusPenalty", payload: response?.data?.data });
+      return response;
+    } catch (error) {
+      dispatch({
+        type: "API_ERROR",
+        key: "assignSupercampBonusPenalty",
+        payload: error?.response?.data?.message || "Failed to update bonus/penalty",
+      });
+      throw error;
+    }
+  };
+};
+
+export const assignSupercampPoints = (auctionId, payload) => {
+  return async (dispatch) => {
+    dispatch({ type: "API_START", key: "assignSupercampPoints" });
+    try {
+      const response = await api.post(`/webSiteApi/auctionSupercamp/assignPoints/${auctionId}`, payload);
+      dispatch({ type: "API_SUCCESS", key: "assignSupercampPoints", payload: response?.data?.data });
+      return response;
+    } catch (error) {
+      dispatch({
+        type: "API_ERROR",
+        key: "assignSupercampPoints",
+        payload: error?.response?.data?.message || "Failed to assign points",
+      });
+      throw error;
+    }
+  };
+};
+
+export const bulkToggleSupercampPlayers = (auctionId, playerIds, isSupercamp = true) => {
+  return async (dispatch) => {
+    dispatch({ type: "API_START", key: "bulkToggleSupercamp" });
+    try {
+      const response = await api.post(
+        `/webSiteApi/auctionSupercamp/bulkToggleSupercamp/${auctionId}`,
+        { playerIds, isSupercamp }
+      );
+      dispatch({ type: "API_SUCCESS", key: "bulkToggleSupercamp", payload: response?.data?.data });
+      return response;
+    } catch (error) {
+      dispatch({
+        type: "API_ERROR",
+        key: "bulkToggleSupercamp",
+        payload: error?.response?.data?.message || "Failed to update supercamp players",
+      });
+      throw error;
+    }
+  };
+};
+
+export const toggleSupercampPlayer = (auctionId, playerId, isSupercamp) => {
+  return async (dispatch) => {
+    dispatch({ type: "API_START", key: "toggleSupercampPlayer" });
+    try {
+      const response = await api.post(
+        `/webSiteApi/auctionSupercamp/toggleSupercamp/${auctionId}/${playerId}`,
+        { isSupercamp }
+      );
+      dispatch({ type: "API_SUCCESS", key: "toggleSupercampPlayer", payload: response?.data?.data });
+      return response;
+    } catch (error) {
+      dispatch({
+        type: "API_ERROR",
+        key: "toggleSupercampPlayer",
+        payload: error?.response?.data?.message || "Failed to update supercamp status",
+      });
+      throw error;
+    }
+  };
+};
+
+export const getSupercampPlayerDetails = (auctionId, playerId) => {
+  return async (dispatch) => {
+    dispatch({ type: "API_START", key: "supercampPlayerDetails" });
+    try {
+      const response = await api.get(
+        `/webSiteApi/auctionSupercamp/getPlayerDetails/${auctionId}/${playerId}`
+      );
+      dispatch({ type: "API_SUCCESS", key: "supercampPlayerDetails", payload: response?.data?.data });
+      return response;
+    } catch (error) {
+      dispatch({
+        type: "API_ERROR",
+        key: "supercampPlayerDetails",
+        payload: error?.response?.data?.message || "Failed to fetch player details",
+      });
+      throw error;
+    }
+  };
+};
+
 
 
 

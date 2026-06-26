@@ -2,8 +2,7 @@ import React, { useCallback, useEffect, useState } from "react";
 import { MapPin, Calendar, Clock, X, Loader2, AlertCircle, Download } from "lucide-react";
 import api from "../utils/api";
 import logo from "/Crickbro_auction_logo-1.png";
-import html2canvas from "html2canvas";
-import jsPDF from "jspdf";
+import html2pdf from "html2pdf.js";
 import QRCode from "qrcode"
 
 const RegistrationDetails = ({ auctionId, onClose, playerId }) => {
@@ -115,58 +114,51 @@ const RegistrationDetails = ({ auctionId, onClose, playerId }) => {
     const element = document.getElementById("registration-pass");
     if (!element || !details) return;
 
+    const prev = {
+      maxHeight: element.style.maxHeight,
+      height: element.style.height,
+      overflow: element.style.overflow,
+      overflowY: element.style.overflowY,
+      overflowX: element.style.overflowX,
+    };
+
+    element.style.maxHeight = "none";
+    element.style.height = "auto";
+    element.style.overflow = "visible";
+    element.style.overflowY = "visible";
+    element.style.overflowX = "visible";
+
     await new Promise((resolve) => setTimeout(resolve, 350));
 
-    const clone = element.cloneNode(true);
-    clone.removeAttribute("id");
-    clone
-      .querySelectorAll("button, .registration-pass-action, .hidden")
-      .forEach((node) => node.remove());
-
-    const captureWidth = element.offsetWidth || element.scrollWidth;
-    Object.assign(clone.style, {
-      position: "absolute",
-      left: "-10000px",
-      top: "0",
-      width: `${captureWidth}px`,
-      maxWidth: `${captureWidth}px`,
-      maxHeight: "none",
-      height: "auto",
-      overflow: "visible",
-      overflowX: "visible",
-      overflowY: "visible",
-      boxShadow: "none",
-      borderRadius: "16px",
-    });
-
-    document.body.appendChild(clone);
-
-    try {
-      const canvas = await html2canvas(clone, {
+    const opt = {
+      margin: 10,
+      filename: `${details?.player?.name || "player"}-Registration-Pass.pdf`,
+      image: { type: "jpeg", quality: 0.98 },
+      pagebreak: { mode: ["css", "legacy"] },
+      html2canvas: {
         scale: 2,
         useCORS: true,
         allowTaint: true,
-        backgroundColor: "#ffffff",
-        width: clone.scrollWidth,
-        height: clone.scrollHeight,
-        windowWidth: clone.scrollWidth,
-        windowHeight: clone.scrollHeight,
-      });
+        scrollY: 0,
+        scrollX: 0,
+        windowHeight: element.scrollHeight,
+        ignoreElements: (el) => el.tagName === "BUTTON" || el.closest(".fixed") || el.closest(".hidden"),
+      },
+      jsPDF: {
+        unit: "mm",
+        format: "a4",
+        orientation: "portrait",
+      },
+    };
 
-      const imgData = canvas.toDataURL("image/jpeg", 0.98);
-      const pdf = new jsPDF({
-        orientation: canvas.width > canvas.height ? "l" : "p",
-        unit: "px",
-        format: [canvas.width, canvas.height],
-        compress: true,
-      });
-
-      pdf.addImage(imgData, "JPEG", 0, 0, canvas.width, canvas.height);
-      pdf.save(`${details?.player?.name || "player"}-Registration-Pass.pdf`);
-    } catch (err) {
-      console.error("Failed to download registration pass:", err);
+    try {
+      await html2pdf().set(opt).from(element).save();
     } finally {
-      clone.remove();
+      element.style.maxHeight = prev.maxHeight;
+      element.style.height = prev.height;
+      element.style.overflow = prev.overflow;
+      element.style.overflowY = prev.overflowY;
+      element.style.overflowX = prev.overflowX;
     }
   };
 
@@ -191,7 +183,7 @@ const RegistrationDetails = ({ auctionId, onClose, playerId }) => {
       >
         <button
           type="button"
-          className="registration-pass-action absolute top-3 right-3 sm:top-4 sm:right-4 z-20 bg-white/90 rounded-full p-2 shadow-md hover:bg-white"
+          className="absolute top-3 right-3 sm:top-4 sm:right-4 z-20 bg-white/90 rounded-full p-2 shadow-md hover:bg-white"
           onClick={onClose}
           aria-label="Close"
         >
@@ -293,7 +285,7 @@ const RegistrationDetails = ({ auctionId, onClose, playerId }) => {
                   <button
                     type="button"
                     onClick={downloadPass}
-                    className="registration-pass-action inline-flex items-center justify-center rounded-full bg-red-600 p-3 text-white shadow-sm transition hover:bg-red-700"
+                    className="inline-flex items-center justify-center rounded-full bg-red-600 p-3 text-white shadow-sm transition hover:bg-red-700"
                     aria-label="Download registration pass"
                     title="Download registration pass"
                   >
@@ -450,7 +442,7 @@ const RegistrationDetails = ({ auctionId, onClose, playerId }) => {
                               <button
                                 type="button"
                                 onClick={() => copyToClipboard(details.slot.location.link)}
-                                className="registration-pass-action shrink-0 rounded-full border border-slate-300 bg-white px-3 py-1 text-xs font-semibold text-slate-700 shadow-sm transition hover:bg-slate-100"
+                                className="shrink-0 rounded-full border border-slate-300 bg-white px-3 py-1 text-xs font-semibold text-slate-700 shadow-sm transition hover:bg-slate-100"
                               >
                                 {locationLinkCopied ? "Copied" : "Copy"}
                               </button>

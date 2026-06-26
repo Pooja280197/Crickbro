@@ -205,7 +205,7 @@ export default function TeamRegistrationPopup({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-      <div className="w-full max-w-md overflow-hidden rounded-2xl border border-[var(--border-card)] bg-[var(--bg-card)] shadow-[var(--shadow-card)]">
+      <div className="flex max-h-[calc(100vh-2rem)] w-full max-w-md flex-col overflow-hidden rounded-2xl border border-[var(--border-card)] bg-[var(--bg-card)] shadow-[var(--shadow-card)]">
         {/* Header */}
         <div className="flex items-center justify-between border-b border-[var(--border-card)] bg-[var(--bg-main)] px-6 py-4">
           <div className="flex items-center gap-2 text-[var(--text-primary)]">
@@ -221,7 +221,7 @@ export default function TeamRegistrationPopup({
         </div>
 
         {/* Body */}
-        <div className="px-6 py-5 space-y-4 max-h-[70vh] overflow-y-auto">
+        <div className="professional-scrollbar min-h-0 flex-1 space-y-4 overflow-y-auto px-6 py-5">
           {/* Logo upload */}
           <div className="flex flex-col items-center gap-2">
             <div
@@ -348,7 +348,7 @@ export default function TeamRegistrationPopup({
           <button
             onClick={handleSubmit}
             disabled={loading}
-            className="flex flex-1 items-center justify-center gap-2 rounded-lg bg-[var(--primary)] py-2.5 text-sm font-semibold text-white transition-colors hover:bg-[var(--primary-dark)] disabled:opacity-60"
+            className="flex flex-1 items-center justify-center gap-2 rounded-lg border border-[rgba(255,213,106,0.42)] bg-gradient-to-b from-[#ffd56a] to-[var(--secondary)] py-2.5 text-sm font-bold text-[#102033] shadow-[0_12px_24px_rgba(244,180,0,0.18)] transition hover:bg-[var(--secondary-strong)] disabled:cursor-not-allowed disabled:opacity-60"
           >
             {loading && <Loader2 className="w-4 h-4 animate-spin" />}
             {isPaid ? "Pay & Register" : "Register Team"}

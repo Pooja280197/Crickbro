@@ -94,10 +94,20 @@ function DirectSelectModal({ selectedPlayers, selectorPlayers, onClose, auctionI
 
   const handleSave = async () => {
     try {
+      const missingGradePlayer = selectedPlayerDetails.find((player) => {
+        const playerId = player?.player?._id;
+        return !playerGrades[playerId];
+      });
+
+      if (missingGradePlayer) {
+        toast.error("Please select grade for all players before saving");
+        return;
+      }
+
       const updates = Object.entries(playerSelections).map(([playerId, status]) => ({
         playerId,
         status: status === "select" ? "selected" : "not_selected",
-        grade: playerGrades[playerId] || null
+        grade: playerGrades[playerId]
       }));
 
       // Add removed players with "removed" status
@@ -197,7 +207,11 @@ function DirectSelectModal({ selectedPlayers, selectorPlayers, onClose, auctionI
                   <select
                     value={playerGrades[player.player._id] || ""}
                     onChange={(e) => handleGradeChange(player.player._id, e.target.value === "" ? null : e.target.value)}
-                    className="w-full sm:w-auto px-2 py-1 border border-[var(--border-primary)] rounded text-xs sm:text-sm min-w-[72px]"
+                    className={`w-full sm:w-auto px-2 py-1 border rounded text-xs sm:text-sm min-w-[72px] ${
+                      playerGrades[player.player._id]
+                        ? "border-[var(--border-primary)]"
+                        : "border-red-500"
+                    }`}
                     title="Select grade"
                   >
                     <option value="">Grade</option>

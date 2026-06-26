@@ -676,19 +676,11 @@ export default function CreateEditAuction({ theme = "light", onToggleTheme }) {
     if (!validateForm()) return;
 
     try {
-      const res = await dispatch(createAuction(form));
-
-      // 🔥 IMPORTANT: yaha se id nikaalo
-      const createdAuctionId =
-        res?.payload?._id || res?.payload?.id || res?.data?._id;
+      await dispatch(createAuction(form));
 
       toast.success("Auction created successfully!");
 
-      if (createdAuctionId) {
-        navigate(`/auction/${createdAuctionId}`);
-      } else {
-        navigate("/auction"); // fallback
-      }
+      navigate("/auction?tab=my");
 
       setForm(initialForm);
     } catch (error) {

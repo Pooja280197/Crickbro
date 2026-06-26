@@ -126,7 +126,7 @@ const PlayerAssign = ({
   };
 
   const handleAssign = async () => {
-    if (!selectedSlot || !selectedSession) {
+    if (!selectedSlot) {
       toast.error("Please select both location and shift time");
       return;
     }
@@ -204,7 +204,7 @@ const PlayerAssign = ({
         {/* Content */}
         <div className="p-6 space-y-6">
           <div className="bg-blue-50 rounded-lg p-4">
-            <p className="text-sm font-semibold text-blue-900">
+            <p className="text-sm font-semibold text-[var(--text-primary)]">
               Assigning {playerCount} player{playerCount > 1 ? "s" : ""} to
               trial
             </p>
@@ -352,7 +352,7 @@ const PlayerAssign = ({
               sessions.length === 0 && (
                 <div className="flex items-center gap-2 p-3 bg-yellow-900/20 border border-yellow-800/30 rounded-lg ">
                   <AlertCircle className="w-4 h-4 text-yellow-400" />
-                  <p className="text-sm text-yellow-300">
+                  <p className="text-sm text-[var(--text-muted)]">
                     No shift times available for this location
                   </p>
                 </div>
