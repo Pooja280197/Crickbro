@@ -93,6 +93,8 @@ const RegWebsite = () => {
     if (playerId && playertoken) {
       localStorage.setItem("playerId", playerId);
       localStorage.setItem("token", playertoken);
+      window.dispatchEvent(new Event("userLoggedIn"));
+      window.dispatchEvent(new Event("crickbro-auth-change"));
     }
   }, []);
 

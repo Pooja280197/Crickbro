@@ -1,4 +1,5 @@
-import React, { useState, useEffect, useMemo, useRef } from "react";
+import React, { useState, useEffect, useMemo, useRef, useCallback } from "react";
+import { createPortal } from "react-dom";
 import {
   ChevronRight,
   User,
@@ -165,6 +166,7 @@ const RegisterationForm = ({
   const formRef = useRef(null);
   const profileInputRef = useRef(null);
   const fieldRefs = useRef({});
+  const slotDropdownAnchorRef = useRef(null);
   const [currentStep, setCurrentStep] = useState("details");
   const [loginDetails, setLoginDetails] = useState({
     mobile: "",
@@ -179,6 +181,7 @@ const RegisterationForm = ({
   const [paymentData, setPaymentData] = useState(null);
   const [showRegistrationDetails, setShowRegistrationDetails] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
+  const [slotDropdownPosition, setSlotDropdownPosition] = useState(null);
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
   const [slots, setSlots] = useState([]);
@@ -469,15 +472,73 @@ const RegisterationForm = ({
     }
   };
 
+  const updateSlotDropdownPosition = useCallback(() => {
+    const anchor = slotDropdownAnchorRef.current;
+    if (!anchor) return;
+
+    const rect = anchor.getBoundingClientRect();
+    const availableBelow = window.innerHeight - rect.bottom - 12;
+    const maxHeight = Math.max(160, Math.min(240, availableBelow));
+
+    setSlotDropdownPosition({
+      left: rect.left,
+      top: rect.bottom + 4,
+      width: rect.width,
+      maxHeight,
+    });
+  }, []);
+
   useEffect(() => {
+    if (!isOpen) return undefined;
+
+    updateSlotDropdownPosition();
+
+    const syncPosition = () => updateSlotDropdownPosition();
+    window.addEventListener("resize", syncPosition);
+    window.addEventListener("scroll", syncPosition, true);
+
+    return () => {
+      window.removeEventListener("resize", syncPosition);
+      window.removeEventListener("scroll", syncPosition, true);
+    };
+  }, [isOpen, updateSlotDropdownPosition]);
+
+  const syncAuthenticatedPlayer = useCallback(() => {
     const token = localStorage.getItem("token");
-    const storedPlayerId = localStorage.getItem("playerId");
+    const storedPlayerId =
+      localStorage.getItem("playerId") || sessionStorage.getItem("playerId");
 
     if (token && isValidMongoObjectId(storedPlayerId)) {
       setIsOtpVerified(true);
+      setIsOtpSent(false);
+      setOtp("");
       dispatch(fetchProfile(storedPlayerId));
+      if (auctionId) {
+        dispatch(fetchUserRole(auctionId, storedPlayerId));
+      }
+      return true;
     }
-  }, []);
+
+    return false;
+  }, [auctionId, dispatch]);
+
+  useEffect(() => {
+    syncAuthenticatedPlayer();
+
+    const sync = () => {
+      syncAuthenticatedPlayer();
+    };
+
+    window.addEventListener("userLoggedIn", sync);
+    window.addEventListener("crickbro-auth-change", sync);
+    window.addEventListener("storage", sync);
+
+    return () => {
+      window.removeEventListener("userLoggedIn", sync);
+      window.removeEventListener("crickbro-auth-change", sync);
+      window.removeEventListener("storage", sync);
+    };
+  }, [syncAuthenticatedPlayer]);
 
   useEffect(() => {
     if (!pagedata?.showTrialLocations || !auctionId) return;
@@ -1131,7 +1192,7 @@ const RegisterationForm = ({
 
   return (
     <div
-      className="registration-form-section relative overflow-hidden"
+      className="registration-form-section relative overflow-visible"
       style={formThemeStyle}
     >
       <div className="absolute inset-0 bg-gradient-to-br from-blue-50 via-white to-blue-100 opacity-80" />
@@ -1203,7 +1264,7 @@ const RegisterationForm = ({
               />
             ) : (
               <div
-                className="registration-form-card quick-form-card w-full rounded-3xl p-4 sm:p-5 md:p-6 border shadow-xl"
+                className="registration-form-card quick-form-card w-full rounded-3xl p-4 sm:p-5 border shadow-xl"
                 style={{
                   // background:
                   //   "radial-gradient(circle at 12% 8%, rgba(96, 165, 250, 0.2), transparent 30%), radial-gradient(circle at 88% 12%, rgba(14, 165, 233, 0.16), transparent 26%), linear-gradient(145deg, #020617 0%, #082f49 42%, #0b4a7a 100%)",
@@ -1212,7 +1273,7 @@ const RegisterationForm = ({
                     "0 24px 60px rgba(2, 6, 23, 0.36), inset 0 1px 0 rgba(125, 211, 252, 0.18)",
                 }}
               >
-              <div className="mb-4 flex items-center justify-between gap-3">
+              <div className="registration-form-heading mb-3 flex items-center justify-between gap-3">
                 <div>
                   {/* <p className="text-xs font-bold uppercase tracking-[0.18em] text-blue-100">
                     Quick Form
@@ -1225,7 +1286,7 @@ const RegisterationForm = ({
                   OTP Secure
                 </div>
               </div>
-              <form onSubmit={handleSubmit} className="registration-form-body space-y-4">
+              <form onSubmit={handleSubmit} className="registration-form-body space-y-3">
                 {/* OTP Verification Section */}
                 <div>
                   {!isOtpVerified && (
@@ -1338,11 +1399,17 @@ const RegisterationForm = ({
                   )}
 
                   {/* Registration Form Fields - Multi-column compact layout */}
-                  <div className="mt-4 space-y-4">
+                  <div className="registration-fields-stack mt-3 space-y-3">
                     {/* Row 1: Profile Picture + Name + Role (3 columns) */}
-                    <div className="grid grid-cols-1 sm:grid-cols-[90px_1fr_1fr] gap-3 items-end">
+                    <div
+                      className={`registration-primary-row ${
+                        isFieldEnabled("profilePicture")
+                          ? "registration-primary-row-with-avatar"
+                          : ""
+                      }`}
+                    >
                       {isFieldEnabled("profilePicture") && (
-                        <div className="flex flex-col items-center sm:items-center justify-end">
+                        <div className="registration-avatar-field flex flex-col items-center sm:items-center justify-end">
                           <button
                             type="button"
                             onClick={() => {
@@ -1407,57 +1474,59 @@ const RegisterationForm = ({
                         </div>
                       )}
 
-                      {isFieldEnabled("name") && (
-                        <div>
-                          <label className="block text-[var(--rf-label)] text-sm font-semibold mb-1 tracking-wide">
-                            Full Name <span className="text-red-500">*</span>
-                          </label>
-                          <input
-                            ref={registerFieldRef("name")}
-                            type="text"
-                            name="name"
-                            value={form.name}
-                            onChange={handleFormChange}
-                            placeholder="Full name"
-                            disabled={!isOtpVerified}
-                            className="w-full px-3 py-2 text-sm rounded-md bg-gray-50 border border-gray-300 text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/60 disabled:opacity-60 disabled:cursor-not-allowed"
-                          />
-                          {errors.name && (
-                            <p className="text-red-500 text-xs mt-1">
-                              {errors.name}
-                            </p>
-                          )}
-                        </div>
-                      )}
+                      <div className="registration-primary-fields">
+                        {isFieldEnabled("name") && (
+                          <div>
+                            <label className="block text-[var(--rf-label)] text-sm font-semibold mb-1 tracking-wide">
+                              Full Name <span className="text-red-500">*</span>
+                            </label>
+                            <input
+                              ref={registerFieldRef("name")}
+                              type="text"
+                              name="name"
+                              value={form.name}
+                              onChange={handleFormChange}
+                              placeholder="Full name"
+                              disabled={!isOtpVerified}
+                              className="w-full px-3 py-2 text-sm rounded-md bg-gray-50 border border-gray-300 text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/60 disabled:opacity-60 disabled:cursor-not-allowed"
+                            />
+                            {errors.name && (
+                              <p className="text-red-500 text-xs mt-1">
+                                {errors.name}
+                              </p>
+                            )}
+                          </div>
+                        )}
 
-                      {isFieldEnabled("role") && (
-                        <div>
-                          <label className="block text-[var(--rf-label)] text-sm font-semibold mb-1 tracking-wide">
-                            Player Role <span className="text-red-500">*</span>
-                          </label>
-                          <select
-                            ref={registerFieldRef("playerRole")}
-                            value={form.playerRole}
-                            onChange={(e) => update("playerRole", e.target.value)}
-                            disabled={!isOtpVerified}
-                            className="w-full px-3 py-2 text-sm rounded-md bg-gray-50 border border-gray-300 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/60 disabled:opacity-60 disabled:cursor-not-allowed"
-                          >
-                            <option value="" className="text-gray-600">
-                              Select role
-                            </option>
-                            {PLAYER_ROLES.map((role) => (
-                              <option key={role.label} value={role.value} className="text-gray-600">
-                                {getRoleOptionLabel(role)}
+                        {isFieldEnabled("role") && (
+                          <div>
+                            <label className="block text-[var(--rf-label)] text-sm font-semibold mb-1 tracking-wide">
+                              Player Role <span className="text-red-500">*</span>
+                            </label>
+                            <select
+                              ref={registerFieldRef("playerRole")}
+                              value={form.playerRole}
+                              onChange={(e) => update("playerRole", e.target.value)}
+                              disabled={!isOtpVerified}
+                              className="w-full px-3 py-2 text-sm rounded-md bg-gray-50 border border-gray-300 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/60 disabled:opacity-60 disabled:cursor-not-allowed"
+                            >
+                              <option value="" className="text-gray-600">
+                                Select role
                               </option>
-                            ))}
-                          </select>
-                          {errors.playerRole && (
-                            <p className="text-red-500 text-xs mt-1">
-                              {errors.playerRole}
-                            </p>
-                          )}
-                        </div>
-                      )}
+                              {PLAYER_ROLES.map((role) => (
+                                <option key={role.label} value={role.value} className="text-gray-600">
+                                  {getRoleOptionLabel(role)}
+                                </option>
+                              ))}
+                            </select>
+                            {errors.playerRole && (
+                              <p className="text-red-500 text-xs mt-1">
+                                {errors.playerRole}
+                              </p>
+                            )}
+                          </div>
+                        )}
+                      </div>
                     </div>
 
                     {/* Row 2: Location (full width) */}
@@ -1503,7 +1572,7 @@ const RegisterationForm = ({
 
                     {/* Row 3: Email, DOB, Gender (3 columns) */}
                     {(isFieldEnabled("email") || isFieldEnabled("dateOfBirth") || isFieldEnabled("gender")) && (
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div className="registration-dynamic-grid">
                         {isFieldEnabled("email") && (
                           <div>
                             <label className="block text-[var(--rf-label)] text-sm font-semibold mb-1 tracking-wide">
@@ -1559,7 +1628,7 @@ const RegisterationForm = ({
 
                     {/* Row 4: Jersey Details (4 columns) */}
                     {(isFieldEnabled("jerseyNumber") || isFieldEnabled("jerseyName") || isFieldEnabled("jerseySize") || isFieldEnabled("lowerSize")) && (
-                      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                      <div className="registration-dynamic-grid">
                         {isFieldEnabled("jerseyNumber") && (
                           <div>
                             <label className="block text-[var(--rf-label)] text-sm font-semibold mb-1 tracking-wide">
@@ -1638,7 +1707,7 @@ const RegisterationForm = ({
 
                     {/* Row 5: Document Uploads (2 columns) */}
                     {(isFieldEnabled("adharCard") || isFieldEnabled("voterId")) && (
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="registration-dynamic-grid">
                         {isFieldEnabled("adharCard") && (
                           <div>
                             <label className="block text-[var(--rf-label)] text-sm font-semibold mb-1 tracking-wide">
@@ -1706,12 +1775,12 @@ const RegisterationForm = ({
 
                     {/* Trial Locations Section */}
                     {pagedata?.showTrialLocations && (
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <div>
+                      <div className="registration-dynamic-grid relative z-20 overflow-visible">
+                        <div className="relative z-30 overflow-visible">
                           <label className="block text-[var(--rf-label)] text-sm font-semibold mb-1 tracking-wide">
                             Select Slot
                           </label>
-                          <div className="relative">
+                          <div ref={slotDropdownAnchorRef} className="relative overflow-visible">
                             <input
                               type="text"
                               value={isOpen ? search : selectedSlotLabel}
@@ -1723,9 +1792,16 @@ const RegisterationForm = ({
                               }}
                               className="w-full px-3 py-2 rounded-md bg-gray-50 border border-gray-300 text-gray-900"
                             />
-                            {isOpen && (
+                            {isOpen && typeof document !== "undefined" && createPortal(
                               <div
-                                className="absolute w-full mt-1 bg-white text-gray-900 rounded-md shadow-lg max-h-48 overflow-y-auto z-50 border border-gray-200"
+                                className="registration-slot-dropdown fixed rounded-md border border-gray-200 bg-white text-gray-900 shadow-xl"
+                                style={{
+                                  left: slotDropdownPosition?.left || 0,
+                                  top: slotDropdownPosition?.top || 0,
+                                  width: slotDropdownPosition?.width || "auto",
+                                  maxHeight: slotDropdownPosition?.maxHeight || 208,
+                                  zIndex: 2147483000,
+                                }}
                                 onScroll={handleScroll}
                               >
                                 {slots.length === 0 ? (
@@ -1748,14 +1824,15 @@ const RegisterationForm = ({
                                   ))
                                 )}
                                 {slotLoading && <div className="p-2 text-center text-sm">Loading...</div>}
-                              </div>
+                              </div>,
+                              document.body,
                             )}
                           </div>
                           {errors.selectedSlot && <p className="text-red-500 text-xs mt-1">{errors.selectedSlot}</p>}
                         </div>
 
                         {selectedSlot && (
-                          <div>
+                          <div className="relative z-10">
                             <label className="block text-[var(--rf-label)] text-sm font-semibold mb-1 tracking-wide">
                               Select session
                               {Array.isArray(sessions) && sessions.length > 0 && <span className="text-red-500"> *</span>}
@@ -1863,7 +1940,7 @@ const RegisterationForm = ({
 
         .registration-form-card {
           position: relative;
-          overflow: hidden;
+          overflow: visible;
           background:
             radial-gradient(circle at 12% 8%, rgba(96, 165, 250, 0.18), transparent 30%),
             radial-gradient(circle at 88% 12%, rgba(14, 165, 233, 0.14), transparent 26%),
@@ -1912,6 +1989,73 @@ const RegisterationForm = ({
           animation: none !important;
         }
 
+        .registration-dynamic-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
+          gap: 0.75rem 1rem;
+          align-items: end;
+          width: 100%;
+        }
+
+        .registration-dynamic-grid-with-avatar {
+          grid-template-columns: minmax(86px, 110px) repeat(auto-fit, minmax(min(100%, 220px), 1fr));
+          gap: 0.75rem 1.25rem;
+        }
+
+        .registration-primary-row {
+          display: grid;
+          grid-template-columns: 1fr;
+          gap: 0.75rem 1.35rem;
+          align-items: end;
+          width: 100%;
+        }
+
+        .registration-primary-row-with-avatar {
+          grid-template-columns: minmax(92px, 120px) minmax(0, 1fr);
+        }
+
+        .registration-primary-fields {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(min(100%, 230px), 1fr));
+          gap: 0.75rem 1rem;
+          align-items: end;
+          width: 100%;
+        }
+
+        .registration-avatar-field {
+          align-self: end;
+          justify-self: center;
+          width: 100%;
+          max-width: 110px;
+        }
+
+        .registration-form-heading h2 {
+          line-height: 1.05;
+        }
+
+        .registration-fields-stack {
+          row-gap: 0.75rem !important;
+        }
+
+        .registration-form-card .w-20.h-20 {
+          width: 4.35rem !important;
+          height: 4.35rem !important;
+        }
+
+        @media (max-width: 640px) {
+          .registration-dynamic-grid,
+          .registration-dynamic-grid-with-avatar,
+          .registration-primary-row,
+          .registration-primary-row-with-avatar,
+          .registration-primary-fields {
+            grid-template-columns: 1fr;
+          }
+
+          .registration-avatar-field {
+            justify-self: center;
+          }
+        }
+
         .registration-form-switcher {
           background: var(--rf-card);
           border-color: var(--rf-card-border);
@@ -1922,15 +2066,15 @@ const RegisterationForm = ({
           font-size: 0.75rem !important;
           font-weight: 600 !important;
           letter-spacing: 0.01em !important;
-          margin-bottom: 0.25rem !important;
+          margin-bottom: 0.18rem !important;
         }
 
         .registration-form-card input:not([type="file"]),
         .registration-form-card select,
         .registration-form-card textarea {
           text-align: left !important;
-          min-height: 40px;
-          padding: 0.55rem 0.75rem !important;
+          min-height: 36px;
+          padding: 0.42rem 0.75rem !important;
           border: 1px solid #d1d5db !important;
           border-radius: 0.45rem !important;
           background: #f9fafb !important;
@@ -1938,6 +2082,12 @@ const RegisterationForm = ({
           font-size: 0.875rem !important;
           outline: none !important;
           transition: border-color 180ms ease, box-shadow 180ms ease;
+        }
+
+        .registration-form-card button[type="submit"] {
+          min-height: 40px;
+          padding-top: 0.5rem !important;
+          padding-bottom: 0.5rem !important;
         }
 
         .registration-form-card input:not([type="file"]):focus,
@@ -1955,6 +2105,32 @@ const RegisterationForm = ({
         .registration-form-card select option {
           background: #ffffff;
           color: #111827;
+        }
+
+        .registration-slot-dropdown {
+          max-height: 13rem;
+          overflow-y: auto;
+          overscroll-behavior: contain;
+          scrollbar-width: thin;
+          scrollbar-color: #60a5fa #eff6ff;
+        }
+
+        .registration-slot-dropdown::-webkit-scrollbar {
+          width: 7px;
+        }
+
+        .registration-slot-dropdown::-webkit-scrollbar-track {
+          background: #eff6ff;
+          border-radius: 999px;
+        }
+
+        .registration-slot-dropdown::-webkit-scrollbar-thumb {
+          background: #60a5fa;
+          border-radius: 999px;
+        }
+
+        .registration-slot-dropdown > div {
+          color: #111827 !important;
         }
 
         .registration-form-card h2,
