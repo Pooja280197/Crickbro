@@ -1,5 +1,5 @@
 import React from "react";
-import { CheckCircle } from "lucide-react";
+import { CheckCircle, Sparkles } from "lucide-react";
 
 const Points = ({ pagedata, theme, themeMode = "light" }) => {
   const keyFeatures = pagedata?.keyFeatures?.features || [];
@@ -66,42 +66,52 @@ const Points = ({ pagedata, theme, themeMode = "light" }) => {
           </p>
         </div>
 
-        <div className="mx-auto grid max-w-6xl grid-cols-1 justify-items-center gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        <div className="mx-auto grid max-w-6xl grid-cols-1 justify-items-center gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {keyFeatures?.map((point, idx) => (
             <article
               key={point?._id}
-              className="group relative flex min-h-[190px] w-full max-w-[285px] overflow-hidden rounded-3xl border p-5 text-center shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
+              className="group relative flex min-h-[205px] w-full max-w-[290px] overflow-hidden rounded-2xl border p-4 text-left shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
               style={{
-                background: "var(--feature-card)",
-                borderColor: "var(--feature-border)",
+                background:
+                  "linear-gradient(180deg, color-mix(in srgb, var(--feature-card) 96%, white), var(--feature-card))",
+                borderColor:
+                  "color-mix(in srgb, var(--feature-primary) 18%, var(--feature-border))",
+                boxShadow: isDark
+                  ? "0 16px 42px rgba(0, 0, 0, 0.18)"
+                  : "0 14px 34px rgba(15, 23, 42, 0.07)",
                 transitionDelay: `${idx * 100}ms`,
               }}
             >
               <div
-                className="absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+                className="absolute -right-10 -top-10 h-28 w-28 rounded-full opacity-70 blur-2xl transition-opacity duration-300 group-hover:opacity-100"
                 style={{
                   background:
-                    "linear-gradient(145deg, color-mix(in srgb, var(--feature-primary) 10%, transparent), transparent 62%)",
+                    "color-mix(in srgb, var(--feature-primary) 18%, transparent)",
                 }}
               />
               <div
-                className="absolute inset-x-0 top-0 h-1"
-                style={{ background: "var(--feature-primary)" }}
+                className="absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+                style={{
+                  background:
+                    "linear-gradient(145deg, color-mix(in srgb, var(--feature-primary) 10%, transparent), transparent 58%)",
+                }}
               />
-              <div
-                className="relative flex h-full w-full flex-col  items-center"
-              >
+              <div className="relative flex h-full w-full flex-col">
                 {/* <div
-                  className="mb-4 flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl text-2xl shadow-sm transition-transform duration-300 group-hover:scale-105"
+                  className="mb-4 flex h-11 w-11 shrink-0 items-center justify-center rounded-xl shadow-sm ring-1 transition-transform duration-300 group-hover:scale-105"
                   style={{
                     background:
-                      "color-mix(in srgb, var(--feature-primary) 14%, var(--feature-card))",
+                      "linear-gradient(145deg, color-mix(in srgb, var(--feature-primary) 16%, var(--feature-card)), var(--feature-card))",
                     color: "var(--feature-primary)",
-                    border:
-                      "1px solid color-mix(in srgb, var(--feature-primary) 24%, transparent)",
+                    ringColor:
+                      "color-mix(in srgb, var(--feature-primary) 22%, transparent)",
                   }}
                 >
-                  {point?.icon || idx + 1}
+                  {point?.icon ? (
+                    <span className="text-lg leading-none">{point.icon}</span>
+                  ) : (
+                    <Sparkles size={20} />
+                  )}
                 </div> */}
                 <div className="mb-3 min-w-0">
                   <h3
@@ -111,7 +121,7 @@ const Points = ({ pagedata, theme, themeMode = "light" }) => {
                     {point?.title}
                   </h3>
                   <div
-                    className="mx-auto mt-2 h-0.5 w-10 rounded-full transition-all group-hover:w-16"
+                    className="mt-2 h-0.5 w-10 rounded-full transition-all group-hover:w-full"
                     style={{
                       background:
                         "linear-gradient(90deg, var(--feature-primary), var(--feature-accent))",
@@ -124,9 +134,15 @@ const Points = ({ pagedata, theme, themeMode = "light" }) => {
                 >
                   {point?.description}
                 </p>
-                <div className="mt-auto flex justify-center pt-4">
+                <div className="mt-auto flex items-center justify-between pt-4">
+                  <span
+                    className="text-[11px] font-bold uppercase tracking-[0.16em]"
+                    style={{ color: "var(--feature-muted)" }}
+                  >
+                    Feature {String(idx + 1).padStart(2, "0")}
+                  </span>
                   <CheckCircle
-                    size={19}
+                    size={18}
                     style={{ color: "var(--feature-primary)" }}
                   />
                 </div>

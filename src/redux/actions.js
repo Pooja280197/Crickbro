@@ -360,17 +360,31 @@ export const EnrollPlayer = (auctionId, formData) => {
 
 
 // Auction Api
-export const fetchAuctions = (tab, playerId) => {
+export const fetchAuctions = (tab, playerId, options = {}) => {
   return async (dispatch) => {
     dispatch({ type: "API_START", key: "auctionList" });
 
-    let url = "/webSiteApi/auction/list";
+    const params = new URLSearchParams();
+    const page = Number(options?.page);
+    const limit = Number(options?.limit);
+    const search = String(options?.search || "").trim();
+    const fromDate = String(options?.fromDate || "").trim();
+    const toDate = String(options?.toDate || "").trim();
 
     if (tab === "my") {
-      url += `?playerId=${playerId}&myAuction=true`;
+      params.set("playerId", playerId);
+      params.set("myAuction", "true");
     } else {
-      url += `?status=${tab}`;
+      params.set("status", tab);
     }
+
+    if (page > 0) params.set("page", String(page));
+    if (limit > 0) params.set("limit", String(limit));
+    if (search) params.set("search", search);
+    if (fromDate) params.set("fromDate", fromDate);
+    if (toDate) params.set("toDate", toDate);
+
+    const url = `/webSiteApi/auction/list?${params.toString()}`;
 
     try {
       const response = await api.get(url);

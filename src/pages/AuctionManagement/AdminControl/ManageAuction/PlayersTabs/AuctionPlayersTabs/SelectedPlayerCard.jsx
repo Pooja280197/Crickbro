@@ -79,7 +79,7 @@ export default function PlayerCard({
             event.stopPropagation();
             onSelect?.();
           }}
-          className={`absolute right-2 top-2 z-20 flex h-7 w-7 items-center justify-center rounded-lg border text-[10px] shadow-sm transition ${
+          className={`absolute right-2 top-2 z-20 !flex !h-6 !max-h-6 !min-h-0 !w-6 !min-w-0 !max-w-6 aspect-square shrink-0 items-center justify-center rounded-md border !p-0 text-[10px] leading-none shadow-sm transition ${
             selected
               ? "border-[var(--secondary)] bg-[var(--secondary)] text-[#102033]"
               : "border-[var(--border-card)] bg-[var(--bg-main)] text-[var(--text-secondary)] hover:border-[var(--border-primary)] hover:text-[var(--primary)]"

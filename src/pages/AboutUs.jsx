@@ -387,13 +387,13 @@ export default function AboutUs({ theme, onToggleTheme }) {
                   className={`${neonPanelClass} group transition`}
                 >
                   <div className="pointer-events-none absolute inset-x-4 top-0 h-px bg-[linear-gradient(90deg,transparent,rgba(8,186,247,0.92),rgba(255,196,0,0.68),transparent)]" />
-                  <div className="relative m-3 aspect-[4/5] overflow-hidden rounded-lg border border-[rgba(8,186,247,0.28)] bg-[var(--bg-main)] shadow-[0_0_24px_rgba(8,186,247,0.12)] sm:aspect-[3/4] xl:aspect-[4/5]">
+                  <div className="relative mx-auto mt-3 h-44 w-36 overflow-hidden rounded-lg border border-[rgba(8,186,247,0.28)] bg-[var(--bg-main)] shadow-[0_0_20px_rgba(8,186,247,0.1)] sm:h-48 sm:w-40 xl:h-80 xl:w-56">
                     <div className="pointer-events-none absolute inset-0 z-10 bg-[linear-gradient(180deg,rgba(8,186,247,0.05),transparent_48%,rgba(0,10,24,0.18))]" />
                     <div className="pointer-events-none absolute -right-12 -top-12 z-10 h-28 w-28 rounded-full bg-[rgba(255,196,0,0.18)] blur-xl transition group-hover:bg-[rgba(8,186,247,0.24)]" />
                     <motion.img
                       src={hod.image}
                       alt={hod.name}
-                      className="h-full w-full object-contain object-top transition duration-500 sm:object-cover"
+                      className="h-full w-full object-cover object-top transition duration-500"
                       whileHover={{ scale: 1.045 }}
                       transition={{ duration: 0.45 }}
                     />

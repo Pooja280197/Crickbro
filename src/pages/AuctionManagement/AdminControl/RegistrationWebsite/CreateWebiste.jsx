@@ -1,4 +1,25 @@
 import React, { useEffect, useState } from "react";
+import { CKEditor } from "@ckeditor/ckeditor5-react";
+import {
+  Bold,
+  Alignment,
+  BlockQuote,
+  ClassicEditor,
+  Essentials,
+  FontBackgroundColor,
+  FontColor,
+  FontFamily,
+  FontSize,
+  Heading,
+  Italic,
+  Link,
+  List,
+  Paragraph,
+  RemoveFormat,
+  Strikethrough,
+  Underline,
+} from "ckeditor5";
+import "ckeditor5/ckeditor5.css";
 import {
   FiSave, FiEye, FiUpload, FiPlus, FiTrash2, FiX, FiLoader,
   FiChevronRight, FiChevronLeft, FiSettings, FiSliders,
@@ -51,6 +72,59 @@ const EmptyState = ({ message }) => (
 );
 
 const digitsOnly = (value) => value.replace(/\D/g, "");
+const hasRichTextContent = (value) =>
+  String(value || "")
+    .replace(/<[^>]*>/g, " ")
+    .replace(/&nbsp;/g, " ")
+    .trim().length > 0;
+
+const shortDescriptionEditorConfig = {
+  licenseKey: "GPL",
+  plugins: [
+    Essentials,
+    Paragraph,
+    Heading,
+    Bold,
+    Italic,
+    Underline,
+    Strikethrough,
+    Link,
+    List,
+    FontColor,
+    FontBackgroundColor,
+    FontSize,
+    FontFamily,
+    Alignment,
+    RemoveFormat,
+    BlockQuote,
+  ],
+  toolbar: [
+    "heading",
+    "|",
+    "bold",
+    "italic",
+    "underline",
+    "strikethrough",
+    "|",
+    "fontColor",
+    "fontBackgroundColor",
+    "fontSize",
+    "fontFamily",
+    "|",
+    "alignment",
+    "|",
+    "bulletedList",
+    "numberedList",
+    "|",
+    "blockQuote",
+    "link",
+    "removeFormat",
+    "|",
+    "undo",
+    "redo",
+  ],
+  placeholder: "Brief, compelling description of the tournament...",
+};
 
 const TournamentAdminForm = ({ tournamentId, auctionId, TrialType }) => {
   const [activeStep, setActiveStep] = useState(0);
@@ -210,7 +284,7 @@ const TournamentAdminForm = ({ tournamentId, auctionId, TrialType }) => {
   const saveBasicInfoAndContact = async () => {
     if (!formData.tournamentTitle?.trim()) { toast.error("Tournament Title is required"); return false; }
     if (!formData.tournamentName?.trim()) { toast.error("Tournament Name is required"); return false; }
-    if (!formData.description?.trim()) { toast.error("Description is required"); return false; }
+    if (!hasRichTextContent(formData.description)) { toast.error("Description is required"); return false; }
     setIsSavingBasicInfo(true);
     try {
       const apiData = buildBasicInfoPayload();
@@ -243,7 +317,7 @@ const TournamentAdminForm = ({ tournamentId, auctionId, TrialType }) => {
   const handleFullSubmit = async () => {
     setLoading(true);
     try {
-      if (!formData.tournamentTitle || !formData.tournamentName || !formData.description) {
+      if (!formData.tournamentTitle || !formData.tournamentName || !hasRichTextContent(formData.description)) {
         toast.error("Please fill tournament title, name, and description");
         return;
       }
@@ -535,13 +609,13 @@ const TournamentAdminForm = ({ tournamentId, auctionId, TrialType }) => {
                 </Field>
               </div>
 
-              <Field label="Short Description *" hint="A concise overview shown beneath the title. Aim for 1–2 sentences.">
-                <textarea
-                  rows={3}
-                  value={formData.description}
-                  onChange={(e) => handleInputChange(null, "description", e.target.value)}
-                  className="lp-input lp-textarea"
-                  placeholder="Brief, compelling description of the tournament..."
+              <Field label=" Description *" hint="A concise overview shown beneath the title.">
+                <CKEditor
+                  editor={ClassicEditor}
+                  config={shortDescriptionEditorConfig}
+                  data={formData.description}
+                  onChange={(_, editor) => handleInputChange(null, "description", editor.getData())}
+                  onBlur={() => markFieldAsTouched("description")}
                 />
               </Field>
 
@@ -1815,6 +1889,55 @@ const TournamentAdminForm = ({ tournamentId, auctionId, TrialType }) => {
         }
         .lp-spinner {
           color: var(--secondary);
+        }
+        .lp-root .ck-content h1,
+        .lp-root .ck-content h2,
+        .lp-root .ck-content h3,
+        .lp-root .ck-content h4,
+        .lp-root .ck-content h5,
+        .lp-root .ck-content h6 {
+          margin: 0.65rem 0 0.35rem;
+          color: var(--text-primary);
+          font-weight: 800;
+          line-height: 1.25;
+        }
+        .lp-root .ck-content h1 { font-size: 1.65rem; }
+        .lp-root .ck-content h2 { font-size: 1.4rem; }
+        .lp-root .ck-content h3 { font-size: 1.2rem; }
+        .lp-root .ck-content h4,
+        .lp-root .ck-content h5,
+        .lp-root .ck-content h6 { font-size: 1rem; }
+        .lp-root .ck-content p {
+          margin: 0.4rem 0;
+        }
+        .lp-root .ck-content ul,
+        .lp-root .ck-content ol {
+          margin: 0.5rem 0;
+          padding-left: 1.5rem;
+        }
+        .lp-root .ck-content ul {
+          list-style: disc outside;
+        }
+        .lp-root .ck-content ol {
+          list-style: decimal outside;
+        }
+        .lp-root .ck-content li + li {
+          margin-top: 0.2rem;
+        }
+        .lp-root .ck-content em,
+        .lp-root .ck-content i,
+        .lp-root .ck-content span[style*="italic"],
+        .lp-root .ck-content span[style*="font-style:italic"],
+        .lp-root .ck-content span[style*="font-style: italic"] {
+          display: inline-block;
+          font-synthesis: style !important;
+          font-style: oblique 12deg !important;
+          transform: skewX(-10deg);
+          transform-origin: left bottom;
+        }
+        .lp-root .ck-content strong,
+        .lp-root .ck-content b {
+          font-weight: 800;
         }
       `}</style>
     </div>

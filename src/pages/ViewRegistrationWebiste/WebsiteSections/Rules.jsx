@@ -107,8 +107,7 @@ const Rules = ({ pagedata }) => {
       <div className="absolute inset-0 bg-[linear-gradient(120deg,_rgba(255,255,255,0.08),_transparent_36%),linear-gradient(180deg,_rgba(125,211,252,0.08),_transparent_55%)]" />
 
       <div className="relative mx-auto max-w-7xl px-4">
-        <div className="mb-6 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
-          <div className="max-w-3xl">
+        <div className="mx-auto mb-7 max-w-3xl text-center">
             <span
               className="inline-flex rounded-full border px-3 py-1 text-[11px] font-bold uppercase tracking-[0.18em]"
               style={{
@@ -126,12 +125,11 @@ const Rules = ({ pagedata }) => {
               {sectionTitle}
             </h2>
             <p
-              className="mt-2 max-w-2xl text-sm leading-6 md:text-base"
+              className="mx-auto mt-2 max-w-2xl text-sm leading-6 md:text-base"
               style={{ color: "var(--rules-text)" }}
             >
               {sectionDescription}
             </p>
-          </div>
         </div>
 
         <div className="grid gap-4">
@@ -139,48 +137,46 @@ const Rules = ({ pagedata }) => {
             {visibleRules.map((rule, index) => (
               <div
                 key={rule.label || rule.title}
-                className="group relative overflow-hidden rounded-2xl border p-4 pt-5 shadow-lg transition-all duration-200 hover:-translate-y-0.5 hover:shadow-xl"
+                className="group relative overflow-hidden rounded-xl border p-4 shadow-lg transition-all duration-200 hover:-translate-y-0.5 hover:shadow-xl"
                 style={{
                   background:
-                    "linear-gradient(145deg, rgba(15, 23, 42, 0.92) 0%, rgba(8, 47, 73, 0.92) 52%, rgba(11, 74, 122, 0.88) 100%)",
+                    "linear-gradient(180deg, rgba(255,255,255,0.105) 0%, rgba(255,255,255,0.065) 100%)",
                   borderColor: "rgba(125, 211, 252, 0.22)",
                   boxShadow:
-                    "0 12px 32px rgba(2, 6, 23, 0.24), inset 0 1px 0 rgba(125, 211, 252, 0.12)",
+                    "0 12px 30px rgba(2, 6, 23, 0.22), inset 0 1px 0 rgba(255,255,255,0.12)",
                 }}
               >
                 <div
-                  className="absolute inset-x-0 top-0 h-1.5 transition-all duration-300 group-hover:h-2"
+                  className="absolute inset-x-0 top-0 h-1 transition-all duration-300 group-hover:h-1.5"
                   style={{
                     background:
-                      "linear-gradient(90deg, #2563eb 0%, #38bdf8 45%, #f59e0b 100%)",
+                      "linear-gradient(90deg, #38bdf8 0%, #60a5fa 55%, #f59e0b 100%)",
                   }}
                 />
-                <div className="mb-3 flex items-center gap-2">
+                <div className="mb-3 flex items-center gap-2 pt-1">
                   <span
-                    className="flex h-7 w-7 items-center justify-center rounded-xl text-xs font-black text-white"
+                    className="flex h-7 w-7 items-center justify-center rounded-lg text-xs font-black"
                     style={{
-                      background:
-                        "linear-gradient(135deg, #2563eb 0%, #38bdf8 100%)",
+                      background: "rgba(56, 189, 248, 0.16)",
+                      color: "#e0f2fe",
+                      border: "1px solid rgba(125, 211, 252, 0.28)",
                     }}
                   >
                     {index + 1}
                   </span>
                   <div
-                    className="h-px flex-1 transition-all group-hover:h-0.5"
-                    style={{
-                      background:
-                        "color-mix(in srgb, var(--rules-primary) 34%, transparent)",
-                    }}
+                    className="h-px flex-1 transition-all"
+                    style={{ background: "rgba(125, 211, 252, 0.2)" }}
                   />
                 </div>
                 <h3
-                  className="text-sm font-bold leading-5 md:text-base"
+                  className="text-sm font-extrabold leading-5 md:text-base"
                   style={{ color: "var(--rules-title)" }}
                 >
                   {rule.label || rule.title}
                 </h3>
                 <p
-                  className="mt-2 text-sm leading-5"
+                  className="mt-2 text-sm leading-6"
                   style={{ color: "var(--rules-muted)" }}
                 >
                   {rule.value || rule.description}

@@ -211,6 +211,9 @@ const RegisterationForm = ({
   const [coords, setCoords] = useState(null);
   const [loading, setLoading] = useState(false);
   const [showMap, setShowMap] = useState(false);
+  const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
+  const [canExpandDescription, setCanExpandDescription] = useState(false);
+  const descriptionPreviewRef = useRef(null);
   const playerId = localStorage.getItem("playerId") || "";
 
   const { content } = useContent();
@@ -381,6 +384,39 @@ const RegisterationForm = ({
 
     return null;
   };
+
+  useEffect(() => {
+    const preview = descriptionPreviewRef.current;
+    if (!preview) return;
+
+    const updateDescriptionOverflow = () => {
+      const rootFontSize =
+        parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;
+      const collapsedMaxHeight = Math.min(
+        Math.max(18 * rootFontSize, window.innerHeight * 0.42),
+        28 * rootFontSize,
+      );
+      const contentHeight =
+        preview.firstElementChild?.scrollHeight || preview.scrollHeight;
+      const hasOverflow = contentHeight > collapsedMaxHeight + 12;
+      setCanExpandDescription(hasOverflow);
+      if (!hasOverflow) setIsDescriptionExpanded(false);
+    };
+
+    const frameId = window.requestAnimationFrame(updateDescriptionOverflow);
+    const resizeObserver =
+      typeof ResizeObserver !== "undefined"
+        ? new ResizeObserver(updateDescriptionOverflow)
+        : null;
+    resizeObserver?.observe(preview);
+    if (preview.firstElementChild) resizeObserver?.observe(preview.firstElementChild);
+    window.addEventListener("resize", updateDescriptionOverflow);
+    return () => {
+      window.cancelAnimationFrame(frameId);
+      resizeObserver?.disconnect();
+      window.removeEventListener("resize", updateDescriptionOverflow);
+    };
+  }, [pagedata?.description]);
 
   useEffect(() => {
     if (isOtpVerified && !form.location) {
@@ -1039,37 +1075,6 @@ const RegisterationForm = ({
       newErrors.email = "Please enter a valid email address";
     }
 
-    if (isFieldEnabled("jerseyNumber") && !form.jerseyNumber) {
-      newErrors.jerseyNumber = "Jersey number is required";
-    }
-
-    if (
-      isFieldEnabled("jerseyNumber") &&
-      form.jerseyNumber &&
-      (form.jerseyNumber < 0 || form.jerseyNumber > 999)
-    ) {
-      newErrors.jerseyNumber = "Jersey number must be between 0 and 999";
-    }
-
-    if (
-      isFieldEnabled("jerseyName") &&
-      (!form.jerseyName || form.jerseyName.trim().length < 2)
-    ) {
-      newErrors.jerseyName = "Jersey name must be at least 2 characters";
-    }
-
-    if (isFieldEnabled("jerseySize") && !form.jerseySize) {
-      newErrors.jerseySize = "Please select jersey size";
-    }
-
-    if (
-      isFieldEnabled("jerseySize") &&
-      form.jerseySize &&
-      !isValidJerseySize(form.jerseySize)
-    ) {
-      newErrors.jerseySize = `Jersey size must be one of: ${JERSEY_SIZE_HINT}`;
-    }
-
     if (pagedata?.showTrialLocations) {
       if (!selectedSlot) {
         newErrors.selectedSlot = "Please select a trial location";
@@ -1197,7 +1202,7 @@ const RegisterationForm = ({
     >
       <div className="absolute inset-0 bg-gradient-to-br from-blue-50 via-white to-blue-100 opacity-80" />
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_10%_15%,rgba(59,130,246,0.08),transparent_30%),radial-gradient(circle_at_90%_80%,rgba(37,99,235,0.06),transparent_28%)]" />
-      <div className="max-w-7xl mx-auto px-4 py-8 md:py-10 relative z-10">
+      <div className="max-w-7xl mx-auto px-4 py-6 md:py-8 relative z-10">
         {showSwitcher && (
           <div className="flex items-center justify-center mb-6">
             <div className="registration-form-switcher inline-flex rounded-2xl border border-blue-200 bg-white p-1 shadow-sm">
@@ -1226,14 +1231,14 @@ const RegisterationForm = ({
             </div>
           </div>
         )}
-        <div className="grid grid-cols-1 lg:grid-cols-[1fr_1.2fr] gap-6 md:gap-10 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-[0.9fr_1.1fr] gap-5 md:gap-8 items-start lg:items-center">
           {/* Left Content - Centered with no border */}
-          <div className="registration-form-intro space-y-5 animate-fadeIn rounded-3xl p-5 md:p-7 bg-transparent shadow-none border-0 flex flex-col justify-center h-full">
+          <div className="registration-form-intro space-y-4 animate-fadeIn rounded-2xl p-4 md:p-5 bg-transparent shadow-none border-0 flex flex-col justify-center h-full">
             <div className="space-y-3 text-center lg:text-left">
               <span className="inline-flex rounded-full px-3 py-1 text-xs font-bold uppercase tracking-[0.18em] mx-auto lg:mx-0 text-blue-700 bg-blue-100">
                 Player Registration
               </span>
-              <h1 className={`text-lg  sm:text-xl md:text-2xl font-semibold  leading-tight text-blue-900`}>
+              <h1 className={`text-lg sm:text-xl md:text-2xl font-semibold leading-tight text-blue-900`}>
                 {pagedata?.tournamentTitle}
               </h1>
               <h2 className="text-3xl sm:text-4xl md:text-5xl font-black leading-tight tracking-tight text-blue-800">
@@ -1242,11 +1247,29 @@ const RegisterationForm = ({
             </div>
             <div className="pt-1 text-center lg:text-left">
               <div
-                className="text-sm sm:text-base font-medium leading-7 text-gray-700"
-                dangerouslySetInnerHTML={{
-                  __html: pagedata?.description || "",
-                }}
-              />
+                ref={descriptionPreviewRef}
+                className={`registration-description-preview ${
+                  isDescriptionExpanded ? "is-expanded" : ""
+                } ${canExpandDescription ? "has-overflow" : ""}`}
+              >
+                <div
+                  className="registration-intro-description registration-rich-text text-base font-medium leading-7 text-gray-700"
+                  dangerouslySetInnerHTML={{
+                    __html: pagedata?.description || "",
+                  }}
+                />
+              </div>
+              {pagedata?.description && canExpandDescription && (
+                <button
+                  type="button"
+                  className="registration-description-button mt-3 inline-flex items-center justify-center rounded-full border border-blue-200 bg-white/80 px-4 py-2 text-sm font-bold text-blue-700 shadow-sm transition hover:border-blue-300 hover:bg-blue-50"
+                  onClick={() =>
+                    setIsDescriptionExpanded((isExpanded) => !isExpanded)
+                  }
+                >
+                  {isDescriptionExpanded ? "Show less" : "Read more"}
+                </button>
+              )}
             </div>
           </div>
 
@@ -1254,7 +1277,7 @@ const RegisterationForm = ({
           <div
             id="registration-form"
             ref={formRef}
-            className="scroll-mt-24 w-full max-w-2xl mx-auto"
+            className="scroll-mt-24 w-full max-w-xl mx-auto lg:self-center"
           >
             {isAlreadyRegistered ? (
               <AlreadyRegisteredCard
@@ -1264,29 +1287,22 @@ const RegisterationForm = ({
               />
             ) : (
               <div
-                className="registration-form-card quick-form-card w-full rounded-3xl p-4 sm:p-5 border shadow-xl"
-                style={{
-                  // background:
-                  //   "radial-gradient(circle at 12% 8%, rgba(96, 165, 250, 0.2), transparent 30%), radial-gradient(circle at 88% 12%, rgba(14, 165, 233, 0.16), transparent 26%), linear-gradient(145deg, #020617 0%, #082f49 42%, #0b4a7a 100%)",
-                  borderColor: "rgba(125, 211, 252, 0.24)",
-                  boxShadow:
-                    "0 24px 60px rgba(2, 6, 23, 0.36), inset 0 1px 0 rgba(125, 211, 252, 0.18)",
-                }}
+                className="registration-form-card quick-form-card w-full rounded-2xl p-3.5 sm:p-4 border shadow-lg"
               >
               <div className="registration-form-heading mb-3 flex items-center justify-between gap-3">
                 <div>
                   {/* <p className="text-xs font-bold uppercase tracking-[0.18em] text-blue-100">
                     Quick Form
                   </p> */}
-                  <h2 className="text-white font-black text-2xl tracking-tight">
+                  <h2 className="font-black text-xl tracking-tight">
                     Registration
                   </h2>
                 </div>
-                <div className="hidden rounded-2xl bg-white/15 px-3 py-2 text-xs font-semibold text-white ring-1 ring-white/15 sm:block">
+                <div className="hidden rounded-full px-3 py-1.5 text-xs font-semibold sm:block">
                   OTP Secure
                 </div>
               </div>
-              <form onSubmit={handleSubmit} className="registration-form-body space-y-3">
+              <form onSubmit={handleSubmit} className="registration-form-body space-y-2.5">
                 {/* OTP Verification Section */}
                 <div>
                   {!isOtpVerified && (
@@ -1399,7 +1415,7 @@ const RegisterationForm = ({
                   )}
 
                   {/* Registration Form Fields - Multi-column compact layout */}
-                  <div className="registration-fields-stack mt-3 space-y-3">
+                    <div className="registration-fields-stack mt-3 space-y-2.5">
                     {/* Row 1: Profile Picture + Name + Role (3 columns) */}
                     <div
                       className={`registration-primary-row ${
@@ -1632,7 +1648,7 @@ const RegisterationForm = ({
                         {isFieldEnabled("jerseyNumber") && (
                           <div>
                             <label className="block text-[var(--rf-label)] text-sm font-semibold mb-1 tracking-wide">
-                              Jersey # <span className="text-red-500">*</span>
+                              Jersey # 
                             </label>
                             <input
                               ref={registerFieldRef("jerseyNumber")}
@@ -1649,7 +1665,7 @@ const RegisterationForm = ({
                         {isFieldEnabled("jerseyName") && (
                           <div>
                             <label className="block text-[var(--rf-label)] text-sm font-semibold mb-1 tracking-wide">
-                              Jersey Name <span className="text-red-500">*</span>
+                              Jersey Name 
                             </label>
                             <input
                               ref={registerFieldRef("jerseyName")}
@@ -1666,7 +1682,7 @@ const RegisterationForm = ({
                         {isFieldEnabled("jerseySize") && (
                           <div>
                             <label className="block text-[var(--rf-label)] text-sm font-semibold mb-1 tracking-wide">
-                              Jersey Size <span className="text-red-500">*</span>
+                              Jersey Size 
                             </label>
                             <select
                               ref={registerFieldRef("jerseySize")}
@@ -1938,18 +1954,182 @@ const RegisterationForm = ({
           color: var(--rf-text);
         }
 
+        .registration-intro-description {
+          max-height: none;
+          overflow-x: hidden;
+          overflow-y: visible;
+          padding-right: 0;
+        }
+
+        .registration-description-preview {
+          position: relative;
+          max-height: clamp(18rem, 42vh, 28rem);
+          overflow: hidden;
+        }
+
+        .registration-description-preview.is-expanded {
+          max-height: min(58vh, 460px);
+          overflow-x: hidden;
+          overflow-y: auto;
+          padding-right: 0.5rem;
+          scrollbar-width: thin;
+          scrollbar-color: #93c5fd transparent;
+        }
+
+        .registration-description-preview.has-overflow::after {
+          content: "";
+          position: absolute;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          height: 4.5rem;
+          pointer-events: none;
+          background: linear-gradient(180deg, rgba(239, 246, 255, 0), var(--rf-section) 86%);
+        }
+
+        .registration-description-preview.is-expanded::after {
+          display: none;
+        }
+
+        .registration-description-preview.is-expanded::-webkit-scrollbar {
+          width: 6px;
+        }
+
+        .registration-description-preview.is-expanded::-webkit-scrollbar-track {
+          background: transparent;
+        }
+
+        .registration-description-preview.is-expanded::-webkit-scrollbar-thumb {
+          background: #93c5fd;
+          border-radius: 999px;
+        }
+
+        .registration-description-button {
+          color: #1d4ed8;
+        }
+
+        .registration-rich-text {
+          color: #334155;
+          font-family: inherit;
+          font-synthesis: style;
+          line-height: 1.65;
+          max-width: 100%;
+          overflow-wrap: anywhere;
+          word-break: break-word;
+        }
+
+        .registration-rich-text * {
+          max-width: 100%;
+        }
+
+        .registration-rich-text > :first-child {
+          margin-top: 0 !important;
+        }
+
+        .registration-rich-text > :last-child {
+          margin-bottom: 0 !important;
+        }
+
+        .registration-rich-text p {
+          margin: 0.42rem 0;
+        }
+
+        .registration-rich-text h1,
+        .registration-rich-text h2,
+        .registration-rich-text h3,
+        .registration-rich-text h4,
+        .registration-rich-text h5,
+        .registration-rich-text h6 {
+          margin: 0.75rem 0 0.35rem;
+          color: #1e3a8a;
+          font-weight: 800;
+          line-height: 1.18;
+        }
+
+        .registration-rich-text h1 { font-size: 1.65rem; }
+        .registration-rich-text h2 { font-size: 1.42rem; }
+        .registration-rich-text h3 { font-size: 1.18rem; }
+        .registration-rich-text h4,
+        .registration-rich-text h5,
+        .registration-rich-text h6 { font-size: 1.02rem; }
+
+        .registration-rich-text strong,
+        .registration-rich-text b {
+          color: #1f2937;
+          font-weight: 800;
+        }
+
+        .registration-rich-text em,
+        .registration-rich-text i,
+        .registration-rich-text span[style*="italic"],
+        .registration-rich-text span[style*="font-style:italic"],
+        .registration-rich-text span[style*="font-style: italic"],
+        .registration-rich-text [style*="font-style" i] {
+          font-family: inherit !important;
+          font-synthesis: style !important;
+          font-style: oblique 14deg !important;
+        }
+
+        .registration-rich-text ul,
+        .registration-rich-text ol {
+          margin: 0.5rem 0;
+          padding-left: 1.55rem;
+        }
+
+        .registration-rich-text ul {
+          list-style: disc outside;
+        }
+
+        .registration-rich-text ol {
+          list-style: decimal outside;
+        }
+
+        .registration-rich-text li {
+          display: list-item;
+          padding-left: 0.25rem;
+          break-inside: avoid;
+        }
+
+        .registration-rich-text li > p:first-child {
+          display: inline;
+          margin: 0;
+        }
+
+        .registration-rich-text li > p:not(:first-child) {
+          margin: 0.25rem 0 0;
+        }
+
+        .registration-rich-text li + li {
+          margin-top: 0.22rem;
+        }
+
+        .registration-rich-text li::marker {
+          color: #2563eb;
+          font-weight: 800;
+        }
+
+        .registration-rich-text blockquote {
+          margin: 0.65rem 0;
+          border-left: 3px solid #93c5fd;
+          padding-left: 0.75rem;
+          color: #475569;
+          font-style: italic;
+        }
+
+        .registration-rich-text a {
+          color: #2563eb;
+          font-weight: 700;
+          text-decoration: underline;
+          text-underline-offset: 2px;
+        }
+
         .registration-form-card {
           position: relative;
           overflow: visible;
-          background:
-            radial-gradient(circle at 12% 8%, rgba(96, 165, 250, 0.18), transparent 30%),
-            radial-gradient(circle at 88% 12%, rgba(14, 165, 233, 0.14), transparent 26%),
-            linear-gradient(145deg, #020617 0%, #082f49 42%, #0b4a7a 100%);
-          border-color: rgba(125, 211, 252, 0.22);
-          color: #eaf4ff;
-          box-shadow:
-            0 24px 60px rgba(2, 6, 23, 0.34),
-            inset 0 1px 0 rgba(125, 211, 252, 0.16);
+          background: rgba(255, 255, 255, 0.96);
+          border-color: #dbeafe;
+          color: #0f172a;
+          box-shadow: 0 16px 38px rgba(30, 64, 175, 0.12);
         }
 
         .registration-form-card::before {
@@ -1957,9 +2137,8 @@ const RegisterationForm = ({
           position: absolute;
           inset: 0;
           pointer-events: none;
-          background:
-            linear-gradient(120deg, rgba(255, 255, 255, 0.08), transparent 36%),
-            linear-gradient(180deg, rgba(125, 211, 252, 0.08), transparent 55%);
+          border-radius: inherit;
+          background: linear-gradient(180deg, rgba(239, 246, 255, 0.7), transparent 46%);
         }
 
         .registration-form-card > * {
@@ -1968,22 +2147,15 @@ const RegisterationForm = ({
         }
 
         .registration-form-card.quick-form-card {
-          background:
-            radial-gradient(circle at 12% 8%, rgba(96, 165, 250, 0.2), transparent 30%),
-            radial-gradient(circle at 88% 12%, rgba(14, 165, 233, 0.16), transparent 26%),
-            linear-gradient(145deg, #020617 0%, #082f49 42%, #0b4a7a 100%) !important;
-          border-color: rgba(125, 211, 252, 0.24) !important;
-          color: #eaf4ff !important;
-          box-shadow:
-            0 24px 60px rgba(2, 6, 23, 0.36),
-            inset 0 1px 0 rgba(125, 211, 252, 0.18) !important;
+          background: rgba(255, 255, 255, 0.97) !important;
+          border-color: #bfdbfe !important;
+          color: #0f172a !important;
+          box-shadow: 0 16px 38px rgba(30, 64, 175, 0.12) !important;
           backdrop-filter: none !important;
         }
 
         .registration-form-card.quick-form-card::before {
-          background:
-            linear-gradient(120deg, rgba(255, 255, 255, 0.08), transparent 36%),
-            linear-gradient(180deg, rgba(125, 211, 252, 0.08), transparent 55%) !important;
+          background: linear-gradient(180deg, rgba(239, 246, 255, 0.75), transparent 46%) !important;
           opacity: 1 !important;
           transform: none !important;
           animation: none !important;
@@ -1991,33 +2163,33 @@ const RegisterationForm = ({
 
         .registration-dynamic-grid {
           display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
-          gap: 0.75rem 1rem;
+          grid-template-columns: repeat(auto-fit, minmax(min(100%, 190px), 1fr));
+          gap: 0.6rem 0.75rem;
           align-items: end;
           width: 100%;
         }
 
         .registration-dynamic-grid-with-avatar {
-          grid-template-columns: minmax(86px, 110px) repeat(auto-fit, minmax(min(100%, 220px), 1fr));
-          gap: 0.75rem 1.25rem;
+          grid-template-columns: minmax(76px, 90px) repeat(auto-fit, minmax(min(100%, 190px), 1fr));
+          gap: 0.6rem 0.85rem;
         }
 
         .registration-primary-row {
           display: grid;
           grid-template-columns: 1fr;
-          gap: 0.75rem 1.35rem;
+          gap: 0.6rem 0.85rem;
           align-items: end;
           width: 100%;
         }
 
         .registration-primary-row-with-avatar {
-          grid-template-columns: minmax(92px, 120px) minmax(0, 1fr);
+          grid-template-columns: minmax(76px, 92px) minmax(0, 1fr);
         }
 
         .registration-primary-fields {
           display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(min(100%, 230px), 1fr));
-          gap: 0.75rem 1rem;
+          grid-template-columns: repeat(auto-fit, minmax(min(100%, 190px), 1fr));
+          gap: 0.6rem 0.75rem;
           align-items: end;
           width: 100%;
         }
@@ -2026,7 +2198,7 @@ const RegisterationForm = ({
           align-self: end;
           justify-self: center;
           width: 100%;
-          max-width: 110px;
+          max-width: 92px;
         }
 
         .registration-form-heading h2 {
@@ -2034,12 +2206,12 @@ const RegisterationForm = ({
         }
 
         .registration-fields-stack {
-          row-gap: 0.75rem !important;
+          row-gap: 0.6rem !important;
         }
 
         .registration-form-card .w-20.h-20 {
-          width: 4.35rem !important;
-          height: 4.35rem !important;
+          width: 3.8rem !important;
+          height: 3.8rem !important;
         }
 
         @media (max-width: 640px) {
@@ -2062,32 +2234,32 @@ const RegisterationForm = ({
         }
 
         .registration-form-card label {
-          color: #eef6ff !important;
-          font-size: 0.75rem !important;
+          color: #1e3a8a !important;
+          font-size: 0.72rem !important;
           font-weight: 600 !important;
           letter-spacing: 0.01em !important;
-          margin-bottom: 0.18rem !important;
+          margin-bottom: 0.16rem !important;
         }
 
         .registration-form-card input:not([type="file"]),
         .registration-form-card select,
         .registration-form-card textarea {
           text-align: left !important;
-          min-height: 36px;
-          padding: 0.42rem 0.75rem !important;
+          min-height: 34px;
+          padding: 0.38rem 0.65rem !important;
           border: 1px solid #d1d5db !important;
-          border-radius: 0.45rem !important;
+          border-radius: 0.42rem !important;
           background: #f9fafb !important;
           color: #111827 !important;
-          font-size: 0.875rem !important;
+          font-size: 0.82rem !important;
           outline: none !important;
           transition: border-color 180ms ease, box-shadow 180ms ease;
         }
 
         .registration-form-card button[type="submit"] {
-          min-height: 40px;
-          padding-top: 0.5rem !important;
-          padding-bottom: 0.5rem !important;
+          min-height: 38px;
+          padding-top: 0.45rem !important;
+          padding-bottom: 0.45rem !important;
         }
 
         .registration-form-card input:not([type="file"]):focus,
@@ -2135,25 +2307,31 @@ const RegisterationForm = ({
 
         .registration-form-card h2,
         .registration-form-card h3 {
-          color: #ffffff !important;
+          color: #0f172a !important;
         }
 
         .registration-form-card p {
-          color: #dbeafe;
+          color: #475569;
         }
 
         .registration-form-card .text-\[var\(--rf-primary\)\],
         .registration-form-card .text-blue-600 {
-          color: #bfdbfe !important;
+          color: #2563eb !important;
         }
 
         .registration-form-card .bg-\[var\(--rf-section-soft\)\] {
-          background: rgba(255, 255, 255, 0.14) !important;
-          color: #ffffff !important;
+          background: #eff6ff !important;
+          color: #1d4ed8 !important;
         }
 
         .registration-form-card button {
-          border-radius: 0.5rem !important;
+          border-radius: 0.45rem !important;
+        }
+
+        .registration-form-heading > div:last-child {
+          background: #eff6ff;
+          color: #2563eb;
+          border: 1px solid #bfdbfe;
         }
 
         .registration-form-card button[type="submit"]:not(:disabled) {

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Upload, Loader2 } from "lucide-react";
 import { toast } from "react-toastify";
 import api from "../../../utils/api";
@@ -25,24 +25,24 @@ function AmountBreakdown({ tr }) {
   const { base, platform, gst, total } = calcAmount(tr);
 
   return (
-    <div className="rounded-lg bg-white/10 border border-white/15 p-3 text-sm space-y-1">
-      <div className="flex justify-between text-blue-100">
+    <div className="rounded-lg bg-blue-50 border border-blue-100 p-3 text-sm space-y-1">
+      <div className="flex justify-between text-slate-600">
         <span>Registration Fee</span>
         <span>₹{base.toLocaleString()}</span>
       </div>
       {platform > 0 && (
-        <div className="flex justify-between text-blue-100">
+        <div className="flex justify-between text-slate-600">
           <span>Platform Fee</span>
           <span>₹{platform.toLocaleString()}</span>
         </div>
       )}
       {gst > 0 && (
-        <div className="flex justify-between text-blue-100">
+        <div className="flex justify-between text-slate-600">
           <span>GST ({tr?.teamGstPercentage}%)</span>
           <span>₹{gst.toLocaleString()}</span>
         </div>
       )}
-      <div className="flex justify-between font-bold text-white border-t border-white/20 pt-1">
+      <div className="flex justify-between font-bold text-slate-900 border-t border-blue-200 pt-1">
         <span>Total Payable</span>
         <span>₹{total.toLocaleString()}</span>
       </div>
@@ -73,6 +73,9 @@ export default function TeamRegistrationForm({
     logoPreview: null,
   });
   const [loading, setLoading] = useState(false);
+  const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
+  const [canExpandDescription, setCanExpandDescription] = useState(false);
+  const descriptionPreviewRef = useRef(null);
 
   const update = (key, value) => setForm((p) => ({ ...p, [key]: value }));
 
@@ -218,6 +221,39 @@ export default function TeamRegistrationForm({
 
   const handleSubmit = () => (isPaid ? handlePaidRegister() : handleFreeRegister());
 
+  useEffect(() => {
+    const preview = descriptionPreviewRef.current;
+    if (!preview) return;
+
+    const updateDescriptionOverflow = () => {
+      const rootFontSize =
+        parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;
+      const collapsedMaxHeight = Math.min(
+        Math.max(18 * rootFontSize, window.innerHeight * 0.42),
+        28 * rootFontSize,
+      );
+      const contentHeight =
+        preview.firstElementChild?.scrollHeight || preview.scrollHeight;
+      const hasOverflow = contentHeight > collapsedMaxHeight + 12;
+      setCanExpandDescription(hasOverflow);
+      if (!hasOverflow) setIsDescriptionExpanded(false);
+    };
+
+    const frameId = window.requestAnimationFrame(updateDescriptionOverflow);
+    const resizeObserver =
+      typeof ResizeObserver !== "undefined"
+        ? new ResizeObserver(updateDescriptionOverflow)
+        : null;
+    resizeObserver?.observe(preview);
+    if (preview.firstElementChild) resizeObserver?.observe(preview.firstElementChild);
+    window.addEventListener("resize", updateDescriptionOverflow);
+    return () => {
+      window.cancelAnimationFrame(frameId);
+      resizeObserver?.disconnect();
+      window.removeEventListener("resize", updateDescriptionOverflow);
+    };
+  }, [pagedata?.description]);
+
   const formThemeStyle = {
     "--rf-section": "#f0f9ff",
     "--rf-section-soft": "#e0f2fe",
@@ -244,7 +280,7 @@ export default function TeamRegistrationForm({
     >
       <div className="absolute inset-0 bg-gradient-to-br from-blue-50 via-white to-blue-100 opacity-80" />
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_10%_15%,rgba(59,130,246,0.08),transparent_30%),radial-gradient(circle_at_90%_80%,rgba(37,99,235,0.06),transparent_28%)]" />
-      <div className="max-w-7xl mx-auto px-4 py-8 md:py-10 relative z-10">
+      <div className="max-w-7xl mx-auto px-4 py-6 md:py-8 relative z-10">
         {showSwitcher && (
           <div className="flex items-center justify-center mb-6">
             <div className="registration-form-switcher inline-flex rounded-2xl border border-blue-200 bg-white p-1 shadow-sm">
@@ -273,9 +309,9 @@ export default function TeamRegistrationForm({
             </div>
           </div>
         )}
-        <div className="grid grid-cols-1 lg:grid-cols-[1fr_1.2fr] gap-6 md:gap-10 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-[0.9fr_1.1fr] gap-5 md:gap-8 items-start lg:items-center">
           {/* Left Content */}
-          <div className="registration-form-intro space-y-5 animate-fadeIn rounded-3xl p-5 md:p-7 bg-transparent shadow-none border-0 flex flex-col justify-center h-full">
+          <div className="registration-form-intro space-y-4 animate-fadeIn rounded-2xl p-4 md:p-5 bg-transparent shadow-none border-0 flex flex-col justify-center h-full">
             <div className="space-y-3 text-center lg:text-left">
               <span className="inline-flex rounded-full px-3 py-1 text-xs font-bold uppercase tracking-[0.18em] mx-auto lg:mx-0 text-blue-700 bg-blue-100">
                 Team Registration
@@ -289,35 +325,53 @@ export default function TeamRegistrationForm({
             </div>
             <div className="pt-1 text-center lg:text-left">
               <div
-                className="text-sm sm:text-base font-medium leading-7 text-gray-700"
-                dangerouslySetInnerHTML={{
-                  __html: pagedata?.description || "",
-                }}
-              />
+                ref={descriptionPreviewRef}
+                className={`registration-description-preview ${
+                  isDescriptionExpanded ? "is-expanded" : ""
+                } ${canExpandDescription ? "has-overflow" : ""}`}
+              >
+                <div
+                  className="registration-intro-description registration-rich-text text-base font-medium leading-7 text-gray-700"
+                  dangerouslySetInnerHTML={{
+                    __html: pagedata?.description || "",
+                  }}
+                />
+              </div>
+              {pagedata?.description && canExpandDescription && (
+                <button
+                  type="button"
+                  className="registration-description-button mt-3 inline-flex items-center justify-center rounded-full border border-blue-200 bg-white/80 px-4 py-2 text-sm font-bold text-blue-700 shadow-sm transition hover:border-blue-300 hover:bg-blue-50"
+                  onClick={() =>
+                    setIsDescriptionExpanded((isExpanded) => !isExpanded)
+                  }
+                >
+                  {isDescriptionExpanded ? "Show less" : "Read more"}
+                </button>
+              )}
             </div>
           </div>
 
           {/* Right Form */}
-          <div className="registration-form-card quick-form-card w-full max-w-2xl mx-auto rounded-3xl p-4 sm:p-5 md:p-6 border shadow-xl">
-            <div className="mb-4 flex items-center justify-between gap-3">
+          <div className="registration-form-card quick-form-card w-full max-w-xl mx-auto lg:self-center rounded-2xl p-3.5 sm:p-4 border shadow-lg">
+            <div className="registration-form-heading mb-3 flex items-center justify-between gap-3">
               <div>
-                <h2 className="text-white font-black text-2xl tracking-tight">
-                  Registration
+                <h2 className="font-black text-xl tracking-tight">
+                  Team Registration
                 </h2>
               </div>
               {isPaid && (
-                <div className="hidden rounded-2xl bg-white/15 px-3 py-2 text-xs font-semibold text-white ring-1 ring-white/15 sm:block">
+                <div className="hidden rounded-full px-3 py-1.5 text-xs font-semibold sm:block">
                   Paid Entry
                 </div>
               )}
             </div>
-            <div className="registration-form-body space-y-4">
+            <div className="registration-form-body space-y-2.5">
               {/* Logo Upload */}
-              <div className="grid grid-cols-1 sm:grid-cols-[90px_1fr_1fr] gap-3 items-end">
+              <div className="team-registration-primary-grid grid grid-cols-1 sm:grid-cols-[76px_1fr_1fr] gap-2.5 items-end">
                 <div className="flex flex-col items-center sm:items-center justify-end">
                   <button
                     type="button"
-                    className="relative w-20 h-20 mb-1 border-2 rounded-xl overflow-hidden transition hover:shadow-md border-blue-400/40 cursor-pointer"
+                    className="relative w-16 h-16 mb-1 border-2 rounded-xl overflow-hidden transition hover:shadow-md border-blue-300 cursor-pointer bg-white"
                     onClick={() =>
                       document.getElementById("landing-team-logo-input")?.click()
                     }
@@ -390,7 +444,7 @@ export default function TeamRegistrationForm({
               </div>
 
               {/* Email & Location */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                 <div>
                   <label className="block text-[var(--rf-label)] text-sm font-semibold mb-1 tracking-wide">
                     Email
@@ -465,18 +519,182 @@ export default function TeamRegistrationForm({
           color: var(--rf-text);
         }
 
+        .registration-intro-description {
+          max-height: none;
+          overflow-x: hidden;
+          overflow-y: visible;
+          padding-right: 0;
+        }
+
+        .registration-description-preview {
+          position: relative;
+          max-height: clamp(18rem, 42vh, 28rem);
+          overflow: hidden;
+        }
+
+        .registration-description-preview.is-expanded {
+          max-height: min(58vh, 460px);
+          overflow-x: hidden;
+          overflow-y: auto;
+          padding-right: 0.5rem;
+          scrollbar-width: thin;
+          scrollbar-color: #93c5fd transparent;
+        }
+
+        .registration-description-preview.has-overflow::after {
+          content: "";
+          position: absolute;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          height: 4.5rem;
+          pointer-events: none;
+          background: linear-gradient(180deg, rgba(239, 246, 255, 0), var(--rf-section) 86%);
+        }
+
+        .registration-description-preview.is-expanded::after {
+          display: none;
+        }
+
+        .registration-description-preview.is-expanded::-webkit-scrollbar {
+          width: 6px;
+        }
+
+        .registration-description-preview.is-expanded::-webkit-scrollbar-track {
+          background: transparent;
+        }
+
+        .registration-description-preview.is-expanded::-webkit-scrollbar-thumb {
+          background: #93c5fd;
+          border-radius: 999px;
+        }
+
+        .registration-description-button {
+          color: #1d4ed8;
+        }
+
+        .registration-rich-text {
+          color: #334155;
+          font-family: inherit;
+          font-synthesis: style;
+          line-height: 1.65;
+          max-width: 100%;
+          overflow-wrap: anywhere;
+          word-break: break-word;
+        }
+
+        .registration-rich-text * {
+          max-width: 100%;
+        }
+
+        .registration-rich-text > :first-child {
+          margin-top: 0 !important;
+        }
+
+        .registration-rich-text > :last-child {
+          margin-bottom: 0 !important;
+        }
+
+        .registration-rich-text p {
+          margin: 0.42rem 0;
+        }
+
+        .registration-rich-text h1,
+        .registration-rich-text h2,
+        .registration-rich-text h3,
+        .registration-rich-text h4,
+        .registration-rich-text h5,
+        .registration-rich-text h6 {
+          margin: 0.75rem 0 0.35rem;
+          color: #1e3a8a;
+          font-weight: 800;
+          line-height: 1.18;
+        }
+
+        .registration-rich-text h1 { font-size: 1.65rem; }
+        .registration-rich-text h2 { font-size: 1.42rem; }
+        .registration-rich-text h3 { font-size: 1.18rem; }
+        .registration-rich-text h4,
+        .registration-rich-text h5,
+        .registration-rich-text h6 { font-size: 1.02rem; }
+
+        .registration-rich-text strong,
+        .registration-rich-text b {
+          color: #1f2937;
+          font-weight: 800;
+        }
+
+        .registration-rich-text em,
+        .registration-rich-text i,
+        .registration-rich-text span[style*="italic"],
+        .registration-rich-text span[style*="font-style:italic"],
+        .registration-rich-text span[style*="font-style: italic"],
+        .registration-rich-text [style*="font-style" i] {
+          font-family: inherit !important;
+          font-synthesis: style !important;
+          font-style: oblique 14deg !important;
+        }
+
+        .registration-rich-text ul,
+        .registration-rich-text ol {
+          margin: 0.5rem 0;
+          padding-left: 1.55rem;
+        }
+
+        .registration-rich-text ul {
+          list-style: disc outside;
+        }
+
+        .registration-rich-text ol {
+          list-style: decimal outside;
+        }
+
+        .registration-rich-text li {
+          display: list-item;
+          padding-left: 0.25rem;
+          break-inside: avoid;
+        }
+
+        .registration-rich-text li > p:first-child {
+          display: inline;
+          margin: 0;
+        }
+
+        .registration-rich-text li > p:not(:first-child) {
+          margin: 0.25rem 0 0;
+        }
+
+        .registration-rich-text li + li {
+          margin-top: 0.22rem;
+        }
+
+        .registration-rich-text li::marker {
+          color: #2563eb;
+          font-weight: 800;
+        }
+
+        .registration-rich-text blockquote {
+          margin: 0.65rem 0;
+          border-left: 3px solid #93c5fd;
+          padding-left: 0.75rem;
+          color: #475569;
+          font-style: italic;
+        }
+
+        .registration-rich-text a {
+          color: #2563eb;
+          font-weight: 700;
+          text-decoration: underline;
+          text-underline-offset: 2px;
+        }
+
         .registration-form-card {
           position: relative;
           overflow: hidden;
-          background:
-            radial-gradient(circle at 12% 8%, rgba(96, 165, 250, 0.18), transparent 30%),
-            radial-gradient(circle at 88% 12%, rgba(14, 165, 233, 0.14), transparent 26%),
-            linear-gradient(145deg, #020617 0%, #082f49 42%, #0b4a7a 100%);
-          border-color: rgba(125, 211, 252, 0.22);
-          color: #eaf4ff;
-          box-shadow:
-            0 24px 60px rgba(2, 6, 23, 0.34),
-            inset 0 1px 0 rgba(125, 211, 252, 0.16);
+          background: rgba(255, 255, 255, 0.96);
+          border-color: #dbeafe;
+          color: #0f172a;
+          box-shadow: 0 16px 38px rgba(30, 64, 175, 0.12);
         }
 
         .registration-form-card::before {
@@ -484,9 +702,8 @@ export default function TeamRegistrationForm({
           position: absolute;
           inset: 0;
           pointer-events: none;
-          background:
-            linear-gradient(120deg, rgba(255, 255, 255, 0.08), transparent 36%),
-            linear-gradient(180deg, rgba(125, 211, 252, 0.08), transparent 55%);
+          border-radius: inherit;
+          background: linear-gradient(180deg, rgba(239, 246, 255, 0.7), transparent 46%);
         }
 
         .registration-form-card > * {
@@ -495,22 +712,15 @@ export default function TeamRegistrationForm({
         }
 
         .registration-form-card.quick-form-card {
-          background:
-            radial-gradient(circle at 12% 8%, rgba(96, 165, 250, 0.2), transparent 30%),
-            radial-gradient(circle at 88% 12%, rgba(14, 165, 233, 0.16), transparent 26%),
-            linear-gradient(145deg, #020617 0%, #082f49 42%, #0b4a7a 100%) !important;
-          border-color: rgba(125, 211, 252, 0.24) !important;
-          color: #eaf4ff !important;
-          box-shadow:
-            0 24px 60px rgba(2, 6, 23, 0.36),
-            inset 0 1px 0 rgba(125, 211, 252, 0.18) !important;
+          background: rgba(255, 255, 255, 0.97) !important;
+          border-color: #bfdbfe !important;
+          color: #0f172a !important;
+          box-shadow: 0 16px 38px rgba(30, 64, 175, 0.12) !important;
           backdrop-filter: none !important;
         }
 
         .registration-form-card.quick-form-card::before {
-          background:
-            linear-gradient(120deg, rgba(255, 255, 255, 0.08), transparent 36%),
-            linear-gradient(180deg, rgba(125, 211, 252, 0.08), transparent 55%) !important;
+          background: linear-gradient(180deg, rgba(239, 246, 255, 0.75), transparent 46%) !important;
           opacity: 1 !important;
           transform: none !important;
           animation: none !important;
@@ -522,24 +732,24 @@ export default function TeamRegistrationForm({
         }
 
         .registration-form-card label {
-          color: #eef6ff !important;
-          font-size: 0.75rem !important;
+          color: #1e3a8a !important;
+          font-size: 0.72rem !important;
           font-weight: 600 !important;
           letter-spacing: 0.01em !important;
-          margin-bottom: 0.25rem !important;
+          margin-bottom: 0.16rem !important;
         }
 
         .registration-form-card input:not([type="file"]),
         .registration-form-card select,
         .registration-form-card textarea {
           text-align: left !important;
-          min-height: 40px;
-          padding: 0.55rem 0.75rem !important;
+          min-height: 34px;
+          padding: 0.38rem 0.65rem !important;
           border: 1px solid #d1d5db !important;
-          border-radius: 0.45rem !important;
+          border-radius: 0.42rem !important;
           background: #f9fafb !important;
           color: #111827 !important;
-          font-size: 0.875rem !important;
+          font-size: 0.82rem !important;
           outline: none !important;
           transition: border-color 180ms ease, box-shadow 180ms ease;
         }
@@ -563,25 +773,37 @@ export default function TeamRegistrationForm({
 
         .registration-form-card h2,
         .registration-form-card h3 {
-          color: #ffffff !important;
+          color: #0f172a !important;
         }
 
         .registration-form-card p {
-          color: #dbeafe;
+          color: #475569;
         }
 
         .registration-form-card .text-\[var\(--rf-primary\)\],
         .registration-form-card .text-blue-600 {
-          color: #bfdbfe !important;
+          color: #2563eb !important;
         }
 
         .registration-form-card .bg-\[var\(--rf-section-soft\)\] {
-          background: rgba(255, 255, 255, 0.14) !important;
-          color: #ffffff !important;
+          background: #eff6ff !important;
+          color: #1d4ed8 !important;
         }
 
         .registration-form-card button {
-          border-radius: 0.5rem !important;
+          border-radius: 0.45rem !important;
+        }
+
+        .registration-form-card button[type="button"] {
+          min-height: 38px;
+          padding-top: 0.45rem !important;
+          padding-bottom: 0.45rem !important;
+        }
+
+        .registration-form-heading > div:last-child {
+          background: #eff6ff;
+          color: #2563eb;
+          border: 1px solid #bfdbfe;
         }
 
         .registration-form-card button[type="button"]:not(:disabled).bg-blue-600 {
@@ -623,6 +845,7 @@ export default function TeamRegistrationForm({
           animation: fadeIn 0.5s ease-out;
         }
       `}</style>
+
     </div>
   );
 }

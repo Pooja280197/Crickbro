@@ -297,7 +297,10 @@ const AuctionSettings = ({ auctionId }) => {
       );
     }
 
-    const ownerCount = ownerList.reduce(
+    const visibleOwnerList = ownerList.filter(
+      (owner) => getOwnerItems(owner).length > 0,
+    );
+    const ownerCount = visibleOwnerList.reduce(
       (total, owner) => total + getOwnerItems(owner).length,
       0,
     );
@@ -452,13 +455,13 @@ const AuctionSettings = ({ auctionId }) => {
         </div>
 
         <div className={scrollClass}>
-          {ownerList.length === 0 ? (
+          {visibleOwnerList.length === 0 ? (
             <p className="rounded-lg border border-dashed border-[var(--border-card)] bg-[var(--bg-main)] py-8 text-center text-sm text-[var(--text-secondary)]">
               No team owners added yet
             </p>
           ) : (
             <div className="space-y-3">
-              {ownerList.map((owner) => {
+              {visibleOwnerList.map((owner) => {
                 const teamName = getTeamName(owner);
                 const teamId = getTeamId(owner);
                 const owners = getOwnerItems(owner);
@@ -469,11 +472,7 @@ const AuctionSettings = ({ auctionId }) => {
                     <Trophy className="h-4 w-4 text-[var(--primary)]" />
                     <span className="truncate">{teamName}</span>
                   </div>
-                  {owners.length === 0 ? (
-                    <div className="rounded-lg border border-dashed border-[var(--border-card)] bg-[var(--bg-main)] px-3 py-3 text-sm text-[var(--text-secondary)] sm:ml-6">
-                      No owner assigned for this team
-                    </div>
-                  ) : owners.map((oname) => (
+                  {owners.map((oname) => (
                     <div
                       key={oname?._id || oname?.mobile || oname?.name}
                       className={`${listItemClass} ml-0 sm:ml-6`}

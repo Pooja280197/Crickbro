@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
-import { Search, Star } from "lucide-react";
+import { Eye, PencilLine, Search, Star } from "lucide-react";
 import { useDebounce } from "../../../../components/useDebounce";
 import {
   assignSupercampBonusPenalty,
@@ -175,44 +175,43 @@ function SupercampSelectorPoints({ auctionId }) {
           No supercamp players in your assigned slots.
         </div>
       ) : (
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        <div className="grid gap-2.5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {players.map((player) => (
             <div
               key={player._id}
-              className="flex flex-col gap-3 rounded-lg border border-[var(--border-card)] bg-[var(--bg-card)] p-4 shadow-[var(--shadow-card)] transition hover:border-[var(--border-primary)]"
+              className="rounded-lg border border-[var(--border-card)] bg-[var(--bg-card)] p-2.5 shadow-[var(--shadow-card)] transition hover:-translate-y-0.5 hover:border-[var(--border-primary)]"
             >
-              <div className="flex items-center gap-3">
+              <div className="flex items-start gap-2.5">
+                <div className="shrink-0">
                 {player.profilePicture ? (
                   <img
                     src={player.profilePicture}
                     alt=""
-                    className="w-12 h-12 rounded-full object-cover"
+                    className="h-11 w-11 rounded-lg object-cover"
                   />
                 ) : (
-                  <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[var(--accent-light)] font-semibold text-[var(--primary)]">
+                  <div className="flex h-11 w-11 items-center justify-center rounded-lg bg-[var(--accent-light)] text-sm font-bold text-[var(--primary)]">
                     {(player.name || "?")[0]}
                   </div>
                 )}
+                </div>
                 <div className="min-w-0 flex-1">
-                  <div className="truncate font-semibold text-[var(--text-primary)]">{player.name}</div>
+                  <div className="truncate text-sm font-semibold leading-5 text-[var(--text-primary)]">{player.name}</div>
                   <div className="truncate text-xs text-[var(--text-secondary)]">
-                    {player.slotName}
+                    {player.slotName || "Slot not assigned"} · {player.totalPoints ?? 0} pts
                     {player.sessionName ? ` · ${player.sessionName}` : ""}
                   </div>
                 </div>
               </div>
-              <div className="rounded-lg border border-[var(--border-card)] bg-[var(--bg-main)] py-2 text-center">
-                <div className="text-xs text-[var(--text-secondary)]">Total Points</div>
-                <div className="text-2xl font-bold text-[var(--primary)]">{player.totalPoints ?? 0}</div>
-              </div>
-              <div className="flex gap-2">
+              <div className="mt-2 grid grid-cols-2 gap-1.5">
                 <button
                   onClick={() => {
                     setSelectedPlayer(player);
                     setDetailsModalOpen(true);
                   }}
-                  className="flex-1 rounded-lg border border-[var(--border-card)] bg-[var(--bg-main)] py-2 text-sm font-semibold text-[var(--text-primary)] hover:border-[var(--border-primary)] hover:bg-[var(--accent-light)]"
+                  className="inline-flex h-8 items-center justify-center gap-1 rounded-md border border-[var(--border-card)] bg-[var(--bg-main)] text-xs font-semibold text-[var(--text-primary)] hover:border-[var(--border-primary)] hover:bg-[var(--accent-light)]"
                 >
+                  <Eye className="h-3.5 w-3.5" />
                   View
                 </button>
                 <button
@@ -220,9 +219,10 @@ function SupercampSelectorPoints({ auctionId }) {
                     setSelectedPlayer(player);
                     setPointsModalOpen(true);
                   }}
-                  className="flex-1 rounded-lg bg-[var(--primary)] py-2 text-sm font-semibold text-[var(--text-dark)] hover:opacity-90"
+                  className="inline-flex h-8 items-center justify-center gap-1 rounded-md bg-[var(--primary)] text-xs font-semibold text-[var(--text-dark)] hover:opacity-90"
                 >
-                  Give Points
+                  <PencilLine className="h-3.5 w-3.5" />
+                  Points
                 </button>
               </div>
             </div>

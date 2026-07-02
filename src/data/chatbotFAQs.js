@@ -75,7 +75,8 @@ export const chatbotFAQs = [
       "Go to Manage Auction.",
       "Make sure teams, budgets and players are ready.",
       "Open Auction Room.",
-      "Start bidding and select players one by one for live auction.",
+      "Select Category and status and click on Start button",
+      "Start bidding and use Next Player option to show players one by one.",
     ],
     related: ["team-budget", "unsold-player"],
   },
@@ -206,10 +207,10 @@ export const chatbotFAQs = [
       "assign players to selector",
     ],
     answer: [
-      "Create trial slots and sessions first.",
-      "Open Trials and Selection.",
-      "Go to the selector/player assignment section.",
-      "Choose the selector and assign players or sessions.",
+      "Open auction details.",
+      "Go to Trials and Selection.",
+      "Open Slot and Session.",
+      "Click on create slot add details and assign Selectors to that particular slot.",
       "Selectors can then evaluate assigned players.",
     ],
     related: ["selector-role", "create-trial-slots", "rate-player"],
@@ -226,33 +227,41 @@ export const chatbotFAQs = [
       "ball by ball rating",
     ],
     answer: [
-      "Selectors open their assigned players or trial sessions.",
+      "Selectors open their assigned players.",
       "They evaluate players using the available rating form.",
       "Ratings may include batting, bowling, fielding or overall performance.",
+      "Selector can also direct select player by giving Grade",
       "Admins can review ratings while selecting players for auction.",
     ],
     related: ["selector-role", "supercamp", "qualify-player"],
   },
-  {
-    id: "qualify-player",
-    category: "Trials",
-    question: "How to qualify selected players for auction?",
-    keywords: [
-      "qualify player",
-      "selected players",
-      "trial selected",
-      "move to auction",
-      "auction qualified",
-    ],
-    answer: [
-      "Open Trials and Selection.",
-      "Review player ratings or trial status.",
-      "Select players who should enter the auction.",
-      "Mark them as selected or move them to auction list.",
-      "They will be available for auction/category setup.",
-    ],
-    related: ["rate-player", "create-player-categories", "start-live-auction"],
-  },
+{
+  id: "qualify-player",
+  category: "Trials",
+  question: "How to qualify selected players for auction?",
+  keywords: [
+    "qualify player",
+    "selected players",
+    "trial selected",
+    "move to auction",
+    "auction qualified",
+    "qualify for auction",
+    "trial results",
+    "selector grades"
+  ],
+  answer: [
+    "Open the Trials & Selection module.",
+    "Go to Trial Settings and configure the player rating criteria.",
+    "Selectors can rate players or directly select them by assigning grades.",
+    "Players selected by the selectors are automatically qualified for the auction.",
+    "Qualified players are automatically added to the Auction Players list and become available for category assignment before the live auction."
+  ],
+  related: [
+    "rate-player",
+    "create-player-categories",
+    "start-live-auction"
+  ],
+},
   {
     id: "supercamp",
     category: "Trials",
@@ -292,25 +301,30 @@ export const chatbotFAQs = [
     ],
     related: ["qualify-player", "base-price", "start-live-auction"],
   },
-  {
-    id: "base-price",
-    category: "Players",
-    question: "How to set base price for players?",
-    keywords: [
-      "base price",
-      "player price",
-      "minimum bid",
-      "category price",
-      "starting price",
-    ],
-    answer: [
-      "Base price can be configured while adding or editing a player.",
-      "You can also set price rules using category or bid slab settings.",
-      "During live auction, bidding starts from the player base price.",
-      "Make sure every auction player has a valid base price before bidding.",
-    ],
-    related: ["create-player-categories", "team-budget", "start-live-auction"],
-  },
+ {
+  id: "base-price",
+  category: "Players",
+  question: "How to set base price for players?",
+  keywords: [
+    "base price",
+    "player price",
+    "minimum bid",
+    "category price",
+    "starting price",
+    "base bid"
+  ],
+  answer: [
+    "Base price is configured while creating or editing a player category.",
+    "Assign the desired base price to the category.",
+    "All players assigned to that category will automatically inherit the same base price.",
+    "During the live auction, bidding starts from the category's assigned base price."
+  ],
+  related: [
+    "create-player-categories",
+    "team-budget",
+    "start-live-auction"
+  ],
+},
   {
     id: "edit-player",
     category: "Players",
@@ -370,26 +384,31 @@ export const chatbotFAQs = [
     ],
     related: ["register-players", "edit-player"],
   },
-  {
-    id: "player-registration-form",
-    category: "Registration",
-    question: "Can I customize player registration form?",
-    keywords: [
-      "custom registration form",
-      "player form",
-      "registration fields",
-      "create website",
-      "registration website",
-    ],
-    answer: [
-      "Open Create Registration Website.",
-      "Configure the registration page and required player fields.",
-      "Share the public registration link with players.",
-      "Players can submit their details from the link.",
-      "Admins can review registered players in All Players.",
-    ],
-    related: ["register-players", "registration-link", "import-players"],
-  },
+{
+  id: "player-registration-form",
+  category: "Registration",
+  question: "Can I customize player registration form?",
+  keywords: [
+    "custom registration form",
+    "player form",
+    "registration fields",
+    "registration website",
+    "custom fields",
+    "auction registration"
+  ],
+  answer: [
+    "Open Create Auction or Edit Auction.",
+    "Go to the Registration Form section.",
+    "Select which player details and fields you want to include in the registration form.",
+    "Save the auction to generate the customized registration form.",
+    "Players registering through the public registration link will only see the fields you've enabled."
+  ],
+  related: [
+    "register-players",
+    "registration-link",
+    "import-players"
+  ],
+},
   {
     id: "registration-link",
     category: "Registration",
@@ -403,7 +422,7 @@ export const chatbotFAQs = [
     ],
     answer: [
       "Open auction details.",
-      "Go to Create Registration Website or Registration Overview.",
+      "Go to Create Registration Website .",
       "Copy the generated registration link.",
       "Share it with players or publish it on social media.",
       "Players can register directly from the link.",
@@ -466,26 +485,30 @@ export const chatbotFAQs = [
     ],
     related: ["team-owner-role", "team-budget", "start-live-auction"],
   },
-  {
-    id: "create-teams",
-    category: "Teams",
-    question: "How to create or manage teams?",
-    keywords: [
-      "create team",
-      "manage teams",
-      "team logo",
-      "team name",
-      "auction teams",
-    ],
-    answer: [
-      "Open Manage Auction.",
-      "Go to Manage Teams.",
-      "Add team name, logo and owner details if required.",
-      "Set or verify team budget.",
-      "Save the team before starting live auction.",
-    ],
-    related: ["add-team-owner", "team-budget", "create-posters"],
-  },
+ {
+  id: "create-teams",
+  category: "Teams",
+  question: "How to create or manage teams?",
+  keywords: [
+    "create team",
+    "manage teams",
+    "team logo",
+    "team name",
+    "auction teams",
+    "tournament teams"
+  ],
+  answer: [
+    "Teams are created and managed while creating a tournament in the CrickBro application.",
+    "Add team details such as team name, logo, and other required information.",
+    "Once the tournament is created, the teams are available for the auction.",
+    "You can then assign team owners and budgets from the Auction module before starting the live auction."
+  ],
+  related: [
+    "add-team-owner",
+    "team-budget",
+    "create-posters"
+  ],
+},
   {
     id: "auction-settings",
     category: "Auction Setup",
@@ -506,25 +529,31 @@ export const chatbotFAQs = [
     ],
     related: ["add-organizer", "add-team-owner", "create-player-categories"],
   },
-  {
-    id: "bid-increment",
-    category: "Live Auction",
-    question: "How does bid increment work?",
-    keywords: [
-      "bid increment",
-      "minimum increment",
-      "next bid",
-      "bidding rules",
-      "bid slab",
-    ],
-    answer: [
-      "Bid increment controls how much the next bid should increase.",
-      "Admins can configure increments in auction rules or bid slabs.",
-      "During live auction, bids should follow the configured increment.",
-      "Correct increments help keep bidding fair and consistent.",
-    ],
-    related: ["auction-settings", "base-price", "start-live-auction"],
-  },
+ {
+  id: "bid-increment",
+  category: "Live Auction",
+  question: "How does bid increment work?",
+  keywords: [
+    "bid increment",
+    "minimum increment",
+    "next bid",
+    "bidding rules",
+    "bid slab",
+    "category increment",
+    "manual bid"
+  ],
+  answer: [
+    "Bid increment is configured while creating or editing a player category.",
+    "All players assigned to that category use the same bid increment value during the live auction.",
+    "Each new bid increases by the configured increment amount for that category.",
+    "Auctioneers can also place a manual bid by directly selecting a team and entering any bid amount when required."
+  ],
+  related: [
+    "auction-settings",
+    "base-price",
+    "start-live-auction"
+  ],
+},
   {
     id: "auction-status",
     category: "Auction Setup",

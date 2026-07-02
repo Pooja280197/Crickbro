@@ -216,8 +216,8 @@ const Select = ({
 };
 
 const Toggle = ({ label, checked, onChange, tooltip = "" }) => (
-  <div className="flex min-h-10 items-center justify-between gap-4 rounded-lg border border-[var(--border-card)] bg-[var(--bg-card)] px-3 py-2">
-    <span className="inline-flex items-center gap-1.5 text-sm font-semibold text-[var(--text-primary)]" title={tooltip}>
+  <div className="flex min-h-10 items-center justify-between gap-3 rounded-lg border border-[var(--border-card)] bg-[var(--bg-card)] px-3 py-2 sm:gap-4">
+    <span className="inline-flex min-w-0 flex-1 flex-wrap items-center gap-1.5 break-words pr-2 text-xs font-semibold leading-5 text-[var(--text-primary)] sm:text-sm" title={tooltip}>
       {label}
       {tooltip ? <Info className="h-3.5 w-3.5 text-[var(--text-secondary)]" /> : null}
     </span>
@@ -229,11 +229,12 @@ const Toggle = ({ label, checked, onChange, tooltip = "" }) => (
     <button
       type="button"
       onClick={() => onChange(!checked)}
-      className={`h-6 w-11 rounded-full p-1 transition ${checked ? "bg-[var(--secondary)]" : "bg-[var(--border-card)]"
+      className={`create-auction-toggle-switch relative inline-flex !h-5 !min-h-5 !w-9 shrink-0 items-center rounded-full !p-0.5 transition sm:!h-6 sm:!min-h-6 sm:!w-11 sm:!p-1 ${checked ? "bg-[var(--secondary)]" : "bg-[var(--border-card)]"
         }`}
+      aria-pressed={checked}
     >
       <span
-        className={`block h-4 w-4 rounded-full bg-white shadow-sm transition ${checked ? "translate-x-5" : "translate-x-0"
+        className={`create-auction-toggle-knob block !h-4 !w-4 rounded-full bg-white shadow-sm transition ${checked ? "translate-x-4 sm:translate-x-5" : "translate-x-0"
           }`}
       />
     </button>

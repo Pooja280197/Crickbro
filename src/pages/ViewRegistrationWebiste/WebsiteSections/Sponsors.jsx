@@ -2,11 +2,11 @@ import React, { useEffect, useState, useRef } from "react";
 import { useContent } from "../../../context/ContentContext";
 
 const sponsorAccents = [
-  { from: "#f59e0b", via: "#facc15", to: "#38bdf8" },
-  { from: "#38bdf8", via: "#2563eb", to: "#8b5cf6" },
-  { from: "#22c55e", via: "#14b8a6", to: "#38bdf8" },
-  { from: "#fb7185", via: "#f97316", to: "#facc15" },
-  { from: "#a78bfa", via: "#6366f1", to: "#06b6d4" },
+  { from: "#fef3c7", to: "#fde68a" },
+  { from: "#dbeafe", to: "#bfdbfe" },
+  { from: "#dcfce7", to: "#bbf7d0" },
+  { from: "#ffe4e6", to: "#fecdd3" },
+  { from: "#ede9fe", to: "#ddd6fe" },
 ];
 
 const getSponsorAccent = (tier, index) => {
@@ -14,8 +14,8 @@ const getSponsorAccent = (tier, index) => {
   const tierAccents = {
     platinum: sponsorAccents[1],
     gold: sponsorAccents[0],
-    silver: { from: "#cbd5e1", via: "#94a3b8", to: "#38bdf8" },
-    bronze: { from: "#d97706", via: "#f97316", to: "#fbbf24" },
+    silver: { from: "#f1f5f9", to: "#e2e8f0" },
+    bronze: { from: "#ffedd5", to: "#fed7aa" },
     partner: sponsorAccents[2],
   };
 
@@ -24,13 +24,24 @@ const getSponsorAccent = (tier, index) => {
 
 const Sponsors = ({ pagedata }) => {
   const [isPaused, setIsPaused] = useState(false);
+  const [isLargeScreen, setIsLargeScreen] = useState(false);
 
   const { content } = useContent();
 
   const sponsors = pagedata?.sponsors || content?.sponsors || [];
-  const shouldAutoScroll = sponsors?.length > 5;
+  const hasManySponsors = sponsors?.length > 5;
+  const shouldAutoScroll = hasManySponsors && isLargeScreen;
 
   const sliderRef = useRef(null);
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia("(min-width: 1024px)");
+    const updateScreenSize = () => setIsLargeScreen(mediaQuery.matches);
+
+    updateScreenSize();
+    mediaQuery.addEventListener?.("change", updateScreenSize);
+    return () => mediaQuery.removeEventListener?.("change", updateScreenSize);
+  }, []);
 
   useEffect(() => {
     if (!shouldAutoScroll) return;
@@ -39,39 +50,48 @@ const Sponsors = ({ pagedata }) => {
 
     if (!slider) return;
 
-    let animationFrame;
+    const scrollByCard = () => {
+      if (!slider || isPaused) return;
 
-    const autoScroll = () => {
-      if (!slider) return;
+      const firstCard = slider.querySelector("article");
+      const gap = parseFloat(getComputedStyle(slider).columnGap || "0") || 0;
+      const cardWidth = firstCard?.offsetWidth || 170;
+      const step = cardWidth + gap;
+      const halfwayPoint = (slider.scrollWidth - slider.clientWidth) / 2;
+      const nextLeft = slider.scrollLeft + step;
 
-      if (!isPaused) {
-        slider.scrollLeft += 0.45;
-
-        // INFINITE LOOP
-        if (slider.scrollLeft >= slider.scrollWidth - slider.clientWidth) {
-          slider.scrollLeft = 0;
-        }
+      if (nextLeft >= halfwayPoint) {
+        slider.scrollTo({ left: 0, behavior: "auto" });
+        return;
       }
 
-      animationFrame = requestAnimationFrame(autoScroll);
+      slider.scrollTo({ left: nextLeft, behavior: "auto" });
     };
 
-    animationFrame = requestAnimationFrame(autoScroll);
+    const intervalId = window.setInterval(scrollByCard, 2200);
 
-    return () => cancelAnimationFrame(animationFrame);
+    return () => window.clearInterval(intervalId);
   }, [isPaused, shouldAutoScroll]);
+
+  useEffect(() => {
+    const slider = sliderRef.current;
+    if (!slider) return;
+    slider.scrollTo({ left: 0, behavior: "auto" });
+  }, [shouldAutoScroll, sponsors?.length]);
+
+  const scrollContainerClass = hasManySponsors
+    ? "px-5 md:px-10"
+    : "px-1 sm:justify-center";
 
   return (
     <div
-      className="relative h-auto overflow-hidden py-8 md:py-10"
+      className="relative h-auto overflow-hidden bg-slate-50 py-8 md:py-10"
       style={{
-        background:
-          "radial-gradient(circle at 12% 8%, rgba(96, 165, 250, 0.18), transparent 30%), radial-gradient(circle at 88% 12%, rgba(14, 165, 233, 0.14), transparent 26%), linear-gradient(145deg, #020617 0%, #082f49 42%, #0b4a7a 100%)",
         fontFamily:
           '"Inter", "Manrope", "Nunito Sans", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
       }}
     >
-      <div className="absolute inset-0 bg-[linear-gradient(120deg,_rgba(255,255,255,0.08),_transparent_36%),linear-gradient(180deg,_rgba(125,211,252,0.08),_transparent_55%)]" />
+      <div className="absolute inset-0 bg-[linear-gradient(180deg,_#ffffff_0%,_#f8fafc_58%,_#eef6ff_100%)]" />
       <section
         className="
           relative
@@ -80,14 +100,14 @@ const Sponsors = ({ pagedata }) => {
       >
         <div className="max-w-7xl mx-auto px-4 md:px-6">
           <div className="mx-auto mb-8 max-w-3xl text-center">
-            <span className="inline-flex rounded-full border border-sky-300/30 bg-white/10 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.18em] text-sky-300">
+            <span className="inline-flex rounded-full border border-blue-100 bg-blue-50 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.18em] text-blue-600">
               Partners
             </span>
-            <h2 className="mt-3 text-3xl font-black tracking-tight text-slate-50 md:text-4xl">
+            <h2 className="mt-3 text-3xl font-black tracking-tight text-slate-900 md:text-4xl">
               Our Sponsors
             </h2>
 
-            <p className="mx-auto mt-2 max-w-2xl text-sm leading-6 text-blue-100 md:text-base">
+            <p className="mx-auto mt-2 max-w-2xl text-sm leading-6 text-slate-600 md:text-base">
               We proudly collaborate with partners who support and inspire
               excellence.
             </p>
@@ -96,8 +116,8 @@ const Sponsors = ({ pagedata }) => {
           <div className="relative overflow-hidden">
             {shouldAutoScroll && (
               <>
-                <div className="pointer-events-none absolute inset-y-0 left-0 z-20 w-10 bg-gradient-to-r from-[#06233b] to-transparent md:w-16" />
-                <div className="pointer-events-none absolute inset-y-0 right-0 z-20 w-10 bg-gradient-to-l from-[#083752] to-transparent md:w-16" />
+                <div className="pointer-events-none absolute inset-y-0 left-0 z-20 w-10 bg-gradient-to-r from-slate-50 to-transparent md:w-16" />
+                <div className="pointer-events-none absolute inset-y-0 right-0 z-20 w-10 bg-gradient-to-l from-slate-50 to-transparent md:w-16" />
               </>
             )}
 
@@ -105,9 +125,9 @@ const Sponsors = ({ pagedata }) => {
               ref={sliderRef}
               onMouseEnter={() => setIsPaused(true)}
               onMouseLeave={() => setIsPaused(false)}
-              className={`flex items-stretch gap-3 overflow-hidden py-3 md:gap-4 ${
-                shouldAutoScroll ? "px-5 md:px-10" : "justify-center px-1"
-              }`}
+              onTouchStart={() => setIsPaused(true)}
+              onTouchEnd={() => setIsPaused(false)}
+              className={`sponsors-scroll flex touch-pan-x snap-x snap-mandatory items-stretch gap-3 overflow-x-auto overflow-y-hidden py-3 md:gap-4 ${scrollContainerClass}`}
             >
               {(shouldAutoScroll ? [...sponsors, ...sponsors] : sponsors).map(
                 (s, i) => {
@@ -116,7 +136,7 @@ const Sponsors = ({ pagedata }) => {
                   return (
                     <article
                       key={`${s._id || s.name || "sponsor"}-${i}`}
-                      className="group relative flex min-w-[145px] max-w-[145px] shrink-0 flex-col overflow-hidden rounded-xl border border-white/15 bg-white/[0.08] p-2.5 shadow-[0_10px_24px_rgba(2,6,23,0.2)] backdrop-blur-md transition-all duration-300 hover:-translate-y-0.5 hover:border-sky-300/35 hover:bg-white/[0.12] md:min-w-[170px] md:max-w-[170px] md:p-3"
+                      className="group relative flex min-w-[145px] max-w-[145px] shrink-0 snap-start flex-col overflow-hidden rounded-xl border border-slate-200 bg-white p-2.5 shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-blue-200 hover:shadow-md md:min-w-[170px] md:max-w-[170px] md:p-3"
                     >
                       <div
                         className="absolute inset-x-0 top-0 h-1"
@@ -125,7 +145,12 @@ const Sponsors = ({ pagedata }) => {
                         }}
                       />
 
-                      <div className="relative flex h-[68px] items-center justify-center rounded-lg bg-white px-3 shadow-sm md:h-[78px]">
+                      <div
+                        className="relative flex h-[68px] items-center justify-center rounded-lg border border-slate-100 px-3 md:h-[78px]"
+                        style={{
+                          background: `linear-gradient(135deg, ${accent.from}, #ffffff 62%, ${accent.to})`,
+                        }}
+                      >
                         <img
                           loading="lazy"
                           decoding="async"
@@ -136,11 +161,11 @@ const Sponsors = ({ pagedata }) => {
                       </div>
 
                       <div className="mt-2.5 min-w-0 text-center">
-                        <p className="truncate text-xs font-bold text-white md:text-sm">
+                        <p className="truncate text-xs font-bold text-slate-900 md:text-sm">
                           {s.name || "Valued Partner"}
                         </p>
                         {s.tier && (
-                          <p className="mt-1 truncate text-[9px] font-semibold uppercase tracking-[0.12em] text-blue-200/70">
+                          <p className="mt-1 truncate text-[9px] font-semibold uppercase tracking-[0.12em] text-slate-500">
                             {s.tier}
                           </p>
                         )}
@@ -153,6 +178,17 @@ const Sponsors = ({ pagedata }) => {
           </div>
         </div>
       </section>
+      <style>{`
+        .sponsors-scroll {
+          -webkit-overflow-scrolling: touch;
+          scrollbar-width: none;
+          overscroll-behavior-x: contain;
+        }
+
+        .sponsors-scroll::-webkit-scrollbar {
+          display: none;
+        }
+      `}</style>
     </div>
   );
 };

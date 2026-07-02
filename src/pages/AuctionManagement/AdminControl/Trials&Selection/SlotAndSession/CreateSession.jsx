@@ -45,11 +45,11 @@ const CreateSession = ({
       valid = false;
     }
 
-    const slotDate = formatDateForInput(sessionData.slotDate);
-    if (slotDate && slotDate < getTodayForInput()) {
-      newErrors.slotDate = "Date must be today or a future date";
-      valid = false;
-    }
+    // const slotDate = formatDateForInput(sessionData.slotDate);
+    // if (!isEditing && slotDate && slotDate < getTodayForInput()) {
+    //   newErrors.slotDate = "Date must be today or a future date";
+    //   valid = false;
+    // }
 
     setErrors(newErrors);
     return valid;
@@ -131,7 +131,7 @@ const CreateSession = ({
               <input
                 name="slotDate"
                 type="date"
-                min={getTodayForInput()}
+                min={isEditing ? undefined : getTodayForInput()}
                 value={formatDateForInput(sessionData.slotDate) || ""}
                 onChange={handleChange}
                 className={fieldClass(errors.slotDate)}
