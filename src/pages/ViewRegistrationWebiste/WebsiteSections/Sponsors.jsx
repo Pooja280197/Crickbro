@@ -24,19 +24,19 @@ const getSponsorAccent = (tier, index) => {
 
 const Sponsors = ({ pagedata }) => {
   const [isPaused, setIsPaused] = useState(false);
-  const [isLargeScreen, setIsLargeScreen] = useState(false);
+  const [isWideScreen, setIsWideScreen] = useState(false);
 
   const { content } = useContent();
 
   const sponsors = pagedata?.sponsors || content?.sponsors || [];
   const hasManySponsors = sponsors?.length > 5;
-  const shouldAutoScroll = hasManySponsors && isLargeScreen;
+  const shouldAutoScroll = hasManySponsors && isWideScreen;
 
   const sliderRef = useRef(null);
 
   useEffect(() => {
-    const mediaQuery = window.matchMedia("(min-width: 1024px)");
-    const updateScreenSize = () => setIsLargeScreen(mediaQuery.matches);
+    const mediaQuery = window.matchMedia("(min-width: 768px)");
+    const updateScreenSize = () => setIsWideScreen(mediaQuery.matches);
 
     updateScreenSize();
     mediaQuery.addEventListener?.("change", updateScreenSize);
@@ -47,45 +47,43 @@ const Sponsors = ({ pagedata }) => {
     if (!shouldAutoScroll) return;
 
     const slider = sliderRef.current;
-
     if (!slider) return;
 
-    const scrollByCard = () => {
-      if (!slider || isPaused) return;
+    let animationFrameId;
+    const step = 0.75;
 
-      const firstCard = slider.querySelector("article");
-      const gap = parseFloat(getComputedStyle(slider).columnGap || "0") || 0;
-      const cardWidth = firstCard?.offsetWidth || 170;
-      const step = cardWidth + gap;
-      const halfwayPoint = (slider.scrollWidth - slider.clientWidth) / 2;
-      const nextLeft = slider.scrollLeft + step;
+    const autoScroll = () => {
+      if (!slider) return;
 
-      if (nextLeft >= halfwayPoint) {
-        slider.scrollTo({ left: 0, behavior: "auto" });
-        return;
+      if (!isPaused) {
+        slider.scrollLeft += step;
+
+        if (slider.scrollLeft >= slider.scrollWidth / 2) {
+          slider.scrollLeft = 0;
+        }
       }
 
-      slider.scrollTo({ left: nextLeft, behavior: "auto" });
+      animationFrameId = requestAnimationFrame(autoScroll);
     };
 
-    const intervalId = window.setInterval(scrollByCard, 2200);
+    animationFrameId = requestAnimationFrame(autoScroll);
 
-    return () => window.clearInterval(intervalId);
+    return () => cancelAnimationFrame(animationFrameId);
   }, [isPaused, shouldAutoScroll]);
 
   useEffect(() => {
     const slider = sliderRef.current;
     if (!slider) return;
-    slider.scrollTo({ left: 0, behavior: "auto" });
+    slider.scrollLeft = 0;
   }, [shouldAutoScroll, sponsors?.length]);
 
   const scrollContainerClass = hasManySponsors
-    ? "px-5 md:px-10"
+    ? "px-4 sm:px-6 md:px-8"
     : "px-1 sm:justify-center";
 
   return (
     <div
-      className="relative h-auto overflow-hidden bg-slate-50 py-8 md:py-10"
+      className="relative  h-auto overflow-hidden bg-slate-50 py-8 md:py-10"
       style={{
         fontFamily:
           '"Inter", "Manrope", "Nunito Sans", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
@@ -127,7 +125,7 @@ const Sponsors = ({ pagedata }) => {
               onMouseLeave={() => setIsPaused(false)}
               onTouchStart={() => setIsPaused(true)}
               onTouchEnd={() => setIsPaused(false)}
-              className={`sponsors-scroll flex touch-pan-x snap-x snap-mandatory items-stretch gap-3 overflow-x-auto overflow-y-hidden py-3 md:gap-4 ${scrollContainerClass}`}
+              className={`sponsors-scroll flex touch-pan-x items-stretch gap-3 overflow-x-auto overflow-y-hidden py-3 md:gap-4 ${shouldAutoScroll ? "" : "snap-x snap-mandatory"} ${scrollContainerClass}`}
             >
               {(shouldAutoScroll ? [...sponsors, ...sponsors] : sponsors).map(
                 (s, i) => {
@@ -136,7 +134,7 @@ const Sponsors = ({ pagedata }) => {
                   return (
                     <article
                       key={`${s._id || s.name || "sponsor"}-${i}`}
-                      className="group relative flex min-w-[145px] max-w-[145px] shrink-0 snap-start flex-col overflow-hidden rounded-xl border border-slate-200 bg-white p-2.5 shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-blue-200 hover:shadow-md md:min-w-[170px] md:max-w-[170px] md:p-3"
+                      className="group relative flex min-w-[145px] md:min-w-[170px] max-w-[170px] shrink-0 snap-start flex-col overflow-hidden rounded-xl border border-slate-200 bg-white p-2.5 shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-blue-200 hover:shadow-md md:p-3"
                     >
                       <div
                         className="absolute inset-x-0 top-0 h-1"
