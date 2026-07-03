@@ -309,7 +309,7 @@ export default function AuctionDetailsPage({ theme, onToggleTheme }) {
     getEntityId(auctionData?.tournament);
   const landingPageUrl =
     landingTournamentId && auctionId
-      ? `/viewlanding-page/${landingTournamentId}/${auctionId}`
+      ? `/landing-page/${landingTournamentId}/${auctionId}`
       : "";
 
   const sortPlayers = [

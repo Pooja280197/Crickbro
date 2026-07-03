@@ -25,6 +25,7 @@ const RegWebsite = () => {
   const [loading, setLoading] = React.useState(true);
   const [activeRegistrationForm, setActiveRegistrationForm] = React.useState("player");
   const [websiteThemeMode, setWebsiteThemeMode] = React.useState("light");
+  const [hideHeaderFooter, setHideHeaderFooter] = React.useState(false);
   const { tournamentId, auctionId } = useParams();
 
   const showPlayerRegistration = !!pageData?.showRegistrationForm;
@@ -95,6 +96,7 @@ const RegWebsite = () => {
       localStorage.setItem("token", playertoken);
       window.dispatchEvent(new Event("userLoggedIn"));
       window.dispatchEvent(new Event("crickbro-auth-change"));
+      setHideHeaderFooter(true);
     }
   }, []);
 
@@ -181,12 +183,14 @@ const RegWebsite = () => {
         </div>
       )}
       <div className={isPreviewMode ? "mt-20" : ""}>
-        <Header
-          data={pageData}
-          theme={activeTheme}
-          themeMode={websiteThemeMode}
-          onThemeModeChange={setWebsiteThemeMode}
-        />
+        {!hideHeaderFooter && (
+          <Header
+            data={pageData}
+            theme={activeTheme}
+            themeMode={websiteThemeMode}
+            onThemeModeChange={setWebsiteThemeMode}
+          />
+        )}
         {pageData?.sliderImages && <Slider pagedata={pageData} />}
         <React.Suspense
           fallback={
@@ -238,7 +242,7 @@ const RegWebsite = () => {
 
         {pageData?.questionsAnswers && pageData?.questionsAnswers.length > 0 && <FAQ pagedata={pageData} />}
 
-        <Footer />
+        {!hideHeaderFooter && <Footer />}
         </React.Suspense>
       </div>
     </div>

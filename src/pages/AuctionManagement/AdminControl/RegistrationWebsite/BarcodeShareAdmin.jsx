@@ -20,7 +20,7 @@ const BarcodeShareAdmin = ({
 
     // 🔗 Generate URL
     useEffect(() => {
-        const url = `${window.location.origin}/viewlanding-page/${tournamentId}/${auctionId}`;
+        const url = `${window.location.origin}/landing-page/${tournamentId}/${auctionId}`;
         setPageUrl(url);
     }, [tournamentId, auctionId]);
 

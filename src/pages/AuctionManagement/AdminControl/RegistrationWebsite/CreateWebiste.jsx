@@ -1076,7 +1076,7 @@ const TournamentAdminForm = ({ tournamentId, auctionId, TrialType }) => {
                 Save Basic Info
               </button>
             )}
-            <button onClick={() => navigate(`/viewlanding-page/${tournamentId}/${auctionId}`)} className="lp-btn-view">
+            <button onClick={() => navigate(`/landing-page/${tournamentId}/${auctionId}`)} className="lp-btn-view">
               <FiEye size={14} /> Preview
             </button>
             <button onClick={() => setShowBarcodeModal(true)} disabled={!landingPageId} className="lp-btn-barcode">

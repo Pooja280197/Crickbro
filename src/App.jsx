@@ -223,7 +223,7 @@ function AppContent({ theme, toggleTheme }) {
           />
           <Route
             exact
-            path="/viewlanding-page/:tournamentId/:auctionId"
+            path="/landing-page/:tournamentId/:auctionId"
             element={<RegWebsite />}
           />
 
