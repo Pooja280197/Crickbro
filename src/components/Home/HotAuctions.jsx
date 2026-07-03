@@ -1,9 +1,8 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Filter, MapPin, Calendar, Users, X } from "lucide-react";
 import Header from "../Header";
 import Footer from "../Footer";
-import Pagination from "../Pagination";
 import { fetchAuctions } from "../../redux/actions";
 import { useDispatch, useSelector } from "react-redux";
 import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
@@ -91,6 +90,10 @@ const HotAuctions = ({ theme, onToggleTheme }) => {
   });
   const [loginRefresh, setLoginRefresh] = useState(0);
   const [homeShowingUpcoming, setHomeShowingUpcoming] = useState(false);
+  const [loadedAuctions, setLoadedAuctions] = useState([]);
+  const [infiniteMeta, setInfiniteMeta] = useState(null);
+  const listTopRef = useRef(null);
+  const loadMoreRef = useRef(null);
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -109,9 +112,10 @@ const HotAuctions = ({ theme, onToggleTheme }) => {
   const isLoading = useSelector((state) => state.loading?.auctionList || false);
   const auctionData = useSelector((state) => state.data?.auctionList || null);
   const auctions = auctionData?.data || [];
+  const sourceAuctions = isHome ? auctions : loadedAuctions;
   const filteredAuctions = useMemo(
-    () => filterAuctions(auctions, filters),
-    [auctions, filters],
+    () => filterAuctions(sourceAuctions, filters),
+    [sourceAuctions, filters],
   );
   const hasServerPagination = Boolean(
     auctionData?.pages || auctionData?.total || auctionData?.page,
@@ -119,27 +123,51 @@ const HotAuctions = ({ theme, onToggleTheme }) => {
   const hasActiveFilters = Boolean(
     filters.search.trim() || filters.fromDate || filters.toDate,
   );
-  const totalAuctions = hasServerPagination
+  const serverTotalAuctions = hasServerPagination
     ? Number(auctionData?.total || filteredAuctions.length)
     : filteredAuctions.length;
+  const totalAuctions = !isHome
+    ? Number(infiniteMeta?.total || filteredAuctions.length)
+    : serverTotalAuctions;
   const totalPages = Math.max(
     1,
-    Number(auctionData?.pages) ||
+    (!isHome ? Number(infiniteMeta?.pages) : Number(auctionData?.pages)) ||
       Math.ceil(totalAuctions / AUCTIONS_PER_PAGE) ||
       1,
   );
+  const hasLoadedFirstPage = isHome || Boolean(infiniteMeta);
+  const canLoadMore = !isHome && hasLoadedFirstPage && currentPage < totalPages;
+  const isInitialLoading =
+    (!isHome && !hasLoadedFirstPage) ||
+    (isLoading && (isHome || currentPage === 1 || loadedAuctions.length === 0));
+  const isLoadingMore =
+    !isHome && isLoading && currentPage > 1 && loadedAuctions.length > 0;
+
+  const resetInfiniteAuctions = useCallback(() => {
+    setLoadedAuctions([]);
+    setInfiniteMeta(null);
+    setCurrentPage(1);
+  }, []);
+
+  const scrollToListTop = useCallback(() => {
+    window.requestAnimationFrame(() => {
+      listTopRef.current?.scrollIntoView({ block: "start" });
+    });
+  }, []);
 
   useEffect(() => {
     if (isHome) return;
 
     const tabFromUrl = searchParams.get("tab");
     const isValidTab = tabs.some((tab) => tab.key === tabFromUrl);
+    const nextTab = isValidTab ? tabFromUrl : "ongoing";
 
-    if (isValidTab && tabFromUrl !== activeTab) {
-      setActiveTab(tabFromUrl);
-      setCurrentPage(1);
+    if (nextTab !== activeTab) {
+      setActiveTab(nextTab);
+      resetInfiniteAuctions();
+      scrollToListTop();
     }
-  }, [activeTab, isHome, searchParams]);
+  }, [activeTab, isHome, resetInfiniteAuctions, scrollToListTop, searchParams]);
 
   useEffect(() => {
     if (!isHome && currentPage > totalPages) {
@@ -150,12 +178,20 @@ const HotAuctions = ({ theme, onToggleTheme }) => {
   useEffect(() => {
     if (activeTab === "my" && !isLoggedIn) {
       setActiveTab("ongoing");
-      setCurrentPage(1);
+      resetInfiniteAuctions();
+      scrollToListTop();
       const nextParams = new URLSearchParams(searchParams);
       nextParams.delete("tab");
       setSearchParams(nextParams, { replace: true });
     }
-  }, [activeTab, isLoggedIn, searchParams, setSearchParams]);
+  }, [
+    activeTab,
+    isLoggedIn,
+    resetInfiniteAuctions,
+    scrollToListTop,
+    searchParams,
+    setSearchParams,
+  ]);
 
   useEffect(() => {
     const handleLoginEvent = () => setLoginRefresh((prev) => prev + 1);
@@ -177,13 +213,59 @@ const HotAuctions = ({ theme, onToggleTheme }) => {
 
       if (activeTab === "my") {
         if (playerId) {
-          await dispatch(fetchAuctions(activeTab, playerId, pageOptions));
+          const result = await dispatch(
+            fetchAuctions(activeTab, playerId, pageOptions),
+          );
+
+          if (active && !isHome) {
+            const fetchedAuctions = result?.data || [];
+            const total = Number(result?.total || fetchedAuctions.length);
+            setInfiniteMeta({
+              total,
+              pages:
+                Number(result?.pages) ||
+                Math.ceil(total / AUCTIONS_PER_PAGE) ||
+                1,
+              page: Number(result?.page || currentPage),
+            });
+            setLoadedAuctions((prev) =>
+              currentPage === 1
+                ? fetchedAuctions
+                : [
+                    ...prev,
+                    ...fetchedAuctions.filter(
+                      (auction) =>
+                        !prev.some((item) => item._id === auction._id),
+                    ),
+                  ],
+            );
+          }
         }
         return;
       }
 
       const result = await dispatch(fetchAuctions(activeTab, null, pageOptions));
       const fetchedAuctions = result?.data || [];
+
+      if (active && !isHome) {
+        const total = Number(result?.total || fetchedAuctions.length);
+        setInfiniteMeta({
+          total,
+          pages:
+            Number(result?.pages) || Math.ceil(total / AUCTIONS_PER_PAGE) || 1,
+          page: Number(result?.page || currentPage),
+        });
+        setLoadedAuctions((prev) =>
+          currentPage === 1
+            ? fetchedAuctions
+            : [
+                ...prev,
+                ...fetchedAuctions.filter(
+                  (auction) => !prev.some((item) => item._id === auction._id),
+                ),
+              ],
+        );
+      }
 
       if (
         active &&
@@ -218,13 +300,32 @@ const HotAuctions = ({ theme, onToggleTheme }) => {
 
   const updateFilter = (key, value) => {
     setFilters((prev) => ({ ...prev, [key]: value }));
-    setCurrentPage(1);
+    resetInfiniteAuctions();
+    scrollToListTop();
   };
 
   const clearFilters = () => {
     setFilters({ search: "", fromDate: "", toDate: "" });
-    setCurrentPage(1);
+    resetInfiniteAuctions();
+    scrollToListTop();
   };
+
+  useEffect(() => {
+    if (isHome || !loadMoreRef.current || !canLoadMore) return undefined;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting && !isLoading) {
+          setCurrentPage((page) => Math.min(page + 1, totalPages));
+        }
+      },
+      { root: null, rootMargin: "260px 0px", threshold: 0.1 },
+    );
+
+    observer.observe(loadMoreRef.current);
+
+    return () => observer.disconnect();
+  }, [canLoadMore, isHome, isLoading, totalPages]);
 
   const handleCreateAuction = () => {
     if (!isLoggedIn) {
@@ -278,12 +379,10 @@ const HotAuctions = ({ theme, onToggleTheme }) => {
   const homeLiveAuctions = auctions.slice(0, 4);
   const paginatedAuctions = hasServerPagination
     ? filteredAuctions
-    : filteredAuctions.slice(
-        (currentPage - 1) * AUCTIONS_PER_PAGE,
-        currentPage * AUCTIONS_PER_PAGE,
-      );
+    : filteredAuctions.slice(0, currentPage * AUCTIONS_PER_PAGE);
   const listToRender = isHome ? homeLiveAuctions : paginatedAuctions;
-  const showPagination = !isHome && !isLoading && totalPages > 1;
+  const showLoadMoreStatus =
+    !isHome && (isLoadingMore || (listToRender.length > 0 && !canLoadMore));
 
   return (
     <>
@@ -303,6 +402,8 @@ const HotAuctions = ({ theme, onToggleTheme }) => {
           </>
         )}
         <div className="container relative mx-auto px-4 sm:px-6">
+          <div ref={listTopRef} className="scroll-mt-[112px]" />
+
           {isHome && (
             <div className="mb-9 text-center text-[var(--text-primary)]">
               <h2 className="m-0 font-heading text-[clamp(30px,4vw,44px)] font-black uppercase leading-tight">
@@ -359,7 +460,8 @@ const HotAuctions = ({ theme, onToggleTheme }) => {
                           key={tab.key}
                           onClick={() => {
                             setActiveTab(tab.key);
-                            setCurrentPage(1);
+                            resetInfiniteAuctions();
+                            scrollToListTop();
 
                             const nextParams = new URLSearchParams(searchParams);
                             if (tab.key === "ongoing") {
@@ -450,7 +552,7 @@ const HotAuctions = ({ theme, onToggleTheme }) => {
               transition={{ duration: 0.25 }}
               className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 mt-4"
             >
-              {isLoading && (
+              {isInitialLoading && (
                 <div className="col-span-full text-center py-20">
                   <div style={{ color: "var(--text-secondary)" }}>
                     Loading auctions...
@@ -458,7 +560,7 @@ const HotAuctions = ({ theme, onToggleTheme }) => {
                 </div>
               )}
 
-              {!isLoading && listToRender.length === 0 && (
+              {!isInitialLoading && listToRender.length === 0 && (
                 <div
                   className="col-span-full py-16 text-center"
                   style={{ color: "var(--text-secondary)" }}
@@ -467,7 +569,7 @@ const HotAuctions = ({ theme, onToggleTheme }) => {
                 </div>
               )}
 
-              {!isLoading &&
+              {!isInitialLoading &&
                 listToRender.map((auction, idx) => (
                   <motion.div
                     key={auction._id}
@@ -541,14 +643,16 @@ const HotAuctions = ({ theme, onToggleTheme }) => {
             </motion.div>
           </AnimatePresence>
 
-          {showPagination && (
-            <Pagination
-              currentPage={currentPage}
-              totalPages={totalPages}
-              onPageChange={setCurrentPage}
-              className="mt-8"
-              summaryPrefix={`${totalAuctions} auctions | Page`}
-            />
+          {!isHome && canLoadMore && (
+            <div ref={loadMoreRef} className="h-12" aria-hidden="true" />
+          )}
+
+          {showLoadMoreStatus && (
+            <div className="mt-8 text-center text-sm font-semibold text-[var(--text-secondary)]">
+              {isLoadingMore
+                ? "Loading more auctions..."
+                : `${listToRender.length} auction cards loaded`}
+            </div>
           )}
 
           {isHome && auctions.length > 0 && (

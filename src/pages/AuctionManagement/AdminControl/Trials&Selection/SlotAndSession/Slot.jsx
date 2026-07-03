@@ -47,7 +47,7 @@ const Slot = ({ auctionId }) => {
   const tournamentId = useSelector((state) => state.tournamentId);
   const total = slotDetails?.total || 0;
   const currentPage = slotDetails?.page || 1;
-  const totalPages = Math.ceil(total / limit);
+  const totalPages = Math.max(1, Math.ceil(total / limit));
   const selectorsList = useSelector(
     (state) => state?.data?.auctionSelectors?.selectors,
   );
@@ -783,30 +783,30 @@ const Slot = ({ auctionId }) => {
                 </tbody>
               </table>
             </div>
-            
-            {/* Pagination */}
-            <div className="flex items-center justify-between border-t border-[var(--border-card)] bg-[var(--bg-main)] px-4 py-3">
-              <div className="text-sm text-[var(--text-secondary)]">
-                Page {currentPage} of {totalPages}
-              </div>
+          </div>
 
-              <div className="flex gap-2">
-                <button
-                  disabled={page === 1}
-                  onClick={() => setPage((prev) => prev - 1)}
-                  className="rounded-lg border border-[var(--border-primary)] bg-[var(--bg-card)] px-3 py-1.5 text-sm font-medium text-[var(--text-primary)] transition hover:bg-[var(--secondary-lighter)] disabled:cursor-not-allowed disabled:opacity-50"
-                >
-                  Prev
-                </button>
+          {/* Pagination */}
+          <div className="flex flex-col gap-3 border-t border-[var(--border-card)] bg-[var(--bg-main)] px-3 py-3 sm:flex-row sm:items-center sm:justify-between sm:px-4">
+            <div className="text-center text-sm text-[var(--text-secondary)] sm:text-left">
+              Page {currentPage} of {totalPages}
+            </div>
 
-                <button
-                  disabled={page === totalPages}
-                  onClick={() => setPage((prev) => prev + 1)}
-                  className="rounded-lg border border-[var(--border-primary)] bg-[var(--bg-card)] px-3 py-1.5 text-sm font-medium text-[var(--text-primary)] transition hover:bg-[var(--secondary-lighter)] disabled:cursor-not-allowed disabled:opacity-50"
-                >
-                  Next
-                </button>
-              </div>
+            <div className="grid grid-cols-2 gap-2 sm:flex">
+              <button
+                disabled={page === 1}
+                onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
+                className="rounded-lg border border-[var(--border-primary)] bg-[var(--bg-card)] px-3 py-2 text-sm font-medium text-[var(--text-primary)] transition hover:bg-[var(--secondary-lighter)] disabled:cursor-not-allowed disabled:opacity-50 sm:py-1.5"
+              >
+                Prev
+              </button>
+
+              <button
+                disabled={page >= totalPages}
+                onClick={() => setPage((prev) => Math.min(prev + 1, totalPages))}
+                className="rounded-lg border border-[var(--border-primary)] bg-[var(--bg-card)] px-3 py-2 text-sm font-medium text-[var(--text-primary)] transition hover:bg-[var(--secondary-lighter)] disabled:cursor-not-allowed disabled:opacity-50 sm:py-1.5"
+              >
+                Next
+              </button>
             </div>
           </div>
         </div>

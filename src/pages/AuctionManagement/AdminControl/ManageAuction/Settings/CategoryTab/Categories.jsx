@@ -15,7 +15,7 @@ import DeleteConfirmModal from "../../../../../../components/DeleteConfirmModal"
 import CategoryPlayers from "./CategoryPlayers";
 import Pagination from "../../../../../../components/Pagination";
 
-const CATEGORIES_PER_PAGE = 10;
+const CATEGORIES_PER_PAGE = 5;
 
 const Categories = ({ auctionId }) => {
   const [categoryPopup, setCategoryPopup] = useState(false);

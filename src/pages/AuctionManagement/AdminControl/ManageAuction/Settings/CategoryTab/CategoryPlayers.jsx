@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import api from "../../../../../../utils/api";
 import { X, ChevronLeft, ChevronRight, Users, Hash, Filter, Search } from "lucide-react";
 import { getCategoryPlayers } from "../../../../../../redux/actions";
+import Pagination from "../../../../../../components/Pagination";
 
 const CategoryPlayers = ({ open, onClose, categoryId, auctionId }) => {
   const dispatch = useDispatch();
@@ -260,55 +261,13 @@ const CategoryPlayers = ({ open, onClose, categoryId, auctionId }) => {
 
         {/* Pagination */}
         <div className="border-t border-[var(--border-card)] bg-[var(--bg-card)] px-4 py-3 sm:px-5">
-          <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-            <div className="text-sm text-[var(--text-secondary)]">
-              Showing {localPlayers.length ? Math.min((page - 1) * limit + 1, totalRecords || localPlayers.length) : 0}-
-              {Math.min(page * limit, totalRecords || localPlayers.length)} of {totalRecords || localPlayers.length} players
-            </div>
-            
-            <div className="flex items-center gap-2">
-              <button
-                disabled={page === 1}
-                onClick={() => setPage((p) => p - 1)}
-                className="inline-flex h-9 items-center gap-2 rounded-lg border border-[var(--border-card)] bg-[var(--bg-main)] px-3 text-sm font-semibold text-[var(--text-primary)] transition hover:border-[var(--border-primary)] hover:bg-[var(--accent-light)] disabled:cursor-not-allowed disabled:opacity-40"
-              >
-                <ChevronLeft size={16} />
-                <span>Previous</span>
-              </button>
-
-              <div className="flex items-center gap-1">
-                {[...Array(Math.min(5, totalPages))].map((_, idx) => {
-                  const pageNum = page <= 3 ? idx + 1 : 
-                                page >= totalPages - 2 ? totalPages - 4 + idx : 
-                                page - 2 + idx;
-                  if (pageNum < 1 || pageNum > totalPages) return null;
-                  
-                  return (
-                    <button
-                      key={idx}
-                      onClick={() => setPage(pageNum)}
-                      className={`h-9 w-9 rounded-lg text-sm font-semibold transition
-                        ${page === pageNum
-                          ? "bg-[var(--secondary)] text-[#102033]"
-                          : "border border-[var(--border-card)] bg-[var(--bg-main)] text-[var(--text-primary)] hover:bg-[var(--accent-light)]"
-                        }`}
-                    >
-                      {pageNum}
-                    </button>
-                  );
-                })}
-              </div>
-
-              <button
-                disabled={page === totalPages}
-                onClick={() => setPage((p) => p + 1)}
-                className="inline-flex h-9 items-center gap-2 rounded-lg border border-[var(--border-card)] bg-[var(--bg-main)] px-3 text-sm font-semibold text-[var(--text-primary)] transition hover:border-[var(--border-primary)] hover:bg-[var(--accent-light)] disabled:cursor-not-allowed disabled:opacity-40"
-              >
-                <span>Next</span>
-                <ChevronRight size={16} />
-              </button>
-            </div>
-          </div>
+          <Pagination
+            currentPage={page}
+            totalPages={totalPages}
+            onPageChange={setPage}
+            summaryPrefix="Players page"
+            className="w-full"
+          />
         </div>
 
         {/* Instructions */}
