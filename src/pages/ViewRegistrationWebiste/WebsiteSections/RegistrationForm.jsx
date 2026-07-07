@@ -1,4 +1,10 @@
-import React, { useState, useEffect, useMemo, useRef, useCallback } from "react";
+import React, {
+  useState,
+  useEffect,
+  useMemo,
+  useRef,
+  useCallback,
+} from "react";
 import { createPortal } from "react-dom";
 import {
   ChevronRight,
@@ -156,12 +162,7 @@ const AlreadyRegisteredCard = ({ profile, onViewDetails, auctionId }) => {
   );
 };
 
-const RegisterationForm = ({
-  pagedata,
-  showSwitcher,
-  activeTab,
-  onSwitch,
-}) => {
+const RegisterationForm = ({ pagedata, showSwitcher, activeTab, onSwitch }) => {
   const { auctionId } = useParams();
   const formRef = useRef(null);
   const profileInputRef = useRef(null);
@@ -409,7 +410,8 @@ const RegisterationForm = ({
         ? new ResizeObserver(updateDescriptionOverflow)
         : null;
     resizeObserver?.observe(preview);
-    if (preview.firstElementChild) resizeObserver?.observe(preview.firstElementChild);
+    if (preview.firstElementChild)
+      resizeObserver?.observe(preview.firstElementChild);
     window.addEventListener("resize", updateDescriptionOverflow);
     return () => {
       window.cancelAnimationFrame(frameId);
@@ -865,8 +867,6 @@ const RegisterationForm = ({
       const response = await dispatch(EnrollPlayer(auctionId, formData));
       const resData = response?.data?.data;
 
-   
-
       if (!resData?.paymentRequired) {
         toast.success("Successfully Registered For The Tournament");
         dispatch(fetchUserRole(auctionId, playerId));
@@ -1199,11 +1199,11 @@ const RegisterationForm = ({
     <div
       className="registration-form-section relative overflow-visible"
       // style={formThemeStyle}
-         style={{
+      style={{
         background: "linear-gradient(to bottom, #8e44ad, #1a1a2e)",
         borderTop: "2px solid rgba(255,255,255,0.15)",
         boxShadow: "inset 0 10px 25px rgba(0,0,0,0.4)",
-        color: "#fff"
+        color: "#fff",
       }}
     >
       <div className="absolute inset-0 opacity-80" />
@@ -1211,14 +1211,14 @@ const RegisterationForm = ({
       <div className="max-w-7xl mx-auto px-4 py-6 md:py-8 relative z-10">
         {showSwitcher && (
           <div className="flex items-center justify-center mb-6">
-            <div className="registration-form-switcher inline-flex rounded-2xl border border-blue-200 bg-white p-1 shadow-sm">
+            <div className="inline-flex rounded-xl border border-white/30 bg-white/10 backdrop-blur-sm p-1">
               <button
                 type="button"
                 onClick={() => onSwitch("player")}
                 className={`rounded-lg px-3 sm:px-5 py-2 text-xs sm:text-sm font-semibold transition ${
                   activeTab === "player"
-                    ? "bg-[var(--rf-primary)] text-white shadow-sm"
-                    : "text-[var(--rf-text)] hover:bg-[var(--rf-section-soft)]"
+                    ? "bg-white text-[var(--primary)]"
+                    : "text-white hover:bg-white/20"
                 }`}
               >
                 Player Register
@@ -1228,8 +1228,8 @@ const RegisterationForm = ({
                 onClick={() => onSwitch("team")}
                 className={`rounded-lg px-3 sm:px-5 py-2 text-xs sm:text-sm font-semibold transition ${
                   activeTab === "team"
-                    ? "bg-[var(--rf-primary)] text-white shadow-sm"
-                    : "text-[var(--rf-text)] hover:bg-[var(--rf-section-soft)]"
+                    ? "bg-white text-[var(--primary)]"
+                    : "text-white hover:bg-white/20"
                 }`}
               >
                 Team Register
@@ -1241,10 +1241,12 @@ const RegisterationForm = ({
           {/* Left Content - Centered with no border */}
           <div className="registration-form-intro space-y-4 animate-fadeIn rounded-2xl p-4 md:p-5 bg-transparent shadow-none border-0 flex flex-col justify-center h-full">
             <div className="space-y-3 text-center lg:text-left">
-              <span className="inline-flex rounded-full px-3 py-1 text-xs font-bold uppercase tracking-[0.18em] mx-auto lg:mx-0 text-blue-700 bg-blue-100">
+              {/* <span className="inline-flex rounded-full px-3 py-1 text-xs font-bold uppercase tracking-[0.18em] mx-auto lg:mx-0 text-blue-700 bg-blue-100">
                 Player Registration
-              </span>
-              <h1 className={`text-lg sm:text-xl md:text-2xl font-semibold leading-tight text-white`}>
+              </span> */}
+              <h1
+                className={`text-lg sm:text-xl md:text-2xl font-semibold leading-tight text-white`}
+              >
                 {pagedata?.tournamentTitle}
               </h1>
               <h2 className="text-3xl sm:text-4xl md:text-5xl font-black leading-tight tracking-tight text-white">
@@ -1259,7 +1261,7 @@ const RegisterationForm = ({
                 } ${canExpandDescription ? "has-overflow" : ""}`}
               >
                 <div
-                  className="registration-intro-description registration-rich-text text-base font-medium leading-7 text-gray-700"
+                  className=" font-medium leading-7"
                   dangerouslySetInnerHTML={{
                     __html: pagedata?.description || "",
                   }}
@@ -1292,626 +1294,774 @@ const RegisterationForm = ({
                 onViewDetails={() => setShowRegistrationDetails(true)}
               />
             ) : (
-              <div
-                className="registration-form-card quick-form-card w-full rounded-2xl p-3.5 sm:p-4 border shadow-lg"
-              >
-              <div className="registration-form-heading mb-3 flex items-center justify-between gap-3">
-                <div>
-                  {/* <p className="text-xs font-bold uppercase tracking-[0.18em] text-blue-100">
+              <div className="registration-form-card quick-form-card w-full rounded-2xl p-3.5 sm:p-4 border shadow-lg">
+                <div className="registration-form-heading mb-3 flex items-center justify-between gap-3">
+                  <div>
+                    {/* <p className="text-xs font-bold uppercase tracking-[0.18em] text-blue-100">
                     Quick Form
                   </p> */}
-                  <h2 className="font-black text-xl tracking-tight">
-                    Registration
-                  </h2>
+                    <h2 className="font-black text-xl tracking-tight">
+                      Registration
+                    </h2>
+                  </div>
+                  <div className="hidden rounded-full px-3 py-1.5 text-xs font-semibold sm:block">
+                    OTP Secure
+                  </div>
                 </div>
-                <div className="hidden rounded-full px-3 py-1.5 text-xs font-semibold sm:block">
-                  OTP Secure
-                </div>
-              </div>
-              <form onSubmit={handleSubmit} className="registration-form-body space-y-2.5">
-                {/* OTP Verification Section */}
-                <div>
-                  {!isOtpVerified && (
-                    <div className="space-y-3">
-                      <div>
-                        <label className="block text-[var(--rf-label)] text-sm font-semibold mb-2 tracking-wide">
-                          Mobile Number <span className="text-red-500">*</span>
-                        </label>
-                        <div className="flex flex-col sm:flex-row gap-2">
-                          <select
-                            ref={registerFieldRef("countryCode")}
-                            name="countryCode"
-                            value={loginDetails.countryCode}
-                            onChange={handleLoginChange}
-                            disabled={isOtpVerified}
-                            className="w-full sm:w-24 px-2 py-1 text-sm text-gray-900 rounded-lg bg-gray-50 border border-gray-300"
-                          >
-                            <option value="+91">🇮🇳 +91</option>
-                            <option value="+1">🇺🇸 +1</option>
-                            <option value="+44">🇬🇧 +44</option>
-                          </select>
-                          <input
-                            ref={registerFieldRef("mobile")}
-                            type="tel"
-                            name="mobile"
-                            value={loginDetails.mobile}
-                            onChange={handleLoginChange}
-                            placeholder="10-digit number"
-                            required
-                            pattern="[0-9]{10}"
-                            maxLength="10"
-                            disabled={isOtpVerified}
-                            className="flex-1 px-2 py-1 text-sm text-gray-900 rounded-lg bg-gray-50 border border-gray-300 w-full"
-                          />
-                          <button
-                            type="button"
-                            onClick={handleSendOtp}
-                            disabled={
-                              isOtpVerified ||
-                              isSendingOtp ||
-                              loginDetails.mobile.length !== 10
-                            }
-                            className={`w-full sm:w-auto px-2 py-1 text-sm font-semibold rounded-lg text-black transition-colors ${
-                              isOtpVerified ||
-                              loginDetails.mobile.length !== 10 ||
-                              isSendingOtp
-                                ? "bg-gray-400 cursor-not-allowed"
-                                : "bg-yellow-500 hover:bg-yellow-600"
-                            }`}
-                          >
-                            {isSendingOtp
-                              ? "Sending..."
-                              : isOtpVerified
-                                ? "✓ Verified"
-                                : "Send OTP"}
-                          </button>
-                        </div>
-                        {errors.mobile && (
-                          <p className="text-red-500 text-xs mt-1">
-                            {errors.mobile}
-                          </p>
-                        )}
-                      </div>
-
-                      {/* OTP Field - Only show if OTP sent but not verified */}
-                      {isOtpSent && !isOtpVerified && (
-                        <div className="space-y-2">
+                <form
+                  onSubmit={handleSubmit}
+                  className="registration-form-body space-y-2.5"
+                >
+                  {/* OTP Verification Section */}
+                  <div>
+                    {!isOtpVerified && (
+                      <div className="space-y-3">
+                        <div>
                           <label className="block text-[var(--rf-label)] text-sm font-semibold mb-2 tracking-wide">
-                            Enter OTP <span className="text-red-500">*</span>
+                            Mobile Number{" "}
+                            <span className="text-red-500">*</span>
                           </label>
                           <div className="flex flex-col sm:flex-row gap-2">
+                            <select
+                              ref={registerFieldRef("countryCode")}
+                              name="countryCode"
+                              value={loginDetails.countryCode}
+                              onChange={handleLoginChange}
+                              disabled={isOtpVerified}
+                              className="w-full sm:w-24 px-2 py-1 text-sm text-gray-900 rounded-lg bg-gray-50 border border-gray-300"
+                            >
+                              <option value="+91">🇮🇳 +91</option>
+                              <option value="+1">🇺🇸 +1</option>
+                              <option value="+44">🇬🇧 +44</option>
+                            </select>
                             <input
-                              type="text"
-                              ref={registerFieldRef("otp")}
-                              placeholder="6 digit OTP"
-                              value={otp}
-                              maxLength={6}
-                              onChange={(e) => handleOtpChange(e.target.value)}
-                              className="w-full px-2 py-1 text-sm text-black text-center rounded-lg bg-gray-50 border border-gray-300"
+                              ref={registerFieldRef("mobile")}
+                              type="tel"
+                              name="mobile"
+                              value={loginDetails.mobile}
+                              onChange={handleLoginChange}
+                              placeholder="10-digit number"
+                              required
+                              pattern="[0-9]{10}"
+                              maxLength="10"
+                              disabled={isOtpVerified || isOtpSent}
+                              className="flex-1 px-2 py-1 text-sm text-gray-900 rounded-lg bg-gray-50 border border-gray-300 w-full"
                             />
                             <button
                               type="button"
-                              disabled={otp.length !== 6 || isVerifying}
-                              onClick={handleVerifyOtp}
-                              className={`px-2 py-1 text-sm text-black rounded-md transition-colors whitespace-nowrap ${
-                                otp.length === 6 && !isVerifying
-                                  ? "bg-yellow-500 hover:bg-yellow-600"
-                                  : "bg-gray-400 cursor-not-allowed"
+                              onClick={handleSendOtp}
+                              disabled={
+                                isOtpVerified ||
+                                isSendingOtp ||
+                                loginDetails.mobile.length !== 10
+                              }
+                              className={`w-full sm:w-auto px-2 py-1 text-sm font-semibold rounded-lg text-black transition-colors ${
+                                isOtpVerified ||
+                                loginDetails.mobile.length !== 10 ||
+                                isSendingOtp
+                                  ? "bg-gray-400 cursor-not-allowed"
+                                  : "bg-yellow-500 hover:bg-yellow-600"
                               }`}
                             >
-                              {isVerifying ? "Verifying..." : "Verify OTP"}
+                              {isSendingOtp
+                                ? "Sending..."
+                                : isOtpVerified
+                                  ? "✓ Verified"
+                                  : "Send OTP"}
                             </button>
                           </div>
-                          {errors.otp && (
+                          {errors.mobile && (
                             <p className="text-red-500 text-xs mt-1">
-                              {errors.otp}
+                              {errors.mobile}
                             </p>
                           )}
                         </div>
-                      )}
 
-                      {/* Verified Badge */}
-                      {isOtpVerified && (
-                        <div className="flex items-center gap-1 text-green-600 text-sm">
-                          <Check className="w-3 h-3" />
-                          <span>Mobile number verified successfully</span>
-                        </div>
-                      )}
-                    </div>
-                  )}
-
-                  {/* Registration Form Fields - Multi-column compact layout */}
-                    <div className="registration-fields-stack mt-3 space-y-2.5">
-                    {/* Row 1: Profile Picture + Name + Role (3 columns) */}
-                    <div
-                      className={`registration-primary-row ${
-                        isFieldEnabled("profilePicture")
-                          ? "registration-primary-row-with-avatar"
-                          : ""
-                      }`}
-                    >
-                      {isFieldEnabled("profilePicture") && (
-                        <div className="registration-avatar-field flex flex-col items-center sm:items-center justify-end">
-                          <button
-                            type="button"
-                            onClick={() => {
-                              if (isOtpVerified) {
-                                profileInputRef.current?.click();
-                              }
-                            }}
-                            disabled={!isOtpVerified}
-                            className={`relative w-20 h-20 mb-1 border-2 rounded-xl overflow-hidden transition hover:shadow-md ${
-                              errors.profilePicture
-                                ? "border-red-500"
-                                : "border-blue-400/40"
-                            } ${isOtpVerified ? "cursor-pointer" : "cursor-not-allowed opacity-70"}`}
-                            title={
-                              isOtpVerified
-                                ? "Upload player photo"
-                                : "Verify OTP to upload photo"
-                            }
-                          >
-                            {getPreviewImage() ? (
-                              <img
-                                src={getPreviewImage()}
-                                alt="profile"
-                                className="w-full h-full object-cover"
-                              />
-                            ) : (
-                              <div className="w-full h-full bg-gray-100 flex items-center justify-center">
-                                <User className="w-6 h-6 text-gray-400" />
-                              </div>
-                            )}
-                            <span
-                              className={`absolute bottom-1 right-1 p-1.5 rounded-full shadow-sm ${isOtpVerified ? "bg-yellow-500" : "bg-gray-400"}`}
-                            >
-                              <Upload className="w-3 h-3 text-black" />
-                            </span>
-                          </button>
-                          <input
-                            ref={(element) => {
-                              profileInputRef.current = element;
-                              registerFieldRef("profilePicture")(element);
-                            }}
-                            type="file"
-                            accept="image/*"
-                            disabled={!isOtpVerified}
-                            onChange={(e) => {
-                              const file = e.target.files?.[0] || null;
-                              if (file) {
-                                update("profilePicture", file);
-                              }
-                              e.target.value = null;
-                            }}
-                            className="sr-only"
-                          />
-                          <p className="text-[10px] font-semibold text-gray-500">
-                            Upload photo
-                          </p>
-                          {errors.profilePicture && (
-                            <p className="text-red-500 text-xs mt-1">
-                              {errors.profilePicture}
-                            </p>
-                          )}
-                        </div>
-                      )}
-
-                      <div className="registration-primary-fields">
-                        {isFieldEnabled("name") && (
-                          <div>
-                            <label className="block text-[var(--rf-label)] text-sm font-semibold mb-1 tracking-wide">
-                              Full Name <span className="text-red-500">*</span>
+                        {/* OTP Field - Only show if OTP sent but not verified */}
+                        {isOtpSent && !isOtpVerified && (
+                          <div className="space-y-2">
+                            <label className="block text-[var(--rf-label)] text-sm font-semibold mb-2 tracking-wide">
+                              Enter OTP <span className="text-red-500">*</span>
                             </label>
-                            <input
-                              ref={registerFieldRef("name")}
-                              type="text"
-                              name="name"
-                              value={form.name}
-                              onChange={handleFormChange}
-                              placeholder="Full name"
-                              disabled={!isOtpVerified}
-                              className="w-full px-3 py-2 text-sm rounded-md bg-gray-50 border border-gray-300 text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/60 disabled:opacity-60 disabled:cursor-not-allowed"
-                            />
-                            {errors.name && (
-                              <p className="text-red-500 text-xs mt-1">
-                                {errors.name}
-                              </p>
-                            )}
-                          </div>
-                        )}
-
-                        {isFieldEnabled("role") && (
-                          <div>
-                            <label className="block text-[var(--rf-label)] text-sm font-semibold mb-1 tracking-wide">
-                              Player Role <span className="text-red-500">*</span>
-                            </label>
-                            <select
-                              ref={registerFieldRef("playerRole")}
-                              value={form.playerRole}
-                              onChange={(e) => update("playerRole", e.target.value)}
-                              disabled={!isOtpVerified}
-                              className="w-full px-3 py-2 text-sm rounded-md bg-gray-50 border border-gray-300 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/60 disabled:opacity-60 disabled:cursor-not-allowed"
-                            >
-                              <option value="" className="text-gray-600">
-                                Select role
-                              </option>
-                              {PLAYER_ROLES.map((role) => (
-                                <option key={role.label} value={role.value} className="text-gray-600">
-                                  {getRoleOptionLabel(role)}
-                                </option>
-                              ))}
-                            </select>
-                            {errors.playerRole && (
-                              <p className="text-red-500 text-xs mt-1">
-                                {errors.playerRole}
-                              </p>
-                            )}
-                          </div>
-                        )}
-                      </div>
-                    </div>
-
-                    {/* Row 2: Location (full width) */}
-                    {isFieldEnabled("location") && (
-                      <div>
-                        <label className="block text-[var(--rf-label)] text-sm font-semibold mb-1 tracking-wide">
-                          Location <span className="text-red-500">*</span>
-                        </label>
-                        <div className="flex items-center gap-2 w-full">
-                          <button
-                            type="button"
-                            onClick={handleGeo}
-                            className="p-2 rounded-md bg-gray-100 hover:bg-gray-200 transition-colors"
-                            title="Use current location"
-                          >
-                            <LocateFixed size={18} className="text-blue-600" />
-                          </button>
-                          <input
-                            ref={registerFieldRef("location")}
-                            value={value}
-                            onChange={(e) => {
-                              setValue(e.target.value);
-                              update("location", e.target.value);
-                            }}
-                            placeholder="Enter location"
-                            className="flex-1 px-3 py-2 text-sm rounded-md bg-gray-50 border border-gray-300 text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/60"
-                          />
-                          <button
-                            type="button"
-                            onClick={handlePickOnMap}
-                            className="p-2 rounded-md bg-gray-100 hover:bg-gray-200 transition-colors"
-                            title="Pick on map"
-                          >
-                            <MapIcon size={18} className="text-blue-600" />
-                          </button>
-                        </div>
-                        {loading && <p className="text-xs mt-1 text-gray-500">Fetching location...</p>}
-                        {errors.location && (
-                          <p className="text-red-500 text-xs mt-1">{errors.location}</p>
-                        )}
-                      </div>
-                    )}
-
-                    {/* Row 3: Email, DOB, Gender (3 columns) */}
-                    {(isFieldEnabled("email") || isFieldEnabled("dateOfBirth") || isFieldEnabled("gender")) && (
-                      <div className="registration-dynamic-grid">
-                        {isFieldEnabled("email") && (
-                          <div>
-                            <label className="block text-[var(--rf-label)] text-sm font-semibold mb-1 tracking-wide">
-                              Email
-                            </label>
-                            <input
-                              type="email"
-                              placeholder="you@example.com"
-                              value={form.email}
-                              onChange={(e) => update("email", e.target.value)}
-                              disabled={!isOtpVerified}
-                              className="w-full px-3 py-2 text-sm rounded-md bg-gray-50 border border-gray-300 placeholder:text-gray-400 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/60 disabled:opacity-60 disabled:cursor-not-allowed"
-                            />
-                            {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email}</p>}
-                          </div>
-                        )}
-
-                        {isFieldEnabled("dateOfBirth") && (
-                          <div>
-                            <label className="block text-[var(--rf-label)] text-sm font-semibold mb-1 tracking-wide">
-                              Date of Birth
-                            </label>
-                            <input
-                              type="date"
-                              value={form.dateOfBirth}
-                              onChange={(e) => update("dateOfBirth", e.target.value)}
-                              disabled={!isOtpVerified}
-                              className="w-full px-3 py-2 text-sm rounded-md bg-gray-50 border border-gray-300 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/60 disabled:opacity-60 disabled:cursor-not-allowed"
-                            />
-                          </div>
-                        )}
-
-                        {isFieldEnabled("gender") && (
-                          <div>
-                            <label className="block text-[var(--rf-label)] text-sm font-semibold mb-1 tracking-wide">
-                              Gender
-                            </label>
-                            <select
-                              value={form.gender}
-                              onChange={(e) => update("gender", e.target.value)}
-                              disabled={!isOtpVerified}
-                              className="w-full px-3 py-2 text-sm rounded-md bg-gray-50 border border-gray-300 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/60 disabled:opacity-60 disabled:cursor-not-allowed"
-                            >
-                              <option value="" className="text-gray-700">Select gender</option>
-                              <option value="male" className="text-gray-700">Male</option>
-                              <option value="female" className="text-gray-700">Female</option>
-                              <option value="other" className="text-gray-700">Other</option>
-                            </select>
-                          </div>
-                        )}
-                      </div>
-                    )}
-
-                    {/* Row 4: Jersey Details (4 columns) */}
-                    {(isFieldEnabled("jerseyNumber") || isFieldEnabled("jerseyName") || isFieldEnabled("jerseySize") || isFieldEnabled("lowerSize")) && (
-                      <div className="registration-dynamic-grid">
-                        {isFieldEnabled("jerseyNumber") && (
-                          <div>
-                            <label className="block text-[var(--rf-label)] text-sm font-semibold mb-1 tracking-wide">
-                              Jersey # 
-                            </label>
-                            <input
-                              ref={registerFieldRef("jerseyNumber")}
-                              type="number"
-                              placeholder="e.g. 10"
-                              value={form.jerseyNumber}
-                              onChange={(e) => update("jerseyNumber", e.target.value)}
-                              disabled={!isOtpVerified}
-                              className="w-full px-3 py-2 text-sm rounded-md bg-gray-50 border border-gray-300 placeholder:text-gray-400 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/60 disabled:opacity-60 disabled:cursor-not-allowed"
-                            />
-                            {errors.jerseyNumber && <p className="text-red-500 text-xs mt-1">{errors.jerseyNumber}</p>}
-                          </div>
-                        )}
-                        {isFieldEnabled("jerseyName") && (
-                          <div>
-                            <label className="block text-[var(--rf-label)] text-sm font-semibold mb-1 tracking-wide">
-                              Jersey Name 
-                            </label>
-                            <input
-                              ref={registerFieldRef("jerseyName")}
-                              type="text"
-                              placeholder="Name on jersey"
-                              value={form.jerseyName}
-                              onChange={(e) => update("jerseyName", e.target.value)}
-                              disabled={!isOtpVerified}
-                              className="w-full px-3 py-2 text-sm rounded-md bg-gray-50 border border-gray-300 placeholder:text-gray-400 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/60 disabled:opacity-60 disabled:cursor-not-allowed"
-                            />
-                            {errors.jerseyName && <p className="text-red-500 text-xs mt-1">{errors.jerseyName}</p>}
-                          </div>
-                        )}
-                        {isFieldEnabled("jerseySize") && (
-                          <div>
-                            <label className="block text-[var(--rf-label)] text-sm font-semibold mb-1 tracking-wide">
-                              Jersey Size 
-                            </label>
-                            <select
-                              ref={registerFieldRef("jerseySize")}
-                              value={form.jerseySize}
-                              onChange={(e) => update("jerseySize", e.target.value)}
-                              disabled={!isOtpVerified}
-                              className="w-full px-3 py-2 text-sm rounded-md bg-gray-50 border border-gray-300 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/60 disabled:opacity-60 disabled:cursor-not-allowed"
-                            >
-                              <option value="" className="text-gray-800">Select size</option>
-                              {["S", "M", "L", "XL", "XXL", "3XL", "4XL", "5XL"].map((s) => (
-                                <option key={s} value={s} className="text-gray-800">{s}</option>
-                              ))}
-                            </select>
-                            {errors.jerseySize && <p className="text-red-500 text-xs mt-1">{errors.jerseySize}</p>}
-                          </div>
-                        )}
-                        {isFieldEnabled("lowerSize") && (
-                          <div>
-                            <label className="block text-[var(--rf-label)] text-sm font-semibold mb-1 tracking-wide">
-                              Lower Size
-                            </label>
-                            <select
-                              ref={registerFieldRef("lowerSize")}
-                              value={form.lowerSize}
-                              onChange={(e) => update("lowerSize", e.target.value)}
-                              disabled={!isOtpVerified}
-                              className="w-full px-3 py-2 text-sm rounded-md bg-gray-50 border border-gray-300 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/60 disabled:opacity-60 disabled:cursor-not-allowed"
-                            >
-                              <option value="" className="text-gray-800">Select size</option>
-                              {["S", "M", "L", "XL", "XXL", "3XL", "4XL", "5XL"].map((s) => (
-                                <option key={s} value={s} className="text-gray-800">{s}</option>
-                              ))}
-                            </select>
-                          </div>
-                        )}
-                      </div>
-                    )}
-
-                    {/* Row 5: Document Uploads (2 columns) */}
-                    {(isFieldEnabled("adharCard") || isFieldEnabled("voterId")) && (
-                      <div className="registration-dynamic-grid">
-                        {isFieldEnabled("adharCard") && (
-                          <div>
-                            <label className="block text-[var(--rf-label)] text-sm font-semibold mb-1 tracking-wide">
-                              Aadhaar Card
-                            </label>
-                            <label
-                              className={`w-full flex items-center rounded-md overflow-hidden border ${isOtpVerified ? "border-gray-300 cursor-pointer" : "border-gray-200 cursor-not-allowed opacity-60"}`}
-                            >
-                              <span className="px-3 py-2 text-sm font-semibold bg-yellow-500 text-black whitespace-nowrap">
-                                Choose File
-                              </span>
-                              <span className="px-3 py-2 text-sm text-gray-600 bg-gray-50 flex-1 truncate">
-                                {formatUploadFileName(form.adharCard)}
-                              </span>
+                            <div className="flex flex-col sm:flex-row gap-2">
                               <input
-                                type="file"
-                                accept="image/*"
-                                disabled={!isOtpVerified}
-                                onChange={(e) => {
-                                  const file = e.target.files?.[0] || null;
-                                  update("adharCard", file);
-                                  e.target.value = null;
-                                }}
-                                className="hidden"
+                                type="text"
+                                ref={registerFieldRef("otp")}
+                                placeholder="6 digit OTP"
+                                value={otp}
+                                maxLength={6}
+                                onChange={(e) =>
+                                  handleOtpChange(e.target.value)
+                                }
+                                className="w-full px-2 py-1 text-sm text-black text-center rounded-lg bg-gray-50 border border-gray-300"
                               />
-                            </label>
-                            {typeof form.adharCard === "string" && form.adharCard && (
-                              <p className="text-yellow-600 text-xs mt-1">Aadhaar already uploaded</p>
-                            )}
-                          </div>
-                        )}
-                        {isFieldEnabled("voterId") && (
-                          <div>
-                            <label className="block text-[var(--rf-label)] text-sm font-semibold mb-1 tracking-wide">
-                              Voter ID
-                            </label>
-                            <label
-                              className={`w-full flex items-center rounded-md overflow-hidden border ${isOtpVerified ? "border-gray-300 cursor-pointer" : "border-gray-200 cursor-not-allowed opacity-60"}`}
-                            >
-                              <span className="px-3 py-2 text-sm font-semibold bg-yellow-500 text-black whitespace-nowrap">
-                                Choose File
-                              </span>
-                              <span className="px-3 py-2 text-sm text-gray-600 bg-gray-50 flex-1 truncate">
-                                {formatUploadFileName(form.voterId)}
-                              </span>
-                              <input
-                                type="file"
-                                accept="image/*"
-                                disabled={!isOtpVerified}
-                                onChange={(e) => {
-                                  const file = e.target.files?.[0] || null;
-                                  update("voterId", file);
-                                  e.target.value = null;
-                                }}
-                                className="hidden"
-                              />
-                            </label>
-                            {typeof form.voterId === "string" && form.voterId && (
-                              <p className="text-blue-600 text-xs mt-1">Voter ID already uploaded</p>
-                            )}
-                          </div>
-                        )}
-                      </div>
-                    )}
-
-                    {/* Trial Locations Section */}
-                    {pagedata?.showTrialLocations && (
-                      <div className="registration-dynamic-grid relative z-20 overflow-visible">
-                        <div className="relative z-30 overflow-visible">
-                          <label className="block text-[var(--rf-label)] text-sm font-semibold mb-1 tracking-wide">
-                            Select Slot
-                          </label>
-                          <div ref={slotDropdownAnchorRef} className="relative overflow-visible">
-                            <input
-                              type="text"
-                              value={isOpen ? search : selectedSlotLabel}
-                              placeholder="Search location..."
-                              onFocus={() => setIsOpen(true)}
-                              onChange={(e) => {
-                                setSearch(e.target.value);
-                                setSelectedSlot("");
-                              }}
-                              className="w-full px-3 py-2 rounded-md bg-gray-50 border border-gray-300 text-gray-900"
-                            />
-                            {isOpen && typeof document !== "undefined" && createPortal(
-                              <div
-                                className="registration-slot-dropdown fixed rounded-md border border-gray-200 bg-white text-gray-900 shadow-xl"
-                                style={{
-                                  left: slotDropdownPosition?.left || 0,
-                                  top: slotDropdownPosition?.top || 0,
-                                  width: slotDropdownPosition?.width || "auto",
-                                  maxHeight: slotDropdownPosition?.maxHeight || 208,
-                                  zIndex: 2147483000,
-                                }}
-                                onScroll={handleScroll}
+                              <button
+                                type="button"
+                                disabled={otp.length !== 6 || isVerifying}
+                                onClick={handleVerifyOtp}
+                                className={`px-2 py-1 text-sm text-black rounded-md transition-colors whitespace-nowrap ${
+                                  otp.length === 6 && !isVerifying
+                                    ? "bg-yellow-500 hover:bg-yellow-600"
+                                    : "bg-gray-400 cursor-not-allowed"
+                                }`}
                               >
-                                {slots.length === 0 ? (
-                                  <div className="p-2 text-sm text-gray-500">No locations found</div>
-                                ) : (
-                                  slots.map((slot) => (
-                                    <div
-                                      key={slot._id}
-                                      onClick={() => {
-                                        setSelectedSlot(slot._id);
-                                        setSelectedSlotLabel(slot.slotName);
-                                        setIsOpen(false);
-                                        setSearch("");
-                                        handleSlotChange(slot._id);
-                                      }}
-                                      className="px-3 py-2 hover:bg-blue-50 cursor-pointer"
-                                    >
-                                      {slot.slotName}
-                                    </div>
-                                  ))
-                                )}
-                                {slotLoading && <div className="p-2 text-center text-sm">Loading...</div>}
-                              </div>,
-                              document.body,
+                                {isVerifying ? "Verifying..." : "Verify OTP"}
+                              </button>
+                            </div>
+                            {errors.otp && (
+                              <p className="text-red-500 text-xs mt-1">
+                                {errors.otp}
+                              </p>
                             )}
                           </div>
-                          {errors.selectedSlot && <p className="text-red-500 text-xs mt-1">{errors.selectedSlot}</p>}
-                        </div>
+                        )}
 
-                        {selectedSlot && (
-                          <div className="relative z-10">
-                            <label className="block text-[var(--rf-label)] text-sm font-semibold mb-1 tracking-wide">
-                              Select session
-                              {Array.isArray(sessions) && sessions.length > 0 && <span className="text-red-500"> *</span>}
-                            </label>
-                            <select
-                              ref={registerFieldRef("selectedSession")}
-                              value={selectedSession}
-                              onChange={(e) => setSelectedSession(e.target.value)}
-                              disabled={!isOtpVerified || !selectedSlot || sessionLoading}
-                              className="w-full px-3 py-2 text-sm rounded-md bg-gray-50 border border-gray-300 text-gray-900 focus:ring-1 focus:ring-blue-500 disabled:opacity-60 disabled:cursor-not-allowed"
-                            >
-                              <option value="" className="text-gray-600">
-                                {!selectedSlot
-                                  ? "Select location first"
-                                  : sessionLoading
-                                    ? "Loading session…"
-                                    : sessions?.length > 0
-                                      ? "Select session"
-                                      : "No sessions for this location"}
-                              </option>
-                              {sessions?.map((session) => (
-                                <option key={session._id} value={session._id} className="text-gray-600">
-                                  {getSessionOptionLabel(session)}
-                                </option>
-                              ))}
-                            </select>
-                            {errors.selectedSession && <p className="text-red-500 text-xs mt-1">{errors.selectedSession}</p>}
+                        {/* Verified Badge */}
+                        {isOtpVerified && (
+                          <div className="flex items-center gap-1 text-green-600 text-sm">
+                            <Check className="w-3 h-3" />
+                            <span>Mobile number verified successfully</span>
                           </div>
                         )}
                       </div>
                     )}
 
-                    {/* Submit Button */}
-                    <button
-                      type="submit"
-                      disabled={
-                        !isOtpVerified ||
-                        (pagedata?.showTrialLocations &&
-                          (!selectedSlot ||
-                            sessionLoading ||
-                            (Array.isArray(sessions) && sessions.length > 0 && !selectedSession)))
-                      }
-                      className={`w-full py-2.5 text-sm font-bold rounded-md transition-all duration-300 ${
-                        !isOtpVerified ||
-                        (pagedata?.showTrialLocations &&
-                          (!selectedSlot ||
-                            sessionLoading ||
-                            (Array.isArray(sessions) && sessions.length > 0 && !selectedSession)))
-                          ? "bg-gray-400 cursor-not-allowed text-gray-700"
-                          : "bg-yellow-500 hover:bg-yellow-600 text-black font-bold transform hover:scale-[1.02]"
-                      }`}
-                    >
-                      {isOtpVerified ? "⚡ REGISTER NOW" : "Verify OTP to Continue"}
-                    </button>
+                    {/* Registration Form Fields - Multi-column compact layout */}
+                    <div className="registration-fields-stack mt-3 space-y-2.5">
+                      {/* Row 1: Profile Picture + Name + Role (3 columns) */}
+                      <div
+                        className={`registration-primary-row ${
+                          isFieldEnabled("profilePicture")
+                            ? "registration-primary-row-with-avatar"
+                            : ""
+                        }`}
+                      >
+                        {isFieldEnabled("profilePicture") && (
+                          <div className="registration-avatar-field flex flex-col items-center sm:items-center justify-end">
+                            <button
+                              type="button"
+                              onClick={() => {
+                                if (isOtpVerified) {
+                                  profileInputRef.current?.click();
+                                }
+                              }}
+                              disabled={!isOtpVerified}
+                              className={`relative w-20 h-20 mb-1 border-2 rounded-xl overflow-hidden transition hover:shadow-md ${
+                                errors.profilePicture
+                                  ? "border-red-500"
+                                  : "border-blue-400/40"
+                              } ${isOtpVerified ? "cursor-pointer" : "cursor-not-allowed opacity-70"}`}
+                              title={
+                                isOtpVerified
+                                  ? "Upload player photo"
+                                  : "Verify OTP to upload photo"
+                              }
+                            >
+                              {getPreviewImage() ? (
+                                <img
+                                  src={getPreviewImage()}
+                                  alt="profile"
+                                  className="w-full h-full object-cover"
+                                />
+                              ) : (
+                                <div className="w-full h-full bg-gray-100 flex items-center justify-center">
+                                  <User className="w-6 h-6 text-gray-400" />
+                                </div>
+                              )}
+                              <span
+                                className={`absolute bottom-1 right-1 p-1.5 rounded-full shadow-sm ${isOtpVerified ? "bg-yellow-500" : "bg-gray-400"}`}
+                              >
+                                <Upload className="w-3 h-3 text-black" />
+                              </span>
+                            </button>
+                            <input
+                              ref={(element) => {
+                                profileInputRef.current = element;
+                                registerFieldRef("profilePicture")(element);
+                              }}
+                              type="file"
+                              accept="image/*"
+                              disabled={!isOtpVerified}
+                              onChange={(e) => {
+                                const file = e.target.files?.[0] || null;
+                                if (file) {
+                                  update("profilePicture", file);
+                                }
+                                e.target.value = null;
+                              }}
+                              className="sr-only"
+                            />
+                            <p className="text-[10px] font-semibold text-gray-500">
+                              Upload photo
+                            </p>
+                            {errors.profilePicture && (
+                              <p className="text-red-500 text-xs mt-1">
+                                {errors.profilePicture}
+                              </p>
+                            )}
+                          </div>
+                        )}
+
+                        <div className="registration-primary-fields">
+                          {isFieldEnabled("name") && (
+                            <div>
+                              <label className="block text-[var(--rf-label)] text-sm font-semibold mb-1 tracking-wide">
+                                Full Name{" "}
+                                <span className="text-red-500">*</span>
+                              </label>
+                              <input
+                                ref={registerFieldRef("name")}
+                                type="text"
+                                name="name"
+                                value={form.name}
+                                onChange={handleFormChange}
+                                placeholder="Full name"
+                                disabled={!isOtpVerified}
+                                className="w-full px-3 py-2 text-sm rounded-md bg-gray-50 border border-gray-300 text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/60 disabled:opacity-60 disabled:cursor-not-allowed"
+                              />
+                              {errors.name && (
+                                <p className="text-red-500 text-xs mt-1">
+                                  {errors.name}
+                                </p>
+                              )}
+                            </div>
+                          )}
+
+                          {isFieldEnabled("role") && (
+                            <div>
+                              <label className="block text-[var(--rf-label)] text-sm font-semibold mb-1 tracking-wide">
+                                Player Role{" "}
+                                <span className="text-red-500">*</span>
+                              </label>
+                              <select
+                                ref={registerFieldRef("playerRole")}
+                                value={form.playerRole}
+                                onChange={(e) =>
+                                  update("playerRole", e.target.value)
+                                }
+                                disabled={!isOtpVerified}
+                                className="w-full px-3 py-2 text-sm rounded-md bg-gray-50 border border-gray-300 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/60 disabled:opacity-60 disabled:cursor-not-allowed"
+                              >
+                                <option value="" className="text-gray-600">
+                                  Select role
+                                </option>
+                                {PLAYER_ROLES.map((role) => (
+                                  <option
+                                    key={role.label}
+                                    value={role.value}
+                                    className="text-gray-600"
+                                  >
+                                    {getRoleOptionLabel(role)}
+                                  </option>
+                                ))}
+                              </select>
+                              {errors.playerRole && (
+                                <p className="text-red-500 text-xs mt-1">
+                                  {errors.playerRole}
+                                </p>
+                              )}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Row 2: Location (full width) */}
+                      {isFieldEnabled("location") && (
+                        <div>
+                          <label className="block text-[var(--rf-label)] text-sm font-semibold mb-1 tracking-wide">
+                            Location <span className="text-red-500">*</span>
+                          </label>
+                          <div className="flex items-center gap-2 w-full">
+                            <button
+                              type="button"
+                              onClick={handleGeo}
+                              className="p-2 rounded-md bg-gray-100 hover:bg-gray-200 transition-colors"
+                              title="Use current location"
+                            >
+                              <LocateFixed
+                                size={18}
+                                className="text-blue-600"
+                              />
+                            </button>
+                            <input
+                              ref={registerFieldRef("location")}
+                              value={value}
+                              onChange={(e) => {
+                                setValue(e.target.value);
+                                update("location", e.target.value);
+                              }}
+                              placeholder="Enter location"
+                              className="flex-1 px-3 py-2 text-sm rounded-md bg-gray-50 border border-gray-300 text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/60"
+                            />
+                            <button
+                              type="button"
+                              onClick={handlePickOnMap}
+                              className="p-2 rounded-md bg-gray-100 hover:bg-gray-200 transition-colors"
+                              title="Pick on map"
+                            >
+                              <MapIcon size={18} className="text-blue-600" />
+                            </button>
+                          </div>
+                          {loading && (
+                            <p className="text-xs mt-1 text-gray-500">
+                              Fetching location...
+                            </p>
+                          )}
+                          {errors.location && (
+                            <p className="text-red-500 text-xs mt-1">
+                              {errors.location}
+                            </p>
+                          )}
+                        </div>
+                      )}
+
+                      {/* Row 3: Email, DOB, Gender (3 columns) */}
+                      {(isFieldEnabled("email") ||
+                        isFieldEnabled("dateOfBirth") ||
+                        isFieldEnabled("gender")) && (
+                        <div className="registration-dynamic-grid">
+                          {isFieldEnabled("email") && (
+                            <div>
+                              <label className="block text-[var(--rf-label)] text-sm font-semibold mb-1 tracking-wide">
+                                Email
+                              </label>
+                              <input
+                                type="email"
+                                placeholder="you@example.com"
+                                value={form.email}
+                                onChange={(e) =>
+                                  update("email", e.target.value)
+                                }
+                                disabled={!isOtpVerified}
+                                className="w-full px-3 py-2 text-sm rounded-md bg-gray-50 border border-gray-300 placeholder:text-gray-400 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/60 disabled:opacity-60 disabled:cursor-not-allowed"
+                              />
+                              {errors.email && (
+                                <p className="text-red-500 text-xs mt-1">
+                                  {errors.email}
+                                </p>
+                              )}
+                            </div>
+                          )}
+
+                          {isFieldEnabled("dateOfBirth") && (
+                            <div>
+                              <label className="block text-[var(--rf-label)] text-sm font-semibold mb-1 tracking-wide">
+                                Date of Birth
+                              </label>
+                              <input
+                                type="date"
+                                value={form.dateOfBirth}
+                                onChange={(e) =>
+                                  update("dateOfBirth", e.target.value)
+                                }
+                                disabled={!isOtpVerified}
+                                className="w-full px-3 py-2 text-sm rounded-md bg-gray-50 border border-gray-300 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/60 disabled:opacity-60 disabled:cursor-not-allowed"
+                              />
+                            </div>
+                          )}
+
+                          {isFieldEnabled("gender") && (
+                            <div>
+                              <label className="block text-[var(--rf-label)] text-sm font-semibold mb-1 tracking-wide">
+                                Gender
+                              </label>
+                              <select
+                                value={form.gender}
+                                onChange={(e) =>
+                                  update("gender", e.target.value)
+                                }
+                                disabled={!isOtpVerified}
+                                className="w-full px-3 py-2 text-sm rounded-md bg-gray-50 border border-gray-300 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/60 disabled:opacity-60 disabled:cursor-not-allowed"
+                              >
+                                <option value="" className="text-gray-700">
+                                  Select gender
+                                </option>
+                                <option value="male" className="text-gray-700">
+                                  Male
+                                </option>
+                                <option
+                                  value="female"
+                                  className="text-gray-700"
+                                >
+                                  Female
+                                </option>
+                                <option value="other" className="text-gray-700">
+                                  Other
+                                </option>
+                              </select>
+                            </div>
+                          )}
+                        </div>
+                      )}
+
+                      {/* Row 4: Jersey Details (4 columns) */}
+                      {(isFieldEnabled("jerseyNumber") ||
+                        isFieldEnabled("jerseyName") ||
+                        isFieldEnabled("jerseySize") ||
+                        isFieldEnabled("lowerSize")) && (
+                        <div className="registration-dynamic-grid">
+                          {isFieldEnabled("jerseyNumber") && (
+                            <div>
+                              <label className="block text-[var(--rf-label)] text-sm font-semibold mb-1 tracking-wide">
+                                Jersey #
+                              </label>
+                              <input
+                                ref={registerFieldRef("jerseyNumber")}
+                                type="number"
+                                placeholder="e.g. 10"
+                                value={form.jerseyNumber}
+                                onChange={(e) =>
+                                  update("jerseyNumber", e.target.value)
+                                }
+                                disabled={!isOtpVerified}
+                                className="w-full px-3 py-2 text-sm rounded-md bg-gray-50 border border-gray-300 placeholder:text-gray-400 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/60 disabled:opacity-60 disabled:cursor-not-allowed"
+                              />
+                              {errors.jerseyNumber && (
+                                <p className="text-red-500 text-xs mt-1">
+                                  {errors.jerseyNumber}
+                                </p>
+                              )}
+                            </div>
+                          )}
+                          {isFieldEnabled("jerseyName") && (
+                            <div>
+                              <label className="block text-[var(--rf-label)] text-sm font-semibold mb-1 tracking-wide">
+                                Jersey Name
+                              </label>
+                              <input
+                                ref={registerFieldRef("jerseyName")}
+                                type="text"
+                                placeholder="Name on jersey"
+                                value={form.jerseyName}
+                                onChange={(e) =>
+                                  update("jerseyName", e.target.value)
+                                }
+                                disabled={!isOtpVerified}
+                                className="w-full px-3 py-2 text-sm rounded-md bg-gray-50 border border-gray-300 placeholder:text-gray-400 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/60 disabled:opacity-60 disabled:cursor-not-allowed"
+                              />
+                              {errors.jerseyName && (
+                                <p className="text-red-500 text-xs mt-1">
+                                  {errors.jerseyName}
+                                </p>
+                              )}
+                            </div>
+                          )}
+                          {isFieldEnabled("jerseySize") && (
+                            <div>
+                              <label className="block text-[var(--rf-label)] text-sm font-semibold mb-1 tracking-wide">
+                                Jersey Size
+                              </label>
+                              <select
+                                ref={registerFieldRef("jerseySize")}
+                                value={form.jerseySize}
+                                onChange={(e) =>
+                                  update("jerseySize", e.target.value)
+                                }
+                                disabled={!isOtpVerified}
+                                className="w-full px-3 py-2 text-sm rounded-md bg-gray-50 border border-gray-300 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/60 disabled:opacity-60 disabled:cursor-not-allowed"
+                              >
+                                <option value="" className="text-gray-800">
+                                  Select size
+                                </option>
+                                {[
+                                  "S",
+                                  "M",
+                                  "L",
+                                  "XL",
+                                  "XXL",
+                                  "3XL",
+                                  "4XL",
+                                  "5XL",
+                                ].map((s) => (
+                                  <option
+                                    key={s}
+                                    value={s}
+                                    className="text-gray-800"
+                                  >
+                                    {s}
+                                  </option>
+                                ))}
+                              </select>
+                              {errors.jerseySize && (
+                                <p className="text-red-500 text-xs mt-1">
+                                  {errors.jerseySize}
+                                </p>
+                              )}
+                            </div>
+                          )}
+                          {isFieldEnabled("lowerSize") && (
+                            <div>
+                              <label className="block text-[var(--rf-label)] text-sm font-semibold mb-1 tracking-wide">
+                                Lower Size
+                              </label>
+                              <select
+                                ref={registerFieldRef("lowerSize")}
+                                value={form.lowerSize}
+                                onChange={(e) =>
+                                  update("lowerSize", e.target.value)
+                                }
+                                disabled={!isOtpVerified}
+                                className="w-full px-3 py-2 text-sm rounded-md bg-gray-50 border border-gray-300 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/60 disabled:opacity-60 disabled:cursor-not-allowed"
+                              >
+                                <option value="" className="text-gray-800">
+                                  Select size
+                                </option>
+                                {[
+                                  "S",
+                                  "M",
+                                  "L",
+                                  "XL",
+                                  "XXL",
+                                  "3XL",
+                                  "4XL",
+                                  "5XL",
+                                ].map((s) => (
+                                  <option
+                                    key={s}
+                                    value={s}
+                                    className="text-gray-800"
+                                  >
+                                    {s}
+                                  </option>
+                                ))}
+                              </select>
+                            </div>
+                          )}
+                        </div>
+                      )}
+
+                      {/* Row 5: Document Uploads (2 columns) */}
+                      {(isFieldEnabled("adharCard") ||
+                        isFieldEnabled("voterId")) && (
+                        <div className="registration-dynamic-grid">
+                          {isFieldEnabled("adharCard") && (
+                            <div>
+                              <label className="block text-[var(--rf-label)] text-sm font-semibold mb-1 tracking-wide">
+                                Aadhaar Card
+                              </label>
+                              <label
+                                className={`w-full flex items-center rounded-md overflow-hidden border ${isOtpVerified ? "border-gray-300 cursor-pointer" : "border-gray-200 cursor-not-allowed opacity-60"}`}
+                              >
+                                <span className="px-3 py-2 text-sm font-semibold bg-yellow-500 text-black whitespace-nowrap">
+                                  Choose File
+                                </span>
+                                <span className="px-3 py-2 text-sm text-gray-600 bg-gray-50 flex-1 truncate">
+                                  {formatUploadFileName(form.adharCard)}
+                                </span>
+                                <input
+                                  type="file"
+                                  accept="image/*"
+                                  disabled={!isOtpVerified}
+                                  onChange={(e) => {
+                                    const file = e.target.files?.[0] || null;
+                                    update("adharCard", file);
+                                    e.target.value = null;
+                                  }}
+                                  className="hidden"
+                                />
+                              </label>
+                              {typeof form.adharCard === "string" &&
+                                form.adharCard && (
+                                  <p className="text-yellow-600 text-xs mt-1">
+                                    Aadhaar already uploaded
+                                  </p>
+                                )}
+                            </div>
+                          )}
+                          {isFieldEnabled("voterId") && (
+                            <div>
+                              <label className="block text-[var(--rf-label)] text-sm font-semibold mb-1 tracking-wide">
+                                Voter ID
+                              </label>
+                              <label
+                                className={`w-full flex items-center rounded-md overflow-hidden border ${isOtpVerified ? "border-gray-300 cursor-pointer" : "border-gray-200 cursor-not-allowed opacity-60"}`}
+                              >
+                                <span className="px-3 py-2 text-sm font-semibold bg-yellow-500 text-black whitespace-nowrap">
+                                  Choose File
+                                </span>
+                                <span className="px-3 py-2 text-sm text-gray-600 bg-gray-50 flex-1 truncate">
+                                  {formatUploadFileName(form.voterId)}
+                                </span>
+                                <input
+                                  type="file"
+                                  accept="image/*"
+                                  disabled={!isOtpVerified}
+                                  onChange={(e) => {
+                                    const file = e.target.files?.[0] || null;
+                                    update("voterId", file);
+                                    e.target.value = null;
+                                  }}
+                                  className="hidden"
+                                />
+                              </label>
+                              {typeof form.voterId === "string" &&
+                                form.voterId && (
+                                  <p className="text-blue-600 text-xs mt-1">
+                                    Voter ID already uploaded
+                                  </p>
+                                )}
+                            </div>
+                          )}
+                        </div>
+                      )}
+
+                      {/* Trial Locations Section */}
+                      {pagedata?.showTrialLocations && (
+                        <div className="registration-dynamic-grid relative z-20 overflow-visible">
+                          <div className="relative z-30 overflow-visible">
+                            <label className="block text-[var(--rf-label)] text-sm font-semibold mb-1 tracking-wide">
+                              Select Slot
+                            </label>
+                            <div
+                              ref={slotDropdownAnchorRef}
+                              className="relative overflow-visible"
+                            >
+                              <input
+                                type="text"
+                                value={isOpen ? search : selectedSlotLabel}
+                                placeholder="Search location..."
+                                onFocus={() => setIsOpen(true)}
+                                onChange={(e) => {
+                                  setSearch(e.target.value);
+                                  setSelectedSlot("");
+                                }}
+                                className="w-full px-3 py-2 rounded-md bg-gray-50 border border-gray-300 text-gray-900"
+                              />
+                              {isOpen &&
+                                typeof document !== "undefined" &&
+                                createPortal(
+                                  <div
+                                    className="registration-slot-dropdown fixed rounded-md border border-gray-200 bg-white text-gray-900 shadow-xl"
+                                    style={{
+                                      left: slotDropdownPosition?.left || 0,
+                                      top: slotDropdownPosition?.top || 0,
+                                      width:
+                                        slotDropdownPosition?.width || "auto",
+                                      maxHeight:
+                                        slotDropdownPosition?.maxHeight || 208,
+                                      zIndex: 2147483000,
+                                    }}
+                                    onScroll={handleScroll}
+                                  >
+                                    {slots.length === 0 ? (
+                                      <div className="p-2 text-sm text-gray-500">
+                                        No locations found
+                                      </div>
+                                    ) : (
+                                      slots.map((slot) => (
+                                        <div
+                                          key={slot._id}
+                                          onClick={() => {
+                                            setSelectedSlot(slot._id);
+                                            setSelectedSlotLabel(slot.slotName);
+                                            setIsOpen(false);
+                                            setSearch("");
+                                            handleSlotChange(slot._id);
+                                          }}
+                                          className="px-3 py-2 hover:bg-blue-50 cursor-pointer"
+                                        >
+                                          {slot.slotName}
+                                        </div>
+                                      ))
+                                    )}
+                                    {slotLoading && (
+                                      <div className="p-2 text-center text-sm">
+                                        Loading...
+                                      </div>
+                                    )}
+                                  </div>,
+                                  document.body,
+                                )}
+                            </div>
+                            {errors.selectedSlot && (
+                              <p className="text-red-500 text-xs mt-1">
+                                {errors.selectedSlot}
+                              </p>
+                            )}
+                          </div>
+
+                          {selectedSlot && (
+                            <div className="relative z-10">
+                              <label className="block text-[var(--rf-label)] text-sm font-semibold mb-1 tracking-wide">
+                                Select session
+                                {Array.isArray(sessions) &&
+                                  sessions.length > 0 && (
+                                    <span className="text-red-500"> *</span>
+                                  )}
+                              </label>
+                              <select
+                                ref={registerFieldRef("selectedSession")}
+                                value={selectedSession}
+                                onChange={(e) =>
+                                  setSelectedSession(e.target.value)
+                                }
+                                disabled={
+                                  !isOtpVerified ||
+                                  !selectedSlot ||
+                                  sessionLoading
+                                }
+                                className="w-full px-3 py-2 text-sm rounded-md bg-gray-50 border border-gray-300 text-gray-900 focus:ring-1 focus:ring-blue-500 disabled:opacity-60 disabled:cursor-not-allowed"
+                              >
+                                <option value="" className="text-gray-600">
+                                  {!selectedSlot
+                                    ? "Select location first"
+                                    : sessionLoading
+                                      ? "Loading session…"
+                                      : sessions?.length > 0
+                                        ? "Select session"
+                                        : "No sessions for this location"}
+                                </option>
+                                {sessions?.map((session) => (
+                                  <option
+                                    key={session._id}
+                                    value={session._id}
+                                    className="text-gray-600"
+                                  >
+                                    {getSessionOptionLabel(session)}
+                                  </option>
+                                ))}
+                              </select>
+                              {errors.selectedSession && (
+                                <p className="text-red-500 text-xs mt-1">
+                                  {errors.selectedSession}
+                                </p>
+                              )}
+                            </div>
+                          )}
+                        </div>
+                      )}
+
+                      {/* Submit Button */}
+                      <button
+                        type="submit"
+                        disabled={
+                          !isOtpVerified ||
+                          (pagedata?.showTrialLocations &&
+                            (!selectedSlot ||
+                              sessionLoading ||
+                              (Array.isArray(sessions) &&
+                                sessions.length > 0 &&
+                                !selectedSession)))
+                        }
+                        className={`w-full py-2.5 text-sm font-bold rounded-md transition-all duration-300 ${
+                          !isOtpVerified ||
+                          (pagedata?.showTrialLocations &&
+                            (!selectedSlot ||
+                              sessionLoading ||
+                              (Array.isArray(sessions) &&
+                                sessions.length > 0 &&
+                                !selectedSession)))
+                            ? "bg-gray-400 cursor-not-allowed text-gray-700"
+                            : "bg-yellow-500 hover:bg-yellow-600 text-black font-bold transform hover:scale-[1.02]"
+                        }`}
+                      >
+                        {isOtpVerified
+                          ? "⚡ REGISTER NOW"
+                          : "Verify OTP to Continue"}
+                      </button>
+                    </div>
                   </div>
-                </div>
-              </form>
+                </form>
               </div>
             )}
           </div>
@@ -2061,7 +2211,7 @@ const RegisterationForm = ({
 
         .registration-rich-text strong,
         .registration-rich-text b {
-          color: #1f2937;
+          color: #ffffff;
           font-weight: 800;
         }
 

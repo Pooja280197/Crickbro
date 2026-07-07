@@ -254,7 +254,6 @@ const IndiaMap = () => {
     city.toLowerCase().includes(searchTerm.toLowerCase()),
   );
 
-\
 
   return (
     <section

@@ -20,7 +20,7 @@ const ChangeAuctionStatus = ({ isOpen, onClose, auctionId, onSuccess,auctionStat
 
   const handleSubmit = async () => {
     if (!status) {
-      alert("Please select a status");
+      toast.error("Please select a status");
       return;
     }
 
@@ -64,7 +64,7 @@ const ChangeAuctionStatus = ({ isOpen, onClose, auctionId, onSuccess,auctionStat
           onChange={(e) => setStatus(e.target.value)}
           className="w-full border rounded-lg px-3 py-2 mb-4 text-[var(--text-primary)] focus:outline-none focus:ring-2 focus:ring-blue-500"
         >
-          <option value="" className="bg-[var(--bg-card)] text-[var(--text-primary)]">Select Status</option>
+          <option value="" className="bg-[var(--bg-primary)] text-[var(--text-primary)]">Select Status</option>
           {STATUS_OPTIONS.map((option) => (
             <option key={option} value={option} className=" text-[var(--text-primary)] cursor-pointer">
               {option.toUpperCase()}

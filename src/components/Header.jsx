@@ -89,7 +89,7 @@ const Header = ({ theme = "light", onToggleTheme }) => {
           <motion.button
             whileHover={{ y: -1 }}
             whileTap={{ scale: 0.98 }}
-            className="inline-flex min-h-[52px] items-center gap-3 rounded-xl px-1 py-1.5 text-left text-[var(--text-primary)] transition hover:bg-[var(--accent-light)] hover:text-[var(--primary)] max-md:min-h-12 max-md:px-1"
+            className="inline-flex min-h-[52px] items-center gap-3 rounded-xl px-1 py-1.5 text-left text-[var(--text-primary)] transition max-md:min-h-12 max-md:px-1"
             type="button"
             onClick={() => handleNav("/")}
             aria-label="Go to home"

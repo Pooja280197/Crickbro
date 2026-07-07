@@ -44,11 +44,11 @@ export default function TeamCard({
         </div>
       )}
 
-      {isAdded && (
+      {/* {isAdded && (
         <span className="absolute left-2 top-2 rounded-full bg-[var(--secondary)] px-2 py-0.5 text-[10px] font-bold text-[#102033]">
           Added
         </span>
-      )}
+      )} */}
 
       <div
         className={`flex h-14 w-14 items-center justify-center overflow-hidden rounded-lg border text-sm font-bold ${

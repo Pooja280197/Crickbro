@@ -275,22 +275,28 @@ export default function TeamRegistrationForm({
   return (
     <div
       className="registration-form-section relative overflow-hidden"
-      style={formThemeStyle}
+      // style={formThemeStyle}
+         style={{
+        background: "linear-gradient(to bottom, #8e44ad, #1a1a2e)",
+        borderTop: "2px solid rgba(255,255,255,0.15)",
+        boxShadow: "inset 0 10px 25px rgba(0,0,0,0.4)",
+        color: "#fff"
+      }}
       id="team-registration-form"
     >
-      <div className="absolute inset-0 bg-gradient-to-br from-blue-50 via-white to-blue-100 opacity-80" />
+      {/* <div className="absolute inset-0 bg-gradient-to-br from-blue-50 via-white to-blue-100 opacity-80" /> */}
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_10%_15%,rgba(59,130,246,0.08),transparent_30%),radial-gradient(circle_at_90%_80%,rgba(37,99,235,0.06),transparent_28%)]" />
       <div className="max-w-7xl mx-auto px-4 py-6 md:py-8 relative z-10">
         {showSwitcher && (
           <div className="flex items-center justify-center mb-6">
-            <div className="registration-form-switcher inline-flex rounded-2xl border border-blue-200 bg-white p-1 shadow-sm">
+            <div className="inline-flex rounded-xl border border-white/30 bg-white/10 backdrop-blur-sm p-1">
               <button
                 type="button"
                 onClick={() => onSwitch("player")}
                 className={`rounded-lg px-3 sm:px-5 py-2 text-xs sm:text-sm font-semibold transition ${
                   activeTab === "player"
-                    ? "bg-[var(--rf-primary)] text-white shadow-sm"
-                    : "text-[var(--rf-text)] hover:bg-[var(--rf-section-soft)]"
+                    ? "bg-white text-[var(--primary)]"
+                    : "text-white hover:bg-white/20"
                 }`}
               >
                 Player Register
@@ -300,8 +306,8 @@ export default function TeamRegistrationForm({
                 onClick={() => onSwitch("team")}
                 className={`rounded-lg px-3 sm:px-5 py-2 text-xs sm:text-sm font-semibold transition ${
                   activeTab === "team"
-                    ? "bg-[var(--rf-primary)] text-white shadow-sm"
-                    : "text-[var(--rf-text)] hover:bg-[var(--rf-section-soft)]"
+                    ? "bg-white text-[var(--primary)]"
+                    : "text-white hover:bg-white/20"
                 }`}
               >
                 Team Register
@@ -313,9 +319,9 @@ export default function TeamRegistrationForm({
           {/* Left Content */}
           <div className="registration-form-intro space-y-4 animate-fadeIn rounded-2xl p-4 md:p-5 bg-transparent shadow-none border-0 flex flex-col justify-center h-full">
             <div className="space-y-3 text-center lg:text-left">
-              <span className="inline-flex rounded-full px-3 py-1 text-xs font-bold uppercase tracking-[0.18em] mx-auto lg:mx-0 text-blue-700 bg-blue-100">
+              {/* <span className="inline-flex rounded-full px-3 py-1 text-xs font-bold uppercase tracking-[0.18em] mx-auto lg:mx-0 text-blue-700 bg-blue-100">
                 Team Registration
-              </span>
+              </span> */}
               <h1 className="text-lg sm:text-xl md:text-2xl font-semibold leading-tight text-blue-900">
                 {pagedata?.tournamentTitle}
               </h1>
@@ -331,7 +337,7 @@ export default function TeamRegistrationForm({
                 } ${canExpandDescription ? "has-overflow" : ""}`}
               >
                 <div
-                  className="registration-intro-description registration-rich-text text-base font-medium leading-7 text-gray-700"
+                  className=" font-medium leading-7"
                   dangerouslySetInnerHTML={{
                     __html: pagedata?.description || "",
                   }}

@@ -28,30 +28,32 @@ const Section = ({ title, children, defaultOpen = false, helper = "" }) => {
   const [isOpen, setIsOpen] = useState(defaultOpen);
 
   return (
-  <section className="overflow-hidden rounded-lg border border-[var(--border-card)] bg-[var(--bg-card)] shadow-[var(--shadow-card)]">
-    <button
-      type="button"
-      onClick={() => setIsOpen((prev) => !prev)}
-      className="flex w-full cursor-pointer items-center justify-between gap-3 border-b border-[var(--border-card)] bg-[var(--bg-card)] px-4 py-3 text-left transition hover:bg-[var(--secondary-lighter)]"
-    >
-      <div>
-        <h3 className="text-sm font-semibold text-[var(--text-primary)]">
-          {title}
-        </h3>
-        {helper ? (
-          <p className="mt-0.5 text-xs font-medium text-[var(--text-secondary)]">
-            {helper}
-          </p>
-        ) : null}
-      </div>
-      <ChevronDown
-        className={`h-4 w-4 shrink-0 text-[var(--text-secondary)] transition ${
-          isOpen ? "rotate-180" : ""
-        }`}
-      />
-    </button>
-    {isOpen && <div className="space-y-4 bg-[var(--bg-soft)] p-4">{children}</div>}
-  </section>
+    <section className="overflow-hidden rounded-lg border border-[var(--border-card)] bg-[var(--bg-card)] shadow-[var(--shadow-card)]">
+      <button
+        type="button"
+        onClick={() => setIsOpen((prev) => !prev)}
+        className="flex w-full cursor-pointer items-center justify-between gap-3 border-b border-[var(--border-card)] bg-[var(--bg-card)] px-4 py-3 text-left transition hover:bg-[var(--secondary-lighter)]"
+      >
+        <div>
+          <h3 className="text-sm font-semibold text-[var(--text-primary)]">
+            {title}
+          </h3>
+          {helper ? (
+            <p className="mt-0.5 text-xs font-medium text-[var(--text-secondary)]">
+              {helper}
+            </p>
+          ) : null}
+        </div>
+        <ChevronDown
+          className={`h-4 w-4 shrink-0 text-[var(--text-secondary)] transition ${
+            isOpen ? "rotate-180" : ""
+          }`}
+        />
+      </button>
+      {isOpen && (
+        <div className="space-y-4 bg-[var(--bg-soft)] p-4">{children}</div>
+      )}
+    </section>
   );
 };
 
@@ -96,7 +98,9 @@ const Input = ({
       title={tooltip}
     >
       {label}
-      {tooltip ? <Info className="h-3.5 w-3.5 text-[var(--text-secondary)]" /> : null}
+      {tooltip ? (
+        <Info className="h-3.5 w-3.5 text-[var(--text-secondary)]" />
+      ) : null}
     </label>
 
     {/* {tooltip && (
@@ -170,9 +174,14 @@ const Select = ({
 
   return (
     <div className="space-y-1.5">
-      <label className="inline-flex items-center gap-1.5 text-xs font-semibold text-[var(--text-primary)]" title={tooltip}>
+      <label
+        className="inline-flex items-center gap-1.5 text-xs font-semibold text-[var(--text-primary)]"
+        title={tooltip}
+      >
         {label}
-        {tooltip ? <Info className="h-3.5 w-3.5 text-[var(--text-secondary)]" /> : null}
+        {tooltip ? (
+          <Info className="h-3.5 w-3.5 text-[var(--text-secondary)]" />
+        ) : null}
       </label>
       {/* {tooltip && (
           <Tooltip text={tooltip}>
@@ -217,9 +226,14 @@ const Select = ({
 
 const Toggle = ({ label, checked, onChange, tooltip = "" }) => (
   <div className="flex min-h-10 items-center justify-between gap-3 rounded-lg border border-[var(--border-card)] bg-[var(--bg-card)] px-3 py-2 sm:gap-4">
-    <span className="inline-flex min-w-0 flex-1 flex-wrap items-center gap-1.5 break-words pr-2 text-xs font-semibold leading-5 text-[var(--text-primary)] sm:text-sm" title={tooltip}>
+    <span
+      className="inline-flex min-w-0 flex-1 flex-wrap items-center gap-1.5 break-words pr-2 text-xs font-semibold leading-5 text-[var(--text-primary)] sm:text-sm"
+      title={tooltip}
+    >
       {label}
-      {tooltip ? <Info className="h-3.5 w-3.5 text-[var(--text-secondary)]" /> : null}
+      {tooltip ? (
+        <Info className="h-3.5 w-3.5 text-[var(--text-secondary)]" />
+      ) : null}
     </span>
     {/* {tooltip && (
         <Tooltip text={tooltip}>
@@ -229,13 +243,15 @@ const Toggle = ({ label, checked, onChange, tooltip = "" }) => (
     <button
       type="button"
       onClick={() => onChange(!checked)}
-      className={`create-auction-toggle-switch relative inline-flex !h-5 !min-h-5 !w-9 shrink-0 items-center rounded-full !p-0.5 transition sm:!h-6 sm:!min-h-6 sm:!w-11 sm:!p-1 ${checked ? "bg-[var(--secondary)]" : "bg-[var(--border-card)]"
-        }`}
+      className={`create-auction-toggle-switch relative inline-flex !h-5 !min-h-5 !w-9 shrink-0 items-center rounded-full !p-0.5 transition sm:!h-6 sm:!min-h-6 sm:!w-11 sm:!p-1 ${
+        checked ? "bg-[var(--secondary)]" : "bg-[var(--border-card)]"
+      }`}
       aria-pressed={checked}
     >
       <span
-        className={`create-auction-toggle-knob block !h-4 !w-4 rounded-full bg-white shadow-sm transition ${checked ? "translate-x-4 sm:translate-x-5" : "translate-x-0"
-          }`}
+        className={`create-auction-toggle-knob block !h-4 !w-4 rounded-full bg-white shadow-sm transition ${
+          checked ? "translate-x-4 sm:translate-x-5" : "translate-x-0"
+        }`}
       />
     </button>
   </div>
@@ -248,10 +264,11 @@ const RadioGroup = ({ value, onChange, options }) => (
         key={opt.value}
         type="button"
         onClick={() => onChange(opt.value)}
-        className={`flex h-11 items-center justify-between rounded-lg border px-4 text-sm font-semibold transition ${value === opt.value
-          ? "border-[var(--border-primary)] bg-[var(--secondary)] text-[#102033] shadow-sm"
-          : "border-[var(--border-card)] bg-[var(--bg-card)] text-[var(--text-secondary)] hover:border-[var(--border-primary)] hover:bg-[var(--accent-light)] hover:text-[var(--text-primary)]"
-          }`}
+        className={`flex h-11 items-center justify-between rounded-lg border px-4 text-sm font-semibold transition ${
+          value === opt.value
+            ? "border-[var(--border-primary)] bg-[var(--secondary)] text-[#102033] shadow-sm"
+            : "border-[var(--border-card)] bg-[var(--bg-card)] text-[var(--text-secondary)] hover:border-[var(--border-primary)] hover:bg-[var(--accent-light)] hover:text-[var(--text-primary)]"
+        }`}
       >
         <span>{opt.label}</span>
         {value === opt.value ? <Check className="h-4 w-4" /> : null}
@@ -479,12 +496,17 @@ export default function CreateEditAuction({ theme = "light", onToggleTheme }) {
         },
 
         teamRegistration: {
-          showTeamRegistration: auctionData?.teamRegistration?.showTeamRegistration || false,
-          teamRegistrationPaid: auctionData?.teamRegistration?.teamRegistrationPaid || false,
-          teamRegistrationFee: auctionData?.teamRegistration?.teamRegistrationFee ?? "",
+          showTeamRegistration:
+            auctionData?.teamRegistration?.showTeamRegistration || false,
+          teamRegistrationPaid:
+            auctionData?.teamRegistration?.teamRegistrationPaid || false,
+          teamRegistrationFee:
+            auctionData?.teamRegistration?.teamRegistrationFee ?? "",
           teamPlatformFee: auctionData?.teamRegistration?.teamPlatformFee ?? "",
-          teamGstEnabled: auctionData?.teamRegistration?.teamGstEnabled || false,
-          teamGstPercentage: auctionData?.teamRegistration?.teamGstPercentage ?? "",
+          teamGstEnabled:
+            auctionData?.teamRegistration?.teamGstEnabled || false,
+          teamGstPercentage:
+            auctionData?.teamRegistration?.teamGstPercentage ?? "",
         },
 
         createdBy: localStorage.getItem("playerId"),
@@ -609,8 +631,6 @@ export default function CreateEditAuction({ theme = "light", onToggleTheme }) {
   ];
   const completedSetup = setupChecklist.filter((item) => item.done).length;
 
-  
-
   useEffect(() => {
     dispatch(getMyTournaments());
   }, []);
@@ -672,7 +692,6 @@ export default function CreateEditAuction({ theme = "light", onToggleTheme }) {
     return true;
   };
 
-
   const handleCreateAuction = async () => {
     if (!validateForm()) return;
 
@@ -722,7 +741,7 @@ export default function CreateEditAuction({ theme = "light", onToggleTheme }) {
       }
       await dispatch(editAuction(auctionId, payload));
       toast.success("Auction edited successfully!");
-      navigate(`/auction-details/${auctionId}`);
+      navigate(`/auction-details/${auctionId}/?tab=manageAuction&subTab=auctionSettings`);
       setForm(initialForm);
     } catch (error) {
       console.error("Error editing Auction:", error);
@@ -758,10 +777,14 @@ export default function CreateEditAuction({ theme = "light", onToggleTheme }) {
 
               <div className="grid grid-cols-2 gap-2 text-xs sm:flex sm:items-center">
                 <span className="rounded-lg border border-[var(--border-card)] bg-[var(--bg-main)] px-3 py-2 font-semibold text-[var(--text-secondary)]">
-                  {form?.auctionType === "auto" ? "Auto Auction" : "Manual Auction"}
+                  {form?.auctionType === "auto"
+                    ? "Auto Auction"
+                    : "Manual Auction"}
                 </span>
                 <span className="rounded-lg border border-[var(--border-card)] bg-[var(--bg-main)] px-3 py-2 font-semibold text-[var(--text-secondary)]">
-                  {form?.showRegistrationForm ? "Registration On" : "Registration Off"}
+                  {form?.showRegistrationForm
+                    ? "Registration On"
+                    : "Registration Off"}
                 </span>
               </div>
             </div>
@@ -769,124 +792,122 @@ export default function CreateEditAuction({ theme = "light", onToggleTheme }) {
 
           <div className="grid grid-cols-1 gap-5 lg:grid-cols-[minmax(0,1fr)_320px] lg:items-start">
             <main className="space-y-4">
+              {/* BASIC INFO */}
+              <Section
+                title="Basic Information"
+                helper="Start here: tournament, name, and auction dates. Start and end dates can be the same for a one-day auction."
+                defaultOpen
+              >
+                <Grid>
+                  <Select
+                    label="Tournament"
+                    value={form?.tournamentId}
+                    onChange={(v) => update("tournamentId", v)}
+                    options={myTournaments}
+                    loading={loading}
+                    placeholder="Select Tournament"
+                    tooltip="Choose the tournament this auction belongs to"
+                  />
 
-          {/* BASIC INFO */}
-          <Section
-            title="Basic Information"
-            helper="Start here: tournament, name, and auction dates. Start and end dates can be the same for a one-day auction."
-            defaultOpen
-          >
-            <Grid>
+                  <Input
+                    label="Auction Name"
+                    value={form?.auctionName}
+                    placeholder="Enter auction name"
+                    onChange={(v) => update("auctionName", v)}
+                    tooltip="Give your auction a unique and descriptive name"
+                  />
 
-              <Select
-                label="Tournament"
-                value={form?.tournamentId}
-                onChange={(v) => update("tournamentId", v)}
-                options={myTournaments}
-                loading={loading}
-                placeholder="Select Tournament"
-                tooltip="Choose the tournament this auction belongs to"
-              />
-
-              <Input
-                label="Auction Name"
-                value={form?.auctionName}
-                placeholder="Enter auction name"
-                onChange={(v) => update("auctionName", v)}
-                tooltip="Give your auction a unique and descriptive name"
-              />
-
-              <Input
-                type="date"
-                label="Auction Start Date"
-                value={form?.auctionStartedAt}
-                onChange={(v) => update("auctionStartedAt", v)}
-                tooltip="When will the auction begin?"
-              />
-              <Input
-                type="date"
-                label="Auction End Date"
-                value={form?.auctionEndedAt}
-                onChange={(v) => update("auctionEndedAt", v)}
-                tooltip="When will the auction end? It can be the same as the start date for a one-day auction."
-              />
-              {/* <Select
+                  <Input
+                    type="date"
+                    label="Auction Start Date"
+                    value={form?.auctionStartedAt}
+                    onChange={(v) => update("auctionStartedAt", v)}
+                    tooltip="When will the auction begin?"
+                  />
+                  <Input
+                    type="date"
+                    label="Auction End Date"
+                    value={form?.auctionEndedAt}
+                    onChange={(v) => update("auctionEndedAt", v)}
+                    tooltip="When will the auction end? It can be the same as the start date for a one-day auction."
+                  />
+                  {/* <Select
                 label="Auction Status"
                 value={form?.auctionStatus}
                 onChange={(v) => update("auctionStatus", v)}
                 options={["scheduled", "ongoing"]}
               /> */}
-            </Grid>
-          </Section>
+                </Grid>
+              </Section>
 
-          {/* STREAM */}
-          <Section
-            title="Streaming (Optional)"
-            helper="Add live stream details only when you need them."
-          >
-            <Grid>
-              <Input
-                label="Stream Key"
-                placeholder="Enter RTMP/stream key"
-                value={form?.streamKey}
-                onChange={(v) => update("streamKey", v)}
-                tooltip="Enter the RTMP or stream key for your live stream"
-              />
-              <Input
-                label="Stream URL"
-                placeholder="https://example.com/stream"
-                value={form?.streamUrl}
-                onChange={(v) => update("streamUrl", v)}
-                tooltip="Enter the URL where your stream will be broadcasted"
-              />
-            </Grid>
-          </Section>
-
-          {/* TRIAL SETTINGS */}
-          <Section
-            title="Trial Auction"
-            helper="Enable only if players need trial slots or sessions."
-          >
-            <Toggle
-              label="Enable Trial Auction"
-              checked={form?.trailTypeAuction}
-              onChange={(v) => update("trailTypeAuction", v)}
-              tooltip="Enable or disable the trial auction feature"
-            />
-
-            {form?.trailTypeAuction && (
-              <>
+              {/* STREAM */}
+              <Section
+                title="Streaming (Optional)"
+                helper="Add live stream details only when you need them."
+              >
                 <Grid>
                   <Input
-                    type="date"
-                    label="Trial Start"
-                    placeholder="Select trial start"
-                    value={form?.trailStart}
-                    onChange={(v) => update("trailStart", v)}
-                    tooltip="Set the start date for the trials"
+                    label="Stream Key"
+                    placeholder="Enter RTMP/stream key"
+                    value={form?.streamKey}
+                    onChange={(v) => update("streamKey", v)}
+                    tooltip="Enter the RTMP or stream key for your live stream"
                   />
                   <Input
-                    type="date"
-                    label="Trial End"
-                    placeholder="Select trial end"
-                    value={form?.trailEnd}
-                    onChange={(v) => update("trailEnd", v)}
-                    tooltip="Set the end date for the trials"
+                    label="Stream URL"
+                    placeholder="https://example.com/stream"
+                    value={form?.streamUrl}
+                    onChange={(v) => update("streamUrl", v)}
+                    tooltip="Enter the URL where your stream will be broadcasted"
                   />
                 </Grid>
+              </Section>
 
-                <div className="mt-4">
-                  <Toggle
-                    label="Show Trial slots/sessions during player registration"
-                    checked={form.showTrialLocations}
-                    onChange={(v) => update("showTrialLocations", v)}
-                    tooltip="Allow players to select trial slots or locations during registration when trial auction is enabled"
-                  />
-                </div>
-              </>
-            )}
-          </Section>
-          {/* <Section title="Player Registration Paid">
+              {/* TRIAL SETTINGS */}
+              <Section
+                title="Trial Auction"
+                helper="Enable only if players need trial slots or sessions."
+              >
+                <Toggle
+                  label="Enable Trial Auction"
+                  checked={form?.trailTypeAuction}
+                  onChange={(v) => update("trailTypeAuction", v)}
+                  tooltip="Enable or disable the trial auction feature"
+                />
+
+                {form?.trailTypeAuction && (
+                  <>
+                    <Grid>
+                      <Input
+                        type="date"
+                        label="Trial Start"
+                        placeholder="Select trial start"
+                        value={form?.trailStart}
+                        onChange={(v) => update("trailStart", v)}
+                        tooltip="Set the start date for the trials"
+                      />
+                      <Input
+                        type="date"
+                        label="Trial End"
+                        placeholder="Select trial end"
+                        value={form?.trailEnd}
+                        onChange={(v) => update("trailEnd", v)}
+                        tooltip="Set the end date for the trials"
+                      />
+                    </Grid>
+
+                    <div className="mt-4">
+                      <Toggle
+                        label="Show Trial slots/sessions during player registration"
+                        checked={form.showTrialLocations}
+                        onChange={(v) => update("showTrialLocations", v)}
+                        tooltip="Allow players to select trial slots or locations during registration when trial auction is enabled"
+                      />
+                    </div>
+                  </>
+                )}
+              </Section>
+              {/* <Section title="Player Registration Paid">
             <Toggle
               label="Enable Player Registration Fee"
               checked={form?.playerRegistrationPaid}
@@ -910,606 +931,632 @@ export default function CreateEditAuction({ theme = "light", onToggleTheme }) {
               </Grid>
             )}
           </Section> */}
-          <Section
-            title="Player Registration"
-            helper="Control player registration form, fees, GST, and fields."
-            defaultOpen
-          >
-            <Toggle
-              label="Show Registration Form"
-              checked={form.showRegistrationForm}
-              onChange={(v) => update("showRegistrationForm", v)}
-            />
-
-            {form.showRegistrationForm && (
-              <>
+              <Section
+                title="Player Registration"
+                helper="Control player registration form, fees, GST, and fields."
+                defaultOpen
+              >
                 <Toggle
-                  label="Player Registration Paid"
-                  checked={form.playerRegistrationPaid}
-                  onChange={(v) => update("playerRegistrationPaid", v)}
-                  tooltip="Require players to pay a registration fee to participate in the auction"
+                  label="Show Registration Form"
+                  checked={form.showRegistrationForm}
+                  onChange={(v) => update("showRegistrationForm", v)}
                 />
 
-                {form.playerRegistrationPaid && (
-                  <Grid>
-                    <Select
-                      label="Fee Type"
-                      value={form.feeType}
-                      onChange={(v) => update("feeType", v)}
-                      options={[
-                        { label: "Default", value: "default" },
-                        { label: "Role Based", value: "roleBased" },
-                      ]}
-                      tooltip="Choose one common fee or separate fees by player role"
-                    />
-
-                    {form.feeType === "default" ? (
-                      <NumberInput
-                        label="Registration Fee"
-                        placeholder="e.g., 1000"
-                        value={String(form.registrationFee ?? "")}
-                        onChange={(v) => update("registrationFee", v)}
-                        tooltip="Set the fee amount that players must pay to register for the auction"
-                      />
-                    ) : (
-                      <>
-                        <NumberInput
-                          label="Batsman Fee"
-                          placeholder="e.g., 1000"
-                          value={String(form.roleBasedFees?.batsman ?? "")}
-                          onChange={(v) =>
-                            update("roleBasedFees", {
-                              ...form.roleBasedFees,
-                              batsman: v,
-                            })
-                          }
-                        />
-                        <NumberInput
-                          label="Bowler Fee"
-                          placeholder="e.g., 1000"
-                          value={String(form.roleBasedFees?.bowler ?? "")}
-                          onChange={(v) =>
-                            update("roleBasedFees", {
-                              ...form.roleBasedFees,
-                              bowler: v,
-                            })
-                          }
-                        />
-                        <NumberInput
-                          label="All Rounder Fee"
-                          placeholder="e.g., 1000"
-                          value={String(form.roleBasedFees?.allRounder ?? "")}
-                          onChange={(v) =>
-                            update("roleBasedFees", {
-                              ...form.roleBasedFees,
-                              allRounder: v,
-                            })
-                          }
-                        />
-                        <NumberInput
-                          label="Wicket Keeper Fee"
-                          placeholder="e.g., 1000"
-                          value={String(form.roleBasedFees?.wicketKeeper ?? "")}
-                          onChange={(v) =>
-                            update("roleBasedFees", {
-                              ...form.roleBasedFees,
-                              wicketKeeper: v,
-                            })
-                          }
-                        />
-                      </>
-                    )}
-
-                    <NumberInput
-                      label="Platform Fee"
-                      placeholder="e.g., 10"
-                      value={String(form.platformFee ?? "")}
-                      onChange={(v) => update("platformFee", v)}
-                    // tooltip="Set the percentage fee that the platform will take from the registration fee"
-                    />
-                    {/* GST Toggle */}
+                {form.showRegistrationForm && (
+                  <>
                     <Toggle
-                      label="GST Enabled"
-                      checked={form.gstEnabled}
-                      onChange={(v) => update("gstEnabled", v)}
-                      tooltip="Enable this if GST should be applied to the registration fee"
+                      label="Player Registration Paid"
+                      checked={form.playerRegistrationPaid}
+                      onChange={(v) => update("playerRegistrationPaid", v)}
+                      tooltip="Require players to pay a registration fee to participate in the auction"
                     />
 
-                    {/* GST Percentage Field */}
-                    {form.gstEnabled && (
-                      <NumberInput
-                        label="GST Percentage (%)"
-                        placeholder="e.g., 18.5"
-                        value={String(form.gstPercentage ?? "")}
-                        onChange={(v) => update("gstPercentage", v)}
-                        tooltip="Set the GST percentage to be applied to the registration fee"
-                        allowDecimal
-                      />
-                    )}
-                  </Grid>
-                )}
-
-                {/* Player Registration Fields Configuration */}
-                <div className="mt-6">
-                  <h4 className="mb-3 text-sm font-semibold text-[var(--text-primary)]">
-                    Player Registration Fields
-                  </h4>
-                  <div className="grid grid-cols-1 gap-2 rounded-lg border border-[var(--border-card)] bg-[var(--bg-card)] p-3 sm:grid-cols-2 lg:grid-cols-3">
-                    {[
-                      { key: 'profilePicture', label: 'Profile Picture' },
-                      { key: 'name', label: 'Name' },
-                      { key: 'role', label: 'Role' },
-                      { key: 'mobileNumber', label: 'Mobile Number' },
-                      { key: 'location', label: 'Location' },
-                      { key: 'email', label: 'Email' },
-                      { key: 'dateOfBirth', label: 'Date of Birth' },
-                      { key: 'gender', label: 'Gender' },
-                      { key: 'jerseyNumber', label: 'Jersey Number' },
-                      { key: 'jerseyName', label: 'Jersey Name' },
-                      { key: 'jerseySize', label: 'Jersey Size' },
-                      { key: 'lowerSize', label: 'Lower Size' },
-                      { key: 'adharCard', label: 'Aadhar Card' },
-                      { key: 'voterId', label: 'Voter ID' },
-                    ].map((field) => (
-                      <label
-                        key={field.key}
-                        className="flex cursor-pointer items-center gap-2 rounded-lg border border-[var(--border-card)] bg-[var(--bg-main)] px-3 py-2 transition hover:border-[var(--border-primary)] hover:bg-[var(--accent-light)]"
-                      >
-                        <input
-                          type="checkbox"
-                          checked={form.playerRegistrationFiels?.[field.key] || false}
-                          onChange={(e) =>
-                            update("playerRegistrationFiels", {
-                              ...form.playerRegistrationFiels,
-                              [field.key]: e.target.checked,
-                            })
-                          }
-                          className="h-4 w-4 rounded border-[var(--border-primary)] accent-[var(--secondary)]"
+                    {form.playerRegistrationPaid && (
+                      <Grid>
+                        <Select
+                          label="Fee Type"
+                          value={form.feeType}
+                          onChange={(v) => update("feeType", v)}
+                          options={[
+                            { label: "Default", value: "default" },
+                            { label: "Role Based", value: "roleBased" },
+                          ]}
+                          tooltip="Choose one common fee or separate fees by player role"
                         />
-                        <span className="text-sm font-medium text-[var(--text-primary)]">
-                          {field.label}
-                        </span>
-                      </label>
-                    ))}
-                  </div>
-                </div>
-              </>
-            )}
-          </Section>
 
-          {/* TEAM REGISTRATION */}
-          <Section
-            title="Team Registration"
-            helper="Optional team registration settings and payment rules."
-          >
-            <Toggle
-              label="Show Team Registration"
-              checked={form.teamRegistration?.showTeamRegistration}
-              onChange={(v) =>
-                update("teamRegistration", {
-                  ...form.teamRegistration,
-                  showTeamRegistration: v,
-                })
-              }
-              tooltip="Allow teams to register for this auction"
-            />
+                        {form.feeType === "default" ? (
+                          <NumberInput
+                            label="Registration Fee"
+                            placeholder="e.g., 1000"
+                            value={String(form.registrationFee ?? "")}
+                            onChange={(v) => update("registrationFee", v)}
+                            tooltip="Set the fee amount that players must pay to register for the auction"
+                          />
+                        ) : (
+                          <>
+                            <NumberInput
+                              label="Batsman Fee"
+                              placeholder="e.g., 1000"
+                              value={String(form.roleBasedFees?.batsman ?? "")}
+                              onChange={(v) =>
+                                update("roleBasedFees", {
+                                  ...form.roleBasedFees,
+                                  batsman: v,
+                                })
+                              }
+                            />
+                            <NumberInput
+                              label="Bowler Fee"
+                              placeholder="e.g., 1000"
+                              value={String(form.roleBasedFees?.bowler ?? "")}
+                              onChange={(v) =>
+                                update("roleBasedFees", {
+                                  ...form.roleBasedFees,
+                                  bowler: v,
+                                })
+                              }
+                            />
+                            <NumberInput
+                              label="All Rounder Fee"
+                              placeholder="e.g., 1000"
+                              value={String(
+                                form.roleBasedFees?.allRounder ?? "",
+                              )}
+                              onChange={(v) =>
+                                update("roleBasedFees", {
+                                  ...form.roleBasedFees,
+                                  allRounder: v,
+                                })
+                              }
+                            />
+                            <NumberInput
+                              label="Wicket Keeper Fee"
+                              placeholder="e.g., 1000"
+                              value={String(
+                                form.roleBasedFees?.wicketKeeper ?? "",
+                              )}
+                              onChange={(v) =>
+                                update("roleBasedFees", {
+                                  ...form.roleBasedFees,
+                                  wicketKeeper: v,
+                                })
+                              }
+                            />
+                          </>
+                        )}
 
-            {form.teamRegistration?.showTeamRegistration && (
-              <>
+                        <NumberInput
+                          label="Platform Fee"
+                          placeholder="e.g., 10"
+                          value={String(form.platformFee ?? "")}
+                          onChange={(v) => update("platformFee", v)}
+                          // tooltip="Set the percentage fee that the platform will take from the registration fee"
+                        />
+                        {/* GST Toggle */}
+                        <Toggle
+                          label="GST Enabled"
+                          checked={form.gstEnabled}
+                          onChange={(v) => update("gstEnabled", v)}
+                          tooltip="Enable this if GST should be applied to the registration fee"
+                        />
+
+                        {/* GST Percentage Field */}
+                        {form.gstEnabled && (
+                          <NumberInput
+                            label="GST Percentage (%)"
+                            placeholder="e.g., 18.5"
+                            value={String(form.gstPercentage ?? "")}
+                            onChange={(v) => update("gstPercentage", v)}
+                            tooltip="Set the GST percentage to be applied to the registration fee"
+                            allowDecimal
+                          />
+                        )}
+                      </Grid>
+                    )}
+
+                    {/* Player Registration Fields Configuration */}
+                    <div className="mt-6">
+                      <h4 className="mb-3 text-sm font-semibold text-[var(--text-primary)]">
+                        Player Registration Fields
+                      </h4>
+                      <div className="grid grid-cols-1 gap-2 rounded-lg border border-[var(--border-card)] bg-[var(--bg-card)] p-3 sm:grid-cols-2 lg:grid-cols-3">
+                        {[
+                          { key: "profilePicture", label: "Profile Picture" },
+                          { key: "name", label: "Name" },
+                          { key: "role", label: "Role" },
+                          { key: "mobileNumber", label: "Mobile Number" },
+                          { key: "location", label: "Location" },
+                          { key: "email", label: "Email" },
+                          { key: "dateOfBirth", label: "Date of Birth" },
+                          { key: "gender", label: "Gender" },
+                          { key: "jerseyNumber", label: "Jersey Number" },
+                          { key: "jerseyName", label: "Jersey Name" },
+                          { key: "jerseySize", label: "Jersey Size" },
+                          { key: "lowerSize", label: "Lower Size" },
+                          { key: "adharCard", label: "Aadhar Card" },
+                          { key: "voterId", label: "Voter ID" },
+                        ].map((field) => (
+                          <label
+                            key={field.key}
+                            className="flex cursor-pointer items-center gap-2 rounded-lg border border-[var(--border-card)] bg-[var(--bg-main)] px-3 py-2 transition hover:border-[var(--border-primary)] hover:bg-[var(--accent-light)]"
+                          >
+                            <input
+                              type="checkbox"
+                              checked={
+                                form.playerRegistrationFiels?.[field.key] ||
+                                false
+                              }
+                              onChange={(e) =>
+                                update("playerRegistrationFiels", {
+                                  ...form.playerRegistrationFiels,
+                                  [field.key]: e.target.checked,
+                                })
+                              }
+                              className="h-4 w-4 rounded border-[var(--border-primary)] accent-[var(--secondary)]"
+                            />
+                            <span className="text-sm font-medium text-[var(--text-primary)]">
+                              {field.label}
+                            </span>
+                          </label>
+                        ))}
+                      </div>
+                    </div>
+                  </>
+                )}
+              </Section>
+
+              {/* TEAM REGISTRATION */}
+              <Section
+                title="Team Registration"
+                helper="Optional team registration settings and payment rules."
+              >
                 <Toggle
-                  label="Team Registration Paid"
-                  checked={form.teamRegistration?.teamRegistrationPaid}
+                  label="Show Team Registration"
+                  checked={form.teamRegistration?.showTeamRegistration}
                   onChange={(v) =>
                     update("teamRegistration", {
                       ...form.teamRegistration,
-                      teamRegistrationPaid: v,
+                      showTeamRegistration: v,
                     })
                   }
-                  tooltip="Require teams to pay a registration fee to join the auction"
+                  tooltip="Allow teams to register for this auction"
                 />
 
-                {form.teamRegistration?.teamRegistrationPaid && (
+                {form.teamRegistration?.showTeamRegistration && (
+                  <>
+                    <Toggle
+                      label="Team Registration Paid"
+                      checked={form.teamRegistration?.teamRegistrationPaid}
+                      onChange={(v) =>
+                        update("teamRegistration", {
+                          ...form.teamRegistration,
+                          teamRegistrationPaid: v,
+                        })
+                      }
+                      tooltip="Require teams to pay a registration fee to join the auction"
+                    />
+
+                    {form.teamRegistration?.teamRegistrationPaid && (
+                      <Grid>
+                        <NumberInput
+                          label="Team Registration Fee"
+                          placeholder="e.g., 2000"
+                          value={String(
+                            form.teamRegistration?.teamRegistrationFee ?? "",
+                          )}
+                          onChange={(v) =>
+                            update("teamRegistration", {
+                              ...form.teamRegistration,
+                              teamRegistrationFee: v,
+                            })
+                          }
+                          tooltip="Set the fee amount that teams must pay to register"
+                        />
+
+                        <NumberInput
+                          label="Platform Fee"
+                          placeholder="e.g., 10"
+                          value={String(
+                            form.teamRegistration?.teamPlatformFee ?? "",
+                          )}
+                          onChange={(v) =>
+                            update("teamRegistration", {
+                              ...form.teamRegistration,
+                              teamPlatformFee: v,
+                            })
+                          }
+                          tooltip="Platform fee charged on team registration"
+                        />
+
+                        <div className="md:col-span-2">
+                          <Toggle
+                            label="GST Enabled"
+                            checked={form.teamRegistration?.teamGstEnabled}
+                            onChange={(v) =>
+                              update("teamRegistration", {
+                                ...form.teamRegistration,
+                                teamGstEnabled: v,
+                              })
+                            }
+                            tooltip="Apply GST on the team registration fee"
+                          />
+                        </div>
+
+                        {form.teamRegistration?.teamGstEnabled && (
+                          <NumberInput
+                            label="GST Percentage (%)"
+                            placeholder="e.g., 18.5"
+                            value={String(
+                              form.teamRegistration?.teamGstPercentage ?? "",
+                            )}
+                            onChange={(v) =>
+                              update("teamRegistration", {
+                                ...form.teamRegistration,
+                                teamGstPercentage: v,
+                              })
+                            }
+                            tooltip="GST percentage applied to the team registration fee"
+                            allowDecimal
+                          />
+                        )}
+                      </Grid>
+                    )}
+                  </>
+                )}
+              </Section>
+
+              {/* AUCTION RULES */}
+              {!auctionId && (
+                <Section
+                  title="Auction Rules"
+                  helper="Advanced squad, budget, RTM, and bidding limits."
+                >
                   <Grid>
                     <NumberInput
-                      label="Team Registration Fee"
-                      placeholder="e.g., 2000"
-                      value={String(form.teamRegistration?.teamRegistrationFee ?? "")}
+                      label="Team Budget Cap"
+                      placeholder="e.g., 100000"
+                      value={String(form?.auctionRules?.budgetCap ?? "")}
                       onChange={(v) =>
-                        update("teamRegistration", {
-                          ...form.teamRegistration,
-                          teamRegistrationFee: v,
+                        update("auctionRules", {
+                          ...form.auctionRules,
+                          budgetCap: v,
                         })
                       }
-                      tooltip="Set the fee amount that teams must pay to register"
+                      tooltip="Set the maximum budget that each team has for bidding on players"
                     />
 
                     <NumberInput
-                      label="Platform Fee"
-                      placeholder="e.g., 10"
-                      value={String(form.teamRegistration?.teamPlatformFee ?? "")}
+                      label="Max Players / Team"
+                      placeholder="e.g., 25"
+                      value={String(
+                        form?.auctionRules?.maxPlayersPerTeam ?? "",
+                      )}
                       onChange={(v) =>
-                        update("teamRegistration", {
-                          ...form.teamRegistration,
-                          teamPlatformFee: v,
+                        update("auctionRules", {
+                          ...form.auctionRules,
+                          maxPlayersPerTeam: v,
                         })
                       }
-                      tooltip="Platform fee charged on team registration"
+                      tooltip="Set the maximum number of players that each team can have in their squad"
                     />
 
-                    <div className="md:col-span-2">
-                      <Toggle
-                        label="GST Enabled"
-                        checked={form.teamRegistration?.teamGstEnabled}
-                        onChange={(v) =>
-                          update("teamRegistration", {
-                            ...form.teamRegistration,
-                            teamGstEnabled: v,
-                          })
-                        }
-                        tooltip="Apply GST on the team registration fee"
-                      />
-                    </div>
+                    <NumberInput
+                      label="Min Players / Team"
+                      placeholder="e.g., 18"
+                      value={String(
+                        form?.auctionRules?.minPlayersPerTeam ?? "",
+                      )}
+                      onChange={(v) =>
+                        update("auctionRules", {
+                          ...form.auctionRules,
+                          minPlayersPerTeam: v,
+                        })
+                      }
+                      tooltip="Set the minimum number of players that each team must have in their squad"
+                    />
 
-                    {form.teamRegistration?.teamGstEnabled && (
-                      <NumberInput
-                        label="GST Percentage (%)"
-                        placeholder="e.g., 18.5"
-                        value={String(form.teamRegistration?.teamGstPercentage ?? "")}
-                        onChange={(v) =>
-                          update("teamRegistration", {
-                            ...form.teamRegistration,
-                            teamGstPercentage: v,
-                          })
-                        }
-                        tooltip="GST percentage applied to the team registration fee"
-                        allowDecimal
-                      />
-                    )}
+                    <NumberInput
+                      label="Max Foreign Players"
+                      placeholder="e.g., 8"
+                      value={String(
+                        form?.auctionRules?.maxForeignPlayers ?? "",
+                      )}
+                      onChange={(v) =>
+                        update("auctionRules", {
+                          ...form.auctionRules,
+                          maxForeignPlayers: v,
+                        })
+                      }
+                      tooltip="Set the maximum number of foreign players allowed in each team"
+                    />
+
+                    <NumberInput
+                      label="Max Wicket Keepers"
+                      placeholder="e.g., 2"
+                      value={String(form?.auctionRules?.maxWicketKeepers ?? "")}
+                      onChange={(v) =>
+                        update("auctionRules", {
+                          ...form.auctionRules,
+                          maxWicketKeepers: v,
+                        })
+                      }
+                      tooltip="Set the maximum number of wicket keepers allowed in each team"
+                    />
+
+                    <NumberInput
+                      label="Min Wicket Keepers"
+                      placeholder="e.g., 1"
+                      value={String(form?.auctionRules?.minWicketKeepers ?? "")}
+                      onChange={(v) =>
+                        update("auctionRules", {
+                          ...form.auctionRules,
+                          minWicketKeepers: v,
+                        })
+                      }
+                      tooltip="Set the minimum number of wicket keepers required in each team"
+                    />
+
+                    <NumberInput
+                      label="Base Price / Minimum Bid(Default)"
+                      placeholder="e.g., 100"
+                      value={String(form?.auctionRules?.minimumBid ?? "")}
+                      onChange={(v) =>
+                        update("auctionRules", {
+                          ...form.auctionRules,
+                          minimumBid: v,
+                        })
+                      }
+                      tooltip="Set the minimum bid amount for the auction"
+                    />
+
+                    <NumberInput
+                      label="Bidding Increment(Default)"
+                      placeholder="e.g., 1000"
+                      value={String(form?.auctionRules?.biddingIncrement ?? "")}
+                      onChange={(v) =>
+                        update("auctionRules", {
+                          ...form.auctionRules,
+                          biddingIncrement: v,
+                        })
+                      }
+                      tooltip="Set the minimum increment amount for each new bid during the auction"
+                    />
+
+                    <NumberInput
+                      label="Max Price Increment(Default)"
+                      placeholder="e.g., 5000"
+                      value={String(
+                        form?.auctionRules?.highPriceIncrement ?? "",
+                      )}
+                      onChange={(v) =>
+                        update("auctionRules", {
+                          ...form.auctionRules,
+                          highPriceIncrement: v,
+                        })
+                      }
+                      tooltip="Set a higher increment amount that applies when the current bid exceeds a certain price threshold"
+                    />
+
+                    <NumberInput
+                      label="Max RTM Cards / Team"
+                      placeholder="e.g., 1"
+                      value={String(
+                        form?.auctionRules?.maxRTMCardsPerTeam ?? "",
+                      )}
+                      onChange={(v) =>
+                        update("auctionRules", {
+                          ...form.auctionRules,
+                          maxRTMCardsPerTeam: v,
+                        })
+                      }
+                      tooltip="Set the maximum number of Right to Match (RTM) cards that each team can use during the auction"
+                    />
+
+                    <Toggle
+                      label="RTM Enabled"
+                      checked={form?.auctionRules?.rtmEnabled}
+                      onChange={(v) =>
+                        update("auctionRules", {
+                          ...form.auctionRules,
+                          rtmEnabled: v,
+                        })
+                      }
+                      tooltip="Right to Match (RTM) allows teams to retain players by matching the highest bid during the auction. When enabled, teams can use RTM cards to bring back their previous players by matching the final bid amount."
+                    />
+
+                    <Toggle
+                      label="Unsold Player Re-Entry"
+                      checked={form?.auctionRules?.unsoldPlayerReEntry}
+                      onChange={(v) =>
+                        update("auctionRules", {
+                          ...form.auctionRules,
+                          unsoldPlayerReEntry: v,
+                        })
+                      }
+                      tooltip="Allow unsold players to re-enter the auction in subsequent rounds if they remain unsold in the initial round"
+                    />
+
+                    <NumberInput
+                      label="Accelerated Round After (Players)"
+                      placeholder="e.g., 60"
+                      value={String(
+                        form?.auctionRules?.acceleratedRoundAfter ?? "",
+                      )}
+                      onChange={(v) =>
+                        update("auctionRules", {
+                          ...form.auctionRules,
+                          acceleratedRoundAfter: v,
+                        })
+                      }
+                    />
+
+                    <NumberInput
+                      label="Max Retain Players / Team"
+                      placeholder="e.g., 0"
+                      value={String(
+                        form?.auctionRules?.maxReturnPlayersPerTeam ?? "",
+                      )}
+                      onChange={(v) =>
+                        update("auctionRules", {
+                          ...form.auctionRules,
+                          maxReturnPlayersPerTeam: v,
+                        })
+                      }
+                      tooltip="Set the maximum number of players that teams can retain from their previous squad before the auction starts"
+                    />
+
+                    <NumberInput
+                      label="Max Purchase Players / Team"
+                      placeholder="e.g., 0"
+                      value={String(
+                        form?.auctionRules?.maxPurchasePlayersPerTeam ?? "",
+                      )}
+                      onChange={(v) =>
+                        update("auctionRules", {
+                          ...form.auctionRules,
+                          maxPurchasePlayersPerTeam: v,
+                        })
+                      }
+                      tooltip="Set the maximum number of players that teams can purchase during the auction"
+                    />
+
+                    <NumberInput
+                      label="Min Purchase Players / Team"
+                      placeholder="e.g., 0"
+                      value={String(
+                        form?.auctionRules?.minPurchasePlayersPerTeam ?? "",
+                      )}
+                      onChange={(v) =>
+                        update("auctionRules", {
+                          ...form.auctionRules,
+                          minPurchasePlayersPerTeam: v,
+                        })
+                      }
+                      tooltip="Set the minimum number of players that teams must purchase during the auction"
+                    />
                   </Grid>
-                )}
-              </>
-            )}
-          </Section>
+                </Section>
+              )}
 
-          {/* AUCTION RULES */}
-          {!auctionId && (
-            <Section
-              title="Auction Rules"
-              helper="Advanced squad, budget, RTM, and bidding limits."
-            >
-              <Grid>
-                <NumberInput
-                  label="Team Budget Cap"
-                  placeholder="e.g., 100000"
-                  value={String(form?.auctionRules?.budgetCap ?? "")}
-                  onChange={(v) =>
-                    update("auctionRules", {
-                      ...form.auctionRules,
-                      budgetCap: v,
-                    })
-                  }
-                  tooltip="Set the maximum budget that each team has for bidding on players"
-                />
+              {
+                <Section
+                  title="Public Visibility"
+                  helper="Choose what visitors can see publicly."
+                  defaultOpen
+                >
+                  <Grid>
+                    <Toggle
+                      label="Show Auction Teams Publically"
+                      checked={form?.teamPublic}
+                      onChange={(v) => update("teamPublic", v)}
+                      tooltip="Control whether the teams participating in the auction are visible to the public"
+                    />
 
-                <NumberInput
-                  label="Max Players / Team"
-                  placeholder="e.g., 25"
-                  value={String(form?.auctionRules?.maxPlayersPerTeam ?? "")}
-                  onChange={(v) =>
-                    update("auctionRules", {
-                      ...form.auctionRules,
-                      maxPlayersPerTeam: v,
-                    })
-                  }
-                  tooltip="Set the maximum number of players that each team can have in their squad"
-                />
+                    <Toggle
+                      label="Show Auction Players Publically"
+                      checked={form?.playerPublic}
+                      onChange={(v) => update("playerPublic", v)}
+                      tooltip="Control whether the players participating in the auction are visible to the public"
+                    />
+                  </Grid>
+                </Section>
+              }
 
-                <NumberInput
-                  label="Min Players / Team"
-                  placeholder="e.g., 18"
-                  value={String(form?.auctionRules?.minPlayersPerTeam ?? "")}
-                  onChange={(v) =>
-                    update("auctionRules", {
-                      ...form.auctionRules,
-                      minPlayersPerTeam: v,
-                    })
-                  }
-                  tooltip="Set the minimum number of players that each team must have in their squad"
+              {/* AUCTION TYPE */}
+              <Section
+                title="Auction Type"
+                helper="Choose manual bidding or auto auction flow."
+                defaultOpen
+              >
+                <RadioGroup
+                  value={form?.auctionType}
+                  onChange={(v) => update("auctionType", v)}
+                  options={[
+                    { label: "Manual", value: "manual" },
+                    { label: "Auto", value: "auto" },
+                  ]}
                 />
+              </Section>
 
-                <NumberInput
-                  label="Max Foreign Players"
-                  placeholder="e.g., 8"
-                  value={String(form?.auctionRules?.maxForeignPlayers ?? "")}
-                  onChange={(v) =>
-                    update("auctionRules", {
-                      ...form.auctionRules,
-                      maxForeignPlayers: v,
-                    })
-                  }
-                  tooltip="Set the maximum number of foreign players allowed in each team"
-                />
-
-                <NumberInput
-                  label="Max Wicket Keepers"
-                  placeholder="e.g., 2"
-                  value={String(form?.auctionRules?.maxWicketKeepers ?? "")}
-                  onChange={(v) =>
-                    update("auctionRules", {
-                      ...form.auctionRules,
-                      maxWicketKeepers: v,
-                    })
-                  }
-                  tooltip="Set the maximum number of wicket keepers allowed in each team"
-                />
-
-                <NumberInput
-                  label="Min Wicket Keepers"
-                  placeholder="e.g., 1"
-                  value={String(form?.auctionRules?.minWicketKeepers ?? "")}
-                  onChange={(v) =>
-                    update("auctionRules", {
-                      ...form.auctionRules,
-                      minWicketKeepers: v,
-                    })
-                  }
-                  tooltip="Set the minimum number of wicket keepers required in each team"
-                />
-
-                <NumberInput
-                  label="Base Price / Minimum Bid(Default)"
-                  placeholder="e.g., 100"
-                  value={String(form?.auctionRules?.minimumBid ?? "")}
-                  onChange={(v) =>
-                    update("auctionRules", {
-                      ...form.auctionRules,
-                      minimumBid: v,
-                    })
-                  }
-                  tooltip="Set the minimum bid amount for the auction"
-                />
-
-                <NumberInput
-                  label="Bidding Increment(Default)"
-                  placeholder="e.g., 1000"
-                  value={String(form?.auctionRules?.biddingIncrement ?? "")}
-                  onChange={(v) =>
-                    update("auctionRules", {
-                      ...form.auctionRules,
-                      biddingIncrement: v,
-                    })
-                  }
-                  tooltip="Set the minimum increment amount for each new bid during the auction"
-                />
-
-                <NumberInput
-                  label="Max Price Increment(Default)"
-                  placeholder="e.g., 5000"
-                  value={String(form?.auctionRules?.highPriceIncrement ?? "")}
-                  onChange={(v) =>
-                    update("auctionRules", {
-                      ...form.auctionRules,
-                      highPriceIncrement: v,
-                    })
-                  }
-                  tooltip="Set a higher increment amount that applies when the current bid exceeds a certain price threshold"
-                />
-
-                <NumberInput
-                  label="Max RTM Cards / Team"
-                  placeholder="e.g., 1"
-                  value={String(form?.auctionRules?.maxRTMCardsPerTeam ?? "")}
-                  onChange={(v) =>
-                    update("auctionRules", {
-                      ...form.auctionRules,
-                      maxRTMCardsPerTeam: v,
-                    })
-                  }
-                  tooltip="Set the maximum number of Right to Match (RTM) cards that each team can use during the auction"
-                />
-
-                <Toggle
-                  label="RTM Enabled"
-                  checked={form?.auctionRules?.rtmEnabled}
-                  onChange={(v) =>
-                    update("auctionRules", {
-                      ...form.auctionRules,
-                      rtmEnabled: v,
-                    })
-                  }
-                  tooltip="Right to Match (RTM) allows teams to retain players by matching the highest bid during the auction. When enabled, teams can use RTM cards to bring back their previous players by matching the final bid amount."
-                />
-
-                <Toggle
-                  label="Unsold Player Re-Entry"
-                  checked={form?.auctionRules?.unsoldPlayerReEntry}
-                  onChange={(v) =>
-                    update("auctionRules", {
-                      ...form.auctionRules,
-                      unsoldPlayerReEntry: v,
-                    })
-                  }
-                  tooltip="Allow unsold players to re-enter the auction in subsequent rounds if they remain unsold in the initial round"
-                />
-
-                <NumberInput
-                  label="Accelerated Round After (Players)"
-                  placeholder="e.g., 60"
-                  value={String(
-                    form?.auctionRules?.acceleratedRoundAfter ?? "",
-                  )}
-                  onChange={(v) =>
-                    update("auctionRules", {
-                      ...form.auctionRules,
-                      acceleratedRoundAfter: v,
-                    })
-                  }
-                />
-
-                <NumberInput
-                  label="Max Retain Players / Team"
-                  placeholder="e.g., 0"
-                  value={String(
-                    form?.auctionRules?.maxReturnPlayersPerTeam ?? "",
-                  )}
-                  onChange={(v) =>
-                    update("auctionRules", {
-                      ...form.auctionRules,
-                      maxReturnPlayersPerTeam: v,
-                    })
-                  }
-                  tooltip="Set the maximum number of players that teams can retain from their previous squad before the auction starts"
-                />
-
-                <NumberInput
-                  label="Max Purchase Players / Team"
-                  placeholder="e.g., 0"
-                  value={String(
-                    form?.auctionRules?.maxPurchasePlayersPerTeam ?? "",
-                  )}
-                  onChange={(v) =>
-                    update("auctionRules", {
-                      ...form.auctionRules,
-                      maxPurchasePlayersPerTeam: v,
-                    })
-                  }
-                  tooltip="Set the maximum number of players that teams can purchase during the auction"
-                />
-
-                <NumberInput
-                  label="Min Purchase Players / Team"
-                  placeholder="e.g., 0"
-                  value={String(
-                    form?.auctionRules?.minPurchasePlayersPerTeam ?? "",
-                  )}
-                  onChange={(v) =>
-                    update("auctionRules", {
-                      ...form.auctionRules,
-                      minPurchasePlayersPerTeam: v,
-                    })
-                  }
-                  tooltip="Set the minimum number of players that teams must purchase during the auction"
-                />
-              </Grid>
-            </Section>
-          )}
-
-          {
-            <Section
-              title="Public Visibility"
-              helper="Choose what visitors can see publicly."
-              defaultOpen
-            >
-            <Grid>
-              <Toggle
-                label="Show Auction Teams Publically"
-                checked={form?.teamPublic}
-                onChange={(v) => update("teamPublic", v)}
-                tooltip="Control whether the teams participating in the auction are visible to the public"
-              />
-
-              <Toggle
-                label="Show Auction Players Publically"
-                checked={form?.playerPublic}
-                onChange={(v) => update("playerPublic", v)}
-                tooltip="Control whether the players participating in the auction are visible to the public"
-              />
-            </Grid>
-            </Section>
-          }
-
-          {/* AUCTION TYPE */}
-          <Section
-            title="Auction Type"
-            helper="Choose manual bidding or auto auction flow."
-            defaultOpen
-          >
-            <RadioGroup
-              value={form?.auctionType}
-              onChange={(v) => update("auctionType", v)}
-              options={[
-                { label: "Manual", value: "manual" },
-                { label: "Auto", value: "auto" },
-              ]}
-            />
-          </Section>
-
-          {/* AUTO SETTINGS */}
-          {form?.auctionType === "auto" && (
-            <Section
-              title="Auto Auction Settings"
-              helper="Timing and bid automation settings."
-              defaultOpen
-            >
-              <Grid>
-                <NumberInput
-                  label="Player Display Duration (sec)"
-                  placeholder="e.g., 30"
-                  value={String(
-                    form?.autoSettings?.playerDisplayDuration ?? "",
-                  )}
-                  onChange={(v) =>
-                    update("autoSettings", {
-                      ...form.autoSettings,
-                      playerDisplayDuration: v,
-                    })
-                  }
-                  tooltip="Set the duration for which each player is displayed during the auto auction"
-                />
-                <NumberInput
-                  label="Bid Increment Interval (sec)"
-                  placeholder="e.g., 2"
-                  value={String(form?.autoSettings?.bidIncrementInterval ?? "")}
-                  onChange={(v) =>
-                    update("autoSettings", {
-                      ...form.autoSettings,
-                      bidIncrementInterval: v,
-                    })
-                  }
-                  tooltip="Set the time interval between each bid increment during the auto auction"
-                />
-                <NumberInput
-                  label="Auto Bid Increment Amount"
-                  placeholder="e.g., 10000"
-                  value={String(
-                    form?.autoSettings?.autoBidIncrementAmount ?? "",
-                  )}
-                  onChange={(v) =>
-                    update("autoSettings", {
-                      ...form.autoSettings,
-                      autoBidIncrementAmount: v,
-                    })
-                  }
-                  tooltip="Set the fixed amount by which the bid will automatically increase at each increment during the auto auction"
-                />
-                <NumberInput
-                  label="Countdown Warning At (sec)"
-                  placeholder="e.g., 10"
-                  value={String(form?.autoSettings?.countdownWarningAt ?? "")}
-                  onChange={(v) =>
-                    update("autoSettings", {
-                      ...form.autoSettings,
-                      countdownWarningAt: v,
-                    })
-                  }
-                  tooltip="Set the time (in seconds) at which a warning will be triggered before the countdown ends for each player during the auto auction"
-                />
-                <NumberInput
-                  label="Extend Time On Bid (sec)"
-                  placeholder="e.g., 10"
-                  value={String(form?.autoSettings?.extendTimeOnBid ?? "")}
-                  onChange={(v) =>
-                    update("autoSettings", {
-                      ...form.autoSettings,
-                      extendTimeOnBid: v,
-                    })
-                  }
-                  tooltip="Set the amount of time (in seconds) that will be added to the countdown when a new bid is placed during the auto auction"
-                />
-              </Grid>
-            </Section>
-          )}
-
+              {/* AUTO SETTINGS */}
+              {form?.auctionType === "auto" && (
+                <Section
+                  title="Auto Auction Settings"
+                  helper="Timing and bid automation settings."
+                  defaultOpen
+                >
+                  <Grid>
+                    <NumberInput
+                      label="Player Display Duration (sec)"
+                      placeholder="e.g., 30"
+                      value={String(
+                        form?.autoSettings?.playerDisplayDuration ?? "",
+                      )}
+                      onChange={(v) =>
+                        update("autoSettings", {
+                          ...form.autoSettings,
+                          playerDisplayDuration: v,
+                        })
+                      }
+                      tooltip="Set the duration for which each player is displayed during the auto auction"
+                    />
+                    <NumberInput
+                      label="Bid Increment Interval (sec)"
+                      placeholder="e.g., 2"
+                      value={String(
+                        form?.autoSettings?.bidIncrementInterval ?? "",
+                      )}
+                      onChange={(v) =>
+                        update("autoSettings", {
+                          ...form.autoSettings,
+                          bidIncrementInterval: v,
+                        })
+                      }
+                      tooltip="Set the time interval between each bid increment during the auto auction"
+                    />
+                    <NumberInput
+                      label="Auto Bid Increment Amount"
+                      placeholder="e.g., 10000"
+                      value={String(
+                        form?.autoSettings?.autoBidIncrementAmount ?? "",
+                      )}
+                      onChange={(v) =>
+                        update("autoSettings", {
+                          ...form.autoSettings,
+                          autoBidIncrementAmount: v,
+                        })
+                      }
+                      tooltip="Set the fixed amount by which the bid will automatically increase at each increment during the auto auction"
+                    />
+                    <NumberInput
+                      label="Countdown Warning At (sec)"
+                      placeholder="e.g., 10"
+                      value={String(
+                        form?.autoSettings?.countdownWarningAt ?? "",
+                      )}
+                      onChange={(v) =>
+                        update("autoSettings", {
+                          ...form.autoSettings,
+                          countdownWarningAt: v,
+                        })
+                      }
+                      tooltip="Set the time (in seconds) at which a warning will be triggered before the countdown ends for each player during the auto auction"
+                    />
+                    <NumberInput
+                      label="Extend Time On Bid (sec)"
+                      placeholder="e.g., 10"
+                      value={String(form?.autoSettings?.extendTimeOnBid ?? "")}
+                      onChange={(v) =>
+                        update("autoSettings", {
+                          ...form.autoSettings,
+                          extendTimeOnBid: v,
+                        })
+                      }
+                      tooltip="Set the amount of time (in seconds) that will be added to the countdown when a new bid is placed during the auto auction"
+                    />
+                  </Grid>
+                </Section>
+              )}
             </main>
 
             <aside className="space-y-4 lg:sticky lg:top-24">
@@ -1567,17 +1614,16 @@ export default function CreateEditAuction({ theme = "light", onToggleTheme }) {
 
           {/* ACTIONS */}
           <div className="flex flex-col-reverse gap-3 rounded-lg border border-[var(--border-card)] bg-[var(--bg-card)] p-4 shadow-[var(--shadow-card)] sm:flex-row sm:items-center sm:justify-between">
-          {!auctionId && (
-            <button
-              type="button"
-              className="inline-flex h-10 items-center justify-center gap-2 rounded-lg border border-[var(--border-card)] bg-[var(--bg-main)] px-4 text-sm font-semibold text-[var(--text-primary)] transition hover:border-[var(--border-primary)] hover:bg-[var(--accent-light)]"
-              onClick={handleGoBack}
-            >
-              <ArrowLeft className="h-4 w-4" />
-              <span>Go Back</span>
-            </button>
-          )
-}
+            {
+              <button
+                type="button"
+                className="inline-flex h-10 items-center justify-center gap-2 rounded-lg border border-[var(--border-card)] bg-[var(--bg-main)] px-4 text-sm font-semibold text-[var(--text-primary)] transition hover:border-[var(--border-primary)] hover:bg-[var(--accent-light)]"
+                onClick={handleGoBack}
+              >
+                <ArrowLeft className="h-4 w-4" />
+                <span>Go Back</span>
+              </button>
+            }
             <button
               className="inline-flex h-10 items-center justify-center gap-2 rounded-lg border border-[var(--border-primary)] bg-[var(--secondary)] px-6 text-sm font-semibold text-[#102033] shadow-sm transition hover:bg-[var(--secondary-strong)]"
               onClick={auctionId ? handleEditAuction : handleCreateAuction}

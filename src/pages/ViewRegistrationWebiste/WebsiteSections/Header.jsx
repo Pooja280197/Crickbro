@@ -192,7 +192,7 @@ const Header = ({ data }) => {
                 {String(tournamentName).trim().charAt(0).toUpperCase() || "A"}
               </div>
             )}
-            <span className="text-lg font-bold tracking-tight truncate max-w-[300px]" style={{ color: "#f8fafc" }}>
+            <span className="text-lg font-bold tracking-tight max-w-[500px]" style={{ color: "#f8fafc" }}>
               {tournamentName}
             </span>
           </Link>
@@ -327,7 +327,7 @@ const Header = ({ data }) => {
 
         {/* Right: Actions - Login/Logout only */}
         <div className="flex shrink-0 items-center gap-3">
-          {isLoggedIn ? (
+          {isLoggedIn && (
             <button
               type="button"
               onClick={handleLogout}
@@ -337,17 +337,8 @@ const Header = ({ data }) => {
               <LogOut size={16} />
               <span>Logout</span>
             </button>
-          ) : (
-            <button
-              type="button"
-              onClick={handleLogin}
-              className="flex items-center gap-2 px-5 py-2 rounded-lg font-semibold text-white shadow-sm transition-all hover:opacity-90 hover:shadow-md"
-              style={{ background: "#3b82f6" }}
-            >
-              <LogIn size={15} />
-              <span>Login</span>
-            </button>
-          )}
+
+          ) }
         </div>
       </div>
 

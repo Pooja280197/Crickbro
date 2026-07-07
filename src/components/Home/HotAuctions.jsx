@@ -70,7 +70,7 @@ const filterAuctions = (auctionList, filters) => {
 const tabs = [
   { key: "ongoing", label: "Ongoing" },
   { key: "upcoming", label: "Upcoming" },
-  { key: "completed", label: "Past" },
+  { key: "completed", label: "Completed" },
   { key: "my", label: "My auctions" },
 ];
 
@@ -96,6 +96,13 @@ const HotAuctions = ({ theme, onToggleTheme }) => {
   const [homeShowingUpcoming, setHomeShowingUpcoming] = useState(false);
   const [loadedAuctions, setLoadedAuctions] = useState([]);
   const [infiniteMeta, setInfiniteMeta] = useState(null);
+  
+  // Use refs to prevent infinite loops
+  const isLoggingOutRef = useRef(false);
+  const logoutTimeoutRef = useRef(null);
+  const isHandlingLogoutRef = useRef(false);
+  const previousActiveTabRef = useRef(activeTab);
+
   const listTopRef = useRef(null);
   const loadMoreRef = useRef(null);
 
@@ -141,9 +148,13 @@ const HotAuctions = ({ theme, onToggleTheme }) => {
   );
   const hasLoadedFirstPage = isHome || Boolean(infiniteMeta);
   const canLoadMore = !isHome && hasLoadedFirstPage && currentPage < totalPages;
+  
+  // Don't show loading during logout
   const isInitialLoading =
-    (!isHome && !hasLoadedFirstPage) ||
-    (isLoading && (isHome || currentPage === 1 || loadedAuctions.length === 0));
+    !isLoggingOutRef.current &&
+    ((!isHome && !hasLoadedFirstPage) ||
+    (isLoading && (isHome || currentPage === 1 || loadedAuctions.length === 0)));
+    
   const isLoadingMore =
     !isHome && isLoading && currentPage > 1 && loadedAuctions.length > 0;
 
@@ -166,7 +177,7 @@ const HotAuctions = ({ theme, onToggleTheme }) => {
     const isValidTab = tabs.some((tab) => tab.key === tabFromUrl);
     const nextTab = isValidTab ? tabFromUrl : "ongoing";
 
-    if (nextTab !== activeTab) {
+    if (nextTab !== activeTab && !isHandlingLogoutRef.current) {
       setActiveTab(nextTab);
       resetInfiniteAuctions();
       scrollToListTop();
@@ -179,14 +190,24 @@ const HotAuctions = ({ theme, onToggleTheme }) => {
     }
   }, [currentPage, isHome, totalPages]);
 
+  // This effect handles tab change when logout happens
   useEffect(() => {
+    // Skip if we're already handling logout
+    if (isHandlingLogoutRef.current) return;
+    
     if (activeTab === "my" && !isLoggedIn) {
+      isHandlingLogoutRef.current = true;
       setActiveTab("ongoing");
       resetInfiniteAuctions();
       scrollToListTop();
       const nextParams = new URLSearchParams(searchParams);
       nextParams.delete("tab");
       setSearchParams(nextParams, { replace: true });
+      
+      // Reset the flag after a delay
+      setTimeout(() => {
+        isHandlingLogoutRef.current = false;
+      }, 300);
     }
   }, [
     activeTab,
@@ -197,16 +218,91 @@ const HotAuctions = ({ theme, onToggleTheme }) => {
     setSearchParams,
   ]);
 
+  // Login/Logout event handlers - Fixed to prevent infinite loops
   useEffect(() => {
-    const handleLoginEvent = () => setLoginRefresh((prev) => prev + 1);
+    const handleLoginEvent = () => {
+      isLoggingOutRef.current = false;
+      isHandlingLogoutRef.current = false;
+      if (logoutTimeoutRef.current) {
+        clearTimeout(logoutTimeoutRef.current);
+        logoutTimeoutRef.current = null;
+      }
+      setLoginRefresh((prev) => prev + 1);
+    };
+    
+    const handleLogoutEvent = () => {
+      // Prevent multiple logout handlers from running
+      if (isLoggingOutRef.current) return;
+      
+      // Set logout flag to prevent loading state
+      isLoggingOutRef.current = true;
+      isHandlingLogoutRef.current = true;
+      
+      // Clear any existing timeout
+      if (logoutTimeoutRef.current) {
+        clearTimeout(logoutTimeoutRef.current);
+        logoutTimeoutRef.current = null;
+      }
+      
+      // If on "my" tab, redirect to ongoing
+      if (activeTab === "my") {
+        setActiveTab("ongoing");
+        resetInfiniteAuctions();
+        scrollToListTop();
+        
+        const nextParams = new URLSearchParams(searchParams);
+        nextParams.delete("tab");
+        setSearchParams(nextParams, { replace: true });
+      }
+      
+      // Clear loaded auctions immediately
+      if (!isHome) {
+        setLoadedAuctions([]);
+        setInfiniteMeta(null);
+      }
+      
+      // Reset flags after state updates complete
+      logoutTimeoutRef.current = setTimeout(() => {
+        isLoggingOutRef.current = false;
+        isHandlingLogoutRef.current = false;
+        setLoginRefresh((prev) => prev + 1);
+        logoutTimeoutRef.current = null;
+      }, 500);
+    };
+    
     window.addEventListener("userLoggedIn", handleLoginEvent);
-    return () => window.removeEventListener("userLoggedIn", handleLoginEvent);
-  }, []);
+    window.addEventListener("userLoggedOut", handleLogoutEvent);
+    
+    return () => {
+      window.removeEventListener("userLoggedIn", handleLoginEvent);
+      window.removeEventListener("userLoggedOut", handleLogoutEvent);
+      if (logoutTimeoutRef.current) {
+        clearTimeout(logoutTimeoutRef.current);
+        logoutTimeoutRef.current = null;
+      }
+    };
+  }, [activeTab, resetInfiniteAuctions, scrollToListTop, searchParams, setSearchParams, isHome]);
 
+  // Fetch auctions effect with logout protection
   useEffect(() => {
     let active = true;
+    let timeoutId = null;
 
     const loadAuctions = async () => {
+      // Skip if logging out or handling logout
+      if (isLoggingOutRef.current || isHandlingLogoutRef.current) {
+        return;
+      }
+
+      // If we're on "my" tab but not logged in, clear data and return
+      if (activeTab === "my" && !playerId) {
+        if (!isHome) {
+          setLoadedAuctions([]);
+          setInfiniteMeta(null);
+        }
+        return;
+      }
+
       const pageOptions = {
         page: isHome ? 1 : currentPage,
         limit: isHome ? 4 : AUCTIONS_PER_PAGE,
@@ -215,13 +311,14 @@ const HotAuctions = ({ theme, onToggleTheme }) => {
         toDate: isHome ? "" : filters.toDate,
       };
 
+      // If we're on "my" tab and playerId exists, fetch my auctions
       if (activeTab === "my") {
         if (playerId) {
           const result = await dispatch(
             fetchAuctions(activeTab, playerId, pageOptions),
           );
 
-          if (active && !isHome) {
+          if (active && !isHome && !isLoggingOutRef.current && !isHandlingLogoutRef.current) {
             const fetchedAuctions = result?.data || [];
             const total = Number(result?.total || fetchedAuctions.length);
             setInfiniteMeta({
@@ -248,10 +345,11 @@ const HotAuctions = ({ theme, onToggleTheme }) => {
         return;
       }
 
+      // For other tabs
       const result = await dispatch(fetchAuctions(activeTab, null, pageOptions));
       const fetchedAuctions = result?.data || [];
 
-      if (active && !isHome) {
+      if (active && !isHome && !isLoggingOutRef.current && !isHandlingLogoutRef.current) {
         const total = Number(result?.total || fetchedAuctions.length);
         setInfiniteMeta({
           total,
@@ -285,10 +383,16 @@ const HotAuctions = ({ theme, onToggleTheme }) => {
       if (active) setHomeShowingUpcoming(false);
     };
 
-    loadAuctions();
+    // Debounce the load to prevent multiple rapid calls
+    timeoutId = setTimeout(() => {
+      loadAuctions();
+    }, 200);
 
     return () => {
       active = false;
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+      }
     };
   }, [
     dispatch,
@@ -373,7 +477,7 @@ const HotAuctions = ({ theme, onToggleTheme }) => {
     if (auction.auctionStatus === "completed") {
       return (
         <span className="absolute right-3 top-3 inline-flex min-h-7 items-center rounded-full bg-[var(--success)] px-3 text-[10px] font-black uppercase text-white">
-          Past
+          Completed
         </span>
       );
     }

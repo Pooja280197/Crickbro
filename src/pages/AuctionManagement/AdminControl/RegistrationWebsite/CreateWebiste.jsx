@@ -21,10 +21,26 @@ import {
 } from "ckeditor5";
 import "ckeditor5/ckeditor5.css";
 import {
-  FiSave, FiEye, FiUpload, FiPlus, FiTrash2, FiX, FiLoader,
-  FiChevronRight, FiChevronLeft, FiSettings, FiSliders,
-  FiFileText, FiTrendingUp, FiList, FiAward, FiImage,
-  FiGrid, FiHelpCircle, FiGlobe, FiLock,
+  FiSave,
+  FiEye,
+  FiUpload,
+  FiPlus,
+  FiTrash2,
+  FiX,
+  FiLoader,
+  FiChevronRight,
+  FiChevronLeft,
+  FiSettings,
+  FiSliders,
+  FiFileText,
+  FiTrendingUp,
+  FiList,
+  FiAward,
+  FiImage,
+  FiGrid,
+  FiHelpCircle,
+  FiGlobe,
+  FiLock,
 } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
 import api from "../../../../utils/api";
@@ -36,11 +52,17 @@ const LockedState = ({ onGoToBasicInfo }) => (
     <div className="w-16 h-16 bg-[var(--secondary-lighter)] rounded-2xl flex items-center justify-center mb-4">
       <FiLock size={28} className="text-[var(--text-muted)]" />
     </div>
-    <h3 className="text-lg font-semibold text-[var(--text-primary)] mb-2">Tab Locked</h3>
+    <h3 className="text-lg font-semibold text-[var(--text-primary)] mb-2">
+      Tab Locked
+    </h3>
     <p className="text-sm text-[var(--text-secondary)] max-w-sm mb-5 leading-relaxed">
-      Complete the Basic Info section first. Fill in the tournament title, name, and description, then click "Next" to save and unlock all tabs.
+      Complete the Basic Info section first. Fill in the tournament title, name,
+      and description, then click "Next" to save and unlock all tabs.
     </p>
-    <button onClick={onGoToBasicInfo} className="lp-ui-btn-secondary text-sm px-5 py-2">
+    <button
+      onClick={onGoToBasicInfo}
+      className="lp-ui-btn-secondary text-sm px-5 py-2"
+    >
       Go to Basic Info →
     </button>
   </div>
@@ -139,16 +161,83 @@ const TournamentAdminForm = ({ tournamentId, auctionId, TrialType }) => {
   const navigate = useNavigate();
 
   const steps = [
-    { id: "registration", label: "Basic Info", icon: <FiFileText size={16} />, description: "Tournament title, name & display settings", lockedByDefault: false },
-    { id: "header", label: "Contact", icon: <FiSettings size={16} />, description: "Contact details and social media links", lockedByDefault: true },
-    { id: "slider", label: "Slider", icon: <FiSliders size={16} />, description: "Hero banner images for the page", requiresSave: true, lockedByDefault: true },
-    { id: "keyFeatures", label: "Features", icon: <FiTrendingUp size={16} />, description: "Highlights and key selling points", requiresSave: true, lockedByDefault: true },
-    { id: "rules", label: "Rules", icon: <FiList size={16} />, description: "Tournament guidelines and regulations", requiresSave: true, lockedByDefault: true },
-    { id: "sponsors", label: "Sponsors", icon: <FiAward size={16} />, description: "Partner logos and sponsor tiers", requiresSave: true, lockedByDefault: true },
-    { id: "gallery", label: "Gallery", icon: <FiImage size={16} />, description: "Photo gallery for the landing page", requiresSave: true, lockedByDefault: true },
-    { id: "cardImages", label: "Guest Gallery", icon: <FiGrid size={16} />, description: "Featured guest image cards", requiresSave: true, lockedByDefault: true },
-    { id: "faqs", label: "FAQ", icon: <FiHelpCircle size={16} />, description: "Frequently asked questions", requiresSave: true, lockedByDefault: true },
-    { id: "meta", label: "SEO", icon: <FiGlobe size={16} />, description: "Meta tags and search engine settings", lockedByDefault: true },
+    {
+      id: "registration",
+      label: "Basic Info",
+      icon: <FiFileText size={16} />,
+      description: "Tournament title, name & display settings",
+      lockedByDefault: false,
+    },
+    {
+      id: "header",
+      label: "Contact",
+      icon: <FiSettings size={16} />,
+      description: "Contact details and social media links",
+      lockedByDefault: true,
+    },
+    {
+      id: "slider",
+      label: "Slider",
+      icon: <FiSliders size={16} />,
+      description: "Hero banner images for the page",
+      requiresSave: true,
+      lockedByDefault: true,
+    },
+    {
+      id: "keyFeatures",
+      label: "Features",
+      icon: <FiTrendingUp size={16} />,
+      description: "Highlights and key selling points",
+      requiresSave: true,
+      lockedByDefault: true,
+    },
+    {
+      id: "rules",
+      label: "Rules",
+      icon: <FiList size={16} />,
+      description: "Tournament guidelines and regulations",
+      requiresSave: true,
+      lockedByDefault: true,
+    },
+    {
+      id: "sponsors",
+      label: "Sponsors",
+      icon: <FiAward size={16} />,
+      description: "Partner logos and sponsor tiers",
+      requiresSave: true,
+      lockedByDefault: true,
+    },
+    {
+      id: "gallery",
+      label: "Gallery",
+      icon: <FiImage size={16} />,
+      description: "Photo gallery for the landing page",
+      requiresSave: true,
+      lockedByDefault: true,
+    },
+    {
+      id: "cardImages",
+      label: "Guest Gallery",
+      icon: <FiGrid size={16} />,
+      description: "Featured guest image cards",
+      requiresSave: true,
+      lockedByDefault: true,
+    },
+    {
+      id: "faqs",
+      label: "FAQ",
+      icon: <FiHelpCircle size={16} />,
+      description: "Frequently asked questions",
+      requiresSave: true,
+      lockedByDefault: true,
+    },
+    {
+      id: "meta",
+      label: "SEO",
+      icon: <FiGlobe size={16} />,
+      description: "Meta tags and search engine settings",
+      lockedByDefault: true,
+    },
   ];
 
   const isStepLocked = (stepId) => {
@@ -157,40 +246,68 @@ const TournamentAdminForm = ({ tournamentId, auctionId, TrialType }) => {
     return true;
   };
 
-  const markFieldAsTouched = (field) => setTouchedFields((prev) => ({ ...prev, [field]: true }));
+  const markFieldAsTouched = (field) =>
+    setTouchedFields((prev) => ({ ...prev, [field]: true }));
 
   const getStepErrorStatus = (stepId) => {
     switch (stepId) {
-      case "header": return !!(validationErrors.contactInfo || validationErrors.socialAccounts);
-      case "slider": return !!validationErrors.sliderImages;
-      case "registration": return !!(validationErrors.tournamentTitle || validationErrors.tournamentName || validationErrors.description);
-      case "keyFeatures": return !!validationErrors.keyFeatures;
-      case "rules": return !!validationErrors.rules;
-      case "gallery": return !!validationErrors.galleryImages;
-      case "cardImages": return !!validationErrors.cardImages;
-      case "faqs": return !!validationErrors.questionsAnswers;
-      default: return false;
+      case "header":
+        return !!(
+          validationErrors.contactInfo || validationErrors.socialAccounts
+        );
+      case "slider":
+        return !!validationErrors.sliderImages;
+      case "registration":
+        return !!(
+          validationErrors.tournamentTitle ||
+          validationErrors.tournamentName ||
+          validationErrors.description
+        );
+      case "keyFeatures":
+        return !!validationErrors.keyFeatures;
+      case "rules":
+        return !!validationErrors.rules;
+      case "gallery":
+        return !!validationErrors.galleryImages;
+      case "cardImages":
+        return !!validationErrors.cardImages;
+      case "faqs":
+        return !!validationErrors.questionsAnswers;
+      default:
+        return false;
     }
   };
 
   const [formData, setFormData] = useState({
-    tournamentId, auctionId,
-    tournamentTitle: "", tournamentName: "", description: "",
+    tournamentId,
+    auctionId,
+    tournamentTitle: "",
+    tournamentName: "",
+    description: "",
     sliderImages: [],
     contactInfo: { email: "", mobileNumber: "", phoneNumber: "", website: "" },
     socialAccounts: [],
     keyFeatures: { title: "Key Features", features: [] },
     rules: { title: "Rules & Guidelines", description: "", items: [] },
-    sponsors: [], galleryImages: [], questionsAnswers: [],
+    sponsors: [],
+    galleryImages: [],
+    questionsAnswers: [],
     cardImages: { title: "Gallery", description: "", Images: [] },
-    showTrialLocations: false, showRegistrationForm: false, showTeamRegistration: false,
-    metaTitle: "", metaDescription: "", metaKeywords: "", isActive: true,
+    showTrialLocations: false,
+    showRegistrationForm: false,
+    showTeamRegistration: false,
+    metaTitle: "",
+    metaDescription: "",
+    metaKeywords: "",
+    isActive: true,
   });
 
   const fetchData = async () => {
     setLoading(true);
     try {
-      const response = await api.get(`/webSiteApi/auctionLandingPage/auctionLandingPage?tournamentId=${tournamentId}&auctionId=${auctionId}&includeInactive=true`);
+      const response = await api.get(
+        `/webSiteApi/auctionLandingPage/auctionLandingPage?tournamentId=${tournamentId}&auctionId=${auctionId}&includeInactive=true`,
+      );
       const data = response.data.data.landingPage;
       setPageData(data);
       if (data && data._id) {
@@ -203,18 +320,41 @@ const TournamentAdminForm = ({ tournamentId, auctionId, TrialType }) => {
           tournamentName: data.tournamentName || "",
           description: data.description || "",
           sliderImages: data.sliderImages || [],
-          contactInfo: data.contactInfo || { email: "", mobileNumber: "", phoneNumber: "", website: "" },
+          contactInfo: data.contactInfo || {
+            email: "",
+            mobileNumber: "",
+            phoneNumber: "",
+            website: "",
+          },
           socialAccounts: data.socialAccounts || [],
-          keyFeatures: { title: data.keyFeatures?.title ?? "Key Features", features: Array.isArray(data.keyFeatures?.features) ? data.keyFeatures.features : [] },
-          rules: { title: data.rules?.title ?? "Rules & Guidelines", description: data.rules?.description ?? "", items: Array.isArray(data.rules?.items) ? data.rules.items : [] },
+          keyFeatures: {
+            title: data.keyFeatures?.title ?? "Key Features",
+            features: Array.isArray(data.keyFeatures?.features)
+              ? data.keyFeatures.features
+              : [],
+          },
+          rules: {
+            title: data.rules?.title ?? "Rules & Guidelines",
+            description: data.rules?.description ?? "",
+            items: Array.isArray(data.rules?.items) ? data.rules.items : [],
+          },
           sponsors: data.sponsors || [],
           galleryImages: data.galleryImages || [],
           questionsAnswers: data.questionsAnswers || [],
-          cardImages: (() => { const c = data.cardImages; return { title: c?.title ?? "Gallery", description: c?.description ?? "", Images: Array.isArray(c?.Images) ? c.Images : [] }; })(),
+          cardImages: (() => {
+            const c = data.cardImages;
+            return {
+              title: c?.title ?? "Gallery",
+              description: c?.description ?? "",
+              Images: Array.isArray(c?.Images) ? c.Images : [],
+            };
+          })(),
           showTrialLocations: data.showTrialLocations ?? false,
           showRegistrationForm: data.showRegistrationForm ?? false,
           showTeamRegistration: data.showTeamRegistration ?? false,
-          metaTitle: data.metaTitle || "", metaDescription: data.metaDescription || "", metaKeywords: data.metaKeywords || "",
+          metaTitle: data.metaTitle || "",
+          metaDescription: data.metaDescription || "",
+          metaKeywords: data.metaKeywords || "",
           isActive: data.isActive ?? true,
         });
       }
@@ -226,31 +366,54 @@ const TournamentAdminForm = ({ tournamentId, auctionId, TrialType }) => {
     }
   };
 
-  useEffect(() => { 
-    fetchData(); 
+  useEffect(() => {
+    fetchData();
   }, [tournamentId, auctionId]);
 
   const buildBasicInfoPayload = () => ({
-    tournamentId: formData.tournamentId, auctionId: formData.auctionId,
-    tournamentTitle: formData.tournamentTitle, tournamentName: formData.tournamentName,
+    tournamentId: formData.tournamentId,
+    auctionId: formData.auctionId,
+    tournamentTitle: formData.tournamentTitle,
+    tournamentName: formData.tournamentName,
     description: formData.description,
-    contactInfo: formData.contactInfo || { email: "", mobileNumber: "", phoneNumber: "", website: "" },
+    contactInfo: formData.contactInfo || {
+      email: "",
+      mobileNumber: "",
+      phoneNumber: "",
+      website: "",
+    },
     socialAccounts: formData.socialAccounts || [],
     showTrialLocations: formData.showTrialLocations || false,
     showRegistrationForm: formData.showRegistrationForm || false,
     showTeamRegistration: formData.showTeamRegistration || false,
     isActive: formData.isActive,
-    metaTitle: formData.metaTitle || "", metaDescription: formData.metaDescription || "", metaKeywords: formData.metaKeywords || "",
-    sliderImages: [], keyFeatures: { title: "Key Features", features: [] },
+    metaTitle: formData.metaTitle || "",
+    metaDescription: formData.metaDescription || "",
+    metaKeywords: formData.metaKeywords || "",
+    sliderImages: [],
+    keyFeatures: { title: "Key Features", features: [] },
     rules: { title: "Rules & Guidelines", description: "", items: [] },
-    sponsors: [], galleryImages: [], questionsAnswers: [],
+    sponsors: [],
+    galleryImages: [],
+    questionsAnswers: [],
     cardImages: { title: "Gallery", description: "", Images: [] },
   });
 
   const buildCompletePayload = () => {
-    const rawCard = formData.cardImages || { title: "Gallery", description: "", Images: [] };
-    const keyFeat = formData.keyFeatures || { title: "Key Features", features: [] };
-    const rulesSection = formData.rules || { title: "Rules & Guidelines", description: "", items: [] };
+    const rawCard = formData.cardImages || {
+      title: "Gallery",
+      description: "",
+      Images: [],
+    };
+    const keyFeat = formData.keyFeatures || {
+      title: "Key Features",
+      features: [],
+    };
+    const rulesSection = formData.rules || {
+      title: "Rules & Guidelines",
+      description: "",
+      items: [],
+    };
     const sponsors = (formData.sponsors || [])
       .map((sponsor, index) => ({
         ...sponsor,
@@ -263,23 +426,55 @@ const TournamentAdminForm = ({ tournamentId, auctionId, TrialType }) => {
       .filter((sponsor) => sponsor.name && sponsor.logo);
 
     return {
-      tournamentId: formData.tournamentId, auctionId: formData.auctionId,
-      tournamentTitle: formData.tournamentTitle, tournamentName: formData.tournamentName,
+      tournamentId: formData.tournamentId,
+      auctionId: formData.auctionId,
+      tournamentTitle: formData.tournamentTitle,
+      tournamentName: formData.tournamentName,
       description: formData.description,
-      sliderImages: (formData.sliderImages || []).filter((s) => String(s?.imageUrl || s?.url || "").trim()),
-      keyFeatures: { ...keyFeat, features: (keyFeat.features || []).filter((f) => f?.title?.trim() && f?.description?.trim()) },
-      rules: { title: rulesSection.title, description: rulesSection.description, items: (rulesSection.items || []).filter((r) => r?.title?.trim() && r?.description?.trim()) },
-      galleryImages: (formData.galleryImages || []).filter((g) => String(g?.imageUrl || g?.url || "").trim()),
+      sliderImages: (formData.sliderImages || []).filter((s) =>
+        String(s?.imageUrl || s?.url || "").trim(),
+      ),
+      keyFeatures: {
+        ...keyFeat,
+        features: (keyFeat.features || []).filter(
+          (f) => f?.title?.trim() && f?.description?.trim(),
+        ),
+      },
+      rules: {
+        title: rulesSection.title,
+        description: rulesSection.description,
+        items: (rulesSection.items || []).filter(
+          (r) => r?.title?.trim() && r?.description?.trim(),
+        ),
+      },
+      galleryImages: (formData.galleryImages || []).filter((g) =>
+        String(g?.imageUrl || g?.url || "").trim(),
+      ),
       sponsors,
-      questionsAnswers: (formData.questionsAnswers || []).filter((q) => q?.question?.trim() && q?.answer?.trim()),
-      cardImages: { title: rawCard.title, description: rawCard.description, Images: (rawCard.Images || []).filter((img) => String(img?.imageUrl || img?.url || "").trim()) },
+      questionsAnswers: (formData.questionsAnswers || []).filter(
+        (q) => q?.question?.trim() && q?.answer?.trim(),
+      ),
+      cardImages: {
+        title: rawCard.title,
+        description: rawCard.description,
+        Images: (rawCard.Images || []).filter((img) =>
+          String(img?.imageUrl || img?.url || "").trim(),
+        ),
+      },
       showTrialLocations: formData.showTrialLocations || false,
       showRegistrationForm: formData.showRegistrationForm || false,
       showTeamRegistration: formData.showTeamRegistration || false,
-      contactInfo: formData.contactInfo || { email: "", mobileNumber: "", phoneNumber: "", website: "" },
+      contactInfo: formData.contactInfo || {
+        email: "",
+        mobileNumber: "",
+        phoneNumber: "",
+        website: "",
+      },
       socialAccounts: formData.socialAccounts || [],
       isActive: formData.isActive,
-      metaTitle: formData.metaTitle || "", metaDescription: formData.metaDescription || "", metaKeywords: formData.metaKeywords || "",
+      metaTitle: formData.metaTitle || "",
+      metaDescription: formData.metaDescription || "",
+      metaKeywords: formData.metaKeywords || "",
     };
   };
 
@@ -302,23 +497,40 @@ const TournamentAdminForm = ({ tournamentId, auctionId, TrialType }) => {
   };
 
   const saveBasicInfoAndContact = async ({ showSuccessToast = true } = {}) => {
-    if (!formData.tournamentTitle?.trim()) { toast.error("Tournament Title is required"); return false; }
-    if (!formData.tournamentName?.trim()) { toast.error("Tournament Name is required"); return false; }
-    if (!hasRichTextContent(formData.description)) { toast.error("Description is required"); return false; }
+    if (!formData.tournamentTitle?.trim()) {
+      toast.error("Tournament Title is required");
+      return false;
+    }
+    if (!formData.tournamentName?.trim()) {
+      toast.error("Tournament Name is required");
+      return false;
+    }
+    if (!hasRichTextContent(formData.description)) {
+      toast.error("Description is required");
+      return false;
+    }
     setIsSavingBasicInfo(true);
     try {
       const apiData = buildBasicInfoPayload();
       let response;
       if (landingPageId) {
-        response = await api.put(`/webSiteApi/auctionLandingPage/auctionLandingPage/${landingPageId}/unifiedUpdate`, apiData);
+        response = await api.put(
+          `/webSiteApi/auctionLandingPage/auctionLandingPage/${landingPageId}/unifiedUpdate`,
+          apiData,
+        );
       } else {
-        response = await api.post("/webSiteApi/auctionLandingPage/auctionLandingPage/create", apiData);
+        response = await api.post(
+          "/webSiteApi/auctionLandingPage/auctionLandingPage/create",
+          apiData,
+        );
       }
       if (isApiSuccess(response)) {
         let newId = extractLandingPageId(response, landingPageId);
         if (!newId && !landingPageId) {
           try {
-            const refetch = await api.get(`/webSiteApi/auctionLandingPage/auctionLandingPage?tournamentId=${tournamentId}&auctionId=${auctionId}&includeInactive=true`);
+            const refetch = await api.get(
+              `/webSiteApi/auctionLandingPage/auctionLandingPage?tournamentId=${tournamentId}&auctionId=${auctionId}&includeInactive=true`,
+            );
             newId = refetch.data?.data?.landingPage?._id || null;
           } catch (refetchError) {
             console.error(refetchError);
@@ -347,7 +559,11 @@ const TournamentAdminForm = ({ tournamentId, auctionId, TrialType }) => {
   const handleFullSubmit = async () => {
     setLoading(true);
     try {
-      if (!formData.tournamentTitle || !formData.tournamentName || !hasRichTextContent(formData.description)) {
+      if (
+        !formData.tournamentTitle ||
+        !formData.tournamentName ||
+        !hasRichTextContent(formData.description)
+      ) {
         toast.error("Please fill tournament title, name, and description");
         return;
       }
@@ -358,12 +574,20 @@ const TournamentAdminForm = ({ tournamentId, auctionId, TrialType }) => {
       const apiData = buildCompletePayload();
       let response;
       if (landingPageId) {
-        response = await api.put(`/webSiteApi/auctionLandingPage/auctionLandingPage/${landingPageId}/unifiedUpdate`, apiData);
+        response = await api.put(
+          `/webSiteApi/auctionLandingPage/auctionLandingPage/${landingPageId}/unifiedUpdate`,
+          apiData,
+        );
       } else {
-        response = await api.post("/webSiteApi/auctionLandingPage/auctionLandingPage/create", apiData);
+        response = await api.post(
+          "/webSiteApi/auctionLandingPage/auctionLandingPage/create",
+          apiData,
+        );
       }
       if (response.data.success) {
-        toast.success(landingPageId ? "Landing page updated!" : "Landing page created!");
+        toast.success(
+          landingPageId ? "Landing page updated!" : "Landing page created!",
+        );
         const newId = extractLandingPageId(response, landingPageId);
         if (newId) {
           setLandingPageId(newId);
@@ -387,17 +611,37 @@ const TournamentAdminForm = ({ tournamentId, auctionId, TrialType }) => {
     }
     try {
       const pageId = landingPageId;
-      if (!pageId) { toast.error("Landing page not found. Please save basic info first."); return; }
+      if (!pageId) {
+        toast.error("Landing page not found. Please save basic info first.");
+        return;
+      }
       const formDataUpload = new FormData();
       let endpoint = "";
-      if (field === "sliderImages") { formDataUpload.append("sliderImages", file); endpoint = `/webSiteApi/auctionLandingPage/auctionLandingPage/${pageId}/uploadSliderImages`; }
-      else if (field === "galleryImages") { formDataUpload.append("galleryImages", file); endpoint = `/webSiteApi/auctionLandingPage/auctionLandingPage/${pageId}/uploadGalleryImages`; }
-      else if (field === "sponsors") { formDataUpload.append("sponsorLogo", file); endpoint = `/webSiteApi/auctionLandingPage/auctionLandingPage/${pageId}/uploadSponsorLogos`; }
-      else if (field === "cardImages") { formDataUpload.append("cardImages", file); endpoint = `/webSiteApi/auctionLandingPage/auctionLandingPage/${pageId}/uploadCardImages`; }
+      if (field === "sliderImages") {
+        formDataUpload.append("sliderImages", file);
+        endpoint = `/webSiteApi/auctionLandingPage/auctionLandingPage/${pageId}/uploadSliderImages`;
+      } else if (field === "galleryImages") {
+        formDataUpload.append("galleryImages", file);
+        endpoint = `/webSiteApi/auctionLandingPage/auctionLandingPage/${pageId}/uploadGalleryImages`;
+      } else if (field === "sponsors") {
+        formDataUpload.append("sponsorLogo", file);
+        endpoint = `/webSiteApi/auctionLandingPage/auctionLandingPage/${pageId}/uploadSponsorLogos`;
+      } else if (field === "cardImages") {
+        formDataUpload.append("cardImages", file);
+        endpoint = `/webSiteApi/auctionLandingPage/auctionLandingPage/${pageId}/uploadCardImages`;
+      }
       const response = await api.post(endpoint, formDataUpload);
       if (response.data.success) {
-        if (field === "sliderImages") setFormData((prev) => ({ ...prev, sliderImages: response.data.data.sliderImages }));
-        else if (field === "galleryImages") setFormData((prev) => ({ ...prev, galleryImages: response.data.data.galleryImages }));
+        if (field === "sliderImages")
+          setFormData((prev) => ({
+            ...prev,
+            sliderImages: response.data.data.sliderImages,
+          }));
+        else if (field === "galleryImages")
+          setFormData((prev) => ({
+            ...prev,
+            galleryImages: response.data.data.galleryImages,
+          }));
         else if (field === "sponsors") {
           setFormData((prev) => {
             const currentSponsors = [...(prev.sponsors || [])];
@@ -438,8 +682,11 @@ const TournamentAdminForm = ({ tournamentId, auctionId, TrialType }) => {
 
             return { ...prev, sponsors: currentSponsors };
           });
-        }
-        else if (field === "cardImages") setFormData((prev) => ({ ...prev, cardImages: response.data.data.cardImages }));
+        } else if (field === "cardImages")
+          setFormData((prev) => ({
+            ...prev,
+            cardImages: response.data.data.cardImages,
+          }));
         toast.success(`${field} uploaded successfully`);
       }
     } catch (error) {
@@ -448,7 +695,13 @@ const TournamentAdminForm = ({ tournamentId, auctionId, TrialType }) => {
     }
   };
 
-  const handleInputChange = (section, field, value, index = null, subField = null) => {
+  const handleInputChange = (
+    section,
+    field,
+    value,
+    index = null,
+    subField = null,
+  ) => {
     setFormData((prev) => {
       const updated = structuredClone(prev);
       if (index !== null && subField) {
@@ -469,19 +722,63 @@ const TournamentAdminForm = ({ tournamentId, auctionId, TrialType }) => {
     setFormData((prev) => {
       const updated = structuredClone(prev);
       const getTemplate = () => {
-        if (field === "features") return { title: "", description: "", icon: "tv", order: (formData.keyFeatures?.features?.length || 0) + 1 };
-        if (field === "items") return { title: "", description: "", order: (formData.rules?.items?.length || 0) + 1 };
-        if (field === "sponsors") return { name: "", logo: "", website: "", tier: "partner", order: (formData.sponsors?.length || 0) + 1 };
-        if (field === "questionsAnswers") return { question: "", answer: "", category: "", order: (formData.questionsAnswers?.length || 0) + 1 };
-        if (field === "Images") return { imageUrl: "", title: "", description: "", order: formData.cardImages?.Images?.length || 0 };
-        if (field === "socialAccounts") return { platform: "instagram", url: "" };
-        if (field === "sliderImages") return { imageUrl: "", title: "", description: "", order: formData.sliderImages?.length || 0 };
-        if (field === "galleryImages") return { imageUrl: "", title: "", description: "", order: formData.galleryImages?.length || 0 };
+        if (field === "features")
+          return {
+            title: "",
+            description: "",
+            icon: "tv",
+            order: (formData.keyFeatures?.features?.length || 0) + 1,
+          };
+        if (field === "items")
+          return {
+            title: "",
+            description: "",
+            order: (formData.rules?.items?.length || 0) + 1,
+          };
+        if (field === "sponsors")
+          return {
+            name: "",
+            logo: "",
+            website: "",
+            tier: "partner",
+            order: (formData.sponsors?.length || 0) + 1,
+          };
+        if (field === "questionsAnswers")
+          return {
+            question: "",
+            answer: "",
+            category: "",
+            order: (formData.questionsAnswers?.length || 0) + 1,
+          };
+        if (field === "Images")
+          return {
+            imageUrl: "",
+            title: "",
+            description: "",
+            order: formData.cardImages?.Images?.length || 0,
+          };
+        if (field === "socialAccounts")
+          return { platform: "instagram", url: "" };
+        if (field === "sliderImages")
+          return {
+            imageUrl: "",
+            title: "",
+            description: "",
+            order: formData.sliderImages?.length || 0,
+          };
+        if (field === "galleryImages")
+          return {
+            imageUrl: "",
+            title: "",
+            description: "",
+            order: formData.galleryImages?.length || 0,
+          };
         return {};
       };
       if (section) {
         if (!updated[section]) updated[section] = {};
-        if (!Array.isArray(updated[section][field])) updated[section][field] = [];
+        if (!Array.isArray(updated[section][field]))
+          updated[section][field] = [];
         updated[section][field].push(getTemplate());
       } else {
         if (!Array.isArray(updated[field])) updated[field] = [];
@@ -548,7 +845,6 @@ const TournamentAdminForm = ({ tournamentId, auctionId, TrialType }) => {
       {/* ── Sticky Header ───────────────────────────── */}
       <div className="lp-sticky-header">
         <div className="lp-header-inner">
-
           {/* Title row */}
           <div className="lp-title-row">
             <div>
@@ -564,7 +860,9 @@ const TournamentAdminForm = ({ tournamentId, auctionId, TrialType }) => {
                 <span className="lp-badge lp-badge-success">● Live</span>
               )}
               {!isBasicInfoSaved && (
-                <span className="lp-badge lp-badge-warning">Setup required</span>
+                <span className="lp-badge lp-badge-warning">
+                  Setup required
+                </span>
               )}
             </div>
           </div>
@@ -580,7 +878,12 @@ const TournamentAdminForm = ({ tournamentId, auctionId, TrialType }) => {
                   <button
                     key={step.id}
                     onClick={() => {
-                      if (isLocked) { toast.info("Fill Basic Info and click Next to unlock all tabs"); return; }
+                      if (isLocked) {
+                        toast.info(
+                          "Fill Basic Info and click Next to unlock all tabs",
+                        );
+                        return;
+                      }
                       setActiveStep(idx);
                     }}
                     disabled={isLocked}
@@ -600,13 +903,17 @@ const TournamentAdminForm = ({ tournamentId, auctionId, TrialType }) => {
 
           {/* Step meta */}
           <div className="lp-step-meta">
-            <span className="lp-step-badge">{activeStep + 1} / {steps.length}</span>
+            <span className="lp-step-badge">
+              {activeStep + 1} / {steps.length}
+            </span>
             <span className="lp-step-desc">{currentStep.description}</span>
-            {!isBasicInfoSaved && !landingPageId && currentStepId !== "registration" && (
-              <span className="lp-badge lp-badge-warning">
-                <FiLock size={10} /> Save Basic Info first
-              </span>
-            )}
+            {!isBasicInfoSaved &&
+              !landingPageId &&
+              currentStepId !== "registration" && (
+                <span className="lp-badge lp-badge-warning">
+                  <FiLock size={10} /> Save Basic Info first
+                </span>
+              )}
           </div>
         </div>
       </div>
@@ -614,7 +921,6 @@ const TournamentAdminForm = ({ tournamentId, auctionId, TrialType }) => {
       {/* ── Main content ────────────────────────────── */}
       <div className="lp-body">
         <div className="lp-content-card">
-
           {/* ─ Basic Info ─ */}
           {currentStepId === "registration" && (
             <div className="lp-section-fade">
@@ -624,50 +930,76 @@ const TournamentAdminForm = ({ tournamentId, auctionId, TrialType }) => {
               />
 
               <div className="lp-grid-2">
-                <Field label="Tournament Title *" hint="The prominent display title shown at the top of the landing page.">
+                <Field
+                  label="Tournament Title *"
+                  hint="The prominent display title shown at the top of the landing page."
+                >
                   <input
                     type="text"
                     value={formData.tournamentTitle}
-                    onChange={(e) => handleInputChange(null, "tournamentTitle", e.target.value)}
+                    onChange={(e) =>
+                      handleInputChange(null, "tournamentTitle", e.target.value)
+                    }
                     className="lp-input"
                     placeholder="e.g. Champions Cup 2026"
                   />
                 </Field>
-                <Field label="Tournament Name *" hint="The official registered name of the tournament.">
+                <Field
+                  label="Tournament Name *"
+                  hint="The official registered name of the tournament."
+                >
                   <input
                     type="text"
                     value={formData.tournamentName}
-                    onChange={(e) => handleInputChange(null, "tournamentName", e.target.value)}
+                    onChange={(e) =>
+                      handleInputChange(null, "tournamentName", e.target.value)
+                    }
                     className="lp-input"
                     placeholder="e.g. ICC Champions Trophy"
                   />
                 </Field>
               </div>
 
-              <Field label=" Description *" hint="A concise overview shown beneath the title.">
+              <Field
+                label=" Description *"
+                hint="A concise overview shown beneath the title."
+              >
                 <CKEditor
                   editor={ClassicEditor}
                   config={shortDescriptionEditorConfig}
                   data={formData.description}
-                  onChange={(_, editor) => handleInputChange(null, "description", editor.getData())}
+                  onChange={(_, editor) =>
+                    handleInputChange(null, "description", editor.getData())
+                  }
                   onBlur={() => markFieldAsTouched("description")}
                 />
               </Field>
 
               <div className="lp-divider-section">
                 <h3 className="lp-sub-title">Display Options</h3>
-                <p className="lp-sub-desc">Control which additional sections appear on the public landing page.</p>
+                <p className="lp-sub-desc">
+                  Control which additional sections appear on the public landing
+                  page.
+                </p>
                 <div className="lp-toggle-grid">
                   {TrialType && (
                     <label className="lp-toggle-card">
                       <div>
                         <span className="lp-toggle-name">Trial Locations</span>
-                        <span className="lp-toggle-hint">Show venue selection map</span>
+                        <span className="lp-toggle-hint">
+                          Show venue selection map
+                        </span>
                       </div>
                       <input
                         type="checkbox"
                         checked={formData.showTrialLocations}
-                        onChange={(e) => handleInputChange(null, "showTrialLocations", e.target.checked)}
+                        onChange={(e) =>
+                          handleInputChange(
+                            null,
+                            "showTrialLocations",
+                            e.target.checked,
+                          )
+                        }
                         className="lp-checkbox"
                       />
                     </label>
@@ -675,24 +1007,40 @@ const TournamentAdminForm = ({ tournamentId, auctionId, TrialType }) => {
                   <label className="lp-toggle-card">
                     <div>
                       <span className="lp-toggle-name">Registration Form</span>
-                      <span className="lp-toggle-hint">Enable individual sign-ups</span>
+                      <span className="lp-toggle-hint">
+                        Enable individual sign-ups
+                      </span>
                     </div>
                     <input
                       type="checkbox"
                       checked={formData.showRegistrationForm}
-                      onChange={(e) => handleInputChange(null, "showRegistrationForm", e.target.checked)}
+                      onChange={(e) =>
+                        handleInputChange(
+                          null,
+                          "showRegistrationForm",
+                          e.target.checked,
+                        )
+                      }
                       className="lp-checkbox"
                     />
                   </label>
                   <label className="lp-toggle-card">
                     <div>
                       <span className="lp-toggle-name">Team Registration</span>
-                      <span className="lp-toggle-hint">Enable team-based sign-ups</span>
+                      <span className="lp-toggle-hint">
+                        Enable team-based sign-ups
+                      </span>
                     </div>
                     <input
                       type="checkbox"
                       checked={formData.showTeamRegistration}
-                      onChange={(e) => handleInputChange(null, "showTeamRegistration", e.target.checked)}
+                      onChange={(e) =>
+                        handleInputChange(
+                          null,
+                          "showTeamRegistration",
+                          e.target.checked,
+                        )
+                      }
                       className="lp-checkbox"
                     />
                   </label>
@@ -702,25 +1050,91 @@ const TournamentAdminForm = ({ tournamentId, auctionId, TrialType }) => {
           )}
 
           {/* ─ Contact ─ */}
-          {currentStepId === "header" && (
-            isCurrentStepLocked ? <LockedState onGoToBasicInfo={() => setActiveStep(0)} /> : (
+          {currentStepId === "header" &&
+            (isCurrentStepLocked ? (
+              <LockedState onGoToBasicInfo={() => setActiveStep(0)} />
+            ) : (
               <div className="lp-section-fade">
                 <SectionHeader
                   title="Contact Information"
                   description="This information appears in the contact section of the landing page and helps visitors reach you."
                 />
                 <div className="lp-grid-2">
-              <Field label="Mobile Number" hint="Primary contact number for visitors.">
-                <input type="tel" inputMode="numeric" pattern="[0-9]*"  value={formData.contactInfo?.mobileNumber ?? ""} onChange={(e) => handleInputChange("contactInfo", "mobileNumber", digitsOnly(e.target.value))} className="lp-input" placeholder="919876543210" />
-              </Field>
-                  <Field label="Email Address" hint="Enquiry or support email address.">
-                    <input type="email" value={formData.contactInfo?.email ?? ""} onChange={(e) => handleInputChange("contactInfo", "email", e.target.value)} className="lp-input" placeholder="contact@tournament.com" />
+                  <Field
+                    label="Mobile Number"
+                    hint="Primary contact number for visitors."
+                  >
+                    <input
+                      type="tel"
+                      inputMode="numeric"
+                      pattern="[0-9]*"
+                      value={formData.contactInfo?.mobileNumber ?? ""}
+                      onChange={(e) =>
+                        handleInputChange(
+                          "contactInfo",
+                          "mobileNumber",
+                          digitsOnly(e.target.value),
+                        )
+                      }
+                      className="lp-input"
+                      placeholder="919876543210"
+                    />
                   </Field>
-              <Field label="Phone Number" hint="Alternate landline or office number.">
-                <input type="tel" inputMode="numeric" pattern="[0-9]*" value={formData.contactInfo?.phoneNumber ?? ""} onChange={(e) => handleInputChange("contactInfo", "phoneNumber", digitsOnly(e.target.value))} className="lp-input" placeholder="02212345678" />
-              </Field>
-                  <Field label="Website" hint="Official tournament or organization website.">
-                    <input type="text"  value={formData.contactInfo?.website ?? ""} onChange={(e) => handleInputChange("contactInfo", "website", e.target.value)} className="lp-input" placeholder="https://tournament.com" />
+                  <Field
+                    label="Email Address"
+                    hint="Enquiry or support email address."
+                  >
+                    <input
+                      type="email"
+                      value={formData.contactInfo?.email ?? ""}
+                      onChange={(e) =>
+                        handleInputChange(
+                          "contactInfo",
+                          "email",
+                          e.target.value,
+                        )
+                      }
+                      className="lp-input"
+                      placeholder="contact@tournament.com"
+                    />
+                  </Field>
+                  <Field
+                    label="Phone Number"
+                    hint="Alternate landline or office number."
+                  >
+                    <input
+                      type="tel"
+                      inputMode="numeric"
+                      pattern="[0-9]*"
+                      value={formData.contactInfo?.phoneNumber ?? ""}
+                      onChange={(e) =>
+                        handleInputChange(
+                          "contactInfo",
+                          "phoneNumber",
+                          digitsOnly(e.target.value),
+                        )
+                      }
+                      className="lp-input"
+                      placeholder="02212345678"
+                    />
+                  </Field>
+                  <Field
+                    label="Website"
+                    hint="Official tournament or organization website."
+                  >
+                    <input
+                      type="text"
+                      value={formData.contactInfo?.website ?? ""}
+                      onChange={(e) =>
+                        handleInputChange(
+                          "contactInfo",
+                          "website",
+                          e.target.value,
+                        )
+                      }
+                      className="lp-input"
+                      placeholder="https://tournament.com"
+                    />
                   </Field>
                 </div>
 
@@ -728,201 +1142,546 @@ const TournamentAdminForm = ({ tournamentId, auctionId, TrialType }) => {
                   <div className="lp-section-header">
                     <div>
                       <h3 className="lp-sub-title">Social Accounts</h3>
-                      <p className="lp-sub-desc">Add links to your social media profiles. These appear as icons on the page.</p>
+                      <p className="lp-sub-desc">
+                        Add links to your social media profiles. These appear as
+                        icons on the page.
+                      </p>
                     </div>
-                    <button onClick={() => handleArrayAdd(null, "socialAccounts")} className="lp-btn-outline">
+                    <button
+                      onClick={() => handleArrayAdd(null, "socialAccounts")}
+                      className="lp-btn-outline"
+                    >
                       <FiPlus size={14} /> Add Account
                     </button>
                   </div>
-                  {formData.socialAccounts?.length === 0 && <EmptyState message="No social accounts added yet. Click 'Add Account' to get started." />}
+                  {formData.socialAccounts?.length === 0 && (
+                    <EmptyState message="No social accounts added yet. Click 'Add Account' to get started." />
+                  )}
                   {formData.socialAccounts?.map((acc, idx) => (
                     <div key={idx} className="lp-row-card">
-                      <select value={acc.platform ?? ""} onChange={(e) => handleInputChange(null, "socialAccounts", e.target.value, idx, "platform")} className="lp-input lp-select lp-row-select">
-                        {socialPlatforms.map((p) => <option key={p.value} value={p.value}>{p.label}</option>)}
+                      <select
+                        value={acc.platform ?? ""}
+                        onChange={(e) =>
+                          handleInputChange(
+                            null,
+                            "socialAccounts",
+                            e.target.value,
+                            idx,
+                            "platform",
+                          )
+                        }
+                        className="lp-input lp-select lp-row-select"
+                      >
+                        {socialPlatforms.map((p) => (
+                          <option key={p.value} value={p.value}>
+                            {p.label}
+                          </option>
+                        ))}
                       </select>
-                      <input value={acc.url ?? ""} onChange={(e) => handleInputChange(null, "socialAccounts", e.target.value, idx, "url")} className="lp-input lp-row-input" placeholder="https://..." />
-                      <button onClick={() => handleArrayRemove(null, "socialAccounts", idx)} className="lp-icon-btn lp-icon-btn-danger"><FiTrash2 size={15} /></button>
+                      <input
+                        value={acc.url ?? ""}
+                        onChange={(e) =>
+                          handleInputChange(
+                            null,
+                            "socialAccounts",
+                            e.target.value,
+                            idx,
+                            "url",
+                          )
+                        }
+                        className="lp-input lp-row-input"
+                        placeholder="https://..."
+                      />
+                      <button
+                        onClick={() =>
+                          handleArrayRemove(null, "socialAccounts", idx)
+                        }
+                        className="lp-icon-btn lp-icon-btn-danger"
+                      >
+                        <FiTrash2 size={15} />
+                      </button>
                     </div>
                   ))}
                 </div>
               </div>
-            )
-          )}
+            ))}
 
           {/* ─ Slider ─ */}
-          {currentStepId === "slider" && (
-            isCurrentStepLocked ? <LockedState onGoToBasicInfo={() => setActiveStep(0)} /> : (
+          {currentStepId === "slider" &&
+            (isCurrentStepLocked ? (
+              <LockedState onGoToBasicInfo={() => setActiveStep(0)} />
+            ) : (
               <div className="lp-section-fade">
                 <SectionHeader
                   title="Slider Images"
                   description="These images rotate as a hero banner at the top of the landing page. Use high-quality landscape images (recommended: 1920×600px)."
                   action={
-                    <button onClick={() => handleArrayAdd(null, "sliderImages")} className="lp-ui-btn-secondary">
+                    <button
+                      onClick={() => handleArrayAdd(null, "sliderImages")}
+                      className="lp-ui-btn-secondary"
+                    >
                       <FiPlus size={14} /> Add Slide
                     </button>
                   }
                 />
-                {formData.sliderImages?.length === 0 && <EmptyState message="No slides added yet. Click 'Add Slide' to get started." />}
+                {formData.sliderImages?.length === 0 && (
+                  <EmptyState message="No slides added yet. Click 'Add Slide' to get started." />
+                )}
                 <div className="lp-image-grid">
                   {formData.sliderImages?.map((slide, i) => (
                     <div key={i} className="lp-image-card">
                       <div className="lp-image-card-header">
                         <span className="lp-image-card-num">Slide {i + 1}</span>
-                        <button onClick={() => handleArrayRemove(null, "sliderImages", i)} className="lp-icon-btn lp-icon-btn-danger"><FiTrash2 size={14} /></button>
+                        <button
+                          onClick={() =>
+                            handleArrayRemove(null, "sliderImages", i)
+                          }
+                          className="lp-icon-btn lp-icon-btn-danger"
+                        >
+                          <FiTrash2 size={14} />
+                        </button>
                       </div>
-                      {(slide.imageUrl || slide.url) ? (
-                        <img src={slide.imageUrl || slide.url} className="lp-image-preview" alt={`Slide ${i + 1}`} />
+                      {slide.imageUrl || slide.url ? (
+                        <img
+                          src={slide.imageUrl || slide.url}
+                          className="lp-image-preview"
+                          alt={`Slide ${i + 1}`}
+                        />
                       ) : (
-                        <div className="lp-image-placeholder">No image uploaded</div>
+                        <div className="lp-image-placeholder">
+                          No image uploaded
+                        </div>
                       )}
                       <label className="lp-upload-zone">
                         <FiUpload size={15} /> Upload Image
-                        <input type="file" accept="image/*" className="hidden" onChange={(e) => handleFileChange("sliderImages", e.target.files[0], i)} />
+                        <input
+                          type="file"
+                          accept="image/*"
+                          className="hidden"
+                          onChange={(e) =>
+                            handleFileChange(
+                              "sliderImages",
+                              e.target.files[0],
+                              i,
+                            )
+                          }
+                        />
                       </label>
-                      <input placeholder="Slide title (optional)" value={slide.title ?? ""} onChange={(e) => handleInputChange(null, "sliderImages", e.target.value, i, "title")} className="lp-input lp-input-sm" />
-                      <textarea placeholder="Caption (optional)" rows={2} value={slide.description ?? ""} onChange={(e) => handleInputChange(null, "sliderImages", e.target.value, i, "description")} className="lp-input lp-textarea lp-input-sm" />
+                      <input
+                        placeholder="Slide title (optional)"
+                        value={slide.title ?? ""}
+                        onChange={(e) =>
+                          handleInputChange(
+                            null,
+                            "sliderImages",
+                            e.target.value,
+                            i,
+                            "title",
+                          )
+                        }
+                        className="lp-input lp-input-sm"
+                      />
+                      <textarea
+                        placeholder="Caption (optional)"
+                        rows={2}
+                        value={slide.description ?? ""}
+                        onChange={(e) =>
+                          handleInputChange(
+                            null,
+                            "sliderImages",
+                            e.target.value,
+                            i,
+                            "description",
+                          )
+                        }
+                        className="lp-input lp-textarea lp-input-sm"
+                      />
                     </div>
                   ))}
                 </div>
               </div>
-            )
-          )}
+            ))}
 
           {/* ─ Key Features ─ */}
-          {currentStepId === "keyFeatures" && (
-            isCurrentStepLocked ? <LockedState onGoToBasicInfo={() => setActiveStep(0)} /> : (
+          {currentStepId === "keyFeatures" &&
+            (isCurrentStepLocked ? (
+              <LockedState onGoToBasicInfo={() => setActiveStep(0)} />
+            ) : (
               <div className="lp-section-fade">
                 <SectionHeader
                   title="Key Features"
                   description="Highlight the most compelling aspects of this tournament. Each feature card shows an icon, title, and short description."
                   action={
-                    <button onClick={() => handleArrayAdd("keyFeatures", "features")} className="lp-ui-btn-secondary">
+                    <button
+                      onClick={() => handleArrayAdd("keyFeatures", "features")}
+                      className="lp-ui-btn-secondary"
+                    >
                       <FiPlus size={14} /> Add Feature
                     </button>
                   }
                 />
-                <Field label="Section Title" hint="Heading shown above the features grid on the page.">
-                  <input value={formData.keyFeatures.title ?? ""} onChange={(e) => handleInputChange("keyFeatures", "title", e.target.value)} className="lp-input" placeholder="Key Features" />
+                <Field
+                  label="Section Title"
+                  hint="Heading shown above the features grid on the page."
+                >
+                  <input
+                    value={formData.keyFeatures.title ?? ""}
+                    onChange={(e) =>
+                      handleInputChange("keyFeatures", "title", e.target.value)
+                    }
+                    className="lp-input"
+                    placeholder="Key Features"
+                  />
                 </Field>
-                {formData.keyFeatures.features.length === 0 && <EmptyState message="No features added yet. Click 'Add Feature' to get started." />}
+                {formData.keyFeatures.features.length === 0 && (
+                  <EmptyState message="No features added yet. Click 'Add Feature' to get started." />
+                )}
                 {formData.keyFeatures.features.map((feat, idx) => (
                   <div key={idx} className="lp-list-card">
                     <div className="lp-list-card-header">
-                      <span className="lp-list-card-num">Feature {idx + 1}</span>
-                      <button onClick={() => handleArrayRemove("keyFeatures", "features", idx)} className="lp-icon-btn lp-icon-btn-danger"><FiTrash2 size={14} /></button>
+                      <span className="lp-list-card-num">
+                        Feature {idx + 1}
+                      </span>
+                      <button
+                        onClick={() =>
+                          handleArrayRemove("keyFeatures", "features", idx)
+                        }
+                        className="lp-icon-btn lp-icon-btn-danger"
+                      >
+                        <FiTrash2 size={14} />
+                      </button>
                     </div>
                     <div className="lp-grid-2">
-                      <Field label="Title" hint="Short feature name, e.g. 'Live Streaming'">
-                        <input value={feat.title ?? ""} onChange={(e) => handleInputChange("keyFeatures", "features", e.target.value, idx, "title")} className="lp-input" placeholder="Feature title" />
+                      <Field
+                        label="Title"
+                        hint="Short feature name, e.g. 'Live Streaming'"
+                      >
+                        <input
+                          value={feat.title ?? ""}
+                          onChange={(e) =>
+                            handleInputChange(
+                              "keyFeatures",
+                              "features",
+                              e.target.value,
+                              idx,
+                              "title",
+                            )
+                          }
+                          className="lp-input"
+                          placeholder="Feature title"
+                        />
                       </Field>
-                      <Field label="Description" hint="One or two sentences describing this feature.">
-                        <textarea rows={2} value={feat.description ?? ""} onChange={(e) => handleInputChange("keyFeatures", "features", e.target.value, idx, "description")} className="lp-input lp-textarea" placeholder="What makes this feature valuable..." />
+                      <Field
+                        label="Description"
+                        hint="One or two sentences describing this feature."
+                      >
+                        <textarea
+                          rows={2}
+                          value={feat.description ?? ""}
+                          onChange={(e) =>
+                            handleInputChange(
+                              "keyFeatures",
+                              "features",
+                              e.target.value,
+                              idx,
+                              "description",
+                            )
+                          }
+                          className="lp-input lp-textarea"
+                          placeholder="What makes this feature valuable..."
+                        />
                       </Field>
                     </div>
                   </div>
                 ))}
               </div>
-            )
-          )}
+            ))}
 
           {/* ─ Rules ─ */}
-          {currentStepId === "rules" && (
-            isCurrentStepLocked ? <LockedState onGoToBasicInfo={() => setActiveStep(0)} /> : (
+          {currentStepId === "rules" &&
+            (isCurrentStepLocked ? (
+              <LockedState onGoToBasicInfo={() => setActiveStep(0)} />
+            ) : (
               <div className="lp-section-fade">
                 <SectionHeader
                   title="Rules & Guidelines"
                   description="Define the rules that participants must follow. These appear in a structured list on the landing page."
                   action={
-                    <button onClick={() => handleArrayAdd("rules", "items")} className="lp-ui-btn-secondary">
+                    <button
+                      onClick={() => handleArrayAdd("rules", "items")}
+                      className="lp-ui-btn-secondary"
+                    >
                       <FiPlus size={14} /> Add Rule
                     </button>
                   }
                 />
                 <div className="lp-grid-2">
-                  <Field label="Section Title" hint="Heading shown above the rules list.">
-                    <input type="text" value={formData?.rules?.title || ""} onChange={(e) => handleInputChange("rules", "title", e.target.value)} className="lp-input" placeholder="Rules & Guidelines" />
+                  <Field
+                    label="Section Title"
+                    hint="Heading shown above the rules list."
+                  >
+                    <input
+                      type="text"
+                      value={formData?.rules?.title || ""}
+                      onChange={(e) =>
+                        handleInputChange("rules", "title", e.target.value)
+                      }
+                      className="lp-input"
+                      placeholder="Rules & Guidelines"
+                    />
                   </Field>
-                  <Field label="Section Description" hint="Short introductory text for the rules section.">
-                    <input type="text" value={formData?.rules?.description || ""} onChange={(e) => handleInputChange("rules", "description", e.target.value)} className="lp-input" placeholder="Please read all rules carefully before registering." />
+                  <Field
+                    label="Section Description"
+                    hint="Short introductory text for the rules section."
+                  >
+                    <input
+                      type="text"
+                      value={formData?.rules?.description || ""}
+                      onChange={(e) =>
+                        handleInputChange(
+                          "rules",
+                          "description",
+                          e.target.value,
+                        )
+                      }
+                      className="lp-input"
+                      placeholder="Please read all rules carefully before registering."
+                    />
                   </Field>
                 </div>
-                {(formData?.rules?.items || []).length === 0 && <EmptyState message="No rules added yet. Click 'Add Rule' to create one." />}
+                {(formData?.rules?.items || []).length === 0 && (
+                  <EmptyState message="No rules added yet. Click 'Add Rule' to create one." />
+                )}
                 {formData?.rules?.items?.map((rule, index) => (
                   <div key={index} className="lp-list-card">
                     <div className="lp-list-card-header">
                       <span className="lp-list-card-num">Rule {index + 1}</span>
-                      <button onClick={() => handleArrayRemove("rules", "items", index)} className="lp-icon-btn lp-icon-btn-danger"><FiTrash2 size={14} /></button>
+                      <button
+                        onClick={() =>
+                          handleArrayRemove("rules", "items", index)
+                        }
+                        className="lp-icon-btn lp-icon-btn-danger"
+                      >
+                        <FiTrash2 size={14} />
+                      </button>
                     </div>
                     <div className="lp-grid-2">
-                      <Field label="Rule Title" hint="Short heading for this rule.">
-                        <input type="text" value={rule.title || ""} onChange={(e) => handleInputChange("rules", "items", e.target.value, index, "title")} className="lp-input" placeholder="e.g. Eligibility Criteria" />
+                      <Field
+                        label="Rule Title"
+                        hint="Short heading for this rule."
+                      >
+                        <input
+                          type="text"
+                          value={rule.title || ""}
+                          onChange={(e) =>
+                            handleInputChange(
+                              "rules",
+                              "items",
+                              e.target.value,
+                              index,
+                              "title",
+                            )
+                          }
+                          className="lp-input"
+                          placeholder="e.g. Eligibility Criteria"
+                        />
                       </Field>
-                      <Field label="Display Order" hint="Lower numbers appear first in the list.">
-                        <input type="number" min="1" value={rule.order ?? index + 1} onChange={(e) => handleInputChange("rules", "items", parseInt(e.target.value), index, "order")} className="lp-input" />
+                      <Field
+                        label="Display Order"
+                        hint="Lower numbers appear first in the list."
+                      >
+                        <input
+                          type="number"
+                          min="1"
+                          value={rule.order ?? index + 1}
+                          onChange={(e) =>
+                            handleInputChange(
+                              "rules",
+                              "items",
+                              parseInt(e.target.value),
+                              index,
+                              "order",
+                            )
+                          }
+                          className="lp-input"
+                        />
                       </Field>
                     </div>
-                    <Field label="Description" hint="Full explanation of this rule.">
-                      <textarea value={rule.description || ""} onChange={(e) => handleInputChange("rules", "items", e.target.value, index, "description")} className="lp-input lp-textarea" rows={3} placeholder="Detailed rule explanation..." />
+                    <Field
+                      label="Description"
+                      hint="Full explanation of this rule."
+                    >
+                      <textarea
+                        value={rule.description || ""}
+                        onChange={(e) =>
+                          handleInputChange(
+                            "rules",
+                            "items",
+                            e.target.value,
+                            index,
+                            "description",
+                          )
+                        }
+                        className="lp-input lp-textarea"
+                        rows={3}
+                        placeholder="Detailed rule explanation..."
+                      />
                     </Field>
                   </div>
                 ))}
               </div>
-            )
-          )}
+            ))}
 
           {/* ─ Sponsors ─ */}
-          {currentStepId === "sponsors" && (
-            isCurrentStepLocked ? <LockedState onGoToBasicInfo={() => setActiveStep(0)} /> : (
+          {currentStepId === "sponsors" &&
+            (isCurrentStepLocked ? (
+              <LockedState onGoToBasicInfo={() => setActiveStep(0)} />
+            ) : (
               <div className="lp-section-fade">
                 <SectionHeader
                   title="Sponsors & Partners"
                   description="Showcase tournament sponsors with their logo, tier, and website link. Logos appear in a grid grouped by tier."
                   action={
-                    <button onClick={() => handleArrayAdd(null, "sponsors")} className="lp-ui-btn-secondary">
+                    <button
+                      onClick={() => handleArrayAdd(null, "sponsors")}
+                      className="lp-ui-btn-secondary"
+                    >
                       <FiPlus size={14} /> Add Sponsor
                     </button>
                   }
                 />
-                {formData?.sponsors?.length === 0 && <EmptyState message="No sponsors added yet. Click 'Add Sponsor' to get started." />}
+                {formData?.sponsors?.length === 0 && (
+                  <EmptyState message="No sponsors added yet. Click 'Add Sponsor' to get started." />
+                )}
                 {formData?.sponsors?.map((sponsor, index) => (
                   <div key={index} className="lp-list-card">
                     <div className="lp-list-card-header">
-                      <span className="lp-list-card-num">Sponsor {index + 1}</span>
+                      <span className="lp-list-card-num">
+                        Sponsor {index + 1}
+                      </span>
                       {(formData?.sponsors?.length || 0) > 1 && (
-                        <button onClick={() => handleArrayRemove(null, "sponsors", index)} className="lp-icon-btn lp-icon-btn-danger"><FiTrash2 size={14} /></button>
+                        <button
+                          onClick={() =>
+                            handleArrayRemove(null, "sponsors", index)
+                          }
+                          className="lp-icon-btn lp-icon-btn-danger"
+                        >
+                          <FiTrash2 size={14} />
+                        </button>
                       )}
                     </div>
                     <div className="lp-sponsor-layout">
                       <div className="lp-sponsor-logo">
                         {sponsor.logo || sponsor.url ? (
-                          <img src={sponsor.logo || sponsor.url} alt={sponsor.name || "Logo"} className="lp-sponsor-img" />
+                          <img
+                            src={sponsor.logo || sponsor.url}
+                            alt={sponsor.name || "Logo"}
+                            className="lp-sponsor-img"
+                          />
                         ) : (
                           <label className="lp-upload-zone lp-upload-zone-tall">
                             <FiUpload size={18} />
                             <span>Upload Logo</span>
-                            <input type="file" accept="image/*" className="hidden" onChange={(e) => handleFileChange("sponsors", e.target.files[0], index)} />
+                            <input
+                              type="file"
+                              accept="image/*"
+                              className="hidden"
+                              onChange={(e) =>
+                                handleFileChange(
+                                  "sponsors",
+                                  e.target.files[0],
+                                  index,
+                                )
+                              }
+                            />
                           </label>
                         )}
                       </div>
                       <div className="lp-sponsor-fields">
                         <div className="lp-grid-2">
-                          <Field label="Sponsor Name" hint="Company or organization name.">
-                            <input type="text" value={sponsor.name ?? ""} onChange={(e) => handleInputChange(null, "sponsors", e.target.value, index, "name")} className="lp-input" placeholder="Acme Corp" />
+                          <Field
+                            label="Sponsor Name"
+                            hint="Company or organization name."
+                          >
+                            <input
+                              type="text"
+                              value={sponsor.name ?? ""}
+                              onChange={(e) =>
+                                handleInputChange(
+                                  null,
+                                  "sponsors",
+                                  e.target.value,
+                                  index,
+                                  "name",
+                                )
+                              }
+                              className="lp-input"
+                              placeholder="Acme Corp"
+                            />
                           </Field>
-                          <Field label="Website" hint="Sponsor's official website URL.">
-                            <input type="url" value={sponsor.website ?? ""} onChange={(e) => handleInputChange(null, "sponsors", e.target.value, index, "website")} className="lp-input" placeholder="https://acme.com" />
+                          <Field
+                            label="Website"
+                            hint="Sponsor's official website URL."
+                          >
+                            <input
+                              type="url"
+                              value={sponsor.website ?? ""}
+                              onChange={(e) =>
+                                handleInputChange(
+                                  null,
+                                  "sponsors",
+                                  e.target.value,
+                                  index,
+                                  "website",
+                                )
+                              }
+                              className="lp-input"
+                              placeholder="https://acme.com"
+                            />
                           </Field>
-                          <Field label="Tier" hint="Sponsorship level for display grouping.">
-                            <select value={sponsor.tier ?? ""} onChange={(e) => handleInputChange(null, "sponsors", e.target.value, index, "tier")} className="lp-input lp-select">
-                              <option value="platinum" >Platinum</option>
+                          <Field
+                            label="Tier"
+                            hint="Sponsorship level for display grouping."
+                          >
+                            <select
+                              value={sponsor.tier ?? ""}
+                              onChange={(e) =>
+                                handleInputChange(
+                                  null,
+                                  "sponsors",
+                                  e.target.value,
+                                  index,
+                                  "tier",
+                                )
+                              }
+                              className="lp-input lp-select"
+                            >
+                              <option value="platinum">Platinum</option>
                               <option value="gold">Gold</option>
                               <option value="silver">Silver</option>
                               <option value="bronze">Bronze</option>
                               <option value="partner">Partner</option>
                             </select>
                           </Field>
-                          <Field label="Display Order" hint="Order within the sponsor tier group.">
-                            <input type="number" min="1" value={sponsor.order ?? "" } onChange={(e) => handleInputChange(null, "sponsors", parseInt(e.target.value), index, "order")} className="lp-input" />
+                          <Field
+                            label="Display Order"
+                            hint="Order within the sponsor tier group."
+                          >
+                            <input
+                              type="number"
+                              min="1"
+                              value={sponsor.order ?? ""}
+                              onChange={(e) =>
+                                handleInputChange(
+                                  null,
+                                  "sponsors",
+                                  parseInt(e.target.value),
+                                  index,
+                                  "order",
+                                )
+                              }
+                              className="lp-input"
+                            />
                           </Field>
                         </div>
                       </div>
@@ -930,156 +1689,399 @@ const TournamentAdminForm = ({ tournamentId, auctionId, TrialType }) => {
                   </div>
                 ))}
               </div>
-            )
-          )}
+            ))}
 
           {/* ─ Gallery ─ */}
-          {currentStepId === "gallery" && (
-            isCurrentStepLocked ? <LockedState onGoToBasicInfo={() => setActiveStep(0)} /> : (
+          {currentStepId === "gallery" &&
+            (isCurrentStepLocked ? (
+              <LockedState onGoToBasicInfo={() => setActiveStep(0)} />
+            ) : (
               <div className="lp-section-fade">
                 <SectionHeader
                   title="Photo Gallery"
                   description="Upload photos from past events or promotional images. These appear in a grid gallery section on the page."
                   action={
-                    <button onClick={() => handleArrayAdd(null, "galleryImages")} className="lp-ui-btn-secondary">
+                    <button
+                      onClick={() => handleArrayAdd(null, "galleryImages")}
+                      className="lp-ui-btn-secondary"
+                    >
                       <FiPlus size={14} /> Add Photo
                     </button>
                   }
                 />
-                {formData.galleryImages?.length === 0 && <EmptyState message="No gallery photos added yet. Click 'Add Photo' to get started." />}
+                {formData.galleryImages?.length === 0 && (
+                  <EmptyState message="No gallery photos added yet. Click 'Add Photo' to get started." />
+                )}
                 <div className="lp-image-grid">
                   {formData.galleryImages?.map((img, i) => (
                     <div key={i} className="lp-image-card">
                       <div className="lp-image-card-header">
                         <span className="lp-image-card-num">Photo {i + 1}</span>
-                        <button onClick={() => handleArrayRemove(null, "galleryImages", i)} className="lp-icon-btn lp-icon-btn-danger"><FiTrash2 size={14} /></button>
+                        <button
+                          onClick={() =>
+                            handleArrayRemove(null, "galleryImages", i)
+                          }
+                          className="lp-icon-btn lp-icon-btn-danger"
+                        >
+                          <FiTrash2 size={14} />
+                        </button>
                       </div>
-                      {(img.imageUrl || img.url) ? (
-                        <img src={img.imageUrl || img.url} className="lp-image-preview" alt={`Gallery ${i + 1}`} />
+                      {img.imageUrl || img.url ? (
+                        <img
+                          src={img.imageUrl || img.url}
+                          className="lp-image-preview"
+                          alt={`Gallery ${i + 1}`}
+                        />
                       ) : (
-                        <div className="lp-image-placeholder">No image uploaded</div>
+                        <div className="lp-image-placeholder">
+                          No image uploaded
+                        </div>
                       )}
                       <label className="lp-upload-zone">
                         <FiUpload size={15} /> Upload Photo
-                        <input type="file" accept="image/*" className="hidden" onChange={(e) => handleFileChange("galleryImages", e.target.files[0], i)} />
+                        <input
+                          type="file"
+                          accept="image/*"
+                          className="hidden"
+                          onChange={(e) =>
+                            handleFileChange(
+                              "galleryImages",
+                              e.target.files[0],
+                              i,
+                            )
+                          }
+                        />
                       </label>
-                      <input placeholder="Photo title (optional)" value={img.title} onChange={(e) => handleInputChange(null, "galleryImages", e.target.value, i, "title")} className="lp-input lp-input-sm" />
-                      <textarea placeholder="Caption (optional)" rows={2} value={img.description} onChange={(e) => handleInputChange(null, "galleryImages", e.target.value, i, "description")} className="lp-input lp-textarea lp-input-sm" />
+                      <input
+                        placeholder="Photo title (optional)"
+                        value={img.title}
+                        onChange={(e) =>
+                          handleInputChange(
+                            null,
+                            "galleryImages",
+                            e.target.value,
+                            i,
+                            "title",
+                          )
+                        }
+                        className="lp-input lp-input-sm"
+                      />
+                      <textarea
+                        placeholder="Caption (optional)"
+                        rows={2}
+                        value={img.description}
+                        onChange={(e) =>
+                          handleInputChange(
+                            null,
+                            "galleryImages",
+                            e.target.value,
+                            i,
+                            "description",
+                          )
+                        }
+                        className="lp-input lp-textarea lp-input-sm"
+                      />
                     </div>
                   ))}
                 </div>
               </div>
-            )
-          )}
+            ))}
 
           {/* ─ Card Images ─ */}
-          {currentStepId === "cardImages" && (
-            isCurrentStepLocked ? <LockedState onGoToBasicInfo={() => setActiveStep(0)} /> : (
+          {currentStepId === "cardImages" &&
+            (isCurrentStepLocked ? (
+              <LockedState onGoToBasicInfo={() => setActiveStep(0)} />
+            ) : (
               <div className="lp-section-fade">
                 <SectionHeader
                   title="Guest Gallery"
                   description="Featured image cards displayed in a prominent section. Ideal for highlighting VIPs, celebrities, or key participants."
                   action={
-                    <button onClick={() => handleArrayAdd("cardImages", "Images")} className="lp-ui-btn-secondary">
+                    <button
+                      onClick={() => handleArrayAdd("cardImages", "Images")}
+                      className="lp-ui-btn-secondary"
+                    >
                       <FiPlus size={14} /> Add Card
                     </button>
                   }
                 />
-                {formData.cardImages?.Images?.length === 0 && <EmptyState message="No guest cards added yet. Click 'Add Card' to get started." />}
+                {formData.cardImages?.Images?.length === 0 && (
+                  <EmptyState message="No guest cards added yet. Click 'Add Card' to get started." />
+                )}
                 <div className="lp-image-grid">
                   {formData.cardImages?.Images?.map((img, i) => (
                     <div key={i} className="lp-image-card">
                       <div className="lp-image-card-header">
                         <span className="lp-image-card-num">Card {i + 1}</span>
-                        <button onClick={() => handleArrayRemove("cardImages", "Images", i)} className="lp-icon-btn lp-icon-btn-danger"><FiTrash2 size={14} /></button>
+                        <button
+                          onClick={() =>
+                            handleArrayRemove("cardImages", "Images", i)
+                          }
+                          className="lp-icon-btn lp-icon-btn-danger"
+                        >
+                          <FiTrash2 size={14} />
+                        </button>
                       </div>
-                      {(img.imageUrl || img.url) ? (
-                        <img src={img.imageUrl || img.url} className="lp-image-preview" alt={`Card ${i + 1}`} />
+                      {img.imageUrl || img.url ? (
+                        <img
+                          src={img.imageUrl || img.url}
+                          className="lp-image-preview"
+                          alt={`Card ${i + 1}`}
+                        />
                       ) : (
-                        <div className="lp-image-placeholder">No image uploaded</div>
+                        <div className="lp-image-placeholder">
+                          No image uploaded
+                        </div>
                       )}
                       <label className="lp-upload-zone">
                         <FiUpload size={15} /> Upload Image
-                        <input type="file" accept="image/*" className="hidden" onChange={(e) => handleFileChange("cardImages", e.target.files[0], i)} />
+                        <input
+                          type="file"
+                          accept="image/*"
+                          className="hidden"
+                          onChange={(e) =>
+                            handleFileChange("cardImages", e.target.files[0], i)
+                          }
+                        />
                       </label>
-                      <input placeholder="Name or title" value={img.title} onChange={(e) => handleInputChange("cardImages", "Images", e.target.value, i, "title")} className="lp-input lp-input-sm" />
-                      <textarea placeholder="Description" rows={2} value={img.description} onChange={(e) => handleInputChange("cardImages", "Images", e.target.value, i, "description")} className="lp-input lp-textarea lp-input-sm" />
+                      <input
+                        placeholder="Name or title"
+                        value={img.title}
+                        onChange={(e) =>
+                          handleInputChange(
+                            "cardImages",
+                            "Images",
+                            e.target.value,
+                            i,
+                            "title",
+                          )
+                        }
+                        className="lp-input lp-input-sm"
+                      />
+                      <textarea
+                        placeholder="Description"
+                        rows={2}
+                        value={img.description}
+                        onChange={(e) =>
+                          handleInputChange(
+                            "cardImages",
+                            "Images",
+                            e.target.value,
+                            i,
+                            "description",
+                          )
+                        }
+                        className="lp-input lp-textarea lp-input-sm"
+                      />
                     </div>
                   ))}
                 </div>
               </div>
-            )
-          )}
+            ))}
 
           {/* ─ FAQ ─ */}
-          {currentStepId === "faqs" && (
-            isCurrentStepLocked ? <LockedState onGoToBasicInfo={() => setActiveStep(0)} /> : (
+          {currentStepId === "faqs" &&
+            (isCurrentStepLocked ? (
+              <LockedState onGoToBasicInfo={() => setActiveStep(0)} />
+            ) : (
               <div className="lp-section-fade">
                 <SectionHeader
                   title="Frequently Asked Questions"
                   description="Address common participant queries upfront. FAQs reduce support load and build confidence in registering."
                   action={
-                    <button onClick={() => handleArrayAdd(null, "questionsAnswers")} className="lp-ui-btn-secondary">
+                    <button
+                      onClick={() => handleArrayAdd(null, "questionsAnswers")}
+                      className="lp-ui-btn-secondary"
+                    >
                       <FiPlus size={14} /> Add FAQ
                     </button>
                   }
                 />
-                {formData?.questionsAnswers?.length === 0 && <EmptyState message="No FAQs added yet. Click 'Add FAQ' to create one." />}
+                {formData?.questionsAnswers?.length === 0 && (
+                  <EmptyState message="No FAQs added yet. Click 'Add FAQ' to create one." />
+                )}
                 {formData?.questionsAnswers?.map((faq, index) => (
                   <div key={index} className="lp-list-card">
                     <div className="lp-list-card-header">
-                      <span className="lp-list-card-num">Question {index + 1}</span>
-                      <button onClick={() => handleArrayRemove(null, "questionsAnswers", index)} className="lp-icon-btn lp-icon-btn-danger"><FiTrash2 size={14} /></button>
+                      <span className="lp-list-card-num">
+                        Question {index + 1}
+                      </span>
+                      <button
+                        onClick={() =>
+                          handleArrayRemove(null, "questionsAnswers", index)
+                        }
+                        className="lp-icon-btn lp-icon-btn-danger"
+                      >
+                        <FiTrash2 size={14} />
+                      </button>
                     </div>
-                    <Field label="Question" hint="Phrase it the way a participant would ask it.">
-                      <input type="text" value={faq.question ?? ""} onChange={(e) => handleInputChange(null, "questionsAnswers", e.target.value, index, "question")} className="lp-input" placeholder="What are the eligibility criteria?" />
+                    <Field
+                      label="Question"
+                      hint="Phrase it the way a participant would ask it."
+                    >
+                      <input
+                        type="text"
+                        value={faq.question ?? ""}
+                        onChange={(e) =>
+                          handleInputChange(
+                            null,
+                            "questionsAnswers",
+                            e.target.value,
+                            index,
+                            "question",
+                          )
+                        }
+                        className="lp-input"
+                        placeholder="What are the eligibility criteria?"
+                      />
                     </Field>
-                    <Field label="Answer" hint="Clear and concise answer. Markdown formatting is not supported.">
-                      <textarea value={faq.answer ?? ""} onChange={(e) => handleInputChange(null, "questionsAnswers", e.target.value, index, "answer")} className="lp-input lp-textarea" rows={3} placeholder="Provide a thorough, easy-to-understand answer..." />
+                    <Field
+                      label="Answer"
+                      hint="Clear and concise answer. Markdown formatting is not supported."
+                    >
+                      <textarea
+                        value={faq.answer ?? ""}
+                        onChange={(e) =>
+                          handleInputChange(
+                            null,
+                            "questionsAnswers",
+                            e.target.value,
+                            index,
+                            "answer",
+                          )
+                        }
+                        className="lp-input lp-textarea"
+                        rows={3}
+                        placeholder="Provide a thorough, easy-to-understand answer..."
+                      />
                     </Field>
                     <div className="lp-grid-2">
-                      <Field label="Category" hint="Optional grouping label (e.g. 'Registration', 'Prizes').">
-                        <input type="text" value={faq.category ?? "" } onChange={(e) => handleInputChange(null, "questionsAnswers", e.target.value, index, "category")} className="lp-input" placeholder="e.g. Registration" />
+                      <Field
+                        label="Category"
+                        hint="Optional grouping label (e.g. 'Registration', 'Prizes')."
+                      >
+                        <input
+                          type="text"
+                          value={faq.category ?? ""}
+                          onChange={(e) =>
+                            handleInputChange(
+                              null,
+                              "questionsAnswers",
+                              e.target.value,
+                              index,
+                              "category",
+                            )
+                          }
+                          className="lp-input"
+                          placeholder="e.g. Registration"
+                        />
                       </Field>
-                      <Field label="Display Order" hint="Lower numbers appear first.">
-                        <input type="number" value={faq.order ?? ""} onChange={(e) => handleInputChange(null, "questionsAnswers", parseInt(e.target.value), index, "order")} className="lp-input"  />
+                      <Field
+                        label="Display Order"
+                        hint="Lower numbers appear first."
+                      >
+                        <input
+                          type="number"
+                          value={faq.order ?? ""}
+                          onChange={(e) =>
+                            handleInputChange(
+                              null,
+                              "questionsAnswers",
+                              parseInt(e.target.value),
+                              index,
+                              "order",
+                            )
+                          }
+                          className="lp-input"
+                        />
                       </Field>
                     </div>
                   </div>
                 ))}
               </div>
-            )
-          )}
+            ))}
 
           {/* ─ SEO ─ */}
-          {currentStepId === "meta" && (
-            isCurrentStepLocked ? <LockedState onGoToBasicInfo={() => setActiveStep(0)} /> : (
+          {currentStepId === "meta" &&
+            (isCurrentStepLocked ? (
+              <LockedState onGoToBasicInfo={() => setActiveStep(0)} />
+            ) : (
               <div className="lp-section-fade">
                 <SectionHeader
                   title="SEO & Visibility"
                   description="Meta tags control how the landing page appears in search engine results and when shared on social media."
                 />
-                <Field label="Meta Title" hint="Shown in browser tabs and search results. Keep under 60 characters for best results.">
-                  <input value={formData.metaTitle} onChange={(e) => handleInputChange(null, "metaTitle", e.target.value)} maxLength="60" className="lp-input" placeholder="Champions Cup 2026 – Official Page" />
-                  <span className={`lp-char-count ${formData.metaTitle.length > 55 ? "lp-char-warn" : ""}`}>{formData.metaTitle.length} / 60</span>
+                <Field
+                  label="Meta Title"
+                  hint="Shown in browser tabs and search results. Keep under 60 characters for best results."
+                >
+                  <input
+                    value={formData.metaTitle}
+                    onChange={(e) =>
+                      handleInputChange(null, "metaTitle", e.target.value)
+                    }
+                    maxLength="60"
+                    className="lp-input"
+                    placeholder="Champions Cup 2026 – Official Page"
+                  />
+                  <span
+                    className={`lp-char-count ${formData.metaTitle.length > 55 ? "lp-char-warn" : ""}`}
+                  >
+                    {formData.metaTitle.length} / 60
+                  </span>
                 </Field>
-                <Field label="Meta Description" hint="Appears beneath the title in search results. Aim for 120–160 characters.">
-                  <textarea rows={3} value={formData.metaDescription} onChange={(e) => handleInputChange(null, "metaDescription", e.target.value)} maxLength="160" className="lp-input lp-textarea" placeholder="Join the premier cricket tournament of 2026. Register your team now..." />
-                  <span className={`lp-char-count ${formData.metaDescription.length > 150 ? "lp-char-warn" : ""}`}>{formData.metaDescription.length} / 160</span>
+                <Field
+                  label="Meta Description"
+                  hint="Appears beneath the title in search results. Aim for 120–160 characters."
+                >
+                  <textarea
+                    rows={3}
+                    value={formData.metaDescription}
+                    onChange={(e) =>
+                      handleInputChange(null, "metaDescription", e.target.value)
+                    }
+                    maxLength="160"
+                    className="lp-input lp-textarea"
+                    placeholder="Join the premier cricket tournament of 2026. Register your team now..."
+                  />
+                  <span
+                    className={`lp-char-count ${formData.metaDescription.length > 150 ? "lp-char-warn" : ""}`}
+                  >
+                    {formData.metaDescription.length} / 160
+                  </span>
                 </Field>
-                <Field label="Meta Keywords" hint="Comma-separated keywords. Less critical for modern SEO, but still useful for some search engines.">
-                  <input value={formData.metaKeywords} onChange={(e) => handleInputChange(null, "metaKeywords", e.target.value)} className="lp-input" placeholder="cricket tournament, champions cup, 2026" />
+                <Field
+                  label="Meta Keywords"
+                  hint="Comma-separated keywords. Less critical for modern SEO, but still useful for some search engines."
+                >
+                  <input
+                    value={formData.metaKeywords}
+                    onChange={(e) =>
+                      handleInputChange(null, "metaKeywords", e.target.value)
+                    }
+                    className="lp-input"
+                    placeholder="cricket tournament, champions cup, 2026"
+                  />
                 </Field>
                 <div className="lp-toggle-card lp-toggle-card-wide">
                   <div>
                     <span className="lp-toggle-name">Page Active</span>
-                    <span className="lp-toggle-hint">When enabled, the landing page is publicly accessible. Disable to take it offline without deleting content.</span>
+                    <span className="lp-toggle-hint">
+                      When enabled, the landing page is publicly accessible.
+                      Disable to take it offline without deleting content.
+                    </span>
                   </div>
-                  <input type="checkbox" checked={formData.isActive} onChange={(e) => handleInputChange(null, "isActive", e.target.checked)} className="lp-checkbox" />
+                  <input
+                    type="checkbox"
+                    checked={formData.isActive}
+                    onChange={(e) =>
+                      handleInputChange(null, "isActive", e.target.checked)
+                    }
+                    className="lp-checkbox"
+                  />
                 </div>
               </div>
-            )
-          )}
+            ))}
         </div>
 
         <div className="lp-footer-spacer" />
@@ -1089,7 +2091,11 @@ const TournamentAdminForm = ({ tournamentId, auctionId, TrialType }) => {
       <div className="lp-action-bar">
         <div className="lp-action-inner">
           <div className="lp-action-nav">
-            <button onClick={goToPrevStep} disabled={activeStep === 0} className={`lp-btn-nav ${activeStep === 0 ? "lp-btn-nav-disabled" : ""}`}>
+            <button
+              onClick={goToPrevStep}
+              disabled={activeStep === 0}
+              className={`lp-btn-nav ${activeStep === 0 ? "lp-btn-nav-disabled" : ""}`}
+            >
               <FiChevronLeft size={15} /> Prev
             </button>
             {activeStep < steps.length - 1 && (
@@ -1115,16 +2121,35 @@ const TournamentAdminForm = ({ tournamentId, auctionId, TrialType }) => {
           </div>
 
           <div className="lp-action-aux">
-            {currentStepId === "registration" && !isBasicInfoSaved && !landingPageId && (
-              <button onClick={saveBasicInfoAndContact} disabled={isSavingBasicInfo} className="lp-btn-setup">
-                {isSavingBasicInfo ? <FiLoader className="lp-spin" size={13} /> : <FiSave size={13} />}
-                Save Basic Info
-              </button>
-            )}
-            <button onClick={() => navigate(`/landing-page/${tournamentId}/${auctionId}`)} className="lp-btn-view">
+            {currentStepId === "registration" &&
+              !isBasicInfoSaved &&
+              !landingPageId && (
+                <button
+                  onClick={saveBasicInfoAndContact}
+                  disabled={isSavingBasicInfo}
+                  className="lp-btn-setup"
+                >
+                  {isSavingBasicInfo ? (
+                    <FiLoader className="lp-spin" size={13} />
+                  ) : (
+                    <FiSave size={13} />
+                  )}
+                  Save Basic Info
+                </button>
+              )}
+            <button
+              onClick={() =>
+                navigate(`/landing-page/${tournamentId}/${auctionId}`)
+              }
+              className="lp-btn-view"
+            >
               <FiEye size={14} /> Preview
             </button>
-            <button onClick={() => setShowBarcodeModal(true)} disabled={!landingPageId} className="lp-btn-barcode">
+            <button
+              onClick={() => setShowBarcodeModal(true)}
+              disabled={!landingPageId}
+              className="lp-btn-barcode"
+            >
               QR Code
             </button>
           </div>
@@ -1135,7 +2160,10 @@ const TournamentAdminForm = ({ tournamentId, auctionId, TrialType }) => {
       {showBarcodeModal && (
         <div className="lp-modal-overlay">
           <div className="lp-modal">
-            <button onClick={() => setShowBarcodeModal(false)} className="lp-modal-close">
+            <button
+              onClick={() => setShowBarcodeModal(false)}
+              className="lp-modal-close"
+            >
               <FiX size={16} />
             </button>
             <BarcodeShareAdmin
@@ -1152,13 +2180,18 @@ const TournamentAdminForm = ({ tournamentId, auctionId, TrialType }) => {
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=DM+Mono:wght@400;500&display=swap');
 
-        .lp-root {
-          font-family: 'DM Sans', system-ui, sans-serif;
-          background: #f5f5f7;
-          min-height: 100vh;
-          color: #1a1a2e;
-          font-size: 14px;
-        }
+       .lp-root {
+  font-family: 'DM Sans', system-ui, sans-serif;
+  background: #f5f5f7;
+  min-height: 100vh;
+  color: #1a1a2e;
+  font-size: 14px;
+  display: flex;
+  flex-direction: column;
+  height: auto; /* Change from fixed height */
+  min-height: 100vh; /* Ensure full viewport height */
+  overflow: visible; /* Allow scrolling */
+}
 
         /* ── Overlay ── */
         .lp-overlay {
@@ -1257,7 +2290,15 @@ const TournamentAdminForm = ({ tournamentId, auctionId, TrialType }) => {
         .lp-step-desc { font-size: 12px; color: #9ca3af; }
 
         /* ── Body / Content ── */
-        .lp-body { max-width: 1100px; margin: 0 auto; padding: 20px; }
+        .lp-body {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 20px;
+  flex: 1;
+  overflow-y: visible; /* Change from auto to visible */
+  height: auto;
+  padding-bottom: 100px; /* Space for fixed action bar */
+}
         .lp-content-card {
           background: #fff; border-radius: 16px;
           border: 1px solid #e5e7eb;
@@ -1600,17 +2641,17 @@ const TournamentAdminForm = ({ tournamentId, auctionId, TrialType }) => {
         }
 
         /* ── Admin Theme Overrides ─────────────────── */
-        .lp-root {
-          font-family: inherit;
-          height: calc(100vh - 108px);
-          min-height: 560px;
-          background: var(--bg-main);
-          color: var(--text-primary);
-          font-size: 13px;
-          display: flex;
-          flex-direction: column;
-          overflow: hidden;
-        }
+       /* ── Admin Theme Overrides ─────────────────── */
+.lp-root {
+  font-family: inherit;
+  min-height: 100vh;
+  background: var(--bg-main);
+  color: var(--text-primary);
+  font-size: 13px;
+  display: flex;
+  flex-direction: column;
+  overflow: visible;
+}
         .lp-root * {
           letter-spacing: 0;
         }
@@ -1701,16 +2742,14 @@ const TournamentAdminForm = ({ tournamentId, auctionId, TrialType }) => {
           font-family: inherit;
           font-size: 11px;
         }
-        .lp-body {
-          max-width: none;
-          width: 100%;
-          flex: 1 1 auto;
-          min-height: 0;
-          overflow-y: auto;
-          overscroll-behavior: contain;
-          padding: 14px 18px 86px;
-          scrollbar-gutter: stable;
-        }
+      .lp-body {
+  max-width: none;
+  width: 100%;
+  flex: 1;
+  min-height: 0;
+  overflow-y: visible;
+  padding: 14px 18px 100px;
+}
         .lp-content-card {
           width: 100%;
           min-height: 360px;
