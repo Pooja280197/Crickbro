@@ -58,7 +58,7 @@ const HowItWorks = () => {
           ))}
         </div>
         <a
-          className="ui-btn-secondary mx-auto mt-[34px] flex items-center gap-2"
+          className="ui-btn-secondary mx-auto mt-[34px] w-[250px] flex items-center gap-2"
           href="/createAuction"
         >
           Start Creating Your Auction

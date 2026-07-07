@@ -978,7 +978,7 @@ button {
   .hero-bg {
     background:
       radial-gradient(circle at 82% 30%, rgba(255, 196, 0, 0.11), transparent 24%),
-      radial-gradient(circle at 16% 22%, rgba(8, 186, 247, 0.22), transparent 27%),
+      /* radial-gradient(circle at 16% 22%, rgba(8, 186, 247, 0.22), transparent 27%), */
       linear-gradient(
         90deg,
         rgba(0, 12, 30, 0.96) 40%,
@@ -991,17 +991,17 @@ button {
 
   .hot-bg {
     background:
-      radial-gradient(circle at 10% 12%, rgba(8, 186, 247, 0.2), transparent 24%),
-      radial-gradient(circle at 88% 72%, rgba(255, 196, 0, 0.12), transparent 24%),
-      linear-gradient(180deg, rgba(0, 16, 36, 0.9), rgba(0, 14, 32, 0.94)),
+     radial-gradient(circle at 50% 28%, rgba(8, 186, 247, 0.18), transparent 40%),
+      radial-gradient(circle at 72% 62%, rgba(255, 196, 0, 0.12), transparent 40%),
+      linear-gradient(180deg, rgba(0, 11, 25, 0.48), rgba(0, 10, 24, 0.9)),
       url("./assets/Images/herobanner2.png") center top/cover no-repeat;
   }
 
   .process-bg {
     background:
-      radial-gradient(circle at 12% 18%, rgba(8, 186, 247, 0.18), transparent 25%),
-      radial-gradient(circle at 86% 82%, rgba(255, 196, 0, 0.11), transparent 24%),
-      linear-gradient(180deg, rgba(0, 13, 30, 0.88), rgba(0, 12, 28, 0.95)),
+     radial-gradient(circle at 50% 28%, rgba(8, 186, 247, 0.18), transparent 26%),
+      radial-gradient(circle at 72% 62%, rgba(255, 196, 0, 0.12), transparent 24%),
+      linear-gradient(180deg, rgba(0, 11, 25, 0.48), rgba(0, 10, 24, 0.9)),
       url("./assets/Images/herobanner3.png") center/cover no-repeat;
   }
 
