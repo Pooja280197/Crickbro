@@ -878,7 +878,7 @@ const AdminAuctionControl = () => {
       className={`admin-auction-control bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 text-slate-50 px-4 py-2 ${
         isRoomFullscreen
           ? "fixed inset-0 z-[9999] min-h-screen overflow-y-auto"
-          : "min-h-screen"
+          : ""
       }`}
     >
       <div className="w-full mx-auto space-y-2">
@@ -889,7 +889,7 @@ const AdminAuctionControl = () => {
           <button
             type="button"
             onClick={isRoomFullscreen ? exitFullscreen : enterFullscreen}
-            className="inline-flex items-center gap-2 rounded-lg border border-slate-700 bg-slate-900/80 px-3 py-2 text-sm font-semibold text-slate-100 shadow-sm transition hover:border-sky-400 hover:bg-slate-800"
+            className="inline-flex items-center gap-2 rounded-lg border border-[var(--border-card)] bg-[var(--bg-card)] px-3 py-2 text-sm font-semibold text-[var(--text-primary)] shadow-sm transition hover:border-[var(--border-primary)] hover:bg-[var(--bg-main)]"
           >
             {isRoomFullscreen ? (
               <>

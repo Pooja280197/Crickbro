@@ -268,16 +268,16 @@ const RegistrationOverview = ({ auctionId: auctionIdProp }) => {
       : summary.totalRegistrationFee || 0,
   );
   const transactionCharge = grossRevenue * 0.023;
-  const netRevenue = grossRevenue - transactionCharge;
+  const netRevenue = Math.round(grossRevenue - transactionCharge);
 
-  const formatCurrency = (value) =>
-    `₹${Number(value || 0).toLocaleString("en-IN", {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    })}`;
+  // const formatCurrency = (value) =>
+  //   `₹${Number(value || 0).toLocaleString("en-IN", {
+  //     minimumFractionDigits: 2,
+  //     maximumFractionDigits: 2,
+  //   })}`;
 
   const gstData = {
-    totalGST: summary.totalGSTAmount || 0,
+    totalGST: Math.round(summary.totalGSTAmount) || 0,
     gstPercentage: summary.gstPercentage || 0,
     enabled: summary.gstEnabled || false,
   };
@@ -318,12 +318,12 @@ const RegistrationOverview = ({ auctionId: auctionIdProp }) => {
       : []),
     {
       title: "Total Revenue",
-      value: formatCurrency(grossRevenue),
+      value: grossRevenue,
       icon: <IndianRupee size={18} />,
     },
     {
       title: "Net Revenue",
-      value: formatCurrency(netRevenue),
+      value: netRevenue,
       subtitle: `After 2.3% Transaction Fee + GST`,
       icon: <IndianRupee size={18} />,
     },
@@ -331,7 +331,7 @@ const RegistrationOverview = ({ auctionId: auctionIdProp }) => {
       ? [
           {
             title: "Total GST",
-            value: formatCurrency(gstData.totalGST),
+            value: gstData.totalGST,
             subtitle: `GST @ ${gstData.gstPercentage}%`,
             icon: <IndianRupee size={18} />,
           },
@@ -339,6 +339,7 @@ const RegistrationOverview = ({ auctionId: auctionIdProp }) => {
       : []),
   ];
 
+  console.log(selectedRegistration,"selected")
   return (
     <div className="space-y-5 p-3 text-[var(--text-primary)] lg:p-5">
       <div className="rounded-lg border border-[var(--border-card)] bg-[var(--bg-card)] p-4 shadow-[var(--shadow-card)]">
@@ -409,7 +410,7 @@ const RegistrationOverview = ({ auctionId: auctionIdProp }) => {
                   {card.value}
                 </p>
                 {card.subtitle ? (
-                  <p className="mt-1 truncate text-[11px] font-medium text-[var(--text-secondary)]">
+                  <p className="mt-1 truncate text-[8px] font-medium text-[var(--text-secondary)]">
                     {card.subtitle}
                   </p>
                 ) : null}
@@ -820,10 +821,10 @@ const RegistrationOverview = ({ auctionId: auctionIdProp }) => {
                   </div>
                   <div className="rounded-lg border border-[var(--border-card)] bg-[var(--bg-card)] px-3 py-2">
                     <p className="text-[10px] font-bold uppercase tracking-wide text-[var(--text-muted)]">
-                      Mode
+                      Role
                     </p>
                     <p className="mt-1 text-sm font-semibold text-[var(--text-primary)]">
-                      {isTeamMode ? "Team" : "Individual"}
+                      {selectedRegistration?.player?.playerRole || "-"}
                     </p>
                   </div>
                 </div>

@@ -157,7 +157,7 @@ const RegWebsite = () => {
     );
   }
 
-  // console.log(pageData, "page");
+  console.log(pageData, "page");
 
   return (
     <div className="relative" data-theme={websiteThemeMode} style={themeStyle}>
@@ -224,7 +224,7 @@ const RegWebsite = () => {
             />
           )
         )}
-        <Rules pagedata={pageData} />
+        {pageData?.rules?.items.length > 0 && <Rules pagedata={pageData} />}
         {pageData?.keyFeatures?.features?.length > 0 && (
           <KeyFeatures
             pagedata={pageData}
@@ -234,7 +234,7 @@ const RegWebsite = () => {
         )}
         {/* <Sponsors pagedata={pageData}/> */}
 
-        <GuestGallery pagedata={pageData} />
+        {pageData?.cardImages && pageData?.cardImages?.Images?.length > 0 && <GuestGallery pagedata={pageData} />}
         {pageData?.sponsors && pageData?.sponsors.length > 0 && <Sponsors pagedata={pageData} />}
 
         {pageData?.galleryImages.length > 0 && <TeamGallery pagedata={pageData} />}
@@ -242,7 +242,7 @@ const RegWebsite = () => {
 
         {pageData?.questionsAnswers && pageData?.questionsAnswers.length > 0 && <FAQ pagedata={pageData} />}
 
-        {!hideHeaderFooter && <Footer />}
+        {!hideHeaderFooter && <Footer isDarkTheme={true} />}
         </React.Suspense>
       </div>
     </div>

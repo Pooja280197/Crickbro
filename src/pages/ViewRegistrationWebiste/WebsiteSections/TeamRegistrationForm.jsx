@@ -266,8 +266,8 @@ export default function TeamRegistrationForm({
     "--rf-input-highlight": "#dbeafe",
     "--rf-input-text": "#0f172a",
     "--rf-placeholder": "#94a3b8",
-    "--rf-primary": "#3b82f6",
-    "--rf-accent": "#2563eb",
+    "--rf-primary": "#FBBF24",
+    "--rf-accent": "#F59E0B",
     fontFamily:
       '"Inter", "Manrope", "Nunito Sans", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
   };
@@ -381,8 +381,8 @@ export default function TeamRegistrationForm({
                       alt="logo"
                       className="w-full h-full object-cover"
                     />
-                    <span className="absolute bottom-1 right-1 p-1.5 rounded-full shadow-sm bg-blue-600">
-                      <Upload className="w-3 h-3 text-white" />
+                    <span className="absolute bottom-1 right-1 p-1.5 rounded-full shadow-sm bg-yellow-500">
+                      <Upload className="w-3 h-3 text-black" />
                     </span>
                   </button>
                   <input
@@ -477,7 +477,7 @@ export default function TeamRegistrationForm({
                 type="button"
                 disabled={loading}
                 onClick={handleSubmit}
-                className="w-full py-2.5 text-sm font-bold rounded-md bg-blue-600 hover:bg-blue-700 text-white transition-all duration-300 disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                className="w-full py-2.5 text-sm font-bold rounded-md bg-yellow-500 hover:bg-yellow-600 text-black transition-all duration-300 disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2"
               >
                 {loading ? (
                   <>
@@ -806,15 +806,15 @@ export default function TeamRegistrationForm({
           border: 1px solid #bfdbfe;
         }
 
-        .registration-form-card button[type="button"]:not(:disabled).bg-blue-600 {
-          background: #3b82f6 !important;
-          color: #ffffff !important;
-          box-shadow: 0 8px 20px rgba(59, 130, 246, 0.24);
+        .registration-form-card button[type="button"]:not(:disabled).bg-yellow-500 {
+          background: #FBBF24 !important;
+          color: #000000 !important;
+          box-shadow: 0 8px 20px rgba(251, 191, 36, 0.24);
           transform: none !important;
         }
 
-        .registration-form-card button[type="button"]:not(:disabled).bg-blue-600:hover {
-          background: #2563eb !important;
+        .registration-form-card button[type="button"]:not(:disabled).bg-yellow-500:hover {
+          background: #F59E0B !important;
         }
 
         .registration-form-card button:disabled,

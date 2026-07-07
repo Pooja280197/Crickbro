@@ -73,6 +73,7 @@ const CreatePoster = () => {
   const [teamPosterDownloading, setTeamPosterDownloading] = useState(false);
   const [teamDropdownOpen, setTeamDropdownOpen] = useState(false);
   const [teamSearchQuery, setTeamSearchQuery] = useState("");
+  const [teamSearchDebounced, setTeamSearchDebounced] = useState("");
   const [teamApiPage, setTeamApiPage] = useState(1);
   const [teamHasMore, setTeamHasMore] = useState(true);
   const [teamListLoading, setTeamListLoading] = useState(false);
@@ -181,32 +182,35 @@ const CreatePoster = () => {
   );
 
   // Fetch teams from API
-  const fetchTeams = useCallback(async (page = 1, append = false) => {
+  const fetchTeams = useCallback(async (page = 1, append = false, query = "") => {
     if (!auctionId || teamLoadingRef.current) return;
 
     teamLoadingRef.current = true;
     setTeamListLoading(true);
     try {
       const limit = 20;
-        const res = await api.get(
-          `/webSiteApi/auction/getAuctionTeams/${auctionId}?page=${page}&limit=${limit}`,
-        );
+      const params = new URLSearchParams({ page: String(page), limit: String(limit) });
+      if (query.trim()) params.append("search", query.trim());
 
-        const responseData = res?.data;
-        const teamsData =
-          responseData?.data?.data || responseData?.data || responseData;
-        const pageItems = Array.isArray(teamsData) ? teamsData : [];
+      const res = await api.get(
+        `/webSiteApi/auction/getAuctionTeams/${auctionId}?${params.toString()}`,
+      );
 
-        const totalPages =
-          responseData?.pages ||
-          responseData?.data?.pages ||
-          responseData?.data?.data?.pages ||
-          0;
-        const totalTeams =
-          responseData?.total ||
-          responseData?.data?.total ||
-          responseData?.data?.data?.total ||
-          0;
+      const responseData = res?.data;
+      const teamsData =
+        responseData?.data?.data || responseData?.data || responseData;
+      const pageItems = Array.isArray(teamsData) ? teamsData : [];
+
+      const totalPages =
+        responseData?.pages ||
+        responseData?.data?.pages ||
+        responseData?.data?.data?.pages ||
+        0;
+      const totalTeams =
+        responseData?.total ||
+        responseData?.data?.total ||
+        responseData?.data?.data?.total ||
+        0;
 
       setTeams((currentTeams) => {
         const combined = append ? [...currentTeams, ...pageItems] : pageItems;
@@ -255,16 +259,16 @@ const CreatePoster = () => {
   useEffect(() => {
     if (auctionId) {
       dispatch(fetchAuctionDetails(auctionId));
-      fetchPlayersWithFilters(1);
-      fetchTeams(1, false);
-      fetchCategories();
+      Promise.resolve().then(() => {
+        fetchPlayersWithFilters(1);
+        fetchCategories();
+      });
     }
-  }, [auctionId, fetchPlayersWithFilters, fetchTeams, fetchCategories]);
+  }, [auctionId, dispatch, fetchPlayersWithFilters, fetchCategories]);
 
   // Reset page when filters change
   useEffect(() => {
-    setCurrentPage(1);
-    fetchPlayersWithFilters(1);
+    Promise.resolve().then(() => fetchPlayersWithFilters(1));
   }, [
     debouncedSearch,
     statusFilter,
@@ -274,7 +278,7 @@ const CreatePoster = () => {
     fetchPlayersWithFilters,
   ]);
 
-  // Debounce search
+  // Debounce main player search
   useEffect(() => {
     const timer = setTimeout(() => {
       setDebouncedSearch(searchQuery);
@@ -282,6 +286,24 @@ const CreatePoster = () => {
 
     return () => clearTimeout(timer);
   }, [searchQuery]);
+
+  // Debounce team dropdown search
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setTeamSearchDebounced(teamSearchQuery);
+    }, 400);
+
+    return () => clearTimeout(timer);
+  }, [teamSearchQuery]);
+
+  // Remote team search / pagination
+  useEffect(() => {
+    Promise.resolve().then(() => {
+      setTeamApiPage(1);
+      setTeamHasMore(true);
+      fetchTeams(1, false, teamSearchDebounced);
+    });
+  }, [teamSearchDebounced, fetchTeams]);
 
   // Reset filters
   const resetFilters = () => {
@@ -1297,7 +1319,7 @@ const CreatePoster = () => {
         </div>
       </div>
       ) : (
-        <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto p-3 md:p-4 xl:overflow-hidden">
+        <div className="flex min-h-[70vh] flex-1 flex-col gap-3 overflow-y-auto p-3 md:p-4 xl:overflow-hidden">
           <div className="relative z-30 flex w-full shrink-0 flex-col items-stretch gap-4 overflow-visible rounded-lg border border-[var(--border-card)] bg-[var(--bg-card)] p-4 shadow-[var(--shadow-card)] lg:flex-row lg:items-center">
             <div className="w-full shrink-0 lg:w-[240px]">
               <div className="flex items-center gap-3">
@@ -1351,8 +1373,8 @@ const CreatePoster = () => {
                       onScroll={(event) => {
                         const element = event.currentTarget;
                         const reachedBottom = element.scrollHeight - element.scrollTop - element.clientHeight < 36;
-                        if (reachedBottom && teamHasMore && !teamListLoading && !teamSearchQuery.trim()) {
-                          fetchTeams(teamApiPage + 1, true);
+                        if (reachedBottom && teamHasMore && !teamListLoading) {
+                          fetchTeams(teamApiPage + 1, true, teamSearchDebounced);
                         }
                       }}
                     >

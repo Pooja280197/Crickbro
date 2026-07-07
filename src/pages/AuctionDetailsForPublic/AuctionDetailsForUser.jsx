@@ -495,8 +495,6 @@ export default function AuctionDetailsPage({ theme, onToggleTheme }) {
     rzp.open();
   };
 
-  console.log(auctionData, "auctionData")
-
   const verifyPayment = async (response, data) => {
     const { auctionId: aid, playerId: pid } = resolveAuctionRegistrationPollIds(
       data,

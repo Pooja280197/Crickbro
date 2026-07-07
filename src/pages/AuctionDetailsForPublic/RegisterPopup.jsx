@@ -40,8 +40,12 @@ const PLAYER_ROLES = [
 ];
 
 const getRoleFeeKey = (role) => {
-  const value = String(role || "").trim().toLowerCase().replace(/[\s_-]+/g, "");
-  if (value.includes("wicketkeeper") || value === "keeper") return "wicketKeeper";
+  const value = String(role || "")
+    .trim()
+    .toLowerCase()
+    .replace(/[\s_-]+/g, "");
+  if (value.includes("wicketkeeper") || value === "keeper")
+    return "wicketKeeper";
   if (value.includes("allrounder")) return "allRounder";
   if (value.includes("bowler")) return "bowler";
   return "batsman";
@@ -148,9 +152,9 @@ const RegisterPopup = ({
   );
   const isConfirmDisabled = Boolean(
     isTrialType &&
-      (!selectedSlot ||
-        sessionLoading ||
-        (isSessionRequired && !selectedSession)),
+    (!selectedSlot ||
+      sessionLoading ||
+      (isSessionRequired && !selectedSession)),
   );
 
   // const slotLoading = loading?.slotList;
@@ -270,11 +274,17 @@ const RegisterPopup = ({
       newErrors.playerRole = "Please select player role";
     }
 
-    if (isFieldEnabled("mobileNumber") && (!form.mobile || form.mobile.length !== 10)) {
+    if (
+      isFieldEnabled("mobileNumber") &&
+      (!form.mobile || form.mobile.length !== 10)
+    ) {
       newErrors.mobile = "Mobile number must be 10 digits";
     }
 
-    if (isFieldEnabled("location") && (!form.location || form.location.trim().length < 2)) {
+    if (
+      isFieldEnabled("location") &&
+      (!form.location || form.location.trim().length < 2)
+    ) {
       newErrors.location = "Location is required";
     }
 
@@ -362,8 +372,7 @@ const RegisterPopup = ({
       form.profilePicture && typeof form.profilePicture !== "string";
     const hasAdharCardFile =
       form.adharCard && typeof form.adharCard !== "string";
-    const hasVoterIdFile =
-      form.voterId && typeof form.voterId !== "string";
+    const hasVoterIdFile = form.voterId && typeof form.voterId !== "string";
     const hasAnyFileUpload =
       hasProfileImageFile || hasAdharCardFile || hasVoterIdFile;
 
@@ -374,11 +383,15 @@ const RegisterPopup = ({
     };
 
     if (isFieldEnabled("name")) basePayload.name = String(form.name || "");
-    if (isFieldEnabled("location")) basePayload.location = String(form.location || "");
-    if (isFieldEnabled("role")) basePayload.playerRole = String(form.playerRole || "");
+    if (isFieldEnabled("location"))
+      basePayload.location = String(form.location || "");
+    if (isFieldEnabled("role"))
+      basePayload.playerRole = String(form.playerRole || "");
     if (isFieldEnabled("email")) basePayload.email = String(form.email || "");
-    if (isFieldEnabled("dateOfBirth")) basePayload.dateOfBirth = String(form.dateOfBirth || "");
-    if (isFieldEnabled("gender")) basePayload.gender = String(form.gender || "");
+    if (isFieldEnabled("dateOfBirth"))
+      basePayload.dateOfBirth = String(form.dateOfBirth || "");
+    if (isFieldEnabled("gender"))
+      basePayload.gender = String(form.gender || "");
     if (isFieldEnabled("jerseyNumber") && form.jerseyNumber) {
       basePayload.jerseyNumber = String(form.jerseyNumber);
     }
@@ -388,7 +401,8 @@ const RegisterPopup = ({
     if (isFieldEnabled("jerseySize") && form.jerseySize) {
       basePayload.jerseySize = normalizeJerseySize(form.jerseySize);
     }
-    if (isFieldEnabled("lowerSize")) basePayload.lowerSize = String(form.lowerSize || "");
+    if (isFieldEnabled("lowerSize"))
+      basePayload.lowerSize = String(form.lowerSize || "");
 
     if (
       isFieldEnabled("adharCard") &&
@@ -436,7 +450,9 @@ const RegisterPopup = ({
   };
 
   const formatDate = (isoDate) => {
+    if (!isoDate) return "";
     const d = new Date(isoDate);
+    if (Number.isNaN(d.getTime())) return "";
     const day = String(d.getDate()).padStart(2, "0");
     const month = String(d.getMonth() + 1).padStart(2, "0");
     const year = d.getFullYear();
@@ -444,13 +460,37 @@ const RegisterPopup = ({
   };
 
   const formatTime = (time) => {
+    if (!time || typeof time !== "string" || !time.includes(":")) return "";
     const [hour, minute] = time.split(":");
     const h = Number(hour);
+    if (Number.isNaN(h) || !minute) return "";
     const ampm = h >= 12 ? "PM" : "AM";
     const h12 = h % 12 === 0 ? 12 : h % 12;
     return `${h12}:${minute} ${ampm}`;
   };
 
+  const getSessionOptionLabel = (session) => {
+    const sessionName = session?.name || "Session";
+    const formattedDate = formatDate(session?.slotDate);
+    const startTime = formatTime(session?.slotStartTime);
+    const endTime = formatTime(session?.slotEndTime);
+
+    const hasDate = Boolean(formattedDate);
+    const hasTimeRange = Boolean(startTime && endTime);
+    const hasPartialTime = Boolean(startTime || endTime);
+
+    if (!hasDate && !hasPartialTime) return sessionName;
+    if (hasDate && hasTimeRange) {
+      return `${sessionName} - ${formattedDate} (${startTime} - ${endTime})`;
+    }
+    if (hasDate) return `${sessionName} - ${formattedDate}`;
+    if (hasTimeRange) return `${sessionName} (${startTime} - ${endTime})`;
+    if (startTime) return `${sessionName} (${startTime})`;
+    if (endTime) return `${sessionName} (${endTime})`;
+    return sessionName;
+  };
+
+  console.log("sessions", availableSessions);
   return (
     <>
       <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 transition-opacity duration-300" />
@@ -494,40 +534,42 @@ const RegisterPopup = ({
                       Upload a clear player image for registration.
                     </p>
                   </div>
-                <div
-                  className={`relative h-20 w-20 rounded-xl border-2 ${!form.profilePicture || form.profilePicture === DUMMY_IMAGE
-                      ? "border-red-500"
-                      : "border-[var(--border-primary)]"
+                  <div
+                    className={`relative h-20 w-20 rounded-xl border-2 ${
+                      !form.profilePicture ||
+                      form.profilePicture === DUMMY_IMAGE
+                        ? "border-red-500"
+                        : "border-[var(--border-primary)]"
                     }`}
-                >
-                  {getPreviewImage() ? (
-                    <img
-                      src={getPreviewImage()}
-                      alt="profile"
-                      className="h-full w-full rounded-xl object-cover"
-                    />
-                  ) : (
-                    <div className="flex h-full w-full items-center justify-center rounded-xl bg-[var(--accent-light)]">
-                      <User className="w-10 h-10 text-[var(--text-secondary)]" />
-                    </div>
-                  )}
-                  <label className="absolute -bottom-2 -right-2 cursor-pointer rounded-lg bg-[var(--primary)] p-2 text-white shadow-md transition-all hover:scale-105 hover:bg-[var(--color-button-primary-hover)]">
-                    <span
-                      ref={registerFieldRef("profilePicture")}
-                      tabIndex={-1}
-                    />
-                    <Upload className="w-4 h-4" />
-                    <input
-                      type="file"
-                      accept="image/*"
-                      onChange={(e) => {
-                        update("profilePicture", e.target.files[0]);
-                        e.target.value = null;
-                      }}
-                      className="hidden"
-                    />
-                  </label>
-                </div>
+                  >
+                    {getPreviewImage() ? (
+                      <img
+                        src={getPreviewImage()}
+                        alt="profile"
+                        className="h-full w-full rounded-xl object-cover"
+                      />
+                    ) : (
+                      <div className="flex h-full w-full items-center justify-center rounded-xl bg-[var(--accent-light)]">
+                        <User className="w-10 h-10 text-[var(--text-secondary)]" />
+                      </div>
+                    )}
+                    <label className="absolute -bottom-2 -right-2 cursor-pointer rounded-lg bg-[var(--primary)] p-2 text-white shadow-md transition-all hover:scale-105 hover:bg-[var(--color-button-primary-hover)]">
+                      <span
+                        ref={registerFieldRef("profilePicture")}
+                        tabIndex={-1}
+                      />
+                      <Upload className="w-4 h-4" />
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={(e) => {
+                          update("profilePicture", e.target.files[0]);
+                          e.target.value = null;
+                        }}
+                        className="hidden"
+                      />
+                    </label>
+                  </div>
                 </div>
                 {errors.profilePicture && (
                   <p className="text-red-500 text-xs mt-1">
@@ -549,10 +591,11 @@ const RegisterPopup = ({
                     ref={registerFieldRef("name")}
                     type="text"
                     placeholder="Enter your full name"
-                    className={`h-10 w-full rounded-lg border px-3 text-sm ${!form.name
+                    className={`h-10 w-full rounded-lg border px-3 text-sm ${
+                      !form.name
                         ? "border-red-500"
                         : "border-[var(--border-card)]"
-                      } bg-[var(--bg-main)] text-[var(--text-primary)] outline-none transition focus:border-[var(--border-primary)] focus:ring-2 focus:ring-[var(--primary)]/20`}
+                    } bg-[var(--bg-main)] text-[var(--text-primary)] outline-none transition focus:border-[var(--border-primary)] focus:ring-2 focus:ring-[var(--primary)]/20`}
                     value={form.name}
                     onChange={(e) => {
                       update("name", e.target.value);
@@ -579,7 +622,9 @@ const RegisterPopup = ({
                     onChange={(e) => update("location", e.target.value)}
                   />
                   {errors.location && (
-                    <p className="text-red-500 text-xs mt-1">{errors.location}</p>
+                    <p className="text-red-500 text-xs mt-1">
+                      {errors.location}
+                    </p>
                   )}
                 </div>
               )}
@@ -588,148 +633,158 @@ const RegisterPopup = ({
             {(isFieldEnabled("email") ||
               isFieldEnabled("dateOfBirth") ||
               isFieldEnabled("gender")) && (
-                <div className="mt-3 grid grid-cols-1 gap-3 rounded-xl border border-[var(--border-card)] bg-[var(--bg-card)] p-3 md:grid-cols-3">
-                  {isFieldEnabled("email") && (
-                    <div>
-                      <label className="mb-1.5 block text-xs font-semibold text-[var(--text-secondary)]">
-                        Email
-                      </label>
-                      <input
-                        type="email"
-                        placeholder="you@example.com"
-                        className="h-10 w-full rounded-lg border border-[var(--border-card)] bg-[var(--bg-main)] px-3 text-sm text-[var(--text-primary)] placeholder:text-[var(--text-secondary)]/60 outline-none transition-all focus:border-[var(--border-primary)] focus:ring-2 focus:ring-[var(--primary)]/20"
-                        value={form.email}
-                        onChange={(e) => update("email", e.target.value)}
-                      />
-                      {errors.email && (
-                        <p className="text-red-500 text-xs mt-1">{errors.email}</p>
-                      )}
-                    </div>
-                  )}
+              <div className="mt-3 grid grid-cols-1 gap-3 rounded-xl border border-[var(--border-card)] bg-[var(--bg-card)] p-3 md:grid-cols-3">
+                {isFieldEnabled("email") && (
+                  <div>
+                    <label className="mb-1.5 block text-xs font-semibold text-[var(--text-secondary)]">
+                      Email
+                    </label>
+                    <input
+                      type="email"
+                      placeholder="you@example.com"
+                      className="h-10 w-full rounded-lg border border-[var(--border-card)] bg-[var(--bg-main)] px-3 text-sm text-[var(--text-primary)] placeholder:text-[var(--text-secondary)]/60 outline-none transition-all focus:border-[var(--border-primary)] focus:ring-2 focus:ring-[var(--primary)]/20"
+                      value={form.email}
+                      onChange={(e) => update("email", e.target.value)}
+                    />
+                    {errors.email && (
+                      <p className="text-red-500 text-xs mt-1">
+                        {errors.email}
+                      </p>
+                    )}
+                  </div>
+                )}
 
-                  {isFieldEnabled("dateOfBirth") && (
-                    <div>
-                      <label className="mb-1.5 block text-xs font-semibold text-[var(--text-secondary)]">
-                        Date of Birth
-                      </label>
-                      <input
-                        type="date"
-                        className="h-10 w-full rounded-lg border border-[var(--border-card)] bg-[var(--bg-main)] px-3 text-sm text-[var(--text-primary)] outline-none transition-all focus:border-[var(--border-primary)] focus:ring-2 focus:ring-[var(--primary)]/20"
-                        value={form.dateOfBirth}
-                        onChange={(e) => update("dateOfBirth", e.target.value)}
-                      />
-                    </div>
-                  )}
+                {isFieldEnabled("dateOfBirth") && (
+                  <div>
+                    <label className="mb-1.5 block text-xs font-semibold text-[var(--text-secondary)]">
+                      Date of Birth
+                    </label>
+                    <input
+                      type="date"
+                      className="h-10 w-full rounded-lg border border-[var(--border-card)] bg-[var(--bg-main)] px-3 text-sm text-[var(--text-primary)] outline-none transition-all focus:border-[var(--border-primary)] focus:ring-2 focus:ring-[var(--primary)]/20"
+                      value={form.dateOfBirth}
+                      onChange={(e) => update("dateOfBirth", e.target.value)}
+                    />
+                  </div>
+                )}
 
-                  {isFieldEnabled("gender") && (
-                    <div>
-                      <label className="mb-1.5 block text-xs font-semibold text-[var(--text-secondary)]">
-                        Gender
-                      </label>
-                      <select
-                        className="h-10 w-full rounded-lg border border-[var(--border-card)] bg-[var(--bg-main)] px-3 text-sm text-[var(--text-primary)] outline-none transition-all focus:border-[var(--border-primary)] focus:ring-2 focus:ring-[var(--primary)]/20"
-                        value={form.gender}
-                        onChange={(e) => update("gender", e.target.value)}
-                      >
-                        <option value="">Select gender</option>
-                        <option value="male">Male</option>
-                        <option value="female">Female</option>
-                        <option value="other">Other</option>
-                      </select>
-                    </div>
-                  )}
-                </div>
-              )}
+                {isFieldEnabled("gender") && (
+                  <div>
+                    <label className="mb-1.5 block text-xs font-semibold text-[var(--text-secondary)]">
+                      Gender
+                    </label>
+                    <select
+                      className="h-10 w-full rounded-lg border border-[var(--border-card)] bg-[var(--bg-main)] px-3 text-sm text-[var(--text-primary)] outline-none transition-all focus:border-[var(--border-primary)] focus:ring-2 focus:ring-[var(--primary)]/20"
+                      value={form.gender}
+                      onChange={(e) => update("gender", e.target.value)}
+                    >
+                      <option value="">Select gender</option>
+                      <option value="male">Male</option>
+                      <option value="female">Female</option>
+                      <option value="other">Other</option>
+                    </select>
+                  </div>
+                )}
+              </div>
+            )}
 
             {/* Jersey Details */}
             {(isFieldEnabled("jerseyNumber") ||
               isFieldEnabled("jerseyName") ||
               isFieldEnabled("jerseySize") ||
               isFieldEnabled("lowerSize")) && (
-                <div className="mt-3 grid grid-cols-1 gap-3 rounded-xl border border-[var(--border-card)] bg-[var(--bg-card)] p-3 md:grid-cols-3">
-                  {isFieldEnabled("jerseyNumber") && (
-                    <div>
-                      <label className="mb-1.5 block text-xs font-semibold text-[var(--text-secondary)]">
-                        Jersey Number
-                      </label>
-                      <input
-                        ref={registerFieldRef("jerseyNumber")}
-                        type="number"
-                        placeholder="e.g. 10"
-                        className="h-10 w-full rounded-lg border border-[var(--border-card)] bg-[var(--bg-main)] px-3 text-sm text-[var(--text-primary)] placeholder:text-[var(--text-secondary)]/60 outline-none transition-all focus:border-[var(--border-primary)] focus:ring-2 focus:ring-[var(--primary)]/20"
-                        value={form.jerseyNumber}
-                        onChange={(e) => update("jerseyNumber", e.target.value)}
-                      />
-                      {errors.jerseyNumber && (
-                        <p className="text-red-500 text-xs mt-1">
-                          {errors.jerseyNumber}
-                        </p>
+              <div className="mt-3 grid grid-cols-1 gap-3 rounded-xl border border-[var(--border-card)] bg-[var(--bg-card)] p-3 md:grid-cols-3">
+                {isFieldEnabled("jerseyNumber") && (
+                  <div>
+                    <label className="mb-1.5 block text-xs font-semibold text-[var(--text-secondary)]">
+                      Jersey Number
+                    </label>
+                    <input
+                      ref={registerFieldRef("jerseyNumber")}
+                      type="number"
+                      placeholder="e.g. 10"
+                      className="h-10 w-full rounded-lg border border-[var(--border-card)] bg-[var(--bg-main)] px-3 text-sm text-[var(--text-primary)] placeholder:text-[var(--text-secondary)]/60 outline-none transition-all focus:border-[var(--border-primary)] focus:ring-2 focus:ring-[var(--primary)]/20"
+                      value={form.jerseyNumber}
+                      onChange={(e) => update("jerseyNumber", e.target.value)}
+                    />
+                    {errors.jerseyNumber && (
+                      <p className="text-red-500 text-xs mt-1">
+                        {errors.jerseyNumber}
+                      </p>
+                    )}
+                  </div>
+                )}
+                {isFieldEnabled("jerseyName") && (
+                  <div>
+                    <label className="mb-1.5 block text-xs font-semibold text-[var(--text-secondary)]">
+                      Jersey Name
+                    </label>
+                    <input
+                      ref={registerFieldRef("jerseyName")}
+                      type="text"
+                      placeholder="Name on jersey"
+                      className="h-10 w-full rounded-lg border border-[var(--border-card)] bg-[var(--bg-main)] px-3 text-sm text-[var(--text-primary)] placeholder:text-[var(--text-secondary)]/60 outline-none transition-all focus:border-[var(--border-primary)] focus:ring-2 focus:ring-[var(--primary)]/20"
+                      value={form.jerseyName}
+                      onChange={(e) => update("jerseyName", e.target.value)}
+                    />
+                    {errors.jerseyName && (
+                      <p className="text-red-500 text-xs mt-1">
+                        {errors.jerseyName}
+                      </p>
+                    )}
+                  </div>
+                )}
+                {isFieldEnabled("jerseySize") && (
+                  <div>
+                    <label className="mb-1.5 block text-xs font-semibold text-[var(--text-secondary)]">
+                      Jersey Size
+                    </label>
+                    <select
+                      ref={registerFieldRef("jerseySize")}
+                      className="h-10 w-full rounded-lg border border-[var(--border-card)] bg-[var(--bg-main)] px-3 text-sm text-[var(--text-primary)] outline-none transition-all focus:border-[var(--border-primary)] focus:ring-2 focus:ring-[var(--primary)]/20"
+                      value={form.jerseySize}
+                      onChange={(e) => update("jerseySize", e.target.value)}
+                    >
+                      <option value="">Select jersey size</option>
+                      {["S", "M", "L", "XL", "XXL", "3XL", "4XL", "5XL"].map(
+                        (s) => (
+                          <option key={s} value={s}>
+                            {s}
+                          </option>
+                        ),
                       )}
-                    </div>
-                  )}
-                  {isFieldEnabled("jerseyName") && (
-                    <div>
-                      <label className="mb-1.5 block text-xs font-semibold text-[var(--text-secondary)]">
-                        Jersey Name
-                      </label>
-                      <input
-                        ref={registerFieldRef("jerseyName")}
-                        type="text"
-                        placeholder="Name on jersey"
-                        className="h-10 w-full rounded-lg border border-[var(--border-card)] bg-[var(--bg-main)] px-3 text-sm text-[var(--text-primary)] placeholder:text-[var(--text-secondary)]/60 outline-none transition-all focus:border-[var(--border-primary)] focus:ring-2 focus:ring-[var(--primary)]/20"
-                        value={form.jerseyName}
-                        onChange={(e) => update("jerseyName", e.target.value)}
-                      />
-                      {errors.jerseyName && (
-                        <p className="text-red-500 text-xs mt-1">
-                          {errors.jerseyName}
-                        </p>
+                    </select>
+                    {errors.jerseySize && (
+                      <p className="text-red-500 text-xs mt-1">
+                        {errors.jerseySize}
+                      </p>
+                    )}
+                  </div>
+                )}
+                {isFieldEnabled("lowerSize") && (
+                  <div>
+                    <label className="mb-1.5 block text-xs font-semibold text-[var(--text-secondary)]">
+                      Lower Size
+                    </label>
+                    <select
+                      ref={registerFieldRef("lowerSize")}
+                      className="h-10 w-full rounded-lg border border-[var(--border-card)] bg-[var(--bg-main)] px-3 text-sm text-[var(--text-primary)] outline-none transition-all focus:border-[var(--border-primary)] focus:ring-2 focus:ring-[var(--primary)]/20"
+                      value={form.lowerSize}
+                      onChange={(e) => update("lowerSize", e.target.value)}
+                    >
+                      <option value="">Select lower size</option>
+                      {["S", "M", "L", "XL", "XXL", "3XL", "4XL", "5XL"].map(
+                        (s) => (
+                          <option key={s} value={s}>
+                            {s}
+                          </option>
+                        ),
                       )}
-                    </div>
-                  )}
-                  {isFieldEnabled("jerseySize") && (
-                    <div>
-                      <label className="mb-1.5 block text-xs font-semibold text-[var(--text-secondary)]">
-                        Jersey Size
-                      </label>
-                      <select
-                        ref={registerFieldRef("jerseySize")}
-                        className="h-10 w-full rounded-lg border border-[var(--border-card)] bg-[var(--bg-main)] px-3 text-sm text-[var(--text-primary)] outline-none transition-all focus:border-[var(--border-primary)] focus:ring-2 focus:ring-[var(--primary)]/20"
-                        value={form.jerseySize}
-                        onChange={(e) => update("jerseySize", e.target.value)}
-                      >
-                        <option value="">Select jersey size</option>
-                        {["S", "M", "L", "XL", "XXL", "3XL", "4XL", "5XL"].map((s) => (
-                          <option key={s} value={s}>{s}</option>
-                        ))}
-                      </select>
-                      {errors.jerseySize && (
-                        <p className="text-red-500 text-xs mt-1">
-                          {errors.jerseySize}
-                        </p>
-                      )}
-                    </div>
-                  )}
-                  {isFieldEnabled("lowerSize") && (
-                    <div>
-                      <label className="mb-1.5 block text-xs font-semibold text-[var(--text-secondary)]">
-                        Lower Size
-                      </label>
-                      <select
-                        ref={registerFieldRef("lowerSize")}
-                        className="h-10 w-full rounded-lg border border-[var(--border-card)] bg-[var(--bg-main)] px-3 text-sm text-[var(--text-primary)] outline-none transition-all focus:border-[var(--border-primary)] focus:ring-2 focus:ring-[var(--primary)]/20"
-                        value={form.lowerSize}
-                        onChange={(e) => update("lowerSize", e.target.value)}
-                      >
-                        <option value="">Select lower size</option>
-                        {["S", "M", "L", "XL", "XXL", "3XL", "4XL", "5XL"].map((s) => (
-                          <option key={s} value={s}>{s}</option>
-                        ))}
-                      </select>
-                    </div>
-                  )}
-                </div>
-              )}
+                    </select>
+                  </div>
+                )}
+              </div>
+            )}
 
             {(isFieldEnabled("adharCard") || isFieldEnabled("voterId")) && (
               <div className="grid grid-cols-1 gap-3 rounded-xl border border-[var(--border-card)] bg-[var(--bg-card)] p-3 md:grid-cols-2">
@@ -826,10 +881,11 @@ const RegisterPopup = ({
                 </label>
                 <select
                   ref={registerFieldRef("playerRole")}
-                  className={`h-10 w-full rounded-lg border px-3 text-sm ${!form.playerRole
+                  className={`h-10 w-full rounded-lg border px-3 text-sm ${
+                    !form.playerRole
                       ? "border-red-500"
                       : "border-[var(--border-card)]"
-                    } bg-[var(--bg-main)] text-[var(--text-primary)] outline-none transition focus:border-[var(--border-primary)] focus:ring-2 focus:ring-[var(--primary)]/20`}
+                  } bg-[var(--bg-main)] text-[var(--text-primary)] outline-none transition focus:border-[var(--border-primary)] focus:ring-2 focus:ring-[var(--primary)]/20`}
                   value={form.playerRole}
                   onChange={(e) => {
                     update("playerRole", e.target.value);
@@ -843,7 +899,9 @@ const RegisterPopup = ({
                   ))}
                 </select>
                 {errors.playerRole && (
-                  <p className="text-red-500 text-xs mt-1">{errors.playerRole}</p>
+                  <p className="text-red-500 text-xs mt-1">
+                    {errors.playerRole}
+                  </p>
                 )}
               </div>
             )}
@@ -996,15 +1054,25 @@ const RegisterPopup = ({
                         ? "Select location first"
                         : sessionLoading
                           ? "Loading available times..."
-                            : availableSessions.length > 0
+                          : availableSessions.length > 0
                             ? "Choose trial time"
                             : "No times available"}
                     </option>
-                    {availableSessions.map((session) => (
+                    {/* {availableSessions.map((session) => (
                       <option key={session._id} value={session._id}>
                         {session.name} - {formatDate(session.slotDate)} (
                         {formatTime(session.slotStartTime)} -{" "}
                         {formatTime(session.slotEndTime)})
+                      </option>
+                    ))} */}
+
+                    {availableSessions?.map((session) => (
+                      <option
+                        key={session._id}
+                        value={session._id}
+                  
+                      >
+                        {getSessionOptionLabel(session)}
                       </option>
                     ))}
                   </select>
@@ -1053,10 +1121,11 @@ const RegisterPopup = ({
               </button>
               <button
                 disabled={isConfirmDisabled}
-                className={`flex-1 rounded-lg px-4 py-2.5 font-semibold transition-all ${isConfirmDisabled
+                className={`flex-1 rounded-lg px-4 py-2.5 font-semibold transition-all ${
+                  isConfirmDisabled
                     ? "cursor-not-allowed bg-[var(--bg-main)] text-[var(--text-muted)]"
                     : "bg-[var(--primary)] text-white shadow-md hover:bg-[var(--primary-strong)] hover:shadow-lg"
-                  }`}
+                }`}
                 onClick={handleSubmit}
               >
                 Confirm Registration

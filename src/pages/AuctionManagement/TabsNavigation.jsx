@@ -432,10 +432,11 @@ const AuctionDetails = ({ theme, onToggleTheme }) => {
   }, [effectiveTab]);
 
   const renderTab = (tabKey) => {
+    const refreshKey = `${tabKey}-${Date.now()}`;
     // Legacy tabs for backward compatibility
     switch (tabKey) {
       case "dashboard":
-        return <Dashboard auctionId={auctionId} />;
+        return <Dashboard  auctionId={auctionId} />;
 
       case "registrationOverview":
         return <RegistrationOverview auctionId={auctionId} />;

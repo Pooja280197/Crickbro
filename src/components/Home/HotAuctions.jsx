@@ -7,6 +7,7 @@ import { fetchAuctions } from "../../redux/actions";
 import { useDispatch, useSelector } from "react-redux";
 import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { useLoginPopup } from "../../context/LoginPopupContext";
+import { useDebounce } from "../useDebounce";
 import CricketImage from "../../assets/Images/cricket_bg.png";
 import ChatBot from "../ChatBot";
 
@@ -88,6 +89,9 @@ const HotAuctions = ({ theme, onToggleTheme }) => {
     fromDate: "",
     toDate: "",
   });
+
+  // Debounce search query
+  const debouncedSearchQuery = useDebounce(filters.search, 300);
   const [loginRefresh, setLoginRefresh] = useState(0);
   const [homeShowingUpcoming, setHomeShowingUpcoming] = useState(false);
   const [loadedAuctions, setLoadedAuctions] = useState([]);
@@ -114,14 +118,14 @@ const HotAuctions = ({ theme, onToggleTheme }) => {
   const auctions = auctionData?.data || [];
   const sourceAuctions = isHome ? auctions : loadedAuctions;
   const filteredAuctions = useMemo(
-    () => filterAuctions(sourceAuctions, filters),
-    [sourceAuctions, filters],
+    () => filterAuctions(sourceAuctions, { ...filters, search: debouncedSearchQuery }),
+    [sourceAuctions, filters, debouncedSearchQuery],
   );
   const hasServerPagination = Boolean(
     auctionData?.pages || auctionData?.total || auctionData?.page,
   );
   const hasActiveFilters = Boolean(
-    filters.search.trim() || filters.fromDate || filters.toDate,
+    debouncedSearchQuery.trim() || filters.fromDate || filters.toDate,
   );
   const serverTotalAuctions = hasServerPagination
     ? Number(auctionData?.total || filteredAuctions.length)
@@ -206,7 +210,7 @@ const HotAuctions = ({ theme, onToggleTheme }) => {
       const pageOptions = {
         page: isHome ? 1 : currentPage,
         limit: isHome ? 4 : AUCTIONS_PER_PAGE,
-        search: isHome ? "" : filters.search,
+        search: isHome ? "" : debouncedSearchQuery,
         fromDate: isHome ? "" : filters.fromDate,
         toDate: isHome ? "" : filters.toDate,
       };
@@ -291,7 +295,7 @@ const HotAuctions = ({ theme, onToggleTheme }) => {
     playerId,
     activeTab,
     currentPage,
-    filters.search,
+    debouncedSearchQuery,
     filters.fromDate,
     filters.toDate,
     loginRefresh,
@@ -359,7 +363,7 @@ const HotAuctions = ({ theme, onToggleTheme }) => {
         </span>
       );
     }
-    if (auction.auctionStatus === "upcoming") {
+    if (auction.auctionStatus === "scheduled") {
       return (
         <span className="absolute right-3 top-3 inline-flex min-h-7 items-center rounded-full bg-[var(--primary)] px-3 text-[10px] font-black uppercase text-white">
           Upcoming

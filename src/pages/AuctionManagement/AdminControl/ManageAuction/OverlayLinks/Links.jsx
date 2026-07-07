@@ -146,20 +146,20 @@ const Links = ({ auctionId, panelOnly = false }) => {
   };
 
   return (
-    <div className="lp-builder overlay-links-page font-poppins text-white/90 w-full min-w-0 space-y-4">
-      <div className="home-card p-4 sm:p-5 !transform-none hover:!transform-none border border-[#0066ff]/25">
+    <div className="lp-builder overlay-links-page font-poppins text-[var(--text-primary)] w-full min-w-0 space-y-4">
+      <div className="home-card p-4 sm:p-5 !transform-none hover:!transform-none border border-[var(--border-card)]">
         <div className="flex items-start gap-3">
-          <div className="w-11 h-11 shrink-0 rounded-xl bg-[#00d4ff]/15 border border-[#00d4ff]/35 flex items-center justify-center">
-            <Link2 className="w-5 h-5 text-[#00d4ff]" />
+          <div className="w-11 h-11 shrink-0 rounded-xl bg-[var(--accent-light)] border border-[var(--border-primary)] flex items-center justify-center">
+            <Link2 className="w-5 h-5 text-[var(--accent)]" />
           </div>
           <div className="min-w-0">
             <h2
-              className="text-lg sm:text-xl font-bold text-white"
+              className="text-lg sm:text-xl font-bold text-[var(--text-primary)]"
               style={{ fontFamily: "var(--font-heading)" }}
             >
               {panelOnly ? "Auction panel" : "Live overlay links"}
             </h2>
-            <p className="text-sm text-white/55 mt-1 leading-relaxed">
+            <p className="text-sm text-[var(--text-secondary)] mt-1 leading-relaxed">
               {panelOnly
                 ? "Open the control panel or copy the link for your auction operator."
                 : "Copy or open OBS/browser source URLs for each broadcast overlay."}
@@ -182,30 +182,30 @@ const Links = ({ auctionId, panelOnly = false }) => {
           return (
             <div
               key={link.id}
-              className={`group home-card p-4 sm:p-5 flex flex-col gap-4 !transform-none hover:!translate-y-0 border border-[#1a2b45] transition-all duration-200 ${accent.ring}`}
+              className={`group home-card p-4 sm:p-5 flex flex-col gap-4 !transform-none hover:!translate-y-0 border border-[var(--border-card)] transition-all duration-200 ${accent.ring}`}
             >
               <div className="flex items-start gap-3 min-w-0">
                 <div
-                  className={`w-11 h-11 shrink-0 rounded-xl border flex items-center justify-center ${accent.icon}`}
+                  className={`w-11 h-11 shrink-0 rounded-xl border border-[var(--border-card)] bg-[var(--accent-light)] flex items-center justify-center ${accent.icon}`}
                 >
-                  <Icon className="w-5 h-5" />
+                  <Icon className="w-5 h-5 text-[var(--accent)]" />
                 </div>
                 <div className="min-w-0 flex-1">
-                  <h3 className="font-bold text-white text-base leading-tight">
+                  <h3 className="font-bold text-[var(--text-primary)] text-base leading-tight">
                     {link.label}
                   </h3>
-                  <p className="text-xs text-white/50 mt-1.5 leading-relaxed">
+                  <p className="text-xs text-[var(--text-secondary)] mt-1.5 leading-relaxed">
                     {link.description}
                   </p>
                 </div>
               </div>
 
-              <div className="flex flex-wrap items-center gap-2 pt-1 border-t border-[#1a2b45]/80">
+              <div className="flex flex-wrap items-center gap-2 pt-1 border-t border-[var(--border-card)]">
                 {link.preview && (
                   <button
                     type="button"
                     onClick={() => setPreviewImage(link.preview)}
-                    className="reg-btn-ghost text-xs sm:text-sm px-3 py-1.5 flex items-center gap-1.5"
+                    className="rounded-full border border-[var(--border-card)] bg-[var(--bg-main)] text-[var(--text-primary)] hover:bg-[var(--bg-section)] text-xs sm:text-sm px-3 py-1.5 flex items-center gap-1.5 transition"
                   >
                     <Eye className="w-3.5 h-3.5" />
                     Sample
@@ -216,7 +216,7 @@ const Links = ({ auctionId, panelOnly = false }) => {
                   <button
                     type="button"
                     onClick={() => openLink(link)}
-                    className="reg-btn-ghost text-xs sm:text-sm px-3 py-1.5 flex items-center gap-1.5"
+                    className="rounded-full border border-[var(--border-card)] bg-[var(--bg-main)] text-[var(--text-primary)] hover:bg-[var(--bg-section)] text-xs sm:text-sm px-3 py-1.5 flex items-center gap-1.5 transition"
                   >
                     <ExternalLink className="w-3.5 h-3.5" />
                     Open
@@ -226,8 +226,10 @@ const Links = ({ auctionId, panelOnly = false }) => {
                 <button
                   type="button"
                   onClick={() => copyLink(link)}
-                  className={`text-xs sm:text-sm px-3 py-1.5 flex items-center gap-1.5 font-bold ml-auto ${
-                    copied === link.id ? "reg-btn-ghost text-[#00d4ff]" : "reg-btn-gold"
+                  className={`rounded-full border border-[var(--border-card)] text-xs sm:text-sm px-3 py-1.5 flex items-center gap-1.5 font-bold ml-auto transition ${
+                    copied === link.id
+                      ? "bg-[var(--accent-light)] text-[var(--accent)]"
+                      : "bg-[var(--secondary-light)] text-[var(--text-primary)] hover:bg-[var(--bg-section)]"
                   }`}
                 >
                   {copied === link.id ? (
@@ -251,7 +253,7 @@ const Links = ({ auctionId, panelOnly = false }) => {
       {previewImage &&
         createPortal(
           <div
-            className="player-details-overlay font-poppins items-center p-4 sm:p-5 z-[1000] bg-black/75 backdrop-blur-sm flex fixed inset-0 cursor-zoom-out"
+            className="player-details-overlay font-poppins items-center p-4 sm:p-5 z-[1000] bg-[var(--background)]/70 backdrop-blur-sm flex fixed inset-0 cursor-zoom-out"
             onClick={(e) => e.target === e.currentTarget && setPreviewImage(null)}
             role="presentation"
           >
@@ -259,11 +261,11 @@ const Links = ({ auctionId, panelOnly = false }) => {
               className="relative z-10 w-full max-w-5xl"
               onClick={(e) => e.stopPropagation()}
             >
-              <div className="home-glass-dark rounded-2xl border border-[#0066ff]/35 overflow-hidden p-2 sm:p-3">
+              <div className="rounded-2xl border border-[var(--border-card)] bg-[var(--bg-card)] overflow-hidden p-2 sm:p-3">
                 <button
                   type="button"
                   onClick={() => setPreviewImage(null)}
-                  className="absolute top-3 right-3 z-20 w-9 h-9 flex items-center justify-center rounded-full border border-[#1a2b45] bg-[#000d21]/90 text-white/70 hover:text-[#00d4ff] transition"
+                  className="absolute top-3 right-3 z-20 w-9 h-9 flex items-center justify-center rounded-full border border-[var(--border-card)] bg-[var(--bg-main)] text-[var(--text-secondary)] hover:text-[var(--accent)] transition"
                   aria-label="Close preview"
                 >
                   <X className="w-4 h-4" />

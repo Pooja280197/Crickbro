@@ -80,10 +80,10 @@ const SelectorSlots = ({ auctionId }) => {
   const paginatedSlots = filteredSlots.slice(pageStart, pageStart + pageSize);
 
   useEffect(() => {
-    if (!slotsData.length) {
+    
       dispatch(getSelectorsSlot(auctionId));
-    }
-  }, [auctionId, dispatch, slotsData.length]);
+    
+  }, [auctionId, dispatch]);
 
   useEffect(() => {
     setPage(1);

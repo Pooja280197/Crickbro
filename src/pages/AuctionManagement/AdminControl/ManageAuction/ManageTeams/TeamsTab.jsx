@@ -152,6 +152,8 @@ const TeamsTab = ({ auctionId }) => {
     }
   }, [activeTab]);
 
+  console.log(tournamentTeamData,"data")
+
   const handleEditTeam = async () => {
     if (!viewTeam || !editForm) return;
 
@@ -342,7 +344,7 @@ const TeamsTab = ({ auctionId }) => {
 
         <div className="mt-5 flex flex-col items-center justify-between gap-3 border-t border-[var(--border-card)] pt-4 sm:flex-row">
           <span className="text-sm font-semibold text-[var(--text-secondary)]">
-            Page {auctionTeamPage} of {totalAuctionPages}
+            Page {auctionTeamPage} of {totalAuctionPages} ({totalAuctionTeams} teams)
           </span>
 
           <div className="flex items-center gap-2">

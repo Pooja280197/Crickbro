@@ -9,7 +9,7 @@ import {
 import logo from "../assets/Images/Logo.png";
 import { contactEmail } from "../config/env";
 
-const Footer = () => {
+const Footer = ({ isDarkTheme = false }) => {
   const currentYear = new Date().getFullYear();
 
   const footerLinks = {
@@ -51,15 +51,19 @@ const Footer = () => {
     },
   ];
 
+  const footerClasses = isDarkTheme 
+    ? "border-t border-gray-700 bg-gray-900 text-gray-100" 
+    : "border-t border-[var(--border-card)] bg-[var(--bg-deep)] text-[var(--text-primary)]";
+
   return (
-    <footer className="border-t border-[var(--border-card)] bg-[var(--bg-deep)] text-[var(--text-primary)]">
+    <footer className={footerClasses}>
       <div className="mx-auto max-w-7xl px-4 py-6 md:py-9">
         {/* ================= MAIN FOOTER ================= */}
         <div className="mb-7 grid grid-cols-2 items-start gap-6 md:mb-8 md:grid-cols-3 md:gap-8">
           {/* ================= BRAND ================= */}
           <div className="col-span-2 w-full md:col-span-1 md:min-w-[260px]">
             <div className="mb-4 flex items-center gap-3">
-              <div className="flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-xl border border-[var(--border-card)] bg-[var(--bg-card)] md:h-24 md:w-24">
+              <div className={`flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-xl border ${isDarkTheme ? "border-gray-700 bg-gray-800" : "border-[var(--border-card)] bg-[var(--bg-card)]"} md:h-24 md:w-24`}>
                 <img
                   loading="lazy"
                   decoding="async"
@@ -69,16 +73,16 @@ const Footer = () => {
                 />
               </div>
               <div className="min-w-0">
-                <h2 className="font-heading text-lg font-bold tracking-tight text-[var(--text-primary)] md:text-xl">
+                <h2 className={`font-heading text-lg font-bold tracking-tight ${isDarkTheme ? "text-gray-100" : "text-[var(--text-primary)]"} md:text-xl`}>
                   CrickBro
                 </h2>
-                <p className="font-main text-xs text-[var(--text-secondary)]">
+                <p className={`font-main text-xs ${isDarkTheme ? "text-gray-400" : "text-[var(--text-secondary)]"}`}>
                   Professional Auction Platform
                 </p>
               </div>
             </div>
 
-            <p className="mb-4 max-w-md font-main text-sm leading-relaxed text-[var(--text-secondary)]">
+            <p className={`mb-4 max-w-md font-main text-sm leading-relaxed ${isDarkTheme ? "text-gray-400" : "text-[var(--text-secondary)]"}`}>
               Revolutionizing cricket auctions with intelligent technology.
               Trusted by leagues, teams, and players across India for
               professional auction management.
@@ -122,7 +126,7 @@ const Footer = () => {
 
           {/* ================= EXPLORE ================= */}
           <div className="flex w-full flex-col items-start md:items-center">
-            <h3 className="mb-3 font-oswald text-lg text-[var(--text-primary)] md:text-xl">
+            <h3 className={`mb-3 font-oswald text-lg ${isDarkTheme ? "text-gray-100" : "text-[var(--text-primary)]"} md:text-xl`}>
               Explore
             </h3>
             <ul className="w-full space-y-1 text-left md:text-center">
@@ -130,7 +134,7 @@ const Footer = () => {
                 <li key={link.label}>
                   <a
                     href={link.link}
-                    className="block py-1 text-sm font-medium text-[var(--text-secondary)] transition-colors hover:text-[var(--primary)]"
+                    className={`block py-1 text-sm font-medium transition-colors ${isDarkTheme ? "text-gray-400 hover:text-yellow-500" : "text-[var(--text-secondary)] hover:text-[var(--primary)]"}`}
                   >
                     {link.label}
                   </a>
@@ -143,14 +147,14 @@ const Footer = () => {
           <div className="flex w-full flex-col gap-4 items-start">
             {/* Email */}
             <div className="flex items-center gap-3 w-full">
-              <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full border border-[var(--border-primary)] bg-[var(--accent-light)]">
-                <Mail className="h-4 w-4 text-[var(--primary)]" />
+              <div className={`flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full border ${isDarkTheme ? "border-gray-700 bg-gray-800 text-yellow-500" : "border-[var(--border-primary)] bg-[var(--accent-light)] text-[var(--primary)]"}`}>
+                <Mail className="h-4 w-4" />
               </div>
               <div className="min-w-0 text-left">
-                <div className="text-xs text-[var(--text-secondary)]">
+                <div className={`text-xs ${isDarkTheme ? "text-gray-400" : "text-[var(--text-secondary)]"}`}>
                   Email
                 </div>
-                <div className="break-all font-main text-sm font-semibold text-[var(--text-primary)]">
+                <div className={`break-all font-main text-sm font-semibold ${isDarkTheme ? "text-gray-100" : "text-[var(--text-primary)]"}`}>
                   {contactEmail}
                 </div>
               </div>
@@ -158,14 +162,14 @@ const Footer = () => {
 
             {/* Phone */}
             <div className="flex items-center gap-3 w-full">
-              <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full border border-[var(--border-primary)] bg-[var(--accent-light)]">
-                <Phone className="h-4 w-4 text-[var(--primary)]" />
+              <div className={`flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full border ${isDarkTheme ? "border-gray-700 bg-gray-800 text-yellow-500" : "border-[var(--border-primary)] bg-[var(--accent-light)] text-[var(--primary)]"}`}>
+                <Phone className="h-4 w-4" />
               </div>
               <div className="min-w-0 text-left">
-                <div className="text-xs text-[var(--text-secondary)]">
+                <div className={`text-xs ${isDarkTheme ? "text-gray-400" : "text-[var(--text-secondary)]"}`}>
                   Phone
                 </div>
-                <div className="font-main text-sm font-semibold text-[var(--text-primary)]">
+                <div className={`font-main text-sm font-semibold ${isDarkTheme ? "text-gray-100" : "text-[var(--text-primary)]"}`}>
                   +91 7000742081
                 </div>
               </div>
@@ -173,14 +177,14 @@ const Footer = () => {
 
             {/* Location */}
             <div className="flex items-center gap-3 w-full">
-              <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full border border-[var(--border-primary)] bg-[var(--accent-light)]">
-                <MapPin className="h-4 w-4 text-[var(--primary)]" />
+              <div className={`flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full border ${isDarkTheme ? "border-gray-700 bg-gray-800 text-yellow-500" : "border-[var(--border-primary)] bg-[var(--accent-light)] text-[var(--primary)]"}`}>
+                <MapPin className="h-4 w-4" />
               </div>
               <div className="min-w-0 text-left">
-                <div className="text-xs text-[var(--text-secondary)]">
+                <div className={`text-xs ${isDarkTheme ? "text-gray-400" : "text-[var(--text-secondary)]"}`}>
                   Office
                 </div>
-                <div className="font-main text-sm font-semibold text-[var(--text-primary)]">
+                <div className={`font-main text-sm font-semibold ${isDarkTheme ? "text-gray-100" : "text-[var(--text-primary)]"}`}>
                   Indore, India
                 </div>
               </div>
@@ -189,8 +193,8 @@ const Footer = () => {
         </div>
 
         {/* Socials */}
-        <div className="flex flex-col gap-3 border-t border-[var(--border-card)] py-4 text-center md:flex-row md:items-center md:justify-between md:text-left">
-          <div className="font-semibold text-[var(--text-primary)]">
+        <div className={`flex flex-col gap-3 border-t py-4 text-center md:flex-row md:items-center md:justify-between md:text-left ${isDarkTheme ? "border-gray-700" : "border-[var(--border-card)]"}`}>
+          <div className={`font-semibold ${isDarkTheme ? "text-gray-100" : "text-[var(--text-primary)]"}`}>
             Follow us on social media
           </div>
           <div className="flex items-center justify-center gap-4 md:justify-start">
@@ -205,7 +209,7 @@ const Footer = () => {
                   rel="noopener noreferrer"
                   aria-label={social.label}
                   title={social.label}
-                  className="flex h-10 w-10 items-center justify-center rounded-full border border-[var(--border-card)] bg-[var(--bg-card)] text-[var(--text-primary)] shadow-sm transition hover:border-[var(--border-primary)] hover:bg-[var(--accent-light)] hover:text-[var(--primary)]"
+                  className={`flex h-10 w-10 items-center justify-center rounded-full border shadow-sm transition ${isDarkTheme ? "border-gray-700 bg-gray-800 text-gray-400 hover:border-yellow-500 hover:bg-gray-700 hover:text-yellow-500" : "border-[var(--border-card)] bg-[var(--bg-card)] text-[var(--text-primary)] hover:border-[var(--border-primary)] hover:bg-[var(--accent-light)] hover:text-[var(--primary)]"}`}
                 >
                   <SocialIcon className="h-4 w-4" />
                 </a>
@@ -215,7 +219,7 @@ const Footer = () => {
         </div>
 
         {/* ================= BOTTOM ================= */}
-        <div className="border-t border-[var(--border-card)] pt-4 text-center font-main text-xs font-medium text-[var(--text-secondary)] md:pt-5">
+        <div className={`border-t pt-4 text-center font-main text-xs font-medium md:pt-5 ${isDarkTheme ? "border-gray-700 text-gray-400" : "border-[var(--border-card)] text-[var(--text-secondary)]"}`}>
           © {currentYear} CrickBro. All rights reserved. | Made for cricket
           lovers in India.
         </div>

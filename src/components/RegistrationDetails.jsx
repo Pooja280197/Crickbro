@@ -85,12 +85,97 @@ const RegistrationDetails = ({ auctionId, onClose, playerId }) => {
     fetchDetails();
   }, [fetchDetails]);
 
-  const formatDate = (date) =>
-    new Date(date).toLocaleDateString("en-IN", {
+  const formatDate = (date) => {
+    if (!date) return "";
+    const parsed = new Date(date);
+    if (Number.isNaN(parsed.getTime())) return "";
+    return parsed.toLocaleDateString("en-IN", {
       day: "numeric",
       month: "long",
       year: "numeric",
     });
+  };
+
+  const hasValue = (value) => {
+    if (value === undefined || value === null) return false;
+    if (typeof value === "string") return value.trim() !== "";
+    return true;
+  };
+
+  const getSessionDateText = (session) =>
+    session?.slotDate ? formatDate(session.slotDate) : "";
+
+  const getSessionTimeText = (session) => {
+    if (!session?.slotDate) return "";
+    const start = session.slotStartTime?.trim() || "";
+    const end = session.slotEndTime?.trim() || "";
+    if (!start && !end) return "";
+    if (start && end) return `${start} - ${end}`;
+    return start || end;
+  };
+
+  const hasSessionDetails = (session) =>
+    !!(
+      session &&
+      (hasValue(session.name) ||
+        hasValue(getSessionDateText(session)) ||
+        hasValue(getSessionTimeText(session)))
+    );
+
+  const getPlayerLocationText = (player) =>
+    player?.location?.trim() || player?.city?.trim() || player?.address?.trim() || "";
+
+  const getContactText = (player) => {
+    if (!player) return "";
+    const country = player.countryCode?.trim() || "";
+    const mobile = player.mobile?.trim() || "";
+    return [country, mobile].filter(hasValue).join(" ");
+  };
+
+  const getSlotPlaceText = (location) =>
+    [location?.city, location?.state, location?.country]
+      .filter(hasValue)
+      .join(", ");
+
+  const getSlotAddressText = (location) => {
+    if (!location) return "";
+    const address = location.address?.trim() || "";
+    const pincode = location.pincode?.toString()?.trim() || "";
+    if (address && pincode) return `${address} - ${pincode}`;
+    return address || pincode || "";
+  };
+
+  const getTournamentCityText = (tournament) =>
+    tournament?.cityTown?.trim() || "";
+
+  const getTournamentDurationText = (tournament) => {
+    const start = formatDate(tournament?.startDate);
+    const end = formatDate(tournament?.endDate);
+    if (hasValue(start) && hasValue(end)) return `${start} - ${end}`;
+    if (hasValue(start)) return start;
+    if (hasValue(end)) return end;
+    return "";
+  };
+
+  const getAuctionDateText = (auction) => {
+    const start = formatDate(auction?.auctionStartedAt);
+    const end = formatDate(auction?.auctionEndedAt);
+    if (hasValue(start) && hasValue(end)) return `${start} - ${end}`;
+    if (hasValue(start)) return start;
+    if (hasValue(end)) return end;
+    return "";
+  };
+
+  const hasSlotDetails = (slot) =>
+    !!(
+      slot &&
+      (hasValue(slot.slotName) ||
+        hasValue(slot.description) ||
+        hasValue(slot.location?.venue) ||
+        hasValue(getSlotPlaceText(slot.location)) ||
+        hasValue(getSlotAddressText(slot.location)) ||
+        hasValue(slot.location?.link))
+    );
 
   // 🟢 Proxy image to bypass CORS
   const proxyImage = (url) => {
@@ -170,6 +255,8 @@ const RegistrationDetails = ({ auctionId, onClose, playerId }) => {
     !details?.auction?.playerRegistrationPaid ||
     (Number(details?.auction?.registrationFee || 0) === 0 &&
       Number(details?.auction?.platformFee || 0) === 0);
+
+      console.log(details, "details")
 
   return (
     <div
@@ -320,38 +407,46 @@ const RegistrationDetails = ({ auctionId, onClose, playerId }) => {
                         <h3 className="text-xl font-bold text-slate-900 leading-tight break-words">
                           {details?.player?.name}
                         </h3>
-                        <p className="mt-1 text-sm text-slate-600 capitalize">
-                          {details?.player?.playerRole || '-'}
-                        </p>
-                        <p className="mt-1 text-sm text-slate-600">
-                          {details?.player?.countryCode || ''} {details?.player?.mobile || '-'}
-                        </p>
+                        {hasValue(details?.player?.playerRole) && (
+                          <p className="mt-1 text-sm text-slate-600 capitalize">
+                            {details.player.playerRole}
+                          </p>
+                        )}
+                        {hasValue(getContactText(details?.player)) && (
+                          <p className="mt-1 text-sm text-slate-600">
+                            {getContactText(details.player)}
+                          </p>
+                        )}
                       </div>
 
                       <div className="space-y-2">
-                        <div className="rounded-2xl bg-slate-50 p-3">
-                          <p className="text-xs uppercase tracking-[0.25em] text-slate-500">Batch ID</p>
-                          <p className="mt-1 font-medium text-slate-900">{details?.player?.batchId || '-'}</p>
-                          {qr && (
-                            <img
-                              src={qr}
-                              alt="QR Code"
-                              className="mx-auto mt-3 w-32 h-32"
-                            />
-                          )}
-                        </div>
+                        {hasValue(details?.player?.batchId) && (
+                          <div className="rounded-2xl bg-slate-50 p-3">
+                            <p className="text-xs uppercase tracking-[0.25em] text-slate-500">Batch ID</p>
+                            <p className="mt-1 font-medium text-slate-900">{details.player.batchId}</p>
+                            {qr && (
+                              <img
+                                src={qr}
+                                alt="QR Code"
+                                className="mx-auto mt-3 w-32 h-32"
+                              />
+                            )}
+                          </div>
+                        )}
                         {/* <div className="rounded-2xl bg-slate-50 p-3">
                       <p className="text-xs uppercase tracking-[0.25em] text-slate-500">Mobile</p>
                       <p className="mt-1 font-medium text-slate-900">
                         {details?.player?.countryCode || ''} {details?.player?.mobile || '-'}
                       </p>
                     </div> */}
-                        <div className="rounded-2xl bg-slate-50 p-3">
-                          <p className="text-xs uppercase tracking-[0.25em] text-slate-500">Location</p>
-                          <p className="mt-1 font-medium text-slate-900">
-                            {details?.player?.location || details?.player?.city || details?.player?.address || '-'}
-                          </p>
-                        </div>
+                        {hasValue(getPlayerLocationText(details?.player)) && (
+                          <div className="rounded-2xl bg-slate-50 p-3">
+                            <p className="text-xs uppercase tracking-[0.25em] text-slate-500">Location</p>
+                            <p className="mt-1 font-medium text-slate-900">
+                              {getPlayerLocationText(details.player)}
+                            </p>
+                          </div>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -360,22 +455,25 @@ const RegistrationDetails = ({ auctionId, onClose, playerId }) => {
                 <div className="rounded-3xl border border-gray-200 bg-white p-3 shadow-sm">
                   <h3 className="text-sm font-semibold text-slate-900">Tournament & auction</h3>
                   <div className="mt-3 grid gap-2 text-sm text-slate-700">
-                    <div className="rounded-2xl bg-slate-50 p-3">
-                      <p className="text-[10px] uppercase tracking-[0.25em] text-slate-500">Duration</p>
-                      <p className="mt-1 font-medium text-slate-900">
-                        {formatDate(details?.tournament?.startDate)} - {formatDate(details?.tournament?.endDate)}
-                      </p>
-                    </div>
-                    <div className="rounded-2xl bg-slate-50 p-3">
-                      <p className="text-xs uppercase tracking-[0.25em] text-slate-500">Venue</p>
-                      <p className="mt-2 font-medium text-slate-900">{details?.tournament?.cityTown || '-'}</p>
-                    </div>
-                    {details?.auction?.auctionStartedAt && (
+                    {hasValue(getTournamentDurationText(details?.tournament)) && (
+                      <div className="rounded-2xl bg-slate-50 p-3">
+                        <p className="text-[10px] uppercase tracking-[0.25em] text-slate-500">Duration</p>
+                        <p className="mt-1 font-medium text-slate-900">
+                          {getTournamentDurationText(details?.tournament)}
+                        </p>
+                      </div>
+                    )}
+                    {hasValue(getTournamentCityText(details?.tournament)) && (
+                      <div className="rounded-2xl bg-slate-50 p-3">
+                        <p className="text-xs uppercase tracking-[0.25em] text-slate-500">Venue</p>
+                        <p className="mt-2 font-medium text-slate-900">{getTournamentCityText(details?.tournament)}</p>
+                      </div>
+                    )}
+                    {hasValue(getAuctionDateText(details?.auction)) && (
                       <div className="rounded-2xl bg-slate-50 p-3">
                         <p className="text-[10px] uppercase tracking-[0.25em] text-slate-500">Auction date</p>
                         <p className="mt-1 font-medium text-slate-900">
-                          {formatDate(details.auction.auctionStartedAt)}
-                          {details.auction.auctionEndedAt ? ` - ${formatDate(details.auction.auctionEndedAt)}` : ''}
+                          {getAuctionDateText(details?.auction)}
                         </p>
                       </div>
                     )}
@@ -383,62 +481,78 @@ const RegistrationDetails = ({ auctionId, onClose, playerId }) => {
                 </div>
               </div>
 
-              {(details?.session || details?.slot) && (
+              {(hasSessionDetails(details?.session) || hasSlotDetails(details?.slot)) && (
                 <div className="space-y-3">
-                  {details?.session && (
+                  {hasSessionDetails(details?.session) && (
                     <div className="rounded-3xl border border-gray-200 bg-white p-3 shadow-sm">
                       <h3 className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-900">Session details</h3>
                       <div className="mt-3 grid gap-2 sm:grid-cols-3">
-                        <div className="rounded-2xl bg-slate-50 p-2">
-                          <p className="text-[9px] uppercase tracking-[0.25em] text-slate-500">Session</p>
-                          <p className="mt-1 text-sm font-medium text-slate-900">{details.session.name || '-'}</p>
-                        </div>
-                        <div className="rounded-2xl bg-slate-50 p-2">
-                          <p className="text-[9px] uppercase tracking-[0.25em] text-slate-500">Date</p>
-                          <p className="mt-1 text-sm font-medium text-slate-900">{formatDate(details.session.slotDate)}</p>
-                        </div>
-                        <div className="rounded-2xl bg-slate-50 p-2">
-                          <p className="text-[9px] uppercase tracking-[0.25em] text-slate-500">Time</p>
-                          <p className="mt-1 text-sm font-medium text-slate-900">{details.session.slotStartTime || '--'} - {details.session.slotEndTime || '--'}</p>
-                        </div>
+                        {hasValue(details.session.name) && (
+                          <div className="rounded-2xl bg-slate-50 p-2">
+                            <p className="text-[9px] uppercase tracking-[0.25em] text-slate-500">Session</p>
+                            <p className="mt-1 text-sm font-medium text-slate-900">{details.session.name}</p>
+                          </div>
+                        )}
+                        {hasValue(getSessionDateText(details.session)) && (
+                          <div className="rounded-2xl bg-slate-50 p-2">
+                            <p className="text-[9px] uppercase tracking-[0.25em] text-slate-500">Date</p>
+                            <p className="mt-1 text-sm font-medium text-slate-900">{getSessionDateText(details.session)}</p>
+                          </div>
+                        )}
+                        {hasValue(getSessionTimeText(details.session)) && (
+                          <div className="rounded-2xl bg-slate-50 p-2">
+                            <p className="text-[9px] uppercase tracking-[0.25em] text-slate-500">Time</p>
+                            <p className="mt-1 text-sm font-medium text-slate-900">{getSessionTimeText(details.session)}</p>
+                          </div>
+                        )}
                       </div>
                     </div>
                   )}
 
-                  {details?.slot && (
+                  {hasSlotDetails(details?.slot) && (
                     <div className="rounded-3xl border border-gray-200 bg-white p-3 shadow-sm">
                       <h3 className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-900">Slot details</h3>
                       <div className="mt-3 grid gap-2 sm:grid-cols-3">
-                        <div className="rounded-2xl bg-slate-50 p-2">
-                          <p className="text-[9px] uppercase tracking-[0.25em] text-slate-500">Name</p>
-                          <p className="mt-1 text-sm font-medium text-slate-900">{details.slot.slotName || '-'}</p>
-                        </div>
-                        <div className="sm:col-span-2 rounded-2xl bg-slate-50 p-2">
-                          <p className="text-[9px] uppercase tracking-[0.25em] text-slate-500">Description</p>
-                          <p className="mt-1 text-sm font-medium text-slate-900">{details.slot.description || '-'}</p>
-                        </div>
+                        {hasValue(details.slot.slotName) && (
+                          <div className="rounded-2xl bg-slate-50 p-2">
+                            <p className="text-[9px] uppercase tracking-[0.25em] text-slate-500">Name</p>
+                            <p className="mt-1 text-sm font-medium text-slate-900">{details.slot.slotName}</p>
+                          </div>
+                        )}
+                        {hasValue(details.slot.description) && (
+                          <div className="sm:col-span-2 rounded-2xl bg-slate-50 p-2">
+                            <p className="text-[9px] uppercase tracking-[0.25em] text-slate-500">Description</p>
+                            <p className="mt-1 text-sm font-medium text-slate-900">{details.slot.description}</p>
+                          </div>
+                        )}
                       </div>
 
                       <div className="mt-3 grid gap-2 sm:grid-cols-2">
-                        <div className="rounded-2xl bg-slate-50 p-2">
-                          <p className="text-[9px] uppercase tracking-[0.25em] text-slate-500">Venue</p>
-                          <p className="mt-1 text-sm font-medium text-slate-900">{details.slot.location?.venue || '-'}</p>
-                        </div>
-                        <div className="rounded-2xl bg-slate-50 p-2">
-                          <p className="text-[9px] uppercase tracking-[0.25em] text-slate-500">Place</p>
-                          <p className="mt-1 text-sm font-medium text-slate-900">{details.slot.location?.city || '-'}, {details.slot.location?.state || '-'}, {details.slot.location?.country || '-'}</p>
-                        </div>
-                        <div className="rounded-2xl bg-slate-50 p-2 sm:col-span-2">
-                          <p className="text-[9px] uppercase tracking-[0.25em] text-slate-500">Address</p>
-                          <p className="mt-1 text-sm font-medium text-slate-900">{details.slot.location?.address || '-'}{details.slot.location?.pincode ? ` - ${details.slot.location.pincode}` : ''}</p>
-                        </div>
-                        <div className="rounded-2xl bg-slate-50 p-2 sm:col-span-2">
-                          <div className="flex items-center justify-between gap-2">
-                            <div className="min-w-0">
-                              <p className="text-[9px] uppercase tracking-[0.25em] text-slate-500">Map / location link</p>
-                              <p className="mt-1 truncate text-sm font-medium text-slate-900">{details.slot.location?.link || '-'}</p>
-                            </div>
-                            {details.slot.location?.link && (
+                        {hasValue(details.slot.location?.venue) && (
+                          <div className="rounded-2xl bg-slate-50 p-2">
+                            <p className="text-[9px] uppercase tracking-[0.25em] text-slate-500">Venue</p>
+                            <p className="mt-1 text-sm font-medium text-slate-900">{details.slot.location.venue}</p>
+                          </div>
+                        )}
+                        {hasValue(getSlotPlaceText(details.slot.location)) && (
+                          <div className="rounded-2xl bg-slate-50 p-2">
+                            <p className="text-[9px] uppercase tracking-[0.25em] text-slate-500">Place</p>
+                            <p className="mt-1 text-sm font-medium text-slate-900">{getSlotPlaceText(details.slot.location)}</p>
+                          </div>
+                        )}
+                        {hasValue(getSlotAddressText(details.slot.location)) && (
+                          <div className="rounded-2xl bg-slate-50 p-2 sm:col-span-2">
+                            <p className="text-[9px] uppercase tracking-[0.25em] text-slate-500">Address</p>
+                            <p className="mt-1 text-sm font-medium text-slate-900">{getSlotAddressText(details.slot.location)}</p>
+                          </div>
+                        )}
+                        {hasValue(details.slot.location?.link) && (
+                          <div className="rounded-2xl bg-slate-50 p-2 sm:col-span-2">
+                            <div className="flex items-center justify-between gap-2">
+                              <div className="min-w-0">
+                                <p className="text-[9px] uppercase tracking-[0.25em] text-slate-500">Map / location link</p>
+                                <p className="mt-1 truncate text-sm font-medium text-slate-900">{details.slot.location.link}</p>
+                              </div>
                               <button
                                 type="button"
                                 onClick={() => copyToClipboard(details.slot.location.link)}
@@ -446,9 +560,9 @@ const RegistrationDetails = ({ auctionId, onClose, playerId }) => {
                               >
                                 {locationLinkCopied ? "Copied" : "Copy"}
                               </button>
-                            )}
+                            </div>
                           </div>
-                        </div>
+                        )}
                       </div>
                     </div>
                   )}
@@ -598,54 +712,51 @@ const RegistrationDetails = ({ auctionId, onClose, playerId }) => {
                   fontSize: "14px",
                 }}
               >
-                <div>
-                  <strong>City</strong>
-                  <p>{details?.tournament?.cityTown}</p>
-                </div>
-
-                <div>
-                  <strong>Dates</strong>
-                  <p>
-                    {formatDate(details?.tournament?.startDate)} -{" "}
-                    {formatDate(details?.tournament?.endDate)}
-                  </p>
-                </div>
-
-                {details?.session && (
-                  <>
-                    <div>
-                      <strong>Trial Date</strong>
-                      <p>{formatDate(details?.session?.slotDate)}</p>
-                    </div>
-
-                    <div>
-                      <strong>Time</strong>
-                      <p>
-                        {details?.session?.slotStartTime} -{" "}
-                        {details?.session?.slotEndTime}
-                      </p>
-                    </div>
-                  </>
-                )}
-
-                {details?.slot && (
+                {hasValue(getTournamentCityText(details?.tournament)) && (
                   <div>
-                    <strong>Venue</strong>
-                    <p>{details?.slot?.location?.venue}</p>
+                    <strong>City</strong>
+                    <p>{getTournamentCityText(details?.tournament)}</p>
                   </div>
                 )}
 
-                <div>
-                  <strong>Contact</strong>
-                  <p>
-                    {details?.player?.countryCode}
-                    {details?.player?.mobile}
-                  </p>
-                </div>
+                {hasValue(getTournamentDurationText(details?.tournament)) && (
+                  <div>
+                    <strong>Dates</strong>
+                    <p>{getTournamentDurationText(details?.tournament)}</p>
+                  </div>
+                )}
+
+                {hasValue(getSessionDateText(details?.session)) && (
+                  <div>
+                    <strong>Trial Date</strong>
+                    <p>{getSessionDateText(details?.session)}</p>
+                  </div>
+                )}
+
+                {hasValue(getSessionTimeText(details?.session)) && (
+                  <div>
+                    <strong>Time</strong>
+                    <p>{getSessionTimeText(details?.session)}</p>
+                  </div>
+                )}
+
+                {hasValue(details?.slot?.location?.venue) && (
+                  <div>
+                    <strong>Venue</strong>
+                    <p>{details.slot.location.venue}</p>
+                  </div>
+                )}
+
+                {hasValue(getContactText(details?.player)) && (
+                  <div>
+                    <strong>Contact</strong>
+                    <p>{getContactText(details.player)}</p>
+                  </div>
+                )}
               </div>
 
         
-              {details?.slot && (
+              {hasValue(getSlotAddressText(details?.slot?.location)) && (
                 <div
                   style={{
                     marginTop: "20px",
@@ -656,10 +767,7 @@ const RegistrationDetails = ({ auctionId, onClose, playerId }) => {
                 >
                   <strong>Venue Address</strong>
                   <p style={{ marginTop: "5px", fontSize: "13px" }}>
-                    {details?.slot?.location?.address},{" "}
-                    {details?.slot?.location?.city},{" "}
-                    {details?.slot?.location?.state} -{" "}
-                    {details?.slot?.location?.pincode}
+                    {getSlotAddressText(details.slot.location)}
                   </p>
                 </div>
               )}

@@ -226,7 +226,9 @@ const TournamentAdminForm = ({ tournamentId, auctionId, TrialType }) => {
     }
   };
 
-  useEffect(() => { fetchData(); }, []);
+  useEffect(() => { 
+    fetchData(); 
+  }, [tournamentId, auctionId]);
 
   const buildBasicInfoPayload = () => ({
     tournamentId: formData.tournamentId, auctionId: formData.auctionId,
@@ -470,9 +472,13 @@ const TournamentAdminForm = ({ tournamentId, auctionId, TrialType }) => {
   };
 
   const goToNextStep = async () => {
+    // Auto-save basic info when moving to next step from registration tab
     if (activeStep === 0 && !isBasicInfoSaved && !landingPageId) {
-      toast.warning("Please save Basic Info first before accessing other tabs");
-      return;
+      toast.info("Saving basic info...");
+      const saved = await saveBasicInfoAndContact();
+      if (!saved) {
+        return; // Stay on current step if save fails
+      }
     }
     if (activeStep < steps.length - 1) {
       setActiveStep(activeStep + 1);

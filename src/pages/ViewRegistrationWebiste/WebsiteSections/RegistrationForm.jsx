@@ -139,14 +139,14 @@ const AlreadyRegisteredCard = ({ profile, onViewDetails, auctionId }) => {
         <button
           type="button"
           onClick={onViewDetails}
-          className="flex-1 py-2.5 rounded-md bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm"
+          className="flex-1 py-2.5 rounded-md bg-yellow-500 hover:bg-yellow-600 text-black font-semibold text-sm"
         >
           View registration details
         </button>
         {auctionId ? (
           <Link
             to={`/viewAuction/${auctionId}`}
-            className="flex-1 py-2.5 rounded-md border-2 border-blue-600 text-blue-700 font-semibold text-sm text-center hover:bg-blue-50 transition"
+            className="flex-1 py-2.5 rounded-md border-2 border-yellow-500 text-yellow-700 font-semibold text-sm text-center hover:bg-yellow-50 transition"
           >
             Go to auction
           </Link>
@@ -1189,8 +1189,8 @@ const RegisterationForm = ({
     "--rf-input-highlight": "#dbeafe",
     "--rf-input-text": "#0f172a",
     "--rf-placeholder": "#94a3b8",
-    "--rf-primary": "#3b82f6",
-    "--rf-accent": "#2563eb",
+    "--rf-primary": "#FBBF24",
+    "--rf-accent": "#F59E0B",
     fontFamily:
       '"Inter", "Manrope", "Nunito Sans", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
   };
@@ -1198,9 +1198,15 @@ const RegisterationForm = ({
   return (
     <div
       className="registration-form-section relative overflow-visible"
-      style={formThemeStyle}
+      // style={formThemeStyle}
+         style={{
+        background: "linear-gradient(to bottom, #8e44ad, #1a1a2e)",
+        borderTop: "2px solid rgba(255,255,255,0.15)",
+        boxShadow: "inset 0 10px 25px rgba(0,0,0,0.4)",
+        color: "#fff"
+      }}
     >
-      <div className="absolute inset-0 bg-gradient-to-br from-blue-50 via-white to-blue-100 opacity-80" />
+      <div className="absolute inset-0 opacity-80" />
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_10%_15%,rgba(59,130,246,0.08),transparent_30%),radial-gradient(circle_at_90%_80%,rgba(37,99,235,0.06),transparent_28%)]" />
       <div className="max-w-7xl mx-auto px-4 py-6 md:py-8 relative z-10">
         {showSwitcher && (
@@ -1238,10 +1244,10 @@ const RegisterationForm = ({
               <span className="inline-flex rounded-full px-3 py-1 text-xs font-bold uppercase tracking-[0.18em] mx-auto lg:mx-0 text-blue-700 bg-blue-100">
                 Player Registration
               </span>
-              <h1 className={`text-lg sm:text-xl md:text-2xl font-semibold leading-tight text-blue-900`}>
+              <h1 className={`text-lg sm:text-xl md:text-2xl font-semibold leading-tight text-white`}>
                 {pagedata?.tournamentTitle}
               </h1>
-              <h2 className="text-3xl sm:text-4xl md:text-5xl font-black leading-tight tracking-tight text-blue-800">
+              <h2 className="text-3xl sm:text-4xl md:text-5xl font-black leading-tight tracking-tight text-white">
                 {pagedata?.tournamentName}
               </h2>
             </div>
@@ -1345,12 +1351,12 @@ const RegisterationForm = ({
                               isSendingOtp ||
                               loginDetails.mobile.length !== 10
                             }
-                            className={`w-full sm:w-auto px-2 py-1 text-sm font-semibold rounded-lg text-white transition-colors ${
+                            className={`w-full sm:w-auto px-2 py-1 text-sm font-semibold rounded-lg text-black transition-colors ${
                               isOtpVerified ||
                               loginDetails.mobile.length !== 10 ||
                               isSendingOtp
                                 ? "bg-gray-400 cursor-not-allowed"
-                                : "bg-blue-600 hover:bg-blue-700"
+                                : "bg-yellow-500 hover:bg-yellow-600"
                             }`}
                           >
                             {isSendingOtp
@@ -1387,9 +1393,9 @@ const RegisterationForm = ({
                               type="button"
                               disabled={otp.length !== 6 || isVerifying}
                               onClick={handleVerifyOtp}
-                              className={`px-2 py-1 text-sm text-white rounded-md transition-colors whitespace-nowrap ${
+                              className={`px-2 py-1 text-sm text-black rounded-md transition-colors whitespace-nowrap ${
                                 otp.length === 6 && !isVerifying
-                                  ? "bg-blue-600 hover:bg-blue-700"
+                                  ? "bg-yellow-500 hover:bg-yellow-600"
                                   : "bg-gray-400 cursor-not-allowed"
                               }`}
                             >
@@ -1457,9 +1463,9 @@ const RegisterationForm = ({
                               </div>
                             )}
                             <span
-                              className={`absolute bottom-1 right-1 p-1.5 rounded-full shadow-sm ${isOtpVerified ? "bg-blue-600" : "bg-gray-400"}`}
+                              className={`absolute bottom-1 right-1 p-1.5 rounded-full shadow-sm ${isOtpVerified ? "bg-yellow-500" : "bg-gray-400"}`}
                             >
-                              <Upload className="w-3 h-3 text-white" />
+                              <Upload className="w-3 h-3 text-black" />
                             </span>
                           </button>
                           <input
@@ -1732,7 +1738,7 @@ const RegisterationForm = ({
                             <label
                               className={`w-full flex items-center rounded-md overflow-hidden border ${isOtpVerified ? "border-gray-300 cursor-pointer" : "border-gray-200 cursor-not-allowed opacity-60"}`}
                             >
-                              <span className="px-3 py-2 text-sm font-semibold bg-blue-600 text-white whitespace-nowrap">
+                              <span className="px-3 py-2 text-sm font-semibold bg-yellow-500 text-black whitespace-nowrap">
                                 Choose File
                               </span>
                               <span className="px-3 py-2 text-sm text-gray-600 bg-gray-50 flex-1 truncate">
@@ -1751,7 +1757,7 @@ const RegisterationForm = ({
                               />
                             </label>
                             {typeof form.adharCard === "string" && form.adharCard && (
-                              <p className="text-blue-600 text-xs mt-1">Aadhaar already uploaded</p>
+                              <p className="text-yellow-600 text-xs mt-1">Aadhaar already uploaded</p>
                             )}
                           </div>
                         )}
@@ -1763,7 +1769,7 @@ const RegisterationForm = ({
                             <label
                               className={`w-full flex items-center rounded-md overflow-hidden border ${isOtpVerified ? "border-gray-300 cursor-pointer" : "border-gray-200 cursor-not-allowed opacity-60"}`}
                             >
-                              <span className="px-3 py-2 text-sm font-semibold bg-blue-600 text-white whitespace-nowrap">
+                              <span className="px-3 py-2 text-sm font-semibold bg-yellow-500 text-black whitespace-nowrap">
                                 Choose File
                               </span>
                               <span className="px-3 py-2 text-sm text-gray-600 bg-gray-50 flex-1 truncate">
@@ -1864,10 +1870,10 @@ const RegisterationForm = ({
                                 {!selectedSlot
                                   ? "Select location first"
                                   : sessionLoading
-                                    ? "Loading shifts…"
+                                    ? "Loading session…"
                                     : sessions?.length > 0
-                                      ? "Select shift"
-                                      : "No shifts for this location"}
+                                      ? "Select session"
+                                      : "No sessions for this location"}
                               </option>
                               {sessions?.map((session) => (
                                 <option key={session._id} value={session._id} className="text-gray-600">
@@ -1898,7 +1904,7 @@ const RegisterationForm = ({
                             sessionLoading ||
                             (Array.isArray(sessions) && sessions.length > 0 && !selectedSession)))
                           ? "bg-gray-400 cursor-not-allowed text-gray-700"
-                          : "bg-blue-600 hover:bg-blue-700 text-white transform hover:scale-[1.02]"
+                          : "bg-yellow-500 hover:bg-yellow-600 text-black font-bold transform hover:scale-[1.02]"
                       }`}
                     >
                       {isOtpVerified ? "⚡ REGISTER NOW" : "Verify OTP to Continue"}
@@ -1919,7 +1925,7 @@ const RegisterationForm = ({
           onClick={scrollToRegistrationForm}
           className="px-4 md:px-5 py-2.5 md:py-3 rounded-full font-bold text-xs md:text-sm flex items-center gap-2 transition-all hover:-translate-y-0.5 shadow-xl"
           style={{
-            backgroundColor: "var(--rf-primary)",
+            backgroundColor: "#facc15",
             color: "#fff",
           }}
         >
@@ -2009,7 +2015,7 @@ const RegisterationForm = ({
         }
 
         .registration-rich-text {
-          color: #334155;
+          color: #ffffff;
           font-family: inherit;
           font-synthesis: style;
           line-height: 1.65;

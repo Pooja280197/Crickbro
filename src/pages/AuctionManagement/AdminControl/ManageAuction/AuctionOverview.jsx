@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from "react";
+import React, { useState, useCallback, useEffect, useRef } from "react";
 import {
   Search,
   Filter,
@@ -21,6 +21,7 @@ import api from "../../../../utils/api";
 import { toast } from "react-toastify";
 import { createPortal } from "react-dom";
 import Pagination from "../../../../components/Pagination";
+import { useDebounce } from "../../../../components/useDebounce";
 
 const panelClass =
   "rounded-lg border border-[var(--border-card)] bg-[var(--bg-card)] shadow-[var(--shadow-card)]";
@@ -67,6 +68,12 @@ const AuctionOverview = ({ auctionId }) => {
   const [showTeamDropdown, setShowTeamDropdown] = useState(false);
   const [viewMode, setViewMode] = useState("card");
 
+  // Ref to track if initial load is done for this auctionId
+  const hasInitialLoadDone = useRef(false);
+
+  // Debounce search query
+  const debouncedSearchQuery = useDebounce(searchQuery, 300);
+
   // Fetch players from API with filters
   const fetchPlayersWithFilters = useCallback(
     async (page = 1) => {
@@ -75,7 +82,7 @@ const AuctionOverview = ({ auctionId }) => {
         const params = new URLSearchParams();
         params.append("limit", itemsPerPage.toString());
         params.append("page", page.toString());
-        if (searchQuery) params.append("search", searchQuery);
+        if (debouncedSearchQuery) params.append("search", debouncedSearchQuery);
         if (statusFilter) params.append("status", statusFilter);
         if (teamIdFilter) params.append("teamId", teamIdFilter);
         if (categoryFilterName) params.append("categoryId", categoryFilterName);
@@ -134,7 +141,7 @@ const AuctionOverview = ({ auctionId }) => {
     },
     [
       auctionId,
-      searchQuery,
+      debouncedSearchQuery,
       statusFilter,
       teamIdFilter,
       categoryFilterName,
@@ -150,7 +157,7 @@ const AuctionOverview = ({ auctionId }) => {
       params.append("limit", "10000"); // large limit for full export
       params.append("page", "1");
 
-      if (searchQuery) params.append("search", searchQuery);
+      if (debouncedSearchQuery) params.append("search", debouncedSearchQuery);
       if (statusFilter) params.append("status", statusFilter);
       if (teamIdFilter) params.append("teamId", teamIdFilter);
       if (categoryFilterName) params.append("categoryId", categoryFilterName);
@@ -332,23 +339,25 @@ const AuctionOverview = ({ auctionId }) => {
 
   // Initial load
   useEffect(() => {
+    hasInitialLoadDone.current = false; // Reset when auctionId changes
     if (auctionId) {
       fetchPlayersWithFilters(1);
       fetchTeams();
+      hasInitialLoadDone.current = true;
     }
   }, [auctionId, fetchTeams]);
 
-  // Fetch when any filter changes or itemsPerPage changes
+  // Fetch when any filter changes or itemsPerPage changes (skip on initial render)
   useEffect(() => {
+    if (!hasInitialLoadDone.current) return; // Skip on initial render
     setCurrentPage(1);
     fetchPlayersWithFilters(1);
   }, [
-    searchQuery,
+    debouncedSearchQuery,
     statusFilter,
     teamIdFilter,
     categoryFilterName,
     itemsPerPage,
-    fetchPlayersWithFilters,
   ]);
 
   // Reset filters
