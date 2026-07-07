@@ -36,7 +36,7 @@ const Sponsors = ({ pagedata }) => {
     return () => cancelAnimationFrame(animationFrame);
   }, [isPaused, shouldAutoScroll]);
 
-  console.log("Sponsors Data:", sponsors);
+  
 
   return (
     <section

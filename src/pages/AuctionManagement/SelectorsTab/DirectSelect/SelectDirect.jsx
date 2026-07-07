@@ -20,6 +20,7 @@ const panelClass =
 const iconTileClass =
   "flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-[var(--border-primary)] bg-[var(--accent-light)] text-[var(--primary)]";
 
+  const EMPTY_ARRAY = [];
 function SelectDirect({ auctionId }) {
   const dispatch = useDispatch();
   const [searchAssignedPlayer, setSearchAssignedPlayer] = useState("");
@@ -38,9 +39,9 @@ function SelectDirect({ auctionId }) {
   );
 
   const selectorPlayers = useSelector(
-    (state) => state.data?.selectorPlayers?.data || [],
+    (state) => state.data?.selectorPlayers?.data || EMPTY_ARRAY ,
   );
-  const slotDetail = useSelector((state) => state.data?.slotList?.data || []);
+  const slotDetail = useSelector((state) => state.data?.slotList?.data || EMPTY_ARRAY );
 
   const selectorPlayersPage = playersData?.page;
   const selectorPlayersTotalPages = playersData?.pages;

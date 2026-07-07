@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import logo from "../../../../../public/Crickbro_auction_logo.png";
+// import logo from "../../../../../public/Crickbro_auction_logo.png";
 import ThemeOne from "./PlayerPosters/ThemeOne";
 import ThemeTwo from "./PlayerPosters/ThemeTwo";
 import ThemeThree from "./PlayerPosters/ThemeThree";
@@ -27,6 +27,7 @@ import {
 import { toast } from "react-toastify";
 import { fetchAuctionDetails } from "../../../../redux/actions";
 import { useDispatch, useSelector } from "react-redux";
+const logo = "/Crickbro_auction_logo.png";
 
 const DisplayCheckbox = ({ label, option, checked, onChange }) => (
   <label className="flex cursor-pointer items-center gap-2 rounded-lg border border-[var(--border-card)] bg-[var(--bg-main)] px-3 py-2 text-[var(--text-primary)] transition hover:border-[var(--border-primary)] hover:bg-[var(--accent-light)]">

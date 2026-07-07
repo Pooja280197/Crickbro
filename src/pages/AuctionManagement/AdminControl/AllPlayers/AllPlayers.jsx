@@ -37,7 +37,7 @@ import {
   Table2,
   Eye,
 } from "lucide-react";
-import PlayerAssign from "../../../../components/PlayerAssign";
+// import PlayerAssign from "../../../../components/PlayerAssign";
 import PlayerCard, {
   PlayerDetailsModal,
 } from "../../../../components/PlayerCard";
@@ -46,7 +46,7 @@ import { toast } from "react-toastify";
 import { useDispatch, useSelector } from "react-redux";
 import {
   fetchAuctionDetails,
-  fetchSlotList,
+  // fetchSlotList,
   getAuctionPlayers,
 } from "../../../../redux/actions";
 import { useParams, useSearchParams } from "react-router-dom";
@@ -56,8 +56,8 @@ import api from "../../../../utils/api";
 import { createPortal } from "react-dom";
 import Pagination from "../../../../components/Pagination";
 
-const tabClass = (active) =>
-  `inline-flex min-h-10 items-center gap-2 rounded-lg border border-[var(--border-soft)] bg-[var(--bg-card)] px-4 text-sm font-bold text-[var(--text-secondary)] transition hover:border-[var(--border-primary)] hover:bg-[var(--accent-light)] hover:text-[var(--text-primary)] ${active ? "bg-[var(--secondary)] text-[#102033] shadow-[0_8px_20px_rgba(244,180,0,0.16)]" : ""}`;
+// const tabClass = (active) =>
+//   `inline-flex min-h-10 items-center gap-2 rounded-lg border border-[var(--border-soft)] bg-[var(--bg-card)] px-4 text-sm font-bold text-[var(--text-secondary)] transition hover:border-[var(--border-primary)] hover:bg-[var(--accent-light)] hover:text-[var(--text-primary)] ${active ? "bg-[var(--secondary)] text-[#102033] shadow-[0_8px_20px_rgba(244,180,0,0.16)]" : ""}`;
 
 const AllPlayers = () => {
   const { auctionId } = useParams();
@@ -76,12 +76,12 @@ const AllPlayers = () => {
   );
 
   const [activePlayerTab, setActivePlayerTab] = useState("all");
-  const [selectedManagerTab, setSelectedManagerTab] =
-    useState("unassignedSelected");
+  // const [selectedManagerTab, setSelectedManagerTab] =
+  //   useState("unassignedSelected");
   //  const [selectedSubTab, setSelectedSubTab] = useState("unassignedSelected");
   const [searchQuery, setSearchQuery] = useState("");
   const [statusSort, setStatusSort] = useState("");
-  const [assignmentModalOpen, setAssignmentModalOpen] = useState(false);
+  // const [assignmentModalOpen, setAssignmentModalOpen] = useState(false);
   const [selectedPlayers, setSelectedPlayers] = useState([]);
   const [typeSort, setTypeSort] = useState("");
   const [currentPageState, setCurrentPageState] = useState(1);
@@ -89,21 +89,21 @@ const AllPlayers = () => {
   const [isItemsDropdownOpen, setIsItemsDropdownOpen] = useState(false);
   const [isAddPlayerOpen, setIsAddPlayerOpen] = useState(false);
   // const [slotDetail, setSlotDetail] = useState([]);
-  const [slot, setSlot] = useState("");
-  const [selectedSlotSessions, setSelectedSlotSessions] = useState([]);
-  const [slotSession, setSlotSession] = useState("");
-  const [isOpen, setIsOpen] = useState(false);
-  const [search, setSearch] = useState("");
-  const [slotLoading, setSlotLoading] = useState(false);
-  const [hasMoreSlots, setHasMoreSlots] = useState(true);
+  // const [slot, setSlot] = useState("");
+  // const [selectedSlotSessions, setSelectedSlotSessions] = useState([]);
+  // const [slotSession, setSlotSession] = useState("");
+  // const [isOpen, setIsOpen] = useState(false);
+  // const [search, setSearch] = useState("");
+  // const [slotLoading, setSlotLoading] = useState(false);
+  // const [hasMoreSlots, setHasMoreSlots] = useState(true);
   const [downloadLoading, setDownloadLoading] = useState(false);
 
   // const [slots, setSlots] = useState([]);
 
-  const [isSlotOpen, setIsSlotOpen] = useState(false);
-  const [slotSearch, setSlotSearch] = useState("");
-  const [selectedSlotLabel, setSelectedSlotLabel] = useState("");
-  const [slotPage, setSlotPage] = useState(1);
+  // const [isSlotOpen, setIsSlotOpen] = useState(false);
+  // const [slotSearch, setSlotSearch] = useState("");
+  // const [selectedSlotLabel, setSelectedSlotLabel] = useState("");
+  // const [slotPage, setSlotPage] = useState(1);
   const [viewMode, setViewMode] = useState("card");
   const [tableDetailsPlayer, setTableDetailsPlayer] = useState(null);
   const [tableDetailsType, setTableDetailsType] = useState("");
@@ -124,7 +124,7 @@ const AllPlayers = () => {
   const totalPlayers = hasCurrentPlayersData
     ? auctionPlayersData?.total || 0
     : 0;
-  const currentPage = hasCurrentPlayersData ? auctionPlayersData?.page || 1 : 1;
+  // const currentPage = hasCurrentPlayersData ? auctionPlayersData?.page || 1 : 1;
   const isPlayersLoading = loading || (!hasCurrentPlayersData && !playersError);
   const slots = useSelector((state) => state?.data?.slotList);
   const slotDetail = slots?.data;
@@ -145,14 +145,14 @@ const AllPlayers = () => {
   //   }
   // };
 
-  const fetchSessionsForSlot = (slotId) => {
-    const slot = slotDetail.find((s) => s._id === slotId);
-    if (slot && slot.sessions) {
-      setSelectedSlotSessions(slot.sessions);
-    } else {
-      setSelectedSlotSessions([]);
-    }
-  };
+  // const fetchSessionsForSlot = (slotId) => {
+  //   const slot = slotDetail.find((s) => s._id === slotId);
+  //   if (slot && slot.sessions) {
+  //     setSelectedSlotSessions(slot.sessions);
+  //   } else {
+  //     setSelectedSlotSessions([]);
+  //   }
+  // };
 
   const sortPlayers = [
     { value: "all", label: "All" },
@@ -161,78 +161,78 @@ const AllPlayers = () => {
     // { value: "pending", label: "Pending" },
     // { value: "not reached", label: "Not Reached" },
   ];
-  const handlePlayerTabChange = (tab) => {
-    setActivePlayerTab(tab);
-    // Reset everything when switching tab
-    setSelectedPlayers([]);
-    setSearchQuery("");
+  // const handlePlayerTabChange = (tab) => {
+  //   setActivePlayerTab(tab);
+  //   // Reset everything when switching tab
+  //   setSelectedPlayers([]);
+  //   setSearchQuery("");
 
-    setStatusSort("");
-    setTypeSort("");
+  //   setStatusSort("");
+  //   setTypeSort("");
 
-    setSlot("");
-    setSlotSession("");
-    setSelectedSlotSessions([]);
+  //   setSlot("");
+  //   setSlotSession("");
+  //   setSelectedSlotSessions([]);
 
-    setCurrentPageState(1);
-  };
+  //   setCurrentPageState(1);
+  // };
 
-  const handleAssignClick = () => {
-    setAssignmentModalOpen(true);
-  };
+  // const handleAssignClick = () => {
+  //   setAssignmentModalOpen(true);
+  // };
 
-  const handleSelectPlayer = (player) => {
-    setSelectedPlayers((prev) => {
-      if (prev.some((p) => p.id === player.id)) {
-        return prev.filter((p) => p.id !== player.id);
-      } else {
-        return [...prev, player];
-      }
-    });
-  };
+  // const handleSelectPlayer = (player) => {
+  //   setSelectedPlayers((prev) => {
+  //     if (prev.some((p) => p.id === player.id)) {
+  //       return prev.filter((p) => p.id !== player.id);
+  //     } else {
+  //       return [...prev, player];
+  //     }
+  //   });
+  // };
 
-  const handleRemovePlayer = (player) => {
-    setSelectedPlayers((prev) => prev.filter((p) => p.id !== player.id));
-  };
+  // const handleRemovePlayer = (player) => {
+  //   setSelectedPlayers((prev) => prev.filter((p) => p.id !== player.id));
+  // };
 
   useEffect(() => {
     dispatch(fetchAuctionDetails(auctionId));
   }, []);
 
-  useEffect(() => {
-    if (auctionId) {
-      dispatch(fetchSlotList(auctionId, slotPage, 20, slotSearch));
-    }
-  }, [auctionId, slotPage, slotSearch]);
+  // useEffect(() => {
+  //   if (auctionId) {
+  //     dispatch(fetchSlotList(auctionId, slotPage, 20, slotSearch));
+  //   }
+  // }, [auctionId, slotPage, slotSearch]);
 
-  useEffect(() => {
-    setSlotPage(1);
-  }, [slotSearch]);
+  // useEffect(() => {
+  //   setSlotPage(1);
+  // }, [slotSearch]);
 
-  useEffect(() => {
-    const handleClickOutside = (e) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
-        setIsSlotOpen(false);
-        setSlotSearch("");
-      }
-    };
+  // useEffect(() => {
+  //   const handleClickOutside = (e) => {
+  //     if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+  //       setIsSlotOpen(false);
+  //       setSlotSearch("");
+  //     }
+  //   };
 
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
+  //   document.addEventListener("mousedown", handleClickOutside);
+  //   return () => document.removeEventListener("mousedown", handleClickOutside);
+  // }, []);
 
-  useEffect(() => {
-    if (auctionId && hasMoreSlots) {
-      setSlotLoading(true);
-      dispatch(fetchSlotList(auctionId, slotPage, 20, slotSearch))
-        .then((res) => {
-          if (res?.data?.data?.data?.length < 20) {
-            setHasMoreSlots(false);
-          }
-        })
-        .finally(() => setSlotLoading(false));
-    }
-  }, [auctionId, slotPage, slotSearch]);
+  // useEffect(() => {
+  //   if (auctionId && hasMoreSlots) {
+  //     setSlotLoading(true);
+  //     dispatch(fetchSlotList(auctionId, slotPage, 20, slotSearch))
+  //       .then((res) => {
+  //         if (res?.data?.data?.data?.length < 20) {
+  //           setHasMoreSlots(false);
+  //         }
+  //       })
+  //       .finally(() => setSlotLoading(false));
+  //   }
+  // }, [auctionId, slotPage, slotSearch]);
 
   const fetchPlayers = (activePlayerTab, page = currentPageState) => {
     return dispatch(
@@ -244,8 +244,8 @@ const AllPlayers = () => {
         statusSort,
         typeSort,
         debouncedSearch,
-        slot, // Add slot filter
-        slotSession, // Add session filter
+        // slot, // Add slot filter
+        // slotSession, // Add session filter
       }),
     );
   };
@@ -256,19 +256,19 @@ const AllPlayers = () => {
     fetchPlayers(activePlayerTab, 1);
   }, [auctionId, isAllPlayersVisible]);
 
-  useEffect(() => {
-    if (
-      statusSort === "pending" ||
-      statusSort === "not reached" ||
-      statusSort === "all"
-    ) {
-      setTypeSort("");
-    }
-    // if (auctionTypeTrial) {
-    //   setCurrentPageState(1);
-    //   fetchPlayers("assigned", 1);
-    // }
-  }, [statusSort, typeSort]);
+  // useEffect(() => {
+  //   if (
+  //     statusSort === "pending" ||
+  //     statusSort === "not reached" ||
+  //     statusSort === "all"
+  //   ) {
+  //     setTypeSort("");
+  //   }
+  //   // if (auctionTypeTrial) {
+  //   //   setCurrentPageState(1);
+  //   //   fetchPlayers("assigned", 1);
+  //   // }
+  // }, [statusSort, typeSort]);
 
   // Fetch assigned players only when explicitly on assigned tab
   useEffect(() => {
@@ -294,14 +294,14 @@ const AllPlayers = () => {
     typeSort,
     debouncedSearch,
     itemsPerPage,
-    slot,
-    slotSession,
+    // slot,
+    // slotSession,
   ]);
 
-  const handleAssignmentSuccess = () => {
-    fetchPlayers(activePlayerTab, currentPageState);
-    setSelectedPlayers([]);
-  };
+  // const handleAssignmentSuccess = () => {
+  //   fetchPlayers(activePlayerTab, currentPageState);
+  //   setSelectedPlayers([]);
+  // };
 
   const handleImportSuccess = () => {
     setCurrentPageState(1);
@@ -323,13 +323,13 @@ const AllPlayers = () => {
     }
   };
 
-  const handleAssignPlayers = () => {
-    if (selectedPlayers.length === 0) {
-      toast.info("Please select at least one player");
-      return;
-    }
-    setAssignmentModalOpen(true);
-  };
+  // const handleAssignPlayers = () => {
+  //   if (selectedPlayers.length === 0) {
+  //     toast.info("Please select at least one player");
+  //     return;
+  //   }
+  //   setAssignmentModalOpen(true);
+  // };
 
   const getFileNameFromHeaders = (headers) => {
     const contentDisposition = headers?.["content-disposition"] || "";
@@ -840,7 +840,7 @@ const AllPlayers = () => {
                       ))}
                     </select> */}
 
-                    <div ref={dropdownRef} className="relative w-full sm:w-40">
+                    {/* <div ref={dropdownRef} className="relative w-full sm:w-40">
                       <input
                         type="text"
                         placeholder="Search Slot..."
@@ -882,10 +882,10 @@ const AllPlayers = () => {
                           </div>
                         ))}
                       </div>
-                    </div>
+                    </div> */}
 
                     {/* Session Filter - Only show when slot is selected and has sessions */}
-                    {slot && selectedSlotSessions.length > 0 && (
+                    {/* {slot && selectedSlotSessions.length > 0 && (
                       <select
                         className="ui-input sm:w-40"
                         value={slotSession}
@@ -898,7 +898,7 @@ const AllPlayers = () => {
                           </option>
                         ))}
                       </select>
-                    )}
+                    )} */}
 
                     {/* Sort By Status */}
                     <select
@@ -966,14 +966,14 @@ const AllPlayers = () => {
               )} */}
             </div>
 
-            <PlayerAssign
+            {/* <PlayerAssign
               isOpen={assignmentModalOpen}
               onClose={() => setAssignmentModalOpen(false)}
               selectedPlayers={selectedPlayers}
               playerCount={selectedPlayers.length}
               onAssignSuccess={handleAssignmentSuccess}
               auctionId={auctionId}
-            />
+            /> */}
 
             <PlayerDetailsModal
               player={tableDetailsPlayer}
@@ -1024,8 +1024,8 @@ const AllPlayers = () => {
                             player={item} // Pass the entire item object
                             type={info.role}
                             auctionId={auctionId}
-                            selectedSlotId={slot}
-                            selectedSlotSessions={selectedSlotSessions}
+                            // selectedSlotId={slot}
+                            // selectedSlotSessions={selectedSlotSessions}
                             slotDetails={slotDetail || []}
                             onActionComplete={() =>
                               fetchPlayers(activePlayerTab, currentPageState)

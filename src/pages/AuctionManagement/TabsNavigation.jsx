@@ -38,20 +38,21 @@ import {
 } from "lucide-react";
 
 // TAB CONTENT COMPONENTS
-const TournamentDetails = lazy(
-  () => import("./AdminControl/TournamentInfo.jsx"),
+const TournamentDetails = lazy(() =>
+  import("./AdminControl/TournamentInfo.jsx")
 );
 // import DetailsOfAuction from "../../pages/AuctionDetailsTabs/DetailsOfAuction";
 // import AuctionPlayers from "../../pages/AuctionDetailsTabs/AuctionPlayers";
 // import AuctionTeams from "../../pages/AuctionDetailsTabs/AuctionTeams";
 // import SettingsTab from "../../pages/AuctionDetailsTabs/SettingsTab";
-const Slot = lazy(
-  () => import("./AdminControl/Trials&Selection/SlotAndSession/Slot.jsx"),
+const Slot = lazy(() =>
+  import("./AdminControl/Trials&Selection/SlotAndSession/Slot.jsx")
 );
 // import Categories from "../../pages/AuctionDetailsTabs/CategoryTab/Categories";
-const CreateWebsite = lazy(
-  () =>
-    import("../../pages/AuctionManagement/AdminControl/RegistrationWebsite/CreateWebiste.jsx"),
+const CreateWebsite = lazy(() =>
+  import(
+    "../../pages/AuctionManagement/AdminControl/RegistrationWebsite/CreateWebiste.jsx"
+  )
 );
 import {
   EnrollPlayer,
@@ -65,63 +66,66 @@ import Links from "../../pages/AuctionManagement/AdminControl/ManageAuction/Over
 import CreatePoster from "./AdminControl/PostersCreation/CreatePoster.jsx";
 import SupercampRounds from "./AdminControl/Trials&Selection/SuperCampRoundsTab/SupercampRounds.jsx";
 import SupercampLeaderboard from "./AdminControl/Trials&Selection/SupercampLeaderboardTab/SupercampLeaderboard.jsx";
-const SupercampSelectorPoints = lazy(
-  () =>
-    import("./SelectorsTab/SupercampPointsTab/SupercampSelectorPoints.jsx"),
+const SupercampSelectorPoints = lazy(() =>
+  import("./SelectorsTab/SupercampPointsTab/SupercampSelectorPoints.jsx")
 );
-const TeamsTab = lazy(
-  () =>
-    import("../../pages/AuctionManagement/AdminControl/ManageAuction/ManageTeams/TeamsTab.jsx"),
+const TeamsTab = lazy(() =>
+  import(
+    "../../pages/AuctionManagement/AdminControl/ManageAuction/ManageTeams/TeamsTab.jsx"
+  )
 );
 // import OwnerTeamDetails from "./Live_Auction/TeamOwner/OwnerTeamDetails";
 // import SelectorPlayerCard from "../../pages/AuctionDetailsTabs/AssignedPlayersTab/SelectorPlayerCard";
 // import AssignedPlayersToSelector from "../../pages/AuctionDetailsTabs/AssignedPlayersTab/AssignedPlayersToSelector";
-const AuctionOverview = lazy(
-  () =>
-    import("../../pages/AuctionManagement/AdminControl/ManageAuction/AuctionOverview.jsx"),
+const AuctionOverview = lazy(() =>
+  import(
+    "../../pages/AuctionManagement/AdminControl/ManageAuction/AuctionOverview.jsx"
+  )
 );
-const Dashboard = lazy(
-  () => import("../../pages/AuctionManagement/AdminControl/Dashboard"),
+const Dashboard = lazy(() =>
+  import("../../pages/AuctionManagement/AdminControl/Dashboard")
 );
 
-const RegistrationOverview = lazy(
-  () =>
-    import("../../pages/AuctionManagement/AdminControl/RegistrationOverview.jsx"),
+const RegistrationOverview = lazy(() =>
+  import("../../pages/AuctionManagement/AdminControl/RegistrationOverview.jsx")
 );
-const DirectSelect = lazy(
-  () =>
-    import("../../pages/AuctionManagement/SelectorsTab/DirectSelect/SelectDirect.jsx"),
+const DirectSelect = lazy(() =>
+  import(
+    "../../pages/AuctionManagement/SelectorsTab/DirectSelect/SelectDirect.jsx"
+  )
 );
 // import AdminPanel from "./AuctionDetailsTabs/AdminPanel";
-const TrialSettings = lazy(
-  () =>
-    import("./AdminControl/Trials&Selection/TrialSettings/TrialSettings.jsx"),
+const TrialSettings = lazy(() =>
+  import("./AdminControl/Trials&Selection/TrialSettings/TrialSettings.jsx")
 );
-const AuctionSettings = lazy(
-  () => import("./AdminControl/ManageAuction/Settings/AuctionSettings.jsx"),
+const AuctionSettings = lazy(() =>
+  import("./AdminControl/ManageAuction/Settings/AuctionSettings.jsx")
 );
-const SelectorSlots = lazy(
-  () =>
-    import("../../pages/AuctionManagement/SelectorsTab/TrailsSlot/SelectorSlots.jsx"),
+const SelectorSlots = lazy(() =>
+  import(
+    "../../pages/AuctionManagement/SelectorsTab/TrailsSlot/SelectorSlots.jsx"
+  )
 );
-const PlayersAssignedToSelector = lazy(
-  () => import("./SelectorsTab/AssignedPlayers/PlayerAssignedToSelector.jsx"),
+const PlayersAssignedToSelector = lazy(() =>
+  import("./SelectorsTab/AssignedPlayers/PlayerAssignedToSelector.jsx")
 );
 const TeamDetails = lazy(() => import("./TeamOwnerTabs/TeamDetails.jsx"));
-const AllPlayers = lazy(
-  () => import("./AdminControl/AllPlayers/AllPlayers.jsx"),
+const AllPlayers = lazy(() =>
+  import("./AdminControl/AllPlayers/AllPlayers.jsx")
 );
-const ManagePlayers = lazy(
-  () => import("./AdminControl/ManageAuction/PlayersTabs/ManagePlayers.jsx"),
+const ManagePlayers = lazy(() =>
+  import("./AdminControl/ManageAuction/PlayersTabs/ManagePlayers.jsx")
 );
-const ManagePlayerTabs = lazy(
-  () =>
-    import("./AdminControl/Trials&Selection/TrailsPlayersTabs/ManagePlayerTabs.jsx"),
+const ManagePlayerTabs = lazy(() =>
+  import(
+    "./AdminControl/Trials&Selection/TrailsPlayersTabs/ManagePlayerTabs.jsx"
+  )
 );
 
-const AdminAuctionControl = lazy(
-  () =>
-    import("./AdminControl/ManageAuction/AuctionBiddingPanel/AdminAuctionControl.jsx"),
+const AdminAuctionControl = lazy(() =>
+  import(
+    "./AdminControl/ManageAuction/AuctionBiddingPanel/AdminAuctionControl.jsx"
+  )
 );
 
 /* ===============================
@@ -210,7 +214,11 @@ const tabStructure = [
       { key: "trialSettings", label: "Trial Settings", icon: Wrench },
       { key: "trialPlayers", label: "Trial Players", icon: Users },
       { key: "supercampRounds", label: "Supercamp rounds", icon: Trophy },
-      { key: "supercampLeaderboard", label: "Supercamp leaderboard", icon: Medal },
+      {
+        key: "supercampLeaderboard",
+        label: "Supercamp leaderboard",
+        icon: Medal,
+      },
     ],
   },
   {
@@ -225,7 +233,7 @@ const tabStructure = [
       { key: "players", label: "Manage Players", icon: Users },
       { key: "overlayLinks", label: "Live Links", icon: Link2 },
       { key: "biddingPanel", label: "Auction Room", icon: Gavel },
-      { key: "createPosters", label: "Create Posters", icon:Link2Icon},
+      { key: "createPosters", label: "Create Posters", icon: Link2Icon },
     ],
   },
   {
@@ -265,15 +273,16 @@ const AuctionDetails = ({ theme, onToggleTheme }) => {
   const playerId = localStorage.getItem("playerId");
   const userRole = useSelector((state) => state.data?.userRole);
   const [activeTab, setActiveTab] = useState(
-    () => searchParams.get("tab") || "info",
+    () => searchParams.get("tab") || "info"
   );
   const [activeSubTab, setActiveSubTab] = useState(
-    () => searchParams.get("subTab") || null,
+    () => searchParams.get("subTab") || null
   );
   const [visitedTabs, setVisitedTabs] = useState(() => new Set());
+  const [tabRefreshKeys, setTabRefreshKeys] = useState({});
   const tournamentId = useSelector((state) => state.tournamentId);
   const isTrialType = useSelector(
-    (state) => state?.data?.auctionDetails?.trailTypeAuction,
+    (state) => state?.data?.auctionDetails?.trailTypeAuction
   );
 
   useEffect(() => {
@@ -323,7 +332,7 @@ const AuctionDetails = ({ theme, onToggleTheme }) => {
         "trialSlot",
         "supercampPoints",
       ]),
-    [],
+    []
   );
 
   const shouldShowTabKey = (tabKey) => {
@@ -334,7 +343,8 @@ const AuctionDetails = ({ theme, onToggleTheme }) => {
   // Filter visible tabs based on role
   const visibleTabs = useMemo(() => {
     return tabStructure.filter(
-      (tab) => allowedParentTabKeys.includes(tab.key) && shouldShowTabKey(tab.key),
+      (tab) =>
+        allowedParentTabKeys.includes(tab.key) && shouldShowTabKey(tab.key)
     );
   }, [allowedParentTabKeys, isTrialType, trialOnlyTabKeys]);
 
@@ -354,7 +364,7 @@ const AuctionDetails = ({ theme, onToggleTheme }) => {
     return parentTab.subTabs.filter(
       (subTab) =>
         shouldShowTabKey(subTab.key) &&
-        isSubTabAllowed(parentTab.key, subTab.key),
+        isSubTabAllowed(parentTab.key, subTab.key)
     );
   };
 
@@ -390,7 +400,7 @@ const AuctionDetails = ({ theme, onToggleTheme }) => {
   ================================ */
   const currentParentTab = visibleTabs.find((tab) => tab.key === activeTab);
   const currentSubTab = currentParentTab?.subTabs?.find(
-    (sub) => sub.key === activeSubTab,
+    (sub) => sub.key === activeSubTab
   );
   const currentParentSubTabs = currentParentTab
     ? getFilteredSubTabs(currentParentTab)
@@ -398,8 +408,8 @@ const AuctionDetails = ({ theme, onToggleTheme }) => {
   const effectiveTab = currentSubTab
     ? currentSubTab.key
     : currentParentTab
-      ? activeTab
-      : null;
+    ? activeTab
+    : null;
 
   useEffect(() => {
     if (!effectiveTab) return;
@@ -417,7 +427,7 @@ const AuctionDetails = ({ theme, onToggleTheme }) => {
 
         return nextParams;
       },
-      { replace: true },
+      { replace: true }
     );
   }, [activeTab, activeSubTab, effectiveTab, setSearchParams]);
 
@@ -431,81 +441,255 @@ const AuctionDetails = ({ theme, onToggleTheme }) => {
     });
   }, [effectiveTab]);
 
+  const bumpTabRefresh = (tabKey) => {
+    if (!tabKey) return;
+    setTabRefreshKeys((previousKeys) => ({
+      ...previousKeys,
+      [tabKey]: (previousKeys[tabKey] || 0) + 1,
+    }));
+  };
+
+  const selectTab = (tabKey, subTabKey = null) => {
+    const effectiveKey = subTabKey || tabKey;
+    setActiveTab(tabKey);
+    setActiveSubTab(subTabKey);
+    bumpTabRefresh(effectiveKey);
+  };
+
+  const handleParentTabClick = (tab, filteredSubTabs, isExpanded) => {
+    if (filteredSubTabs.length > 0) {
+      toggleMenu(tab.key);
+      const nextSubTab =
+        !isExpanded || activeTab !== tab.key
+          ? filteredSubTabs[0].key
+          : activeSubTab || filteredSubTabs[0].key;
+      selectTab(tab.key, nextSubTab);
+      return;
+    }
+
+    selectTab(tab.key, null);
+  };
+
+  // const renderTab = (tabKey) => {
+  //   // Legacy tabs for backward compatibility
+  //   switch (tabKey) {
+  //     case "dashboard":
+  //       return <Dashboard  auctionId={auctionId} />;
+
+  //     case "registrationOverview":
+  //       return <RegistrationOverview auctionId={auctionId} />;
+
+  //     case "createWebsite":
+  //       return (
+  //         <CreateWebsite
+  //           tournamentId={tournamentId}
+  //           auctionId={auctionId}
+  //           TrialType={isTrialType}
+  //         />
+  //       );
+
+  //     case "allPlayers":
+  //       return <AllPlayers auctionId={auctionId} />;
+
+  //     case "players":
+  //       return <ManagePlayers auctionId={auctionId} />;
+
+  //     case "slot":
+  //       return <Slot auctionId={auctionId} />;
+
+  //     case "trialSettings":
+  //       return <TrialSettings auctionId={auctionId} />;
+
+  //     case "trialPlayers":
+  //       return <ManagePlayerTabs auctionId={auctionId} />;
+
+  //     case "assignedPlayers":
+  //       return <PlayersAssignedToSelector auctionId={auctionId} />;
+
+  //     case "directSelect":
+  //       return <DirectSelect auctionId={auctionId} />;
+
+  //     case "auctionSettings":
+  //       return <AuctionSettings auctionId={auctionId} />;
+
+  //     case "auctionOverview":
+  //       return <AuctionOverview auctionId={auctionId} />;
+
+  //     case "manageTeams":
+  //       return <TeamsTab auctionId={auctionId} />;
+
+  //     case "myteam":
+  //       return <TeamDetails auctionId={auctionId} playerId={playerId} />;
+
+  //     case "overlayLinks":
+  //       return <Links auctionId={auctionId} />;
+
+  //     case "biddingPanel":
+  //       return <AdminAuctionControl auctionId={auctionId} />;
+  //     case "info":
+  //       return <TournamentDetails auctionId={auctionId} />;
+
+  //     case "trialSlot":
+  //       return <SelectorSlots auctionId={auctionId} />;
+
+  //     case "supercampRounds":
+  //       return <SupercampRounds auctionId={auctionId} />;
+
+  //     case "supercampLeaderboard":
+  //       return <SupercampLeaderboard auctionId={auctionId} />;
+
+  //     case "supercampPoints":
+  //       return <SupercampSelectorPoints auctionId={auctionId} />;
+
+  //     case "createPosters":
+  //       return <CreatePoster auctionId={auctionId} />;
+
+  //     default:
+  //       return null;
+  //   }
+  // };
+
   const renderTab = (tabKey) => {
-    const refreshKey = `${tabKey}-${Date.now()}`;
-    // Legacy tabs for backward compatibility
+    const refreshKey = tabRefreshKeys[tabKey] || 0;
+
     switch (tabKey) {
+      // Subtab cases - sirf active subtab refresh hoga
+      case "slot":
+        return <Slot key={`slot-${refreshKey}`} auctionId={auctionId} />;
+      case "trialSettings":
+        return (
+          <TrialSettings
+            key={`trialSettings-${refreshKey}`}
+            auctionId={auctionId}
+          />
+        );
+      case "trialPlayers":
+        return (
+          <ManagePlayerTabs
+            key={`trialPlayers-${refreshKey}`}
+            auctionId={auctionId}
+          />
+        );
+      case "assignedPlayers":
+        return (
+          <PlayersAssignedToSelector
+            key={`assignedPlayers-${refreshKey}`}
+            auctionId={auctionId}
+          />
+        );
+      case "directSelect":
+        return (
+          <DirectSelect
+            key={`directSelect-${refreshKey}`}
+            auctionId={auctionId}
+          />
+        );
+      case "auctionSettings":
+        return (
+          <AuctionSettings
+            key={`auctionSettings-${refreshKey}`}
+            auctionId={auctionId}
+          />
+        );
+      case "auctionOverview":
+        return (
+          <AuctionOverview
+            key={`auctionOverview-${refreshKey}`}
+            auctionId={auctionId}
+          />
+        );
+      case "manageTeams":
+        return (
+          <TeamsTab key={`manageTeams-${refreshKey}`} auctionId={auctionId} />
+        );
+      case "overlayLinks":
+        return (
+          <Links key={`overlayLinks-${refreshKey}`} auctionId={auctionId} />
+        );
+      case "biddingPanel":
+        return (
+          <AdminAuctionControl
+            key={`biddingPanel-${refreshKey}`}
+            auctionId={auctionId}
+          />
+        );
+      case "trialSlot":
+        return (
+          <SelectorSlots
+            key={`trialSlot-${refreshKey}`}
+            auctionId={auctionId}
+          />
+        );
+      case "supercampPoints":
+        return (
+          <SupercampSelectorPoints
+            key={`supercampPoints-${refreshKey}`}
+            auctionId={auctionId}
+          />
+        );
+      case "createPosters":
+        return (
+          <CreatePoster
+            key={`createPosters-${refreshKey}`}
+            auctionId={auctionId}
+          />
+        );
+      case "supercampRounds":
+        return (
+          <SupercampRounds
+            key={`supercampRounds-${refreshKey}`}
+            auctionId={auctionId}
+          />
+        );
+      case "supercampLeaderboard":
+        return (
+          <SupercampLeaderboard
+            key={`supercampLeaderboard-${refreshKey}`}
+            auctionId={auctionId}
+          />
+        );
+
+      // Parent tab cases
       case "dashboard":
-        return <Dashboard  auctionId={auctionId} />;
-
+        return (
+          <Dashboard key={`dashboard-${refreshKey}`} auctionId={auctionId} />
+        );
       case "registrationOverview":
-        return <RegistrationOverview auctionId={auctionId} />;
-
+        return (
+          <RegistrationOverview
+            key={`registrationOverview-${refreshKey}`}
+            auctionId={auctionId}
+          />
+        );
       case "createWebsite":
         return (
           <CreateWebsite
+            key={`createWebsite-${refreshKey}`}
             tournamentId={tournamentId}
             auctionId={auctionId}
             TrialType={isTrialType}
           />
         );
-
       case "allPlayers":
-        return <AllPlayers auctionId={auctionId} />;
-
+        return (
+          <AllPlayers key={`allPlayers-${refreshKey}`} auctionId={auctionId} />
+        );
       case "players":
-        return <ManagePlayers auctionId={auctionId} />;
-
-      case "slot":
-        return <Slot auctionId={auctionId} />;
-
-      case "trialSettings":
-        return <TrialSettings auctionId={auctionId} />;
-
-      case "trialPlayers":
-        return <ManagePlayerTabs auctionId={auctionId} />;
-
-      case "assignedPlayers":
-        return <PlayersAssignedToSelector auctionId={auctionId} />;
-
-      case "directSelect":
-        return <DirectSelect auctionId={auctionId} />;
-
-      case "auctionSettings":
-        return <AuctionSettings auctionId={auctionId} />;
-
-      case "auctionOverview":
-        return <AuctionOverview auctionId={auctionId} />;
-
-      case "manageTeams":
-        return <TeamsTab auctionId={auctionId} />;
-
+        return (
+          <ManagePlayers key={`players-${refreshKey}`} auctionId={auctionId} />
+        );
       case "myteam":
-        return <TeamDetails auctionId={auctionId} playerId={playerId} />;
-
-      case "overlayLinks":
-        return <Links auctionId={auctionId} />;
-
-      case "biddingPanel":
-        return <AdminAuctionControl auctionId={auctionId} />;
+        return (
+          <TeamDetails
+            key={`myteam-${refreshKey}`}
+            auctionId={auctionId}
+            playerId={playerId}
+          />
+        );
       case "info":
-        return <TournamentDetails auctionId={auctionId} />;
-
-      case "trialSlot":
-        return <SelectorSlots auctionId={auctionId} />;
-
-      case "supercampRounds":
-        return <SupercampRounds auctionId={auctionId} />;  
-
-      case "supercampLeaderboard":
-        return <SupercampLeaderboard auctionId={auctionId} />;  
-
-      case "supercampPoints":
-        return <SupercampSelectorPoints auctionId={auctionId} />;
-
-      case "createPosters":
-        return <CreatePoster auctionId={auctionId} />;  
-
+        return (
+          <TournamentDetails key={`info-${refreshKey}`} auctionId={auctionId} />
+        );
       default:
         return null;
     }
@@ -594,16 +778,15 @@ const AuctionDetails = ({ theme, onToggleTheme }) => {
                     <div
                       onClick={() => {
                         if (filteredSubTabs.length > 0) {
-                          toggleMenu(tab.key);
-                          setActiveTab(tab.key);
-                          if (!isExpanded && filteredSubTabs.length > 0) {
-                            setActiveSubTab(filteredSubTabs[0].key);
-                          }
+                          handleParentTabClick(
+                            tab,
+                            filteredSubTabs,
+                            isExpanded
+                          );
                         } else {
-                          setActiveTab(tab.key);
-                          setActiveSubTab(null);
-                          setMobileMenuOpen(false);
+                          selectTab(tab.key, null);
                         }
+                        setMobileMenuOpen(false);
                       }}
                       className={`w-full flex items-center justify-between gap-3 px-4 py-3 rounded-lg text-sm font-semibold transition cursor-pointer ${
                         isParentActive
@@ -637,8 +820,7 @@ const AuctionDetails = ({ theme, onToggleTheme }) => {
                             <div
                               key={subTab.key}
                               onClick={() => {
-                                setActiveTab(tab.key);
-                                setActiveSubTab(subTab.key);
+                                selectTab(tab.key, subTab.key);
                                 setMobileMenuOpen(false);
                               }}
                               className={`flex items-center gap-3 px-3 py-2 rounded-lg text-xs font-medium transition cursor-pointer ${
@@ -728,21 +910,21 @@ const AuctionDetails = ({ theme, onToggleTheme }) => {
                         <div
                           onClick={() => {
                             if (filteredSubTabs.length > 0) {
-                              setActiveTab(tab.key);
                               setCollapsedFlyoutKey((currentKey) =>
-                                currentKey === tab.key ? null : tab.key,
+                                currentKey === tab.key ? null : tab.key
                               );
                               if (
                                 activeTab !== tab.key ||
                                 !filteredSubTabs.some(
-                                  (subTab) => subTab.key === activeSubTab,
+                                  (subTab) => subTab.key === activeSubTab
                                 )
                               ) {
-                                setActiveSubTab(filteredSubTabs[0].key);
+                                selectTab(tab.key, filteredSubTabs[0].key);
+                              } else {
+                                selectTab(tab.key, activeSubTab);
                               }
                             } else {
-                              setActiveTab(tab.key);
-                              setActiveSubTab(null);
+                              selectTab(tab.key, null);
                               setCollapsedFlyoutKey(null);
                             }
                           }}
@@ -773,8 +955,7 @@ const AuctionDetails = ({ theme, onToggleTheme }) => {
                                       key={subTab.key}
                                       type="button"
                                       onClick={() => {
-                                        setActiveTab(tab.key);
-                                        setActiveSubTab(subTab.key);
+                                        selectTab(tab.key, subTab.key);
                                         setCollapsedFlyoutKey(null);
                                       }}
                                       className={`flex w-full items-center gap-2 rounded-lg border px-2.5 py-2 text-left text-xs font-semibold transition ${
@@ -784,7 +965,9 @@ const AuctionDetails = ({ theme, onToggleTheme }) => {
                                       }`}
                                     >
                                       <SubIcon className="h-3.5 w-3.5 shrink-0" />
-                                      <span className="truncate">{subTab.label}</span>
+                                      <span className="truncate">
+                                        {subTab.label}
+                                      </span>
                                     </button>
                                   );
                                 })}
@@ -804,18 +987,9 @@ const AuctionDetails = ({ theme, onToggleTheme }) => {
                   return (
                     <div key={tab.key} className="mb-2">
                       <div
-                        onClick={() => {
-                          if (filteredSubTabs.length > 0) {
-                            toggleMenu(tab.key);
-                            setActiveTab(tab.key);
-                            if (!isExpanded && filteredSubTabs.length > 0) {
-                              setActiveSubTab(filteredSubTabs[0].key);
-                            }
-                          } else {
-                            setActiveTab(tab.key);
-                            setActiveSubTab(null);
-                          }
-                        }}
+                        onClick={() =>
+                          handleParentTabClick(tab, filteredSubTabs, isExpanded)
+                        }
                         className={`relative w-full flex items-center justify-between gap-2.5 rounded-lg border font-bold px-2.5 py-1 text-xs  transition cursor-pointer ${
                           isParentActive
                             ? "border-[var(--border-primary)] bg-[var(--accent-light)] text-[var(--primary)] shadow-sm"
@@ -858,10 +1032,7 @@ const AuctionDetails = ({ theme, onToggleTheme }) => {
                             return (
                               <div
                                 key={subTab.key}
-                                onClick={() => {
-                                  setActiveTab(tab.key);
-                                  setActiveSubTab(subTab.key);
-                                }}
+                                onClick={() => selectTab(tab.key, subTab.key)}
                                 className={`relative flex items-center gap-2 rounded-lg border px-2.5 py-1.5 text-[11px] font-medium transition cursor-pointer ${
                                   isSubActive
                                     ? "border-[var(--border-primary)] bg-[var(--accent-light)] text-[var(--primary)]"
@@ -906,10 +1077,9 @@ const AuctionDetails = ({ theme, onToggleTheme }) => {
                         <button
                           key={subTab.key}
                           type="button"
-                          onClick={() => {
-                            setActiveTab(currentParentTab.key);
-                            setActiveSubTab(subTab.key);
-                          }}
+                          onClick={() =>
+                            selectTab(currentParentTab.key, subTab.key)
+                          }
                           className={`flex shrink-0 items-center gap-2 rounded-lg border px-3 py-2 text-xs font-semibold transition ${
                             isSubActive
                               ? "border-[var(--border-primary)] bg-[var(--accent-light)] text-[var(--primary)]"
@@ -933,7 +1103,7 @@ const AuctionDetails = ({ theme, onToggleTheme }) => {
               >
                 {[...visitedTabs].map((tabKey) => (
                   <div
-                    key={tabKey}
+                    key={`${tabKey}-${tabRefreshKeys[tabKey] || 0}`}
                     className={tabKey === effectiveTab ? "block" : "hidden"}
                   >
                     {renderTab(tabKey)}

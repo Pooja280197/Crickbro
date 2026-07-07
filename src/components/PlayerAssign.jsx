@@ -38,7 +38,6 @@ const PlayerAssign = ({
 
   // Fetch auction slots on modal open
 
-
   useEffect(() => {
     if (isOpen && auctionId) {
       setSearch(""); // optional reset
@@ -50,19 +49,19 @@ const PlayerAssign = ({
   }, [isOpen, auctionId]);
 
   useEffect(() => {
-  if (slotsdata?.data) {
-    setAllSlots((prev) => {
-      if (slotPage === 1) {
-        return slotsdata.data; // replace on new search
-      }
-      return [...prev, ...slotsdata.data]; // append for pagination
-    });
+    if (slotsdata?.data) {
+      setAllSlots((prev) => {
+        if (slotPage === 1) {
+          return slotsdata.data; // replace on new search
+        }
+        return [...prev, ...slotsdata.data]; // append for pagination
+      });
 
-    if (slotsdata.data.length < 20) {
-      setHasMoreSlots(false);
+      if (slotsdata.data.length < 20) {
+        setHasMoreSlots(false);
+      }
     }
-  }
-}, [slotsdata]);
+  }, [slotsdata]);
 
   useEffect(() => {
     if (!isOpen || !auctionId) return;
@@ -138,12 +137,12 @@ const PlayerAssign = ({
         playerIds: selectedPlayers,
       };
       await dispatch(
-        AssignPlayersToTrails(selectedSlot, selectedSession, payload),
+        AssignPlayersToTrails(selectedSlot, selectedSession, payload)
       );
       toast.success(
         `Successfully assigned ${playerCount} player${
           playerCount > 1 ? "s" : ""
-        } to trial`,
+        } to trial`
       );
       onAssignSuccess();
       onClose();
@@ -312,10 +311,10 @@ const PlayerAssign = ({
                 {!selectedSlot
                   ? "Select location first"
                   : sessionLoading
-                    ? "Loading shift times..."
-                    : sessions && sessions.length > 0
-                      ? "Select shift time..."
-                      : "No sessions available"}
+                  ? "Loading shift times..."
+                  : sessions && sessions.length > 0
+                  ? "Select shift time..."
+                  : "No sessions available"}
               </option>
 
               {selectedSlot &&
@@ -325,9 +324,16 @@ const PlayerAssign = ({
                   <>
                     {sessions.map((session) => (
                       <option key={session._id} value={session._id}>
-                        {session.name} - {formatDate(session.slotDate)} (
-                        {formatTime(session.slotStartTime)} -{" "}
-                        {formatTime(session.slotEndTime)})
+                        {session.name}
+
+                        {session.slotDate &&
+                          ` - ${formatDate(session.slotDate)}`}
+
+                        {session.slotStartTime &&
+                          session.slotEndTime &&
+                          ` (${formatTime(
+                            session.slotStartTime
+                          )} - ${formatTime(session.slotEndTime)})`}
                       </option>
                     ))}
                   </>

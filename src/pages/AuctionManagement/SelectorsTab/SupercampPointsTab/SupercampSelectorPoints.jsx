@@ -14,6 +14,8 @@ import SupercampPointsModal from "../../../../components/supercamp/SupercampPoin
 import SupercampPlayerDetailsModal from "../../../../components/supercamp/SupercampPlayerDetailsModal";
 import SupercampPageHeader from "../../../../components/supercamp/SupercampPageHeader";
 
+const EMPTY_ARRAY = [];
+
 function SupercampSelectorPoints({ auctionId }) {
   const dispatch = useDispatch();
   const selectorId = localStorage.getItem("playerId");
@@ -29,13 +31,13 @@ function SupercampSelectorPoints({ auctionId }) {
   const [savingPoints, setSavingPoints] = useState(false);
 
   const playersData = useSelector((state) => state.data?.supercampPlayers);
-  const players = playersData?.data || [];
+  const players = playersData?.data || EMPTY_ARRAY;
   const totalPages = playersData?.pages ?? 0;
   const loading = useSelector((state) => state.loading?.supercampPlayers);
 
   const roundsData = useSelector((state) => state.data?.supercampRounds);
-  const rounds = roundsData?.data || [];
-  const slotDetail = useSelector((state) => state.data?.slotList?.data || []);
+  const rounds = roundsData?.data || EMPTY_ARRAY;
+  const slotDetail = useSelector((state) => state.data?.slotList?.data || EMPTY_ARRAY);
   const [slotSessions, setSlotSessions] = useState([]);
 
   const selectorSlots = useMemo(

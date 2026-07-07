@@ -270,6 +270,8 @@ const RegistrationOverview = ({ auctionId: auctionIdProp }) => {
   const transactionCharge = grossRevenue * 0.023;
   const netRevenue = Math.round(grossRevenue - transactionCharge);
 
+  
+
   // const formatCurrency = (value) =>
   //   `₹${Number(value || 0).toLocaleString("en-IN", {
   //     minimumFractionDigits: 2,
@@ -339,7 +341,7 @@ const RegistrationOverview = ({ auctionId: auctionIdProp }) => {
       : []),
   ];
 
-  console.log(selectedRegistration,"selected")
+  
   return (
     <div className="space-y-5 p-3 text-[var(--text-primary)] lg:p-5">
       <div className="rounded-lg border border-[var(--border-card)] bg-[var(--bg-card)] p-4 shadow-[var(--shadow-card)]">
@@ -494,7 +496,7 @@ const RegistrationOverview = ({ auctionId: auctionIdProp }) => {
             </select>
 
             {/* SLOT */}
-            {!isTeamMode && (
+            {!isTeamMode && isTrailAuction && (
               <div className="relative">
                 <div
                   className="h-10 cursor-pointer rounded-lg border border-[var(--border-card)] bg-[var(--bg-main)] px-3 py-2 text-sm font-medium text-[var(--text-primary)]"
@@ -554,7 +556,7 @@ const RegistrationOverview = ({ auctionId: auctionIdProp }) => {
             )}
 
             {/* SESSION */}
-            {!isTeamMode && (
+            {!isTeamMode && isTrailAuction && (
               <select
                 value={sessionId}
                 onChange={(e) => {

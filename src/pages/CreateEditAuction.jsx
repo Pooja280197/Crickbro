@@ -609,7 +609,7 @@ export default function CreateEditAuction({ theme = "light", onToggleTheme }) {
   ];
   const completedSetup = setupChecklist.filter((item) => item.done).length;
 
-  console.log("jdfhkjsd",window.history.state?.idx)
+  
 
   useEffect(() => {
     dispatch(getMyTournaments());

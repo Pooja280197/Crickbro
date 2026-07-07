@@ -38,7 +38,7 @@ const LockedState = ({ onGoToBasicInfo }) => (
     </div>
     <h3 className="text-lg font-semibold text-[var(--text-primary)] mb-2">Tab Locked</h3>
     <p className="text-sm text-[var(--text-secondary)] max-w-sm mb-5 leading-relaxed">
-      Complete the Basic Info section first. Fill in the tournament title, name, and description, then click "Save Basic Info" to unlock all tabs.
+      Complete the Basic Info section first. Fill in the tournament title, name, and description, then click "Next" to save and unlock all tabs.
     </p>
     <button onClick={onGoToBasicInfo} className="lp-ui-btn-secondary text-sm px-5 py-2">
       Go to Basic Info →
@@ -283,7 +283,25 @@ const TournamentAdminForm = ({ tournamentId, auctionId, TrialType }) => {
     };
   };
 
-  const saveBasicInfoAndContact = async () => {
+  const extractLandingPageId = (response, fallbackId = null) => {
+    const payload = response?.data;
+    return (
+      payload?.data?.landingPage?._id ||
+      payload?.data?.landingPage?.id ||
+      payload?.data?._id ||
+      payload?.landingPage?._id ||
+      fallbackId ||
+      null
+    );
+  };
+
+  const isApiSuccess = (response) => {
+    if (!response?.data) return false;
+    if (response.data.success === false) return false;
+    return response.status >= 200 && response.status < 300;
+  };
+
+  const saveBasicInfoAndContact = async ({ showSuccessToast = true } = {}) => {
     if (!formData.tournamentTitle?.trim()) { toast.error("Tournament Title is required"); return false; }
     if (!formData.tournamentName?.trim()) { toast.error("Tournament Name is required"); return false; }
     if (!hasRichTextContent(formData.description)) { toast.error("Description is required"); return false; }
@@ -296,12 +314,22 @@ const TournamentAdminForm = ({ tournamentId, auctionId, TrialType }) => {
       } else {
         response = await api.post("/webSiteApi/auctionLandingPage/auctionLandingPage/create", apiData);
       }
-      if (response.data.success) {
-        const newId = response.data.data.landingPage?._id || landingPageId;
+      if (isApiSuccess(response)) {
+        let newId = extractLandingPageId(response, landingPageId);
+        if (!newId && !landingPageId) {
+          try {
+            const refetch = await api.get(`/webSiteApi/auctionLandingPage/auctionLandingPage?tournamentId=${tournamentId}&auctionId=${auctionId}&includeInactive=true`);
+            newId = refetch.data?.data?.landingPage?._id || null;
+          } catch (refetchError) {
+            console.error(refetchError);
+          }
+        }
         if (newId) {
           setLandingPageId(newId);
           setIsBasicInfoSaved(true);
-          toast.success("Basic info saved! All tabs are now unlocked.");
+          if (showSuccessToast) {
+            toast.success("Basic info saved! All tabs are now unlocked.");
+          }
           return true;
         }
       }
@@ -336,8 +364,9 @@ const TournamentAdminForm = ({ tournamentId, auctionId, TrialType }) => {
       }
       if (response.data.success) {
         toast.success(landingPageId ? "Landing page updated!" : "Landing page created!");
-        if (!landingPageId && response.data.data.landingPage._id) {
-          setLandingPageId(response.data.data.landingPage._id);
+        const newId = extractLandingPageId(response, landingPageId);
+        if (newId) {
+          setLandingPageId(newId);
           setIsBasicInfoSaved(true);
         }
         await fetchData();
@@ -472,13 +501,13 @@ const TournamentAdminForm = ({ tournamentId, auctionId, TrialType }) => {
   };
 
   const goToNextStep = async () => {
-    // Auto-save basic info when moving to next step from registration tab
-    if (activeStep === 0 && !isBasicInfoSaved && !landingPageId) {
-      toast.info("Saving basic info...");
-      const saved = await saveBasicInfoAndContact();
-      if (!saved) {
-        return; // Stay on current step if save fails
+    if (activeStep === 0) {
+      if (isSavingBasicInfo) return;
+      if (!isBasicInfoSaved || !landingPageId) {
+        toast.info("Saving basic info...");
       }
+      const saved = await saveBasicInfoAndContact({ showSuccessToast: true });
+      if (!saved) return;
     }
     if (activeStep < steps.length - 1) {
       setActiveStep(activeStep + 1);
@@ -551,7 +580,7 @@ const TournamentAdminForm = ({ tournamentId, auctionId, TrialType }) => {
                   <button
                     key={step.id}
                     onClick={() => {
-                      if (isLocked) { toast.info("Save Basic Info first to unlock all tabs"); return; }
+                      if (isLocked) { toast.info("Fill Basic Info and click Next to unlock all tabs"); return; }
                       setActiveStep(idx);
                     }}
                     disabled={isLocked}
@@ -591,7 +620,7 @@ const TournamentAdminForm = ({ tournamentId, auctionId, TrialType }) => {
             <div className="lp-section-fade">
               <SectionHeader
                 title="Tournament Details"
-                description="These three fields are required before any other section can be configured. Save Basic Info to unlock the remaining tabs."
+                description="These three fields are required before any other section can be configured. Click Next to save and unlock the remaining tabs."
               />
 
               <div className="lp-grid-2">
@@ -682,16 +711,16 @@ const TournamentAdminForm = ({ tournamentId, auctionId, TrialType }) => {
                 />
                 <div className="lp-grid-2">
               <Field label="Mobile Number" hint="Primary contact number for visitors.">
-                <input type="tel" inputMode="numeric" pattern="[0-9]*" value={formData.contactInfo?.mobileNumber} onChange={(e) => handleInputChange("contactInfo", "mobileNumber", digitsOnly(e.target.value))} className="lp-input" placeholder="919876543210" />
+                <input type="tel" inputMode="numeric" pattern="[0-9]*"  value={formData.contactInfo?.mobileNumber ?? ""} onChange={(e) => handleInputChange("contactInfo", "mobileNumber", digitsOnly(e.target.value))} className="lp-input" placeholder="919876543210" />
               </Field>
                   <Field label="Email Address" hint="Enquiry or support email address.">
-                    <input type="email" value={formData.contactInfo?.email} onChange={(e) => handleInputChange("contactInfo", "email", e.target.value)} className="lp-input" placeholder="contact@tournament.com" />
+                    <input type="email" value={formData.contactInfo?.email ?? ""} onChange={(e) => handleInputChange("contactInfo", "email", e.target.value)} className="lp-input" placeholder="contact@tournament.com" />
                   </Field>
               <Field label="Phone Number" hint="Alternate landline or office number.">
-                <input type="tel" inputMode="numeric" pattern="[0-9]*" value={formData.contactInfo?.phoneNumber} onChange={(e) => handleInputChange("contactInfo", "phoneNumber", digitsOnly(e.target.value))} className="lp-input" placeholder="02212345678" />
+                <input type="tel" inputMode="numeric" pattern="[0-9]*" value={formData.contactInfo?.phoneNumber ?? ""} onChange={(e) => handleInputChange("contactInfo", "phoneNumber", digitsOnly(e.target.value))} className="lp-input" placeholder="02212345678" />
               </Field>
                   <Field label="Website" hint="Official tournament or organization website.">
-                    <input type="text" value={formData.contactInfo?.website} onChange={(e) => handleInputChange("contactInfo", "website", e.target.value)} className="lp-input" placeholder="https://tournament.com" />
+                    <input type="text"  value={formData.contactInfo?.website ?? ""} onChange={(e) => handleInputChange("contactInfo", "website", e.target.value)} className="lp-input" placeholder="https://tournament.com" />
                   </Field>
                 </div>
 
@@ -708,10 +737,10 @@ const TournamentAdminForm = ({ tournamentId, auctionId, TrialType }) => {
                   {formData.socialAccounts?.length === 0 && <EmptyState message="No social accounts added yet. Click 'Add Account' to get started." />}
                   {formData.socialAccounts?.map((acc, idx) => (
                     <div key={idx} className="lp-row-card">
-                      <select value={acc.platform} onChange={(e) => handleInputChange(null, "socialAccounts", e.target.value, idx, "platform")} className="lp-input lp-select lp-row-select">
+                      <select value={acc.platform ?? ""} onChange={(e) => handleInputChange(null, "socialAccounts", e.target.value, idx, "platform")} className="lp-input lp-select lp-row-select">
                         {socialPlatforms.map((p) => <option key={p.value} value={p.value}>{p.label}</option>)}
                       </select>
-                      <input value={acc.url} onChange={(e) => handleInputChange(null, "socialAccounts", e.target.value, idx, "url")} className="lp-input lp-row-input" placeholder="https://..." />
+                      <input value={acc.url ?? ""} onChange={(e) => handleInputChange(null, "socialAccounts", e.target.value, idx, "url")} className="lp-input lp-row-input" placeholder="https://..." />
                       <button onClick={() => handleArrayRemove(null, "socialAccounts", idx)} className="lp-icon-btn lp-icon-btn-danger"><FiTrash2 size={15} /></button>
                     </div>
                   ))}
@@ -750,8 +779,8 @@ const TournamentAdminForm = ({ tournamentId, auctionId, TrialType }) => {
                         <FiUpload size={15} /> Upload Image
                         <input type="file" accept="image/*" className="hidden" onChange={(e) => handleFileChange("sliderImages", e.target.files[0], i)} />
                       </label>
-                      <input placeholder="Slide title (optional)" value={slide.title} onChange={(e) => handleInputChange(null, "sliderImages", e.target.value, i, "title")} className="lp-input lp-input-sm" />
-                      <textarea placeholder="Caption (optional)" rows={2} value={slide.description} onChange={(e) => handleInputChange(null, "sliderImages", e.target.value, i, "description")} className="lp-input lp-textarea lp-input-sm" />
+                      <input placeholder="Slide title (optional)" value={slide.title ?? ""} onChange={(e) => handleInputChange(null, "sliderImages", e.target.value, i, "title")} className="lp-input lp-input-sm" />
+                      <textarea placeholder="Caption (optional)" rows={2} value={slide.description ?? ""} onChange={(e) => handleInputChange(null, "sliderImages", e.target.value, i, "description")} className="lp-input lp-textarea lp-input-sm" />
                     </div>
                   ))}
                 </div>
@@ -773,7 +802,7 @@ const TournamentAdminForm = ({ tournamentId, auctionId, TrialType }) => {
                   }
                 />
                 <Field label="Section Title" hint="Heading shown above the features grid on the page.">
-                  <input value={formData.keyFeatures.title} onChange={(e) => handleInputChange("keyFeatures", "title", e.target.value)} className="lp-input" placeholder="Key Features" />
+                  <input value={formData.keyFeatures.title ?? ""} onChange={(e) => handleInputChange("keyFeatures", "title", e.target.value)} className="lp-input" placeholder="Key Features" />
                 </Field>
                 {formData.keyFeatures.features.length === 0 && <EmptyState message="No features added yet. Click 'Add Feature' to get started." />}
                 {formData.keyFeatures.features.map((feat, idx) => (
@@ -784,10 +813,10 @@ const TournamentAdminForm = ({ tournamentId, auctionId, TrialType }) => {
                     </div>
                     <div className="lp-grid-2">
                       <Field label="Title" hint="Short feature name, e.g. 'Live Streaming'">
-                        <input value={feat.title} onChange={(e) => handleInputChange("keyFeatures", "features", e.target.value, idx, "title")} className="lp-input" placeholder="Feature title" />
+                        <input value={feat.title ?? ""} onChange={(e) => handleInputChange("keyFeatures", "features", e.target.value, idx, "title")} className="lp-input" placeholder="Feature title" />
                       </Field>
                       <Field label="Description" hint="One or two sentences describing this feature.">
-                        <textarea rows={2} value={feat.description} onChange={(e) => handleInputChange("keyFeatures", "features", e.target.value, idx, "description")} className="lp-input lp-textarea" placeholder="What makes this feature valuable..." />
+                        <textarea rows={2} value={feat.description ?? ""} onChange={(e) => handleInputChange("keyFeatures", "features", e.target.value, idx, "description")} className="lp-input lp-textarea" placeholder="What makes this feature valuable..." />
                       </Field>
                     </div>
                   </div>
@@ -878,13 +907,13 @@ const TournamentAdminForm = ({ tournamentId, auctionId, TrialType }) => {
                       <div className="lp-sponsor-fields">
                         <div className="lp-grid-2">
                           <Field label="Sponsor Name" hint="Company or organization name.">
-                            <input type="text" value={sponsor.name} onChange={(e) => handleInputChange(null, "sponsors", e.target.value, index, "name")} className="lp-input" placeholder="Acme Corp" />
+                            <input type="text" value={sponsor.name ?? ""} onChange={(e) => handleInputChange(null, "sponsors", e.target.value, index, "name")} className="lp-input" placeholder="Acme Corp" />
                           </Field>
                           <Field label="Website" hint="Sponsor's official website URL.">
-                            <input type="url" value={sponsor.website} onChange={(e) => handleInputChange(null, "sponsors", e.target.value, index, "website")} className="lp-input" placeholder="https://acme.com" />
+                            <input type="url" value={sponsor.website ?? ""} onChange={(e) => handleInputChange(null, "sponsors", e.target.value, index, "website")} className="lp-input" placeholder="https://acme.com" />
                           </Field>
                           <Field label="Tier" hint="Sponsorship level for display grouping.">
-                            <select value={sponsor.tier} onChange={(e) => handleInputChange(null, "sponsors", e.target.value, index, "tier")} className="lp-input lp-select">
+                            <select value={sponsor.tier ?? ""} onChange={(e) => handleInputChange(null, "sponsors", e.target.value, index, "tier")} className="lp-input lp-select">
                               <option value="platinum" >Platinum</option>
                               <option value="gold">Gold</option>
                               <option value="silver">Silver</option>
@@ -893,7 +922,7 @@ const TournamentAdminForm = ({ tournamentId, auctionId, TrialType }) => {
                             </select>
                           </Field>
                           <Field label="Display Order" hint="Order within the sponsor tier group.">
-                            <input type="number" min="1" value={sponsor.order} onChange={(e) => handleInputChange(null, "sponsors", parseInt(e.target.value), index, "order")} className="lp-input" />
+                            <input type="number" min="1" value={sponsor.order ?? "" } onChange={(e) => handleInputChange(null, "sponsors", parseInt(e.target.value), index, "order")} className="lp-input" />
                           </Field>
                         </div>
                       </div>
@@ -1000,22 +1029,20 @@ const TournamentAdminForm = ({ tournamentId, auctionId, TrialType }) => {
                   <div key={index} className="lp-list-card">
                     <div className="lp-list-card-header">
                       <span className="lp-list-card-num">Question {index + 1}</span>
-                      {formData.questionsAnswers.length > 1 && (
-                        <button onClick={() => handleArrayRemove(null, "questionsAnswers", index)} className="lp-icon-btn lp-icon-btn-danger"><FiTrash2 size={14} /></button>
-                      )}
+                      <button onClick={() => handleArrayRemove(null, "questionsAnswers", index)} className="lp-icon-btn lp-icon-btn-danger"><FiTrash2 size={14} /></button>
                     </div>
                     <Field label="Question" hint="Phrase it the way a participant would ask it.">
-                      <input type="text" value={faq.question} onChange={(e) => handleInputChange(null, "questionsAnswers", e.target.value, index, "question")} className="lp-input" placeholder="What are the eligibility criteria?" />
+                      <input type="text" value={faq.question ?? ""} onChange={(e) => handleInputChange(null, "questionsAnswers", e.target.value, index, "question")} className="lp-input" placeholder="What are the eligibility criteria?" />
                     </Field>
                     <Field label="Answer" hint="Clear and concise answer. Markdown formatting is not supported.">
-                      <textarea value={faq.answer} onChange={(e) => handleInputChange(null, "questionsAnswers", e.target.value, index, "answer")} className="lp-input lp-textarea" rows={3} placeholder="Provide a thorough, easy-to-understand answer..." />
+                      <textarea value={faq.answer ?? ""} onChange={(e) => handleInputChange(null, "questionsAnswers", e.target.value, index, "answer")} className="lp-input lp-textarea" rows={3} placeholder="Provide a thorough, easy-to-understand answer..." />
                     </Field>
                     <div className="lp-grid-2">
                       <Field label="Category" hint="Optional grouping label (e.g. 'Registration', 'Prizes').">
-                        <input type="text" value={faq.category} onChange={(e) => handleInputChange(null, "questionsAnswers", e.target.value, index, "category")} className="lp-input" placeholder="e.g. Registration" />
+                        <input type="text" value={faq.category ?? "" } onChange={(e) => handleInputChange(null, "questionsAnswers", e.target.value, index, "category")} className="lp-input" placeholder="e.g. Registration" />
                       </Field>
                       <Field label="Display Order" hint="Lower numbers appear first.">
-                        <input type="number" value={faq.order} onChange={(e) => handleInputChange(null, "questionsAnswers", parseInt(e.target.value), index, "order")} className="lp-input" min="1" />
+                        <input type="number" value={faq.order ?? ""} onChange={(e) => handleInputChange(null, "questionsAnswers", parseInt(e.target.value), index, "order")} className="lp-input"  />
                       </Field>
                     </div>
                   </div>
@@ -1066,8 +1093,20 @@ const TournamentAdminForm = ({ tournamentId, auctionId, TrialType }) => {
               <FiChevronLeft size={15} /> Prev
             </button>
             {activeStep < steps.length - 1 && (
-              <button onClick={goToNextStep} className="lp-btn-nav lp-btn-nav-next">
-                Next <FiChevronRight size={15} />
+              <button
+                onClick={goToNextStep}
+                disabled={isSavingBasicInfo}
+                className={`lp-btn-nav lp-btn-nav-next ${isSavingBasicInfo ? "lp-btn-nav-disabled" : ""}`}
+              >
+                {isSavingBasicInfo && activeStep === 0 ? (
+                  <>
+                    <FiLoader className="lp-spin" size={15} /> Saving...
+                  </>
+                ) : (
+                  <>
+                    Next <FiChevronRight size={15} />
+                  </>
+                )}
               </button>
             )}
             <button onClick={handleFullSubmit} className="lp-btn-save">

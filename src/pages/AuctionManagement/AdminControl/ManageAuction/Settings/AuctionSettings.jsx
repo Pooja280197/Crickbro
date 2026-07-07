@@ -31,6 +31,7 @@ import {
   RotateCcw,
 } from "lucide-react";
 import Loader from "../../../../../components/Loader";
+import DeleteConfirmModal from "../../../../../components/DeleteConfirmModal";
 import { toast } from "react-toastify";
 import EditAuctionRules from "./EditAuctionRules";
 import Categories from "./CategoryTab/Categories";
@@ -68,8 +69,7 @@ const listItemClass =
   "flex items-center justify-between rounded-lg border border-[var(--border-card)] bg-[var(--bg-main)] p-3 transition hover:border-[var(--border-primary)] hover:bg-[var(--bg-card)]";
 const avatarClass =
   "flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg bg-[var(--accent-light)] text-sm font-bold uppercase text-[var(--primary)]";
-const scrollClass =
-  "professional-scrollbar max-h-[400px] overflow-y-auto p-4";
+const scrollClass = "professional-scrollbar max-h-[400px] overflow-y-auto p-4";
 
 const AuctionSettings = ({ auctionId }) => {
   const [activeTab, setActiveTab] = useState("addAdmin");
@@ -80,25 +80,27 @@ const AuctionSettings = ({ auctionId }) => {
   const [selectedTeam, setSelectedTeam] = useState([]);
   const [selectedTeamId, setSelectedTeamId] = useState("");
   const [addName, setAddName] = useState("");
-   const [showStatusModal, setShowStatusModal] = useState(false);
+  const [showStatusModal, setShowStatusModal] = useState(false);
+  const [removeOwnerModal, setRemoveOwnerModal] = useState(null);
+  const [isRemovingOwner, setIsRemovingOwner] = useState(false);
 
   const dispatch = useDispatch();
 
   const isAdminLoading = useSelector((state) => state.loading?.auctionAdmins);
   const isTeamOwnersLoading = useSelector(
-    (state) => state.loading?.auctionTeamOwners,
+    (state) => state.loading?.auctionTeamOwners
   );
   const isTeamsLoading = useSelector((state) => state.loading?.allAuctionTeams);
   const isRatingFieldsLoading = useSelector(
-    (state) => state.loading?.ratingFieldsList,
+    (state) => state.loading?.ratingFieldsList
   );
 
   const adminData = useSelector((state) => state.data?.auctionAdmins || null);
   const teamOwnersData = useSelector(
-    (state) => state.data?.auctionTeamOwners || null,
+    (state) => state.data?.auctionTeamOwners || null
   );
   const tournamentTeam = useSelector(
-    (state) => state.data?.allAuctionTeams || null,
+    (state) => state.data?.allAuctionTeams || null
   );
 
   const auction = useSelector((state) => state.data?.auctionDetails || null);
@@ -119,18 +121,13 @@ const AuctionSettings = ({ auctionId }) => {
   useEffect(() => {
     if (!auctionId) return;
 
-    if (!auction) {
-      dispatch(fetchAuctionDetails(auctionId));
-    }
-    if (!adminData) {
-      dispatch(fetchAllAdmin(auctionId));
-    }
-    if (!teamOwnersData) {
-      dispatch(fetchAllTeamOwners(auctionId));
-    }
-    if (!tournamentTeam) {
-      dispatch(getAllAuctionTeam(tournamentId));
-    }
+    dispatch(fetchAuctionDetails(auctionId));
+
+    dispatch(fetchAllAdmin(auctionId));
+
+    dispatch(fetchAllTeamOwners(auctionId));
+
+    dispatch(getAllAuctionTeam(tournamentId));
   }, [auctionId]);
 
   useEffect(() => {
@@ -244,14 +241,21 @@ const AuctionSettings = ({ auctionId }) => {
     }
   };
 
-  const handleRemoveTeamOwner = async (ownerId, teamId) => {
+  const handleRemoveTeamOwner = async () => {
+    if (!removeOwnerModal) return;
+
+    const { ownerId, teamId } = removeOwnerModal;
+    setIsRemovingOwner(true);
     try {
       await dispatch(removeTeamOwner(auctionId, ownerId, teamId));
       toast.success("Team Owner removed successfully");
       dispatch(fetchAllTeamOwners(auctionId));
+      setRemoveOwnerModal(null);
     } catch (err) {
       toast.error("Failed to remove team owner");
       console.log("Error removing team owner", err);
+    } finally {
+      setIsRemovingOwner(false);
     }
   };
 
@@ -298,11 +302,11 @@ const AuctionSettings = ({ auctionId }) => {
     }
 
     const visibleOwnerList = ownerList.filter(
-      (owner) => getOwnerItems(owner).length > 0,
+      (owner) => getOwnerItems(owner).length > 0
     );
     const ownerCount = visibleOwnerList.reduce(
       (total, owner) => total + getOwnerItems(owner).length,
-      0,
+      0
     );
 
     // Add Team Owner Form Component
@@ -339,7 +343,10 @@ const AuctionSettings = ({ auctionId }) => {
                 onChange={(e) => setSelectedTeamId(e.target.value)}
                 className={selectClass}
               >
-                <option value="" className="bg-black text-[var(--text-primary)]">
+                <option
+                  value=""
+                  className="bg-black text-[var(--text-primary)]"
+                >
                   -- Select a team --
                 </option>
                 {tournamentTeam?.map((item) => (
@@ -467,44 +474,56 @@ const AuctionSettings = ({ auctionId }) => {
                 const owners = getOwnerItems(owner);
 
                 return (
-                <div key={owner?._id || teamId || teamName} className="space-y-2">
-                  <div className="text-sm font-medium text-[var(--text-primary)] flex items-center gap-2">
-                    <Trophy className="h-4 w-4 text-[var(--primary)]" />
-                    <span className="truncate">{teamName}</span>
-                  </div>
-                  {owners.map((oname) => (
-                    <div
-                      key={oname?._id || oname?.mobile || oname?.name}
-                      className={`${listItemClass} ml-0 sm:ml-6`}
-                    >
-                      <div className="flex items-center gap-3 flex-1 min-w-0">
-                        <div className={avatarClass}>
-                          {oname?.name?.substring(0, 2)}
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <p className="font-medium text-[var(--text-primary)] text-sm truncate">
-                            {oname?.name || oname?.ownerName || "Owner"}
-                          </p>
-                          {/* <p className="text-xs text-[var(--text-muted)]">
+                  <div
+                    key={owner?._id || teamId || teamName}
+                    className="space-y-2"
+                  >
+                    <div className="text-sm font-medium text-[var(--text-primary)] flex items-center gap-2">
+                      <Trophy className="h-4 w-4 text-[var(--primary)]" />
+                      <span className="truncate">{teamName}</span>
+                    </div>
+                    {owners.map((oname) => (
+                      <div
+                        key={oname?._id || oname?.mobile || oname?.name}
+                        className={`${listItemClass} ml-0 sm:ml-6`}
+                      >
+                        <div className="flex items-center gap-3 flex-1 min-w-0">
+                          <div className={avatarClass}>
+                            {oname?.name?.substring(0, 2)}
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p className="font-medium text-[var(--text-primary)] text-sm truncate">
+                              {oname?.name || oname?.ownerName || "Owner"}
+                            </p>
+                            {/* <p className="text-xs text-[var(--text-muted)]">
                             {oname?.mobile || oname?.phone || oname?._id
                               ? `ID: ${(oname?.mobile || oname?.phone || oname?._id)?.slice(-6)}`
                               : "Owner details"}
                           </p> */}
+                          </div>
                         </div>
+                        <button
+                          onClick={() =>
+                            setRemoveOwnerModal({
+                              ownerId: oname?._id,
+                              teamId,
+                              ownerName:
+                                oname?.name ||
+                                oname?.ownerName ||
+                                "this team owner",
+                              teamName,
+                            })
+                          }
+                          className="ml-2 flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg border border-red-200 bg-[var(--bg-card)] text-red-500 transition hover:bg-red-50"
+                          title="Remove owner"
+                        >
+                          <X className="h-4 w-4" />
+                        </button>
                       </div>
-                      <button
-                        onClick={() =>
-                          handleRemoveTeamOwner(oname?._id, teamId)
-                        }
-                        className="ml-2 flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg border border-red-200 bg-[var(--bg-card)] text-red-500 transition hover:bg-red-50"
-                        title="Remove owner"
-                      >
-                        <X className="h-4 w-4" />
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              )})}
+                    ))}
+                  </div>
+                );
+              })}
             </div>
           )}
         </div>
@@ -641,7 +660,8 @@ const AuctionSettings = ({ auctionId }) => {
                       Existing Organizers
                     </h3>
                     <p className="mt-0.5 text-xs text-[var(--text-secondary)]">
-                      {adminList.length} organizer{adminList.length !== 1 ? "s" : ""} added
+                      {adminList.length} organizer
+                      {adminList.length !== 1 ? "s" : ""} added
                     </p>
                   </div>
                 </div>
@@ -655,10 +675,7 @@ const AuctionSettings = ({ auctionId }) => {
                 ) : (
                   <div className="space-y-2">
                     {adminList.map((admin) => (
-                      <div
-                        key={admin._id}
-                        className={listItemClass}
-                      >
+                      <div key={admin._id} className={listItemClass}>
                         <div className="flex items-center gap-3 flex-1 min-w-0">
                           <div className={avatarClass}>
                             {admin?.name?.substring(0, 2)}
@@ -730,7 +747,8 @@ const AuctionSettings = ({ auctionId }) => {
                 Auction Settings
               </h2>
               <p className="mt-1 text-sm text-[var(--text-secondary)]">
-                Manage organizers, team owners, categories, barcode and auction rules.
+                Manage organizers, team owners, categories, barcode and auction
+                rules.
               </p>
             </div>
           </div>
@@ -738,9 +756,9 @@ const AuctionSettings = ({ auctionId }) => {
             <button
               className={primaryButtonClass}
               onClick={(e) => {
-                  e.stopPropagation();
-                  navigate(`/editAuction/${auctionId}`);
-                }}
+                e.stopPropagation();
+                navigate(`/editAuction/${auctionId}`);
+              }}
             >
               <Edit className="h-4 w-4" />
               Edit Auction
@@ -783,7 +801,7 @@ const AuctionSettings = ({ auctionId }) => {
 
       {/* Content */}
       <div>{renderContent()}</div>
-       <ChangeAuctionStatus
+      <ChangeAuctionStatus
         isOpen={showStatusModal}
         onClose={() => setShowStatusModal(false)}
         auctionId={auctionId}
@@ -792,6 +810,21 @@ const AuctionSettings = ({ auctionId }) => {
           // refresh auction details if needed
         }}
         auctionStatus={auction?.auctionStatus}
+      />
+      <DeleteConfirmModal
+        open={Boolean(removeOwnerModal)}
+        title="Remove Team Owner"
+        description={
+          removeOwnerModal
+            ? `Are you sure you want to remove ${removeOwnerModal.ownerName} from ${removeOwnerModal.teamName}? This action cannot be undone.`
+            : ""
+        }
+        confirmText="Remove"
+        loading={isRemovingOwner}
+        onClose={() => {
+          if (!isRemovingOwner) setRemoveOwnerModal(null);
+        }}
+        onConfirm={handleRemoveTeamOwner}
       />
     </div>
   );

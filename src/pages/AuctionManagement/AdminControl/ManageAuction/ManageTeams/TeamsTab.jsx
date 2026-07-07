@@ -152,7 +152,7 @@ const TeamsTab = ({ auctionId }) => {
     }
   }, [activeTab]);
 
-  console.log(tournamentTeamData,"data")
+ 
 
   const handleEditTeam = async () => {
     if (!viewTeam || !editForm) return;

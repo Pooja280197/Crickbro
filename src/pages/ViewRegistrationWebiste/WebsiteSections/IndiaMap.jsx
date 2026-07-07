@@ -254,7 +254,7 @@ const IndiaMap = () => {
     city.toLowerCase().includes(searchTerm.toLowerCase()),
   );
 
-  // console.log(allSlots, "slots");
+\
 
   return (
     <section

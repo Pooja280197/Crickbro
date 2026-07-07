@@ -644,11 +644,14 @@ const AddPlayerManually = ({ isOpen, onClose, auctionId, auctionTypeTrial }) => 
                     const file = e.target.files?.[0] || null;
                     setAdharCardFile(file);
                     update("adharCard", file || form.adharCard || null);
-                    e.target.value = null;
                   }}
                   className="w-full px-4 py-2.5 border rounded-lg"
                 />
-                {typeof form.adharCard === "string" && form.adharCard && !adharCardFile ? (
+                {adharCardFile ? (
+                  <p className="text-xs text-[var(--text-secondary)] mt-1">
+                    Selected: {adharCardFile.name}
+                  </p>
+                ) : typeof form.adharCard === "string" && form.adharCard ? (
                   <p className="text-xs text-[var(--text-secondary)] mt-1">Aadhaar already uploaded</p>
                 ) : null}
               </div>
@@ -661,11 +664,14 @@ const AddPlayerManually = ({ isOpen, onClose, auctionId, auctionTypeTrial }) => 
                     const file = e.target.files?.[0] || null;
                     setVoterIdFile(file);
                     update("voterId", file || form.voterId || null);
-                    e.target.value = null;
                   }}
                   className="w-full px-4 py-2.5 border rounded-lg"
                 />
-                {typeof form.voterId === "string" && form.voterId && !voterIdFile ? (
+                {voterIdFile ? (
+                  <p className="text-xs text-[var(--text-secondary)] mt-1">
+                    Selected: {voterIdFile.name}
+                  </p>
+                ) : typeof form.voterId === "string" && form.voterId ? (
                   <p className="text-xs text-[var(--text-secondary)] mt-1">Voter ID already uploaded</p>
                 ) : null}
               </div>

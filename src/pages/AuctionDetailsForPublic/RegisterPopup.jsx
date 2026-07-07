@@ -490,7 +490,7 @@ const RegisterPopup = ({
     return sessionName;
   };
 
-  console.log("sessions", availableSessions);
+  
   return (
     <>
       <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 transition-opacity duration-300" />

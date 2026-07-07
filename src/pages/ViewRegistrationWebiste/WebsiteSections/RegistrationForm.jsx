@@ -865,7 +865,7 @@ const RegisterationForm = ({
       const response = await dispatch(EnrollPlayer(auctionId, formData));
       const resData = response?.data?.data;
 
-      // console.log(resData, "ENROLL RESPONSE");
+   
 
       if (!resData?.paymentRequired) {
         toast.success("Successfully Registered For The Tournament");

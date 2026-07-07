@@ -1,9 +1,17 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { MapPin, Calendar, Clock, X, Loader2, AlertCircle, Download } from "lucide-react";
+import {
+  MapPin,
+  Calendar,
+  Clock,
+  X,
+  Loader2,
+  AlertCircle,
+  Download,
+} from "lucide-react";
 import api from "../utils/api";
 import logo from "/Crickbro_auction_logo-1.png";
 import html2pdf from "html2pdf.js";
-import QRCode from "qrcode"
+import QRCode from "qrcode";
 
 const RegistrationDetails = ({ auctionId, onClose, playerId }) => {
   const [details, setDetails] = useState(null);
@@ -13,7 +21,6 @@ const RegistrationDetails = ({ auctionId, onClose, playerId }) => {
   /** 'not_found' | null */
   const [notFound, setNotFound] = useState(false);
   const [qr, setQr] = useState("");
-
 
   const resolvedPlayerId =
     playerId ||
@@ -30,7 +37,7 @@ const RegistrationDetails = ({ auctionId, onClose, playerId }) => {
     setNotFound(false);
     try {
       const response = await api.get(
-        `/webSiteApi/auction/playerRegistrationDetails/${auctionId}/${resolvedPlayerId}`,
+        `/webSiteApi/auction/playerRegistrationDetails/${auctionId}/${resolvedPlayerId}`
       );
       const data = response?.data?.data ?? response?.data;
       if (data) {
@@ -47,17 +54,17 @@ const RegistrationDetails = ({ auctionId, onClose, playerId }) => {
         setNotFound(true);
       } else if (status === 401) {
         setError(
-          "Please log in again (same account you used to register) to view these details.",
+          "Please log in again (same account you used to register) to view these details."
         );
       } else if (status === 403) {
         setError(
-          "You can only view your own registration. Check that you are logged in as the correct player.",
+          "You can only view your own registration. Check that you are logged in as the correct player."
         );
       } else {
         setError(
           err?.response?.data?.message ||
-          err?.message ||
-          "Could not load registration details",
+            err?.message ||
+            "Could not load registration details"
         );
       }
     } finally {
@@ -102,13 +109,29 @@ const RegistrationDetails = ({ auctionId, onClose, playerId }) => {
     return true;
   };
 
+  const formatTime12Hour = (time) => {
+    if (!time) return "";
+
+    const [hours, minutes] = time.trim().split(":");
+    const date = new Date();
+    date.setHours(Number(hours), Number(minutes));
+
+    return date.toLocaleTimeString("en-US", {
+      hour: "numeric",
+      minute: "2-digit",
+      hour12: true,
+    });
+  };
+
   const getSessionDateText = (session) =>
     session?.slotDate ? formatDate(session.slotDate) : "";
 
   const getSessionTimeText = (session) => {
     if (!session?.slotDate) return "";
-    const start = session.slotStartTime?.trim() || "";
-    const end = session.slotEndTime?.trim() || "";
+
+    const start = formatTime12Hour(session.slotStartTime);
+    const end = formatTime12Hour(session.slotEndTime);
+
     if (!start && !end) return "";
     if (start && end) return `${start} - ${end}`;
     return start || end;
@@ -123,7 +146,10 @@ const RegistrationDetails = ({ auctionId, onClose, playerId }) => {
     );
 
   const getPlayerLocationText = (player) =>
-    player?.location?.trim() || player?.city?.trim() || player?.address?.trim() || "";
+    player?.location?.trim() ||
+    player?.city?.trim() ||
+    player?.address?.trim() ||
+    "";
 
   const getContactText = (player) => {
     if (!player) return "";
@@ -227,7 +253,10 @@ const RegistrationDetails = ({ auctionId, onClose, playerId }) => {
         scrollY: 0,
         scrollX: 0,
         windowHeight: element.scrollHeight,
-        ignoreElements: (el) => el.tagName === "BUTTON" || el.closest(".fixed") || el.closest(".hidden"),
+        ignoreElements: (el) =>
+          el.tagName === "BUTTON" ||
+          el.closest(".fixed") ||
+          el.closest(".hidden"),
       },
       jsPDF: {
         unit: "mm",
@@ -248,15 +277,15 @@ const RegistrationDetails = ({ auctionId, onClose, playerId }) => {
   };
 
   const isTrial = details?.session && details?.slot;
-  const payStatusNorm = String(details?.paymentDetails?.status || "").toLowerCase();
+  const payStatusNorm = String(
+    details?.paymentDetails?.status || ""
+  ).toLowerCase();
   const isPaid = payStatusNorm === "completed";
   const registrationComplete = Boolean(details);
   const isFreeRegistration =
     !details?.auction?.playerRegistrationPaid ||
     (Number(details?.auction?.registrationFee || 0) === 0 &&
       Number(details?.auction?.platformFee || 0) === 0);
-
-      console.log(details, "details")
 
   return (
     <div
@@ -403,7 +432,9 @@ const RegistrationDetails = ({ auctionId, onClose, playerId }) => {
 
                     <div className="min-w-0 flex-1 space-y-4">
                       <div>
-                        <p className="text-xs uppercase tracking-[0.25em] text-slate-500">Player details</p>
+                        <p className="text-xs uppercase tracking-[0.25em] text-slate-500">
+                          Player details
+                        </p>
                         <h3 className="text-xl font-bold text-slate-900 leading-tight break-words">
                           {details?.player?.name}
                         </h3>
@@ -422,8 +453,12 @@ const RegistrationDetails = ({ auctionId, onClose, playerId }) => {
                       <div className="space-y-2">
                         {hasValue(details?.player?.batchId) && (
                           <div className="rounded-2xl bg-slate-50 p-3">
-                            <p className="text-xs uppercase tracking-[0.25em] text-slate-500">Batch ID</p>
-                            <p className="mt-1 font-medium text-slate-900">{details.player.batchId}</p>
+                            <p className="text-xs uppercase tracking-[0.25em] text-slate-500">
+                              Batch ID
+                            </p>
+                            <p className="mt-1 font-medium text-slate-900">
+                              {details.player.batchId}
+                            </p>
                             {qr && (
                               <img
                                 src={qr}
@@ -441,7 +476,9 @@ const RegistrationDetails = ({ auctionId, onClose, playerId }) => {
                     </div> */}
                         {hasValue(getPlayerLocationText(details?.player)) && (
                           <div className="rounded-2xl bg-slate-50 p-3">
-                            <p className="text-xs uppercase tracking-[0.25em] text-slate-500">Location</p>
+                            <p className="text-xs uppercase tracking-[0.25em] text-slate-500">
+                              Location
+                            </p>
                             <p className="mt-1 font-medium text-slate-900">
                               {getPlayerLocationText(details.player)}
                             </p>
@@ -453,11 +490,17 @@ const RegistrationDetails = ({ auctionId, onClose, playerId }) => {
                 </div>
 
                 <div className="rounded-3xl border border-gray-200 bg-white p-3 shadow-sm">
-                  <h3 className="text-sm font-semibold text-slate-900">Tournament & auction</h3>
+                  <h3 className="text-sm font-semibold text-slate-900">
+                    Tournament & auction
+                  </h3>
                   <div className="mt-3 grid gap-2 text-sm text-slate-700">
-                    {hasValue(getTournamentDurationText(details?.tournament)) && (
+                    {hasValue(
+                      getTournamentDurationText(details?.tournament)
+                    ) && (
                       <div className="rounded-2xl bg-slate-50 p-3">
-                        <p className="text-[10px] uppercase tracking-[0.25em] text-slate-500">Duration</p>
+                        <p className="text-[10px] uppercase tracking-[0.25em] text-slate-500">
+                          Duration
+                        </p>
                         <p className="mt-1 font-medium text-slate-900">
                           {getTournamentDurationText(details?.tournament)}
                         </p>
@@ -465,13 +508,19 @@ const RegistrationDetails = ({ auctionId, onClose, playerId }) => {
                     )}
                     {hasValue(getTournamentCityText(details?.tournament)) && (
                       <div className="rounded-2xl bg-slate-50 p-3">
-                        <p className="text-xs uppercase tracking-[0.25em] text-slate-500">Venue</p>
-                        <p className="mt-2 font-medium text-slate-900">{getTournamentCityText(details?.tournament)}</p>
+                        <p className="text-xs uppercase tracking-[0.25em] text-slate-500">
+                          Venue
+                        </p>
+                        <p className="mt-2 font-medium text-slate-900">
+                          {getTournamentCityText(details?.tournament)}
+                        </p>
                       </div>
                     )}
                     {hasValue(getAuctionDateText(details?.auction)) && (
                       <div className="rounded-2xl bg-slate-50 p-3">
-                        <p className="text-[10px] uppercase tracking-[0.25em] text-slate-500">Auction date</p>
+                        <p className="text-[10px] uppercase tracking-[0.25em] text-slate-500">
+                          Auction date
+                        </p>
                         <p className="mt-1 font-medium text-slate-900">
                           {getAuctionDateText(details?.auction)}
                         </p>
@@ -481,28 +530,43 @@ const RegistrationDetails = ({ auctionId, onClose, playerId }) => {
                 </div>
               </div>
 
-              {(hasSessionDetails(details?.session) || hasSlotDetails(details?.slot)) && (
+              {(hasSessionDetails(details?.session) ||
+                hasSlotDetails(details?.slot)) && (
                 <div className="space-y-3">
                   {hasSessionDetails(details?.session) && (
                     <div className="rounded-3xl border border-gray-200 bg-white p-3 shadow-sm">
-                      <h3 className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-900">Session details</h3>
+                      <h3 className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-900">
+                        Session details
+                      </h3>
                       <div className="mt-3 grid gap-2 sm:grid-cols-3">
                         {hasValue(details.session.name) && (
                           <div className="rounded-2xl bg-slate-50 p-2">
-                            <p className="text-[9px] uppercase tracking-[0.25em] text-slate-500">Session</p>
-                            <p className="mt-1 text-sm font-medium text-slate-900">{details.session.name}</p>
+                            <p className="text-[9px] uppercase tracking-[0.25em] text-slate-500">
+                              Session
+                            </p>
+                            <p className="mt-1 text-sm font-medium text-slate-900">
+                              {details.session.name}
+                            </p>
                           </div>
                         )}
                         {hasValue(getSessionDateText(details.session)) && (
                           <div className="rounded-2xl bg-slate-50 p-2">
-                            <p className="text-[9px] uppercase tracking-[0.25em] text-slate-500">Date</p>
-                            <p className="mt-1 text-sm font-medium text-slate-900">{getSessionDateText(details.session)}</p>
+                            <p className="text-[9px] uppercase tracking-[0.25em] text-slate-500">
+                              Date
+                            </p>
+                            <p className="mt-1 text-sm font-medium text-slate-900">
+                              {getSessionDateText(details.session)}
+                            </p>
                           </div>
                         )}
                         {hasValue(getSessionTimeText(details.session)) && (
                           <div className="rounded-2xl bg-slate-50 p-2">
-                            <p className="text-[9px] uppercase tracking-[0.25em] text-slate-500">Time</p>
-                            <p className="mt-1 text-sm font-medium text-slate-900">{getSessionTimeText(details.session)}</p>
+                            <p className="text-[9px] uppercase tracking-[0.25em] text-slate-500">
+                              Time
+                            </p>
+                            <p className="mt-1 text-sm font-medium text-slate-900">
+                              {getSessionTimeText(details.session)}
+                            </p>
                           </div>
                         )}
                       </div>
@@ -511,18 +575,28 @@ const RegistrationDetails = ({ auctionId, onClose, playerId }) => {
 
                   {hasSlotDetails(details?.slot) && (
                     <div className="rounded-3xl border border-gray-200 bg-white p-3 shadow-sm">
-                      <h3 className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-900">Slot details</h3>
+                      <h3 className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-900">
+                        Slot details
+                      </h3>
                       <div className="mt-3 grid gap-2 sm:grid-cols-3">
                         {hasValue(details.slot.slotName) && (
                           <div className="rounded-2xl bg-slate-50 p-2">
-                            <p className="text-[9px] uppercase tracking-[0.25em] text-slate-500">Name</p>
-                            <p className="mt-1 text-sm font-medium text-slate-900">{details.slot.slotName}</p>
+                            <p className="text-[9px] uppercase tracking-[0.25em] text-slate-500">
+                              Name
+                            </p>
+                            <p className="mt-1 text-sm font-medium text-slate-900">
+                              {details.slot.slotName}
+                            </p>
                           </div>
                         )}
                         {hasValue(details.slot.description) && (
                           <div className="sm:col-span-2 rounded-2xl bg-slate-50 p-2">
-                            <p className="text-[9px] uppercase tracking-[0.25em] text-slate-500">Description</p>
-                            <p className="mt-1 text-sm font-medium text-slate-900">{details.slot.description}</p>
+                            <p className="text-[9px] uppercase tracking-[0.25em] text-slate-500">
+                              Description
+                            </p>
+                            <p className="mt-1 text-sm font-medium text-slate-900">
+                              {details.slot.description}
+                            </p>
                           </div>
                         )}
                       </div>
@@ -530,32 +604,52 @@ const RegistrationDetails = ({ auctionId, onClose, playerId }) => {
                       <div className="mt-3 grid gap-2 sm:grid-cols-2">
                         {hasValue(details.slot.location?.venue) && (
                           <div className="rounded-2xl bg-slate-50 p-2">
-                            <p className="text-[9px] uppercase tracking-[0.25em] text-slate-500">Venue</p>
-                            <p className="mt-1 text-sm font-medium text-slate-900">{details.slot.location.venue}</p>
+                            <p className="text-[9px] uppercase tracking-[0.25em] text-slate-500">
+                              Venue
+                            </p>
+                            <p className="mt-1 text-sm font-medium text-slate-900">
+                              {details.slot.location.venue}
+                            </p>
                           </div>
                         )}
                         {hasValue(getSlotPlaceText(details.slot.location)) && (
                           <div className="rounded-2xl bg-slate-50 p-2">
-                            <p className="text-[9px] uppercase tracking-[0.25em] text-slate-500">Place</p>
-                            <p className="mt-1 text-sm font-medium text-slate-900">{getSlotPlaceText(details.slot.location)}</p>
+                            <p className="text-[9px] uppercase tracking-[0.25em] text-slate-500">
+                              Place
+                            </p>
+                            <p className="mt-1 text-sm font-medium text-slate-900">
+                              {getSlotPlaceText(details.slot.location)}
+                            </p>
                           </div>
                         )}
-                        {hasValue(getSlotAddressText(details.slot.location)) && (
+                        {hasValue(
+                          getSlotAddressText(details.slot.location)
+                        ) && (
                           <div className="rounded-2xl bg-slate-50 p-2 sm:col-span-2">
-                            <p className="text-[9px] uppercase tracking-[0.25em] text-slate-500">Address</p>
-                            <p className="mt-1 text-sm font-medium text-slate-900">{getSlotAddressText(details.slot.location)}</p>
+                            <p className="text-[9px] uppercase tracking-[0.25em] text-slate-500">
+                              Address
+                            </p>
+                            <p className="mt-1 text-sm font-medium text-slate-900">
+                              {getSlotAddressText(details.slot.location)}
+                            </p>
                           </div>
                         )}
                         {hasValue(details.slot.location?.link) && (
                           <div className="rounded-2xl bg-slate-50 p-2 sm:col-span-2">
                             <div className="flex items-center justify-between gap-2">
                               <div className="min-w-0">
-                                <p className="text-[9px] uppercase tracking-[0.25em] text-slate-500">Map / location link</p>
-                                <p className="mt-1 truncate text-sm font-medium text-slate-900">{details.slot.location.link}</p>
+                                <p className="text-[9px] uppercase tracking-[0.25em] text-slate-500">
+                                  Map / location link
+                                </p>
+                                <p className="mt-1 truncate text-sm font-medium text-slate-900">
+                                  {details.slot.location.link}
+                                </p>
                               </div>
                               <button
                                 type="button"
-                                onClick={() => copyToClipboard(details.slot.location.link)}
+                                onClick={() =>
+                                  copyToClipboard(details.slot.location.link)
+                                }
                                 className="shrink-0 rounded-full border border-slate-300 bg-white px-3 py-1 text-xs font-semibold text-slate-700 shadow-sm transition hover:bg-slate-100"
                               >
                                 {locationLinkCopied ? "Copied" : "Copy"}

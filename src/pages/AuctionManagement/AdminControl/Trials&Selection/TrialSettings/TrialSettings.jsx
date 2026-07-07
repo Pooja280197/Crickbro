@@ -65,11 +65,11 @@ const Settings = ({ auctionId, isTrialType }) => {
   const dispatch = useDispatch();
 
   const isSelectorLoading = useSelector(
-    (state) => state.loading?.auctionSelectors,
+    (state) => state.loading?.auctionSelectors
   );
 
   const selectorsData = useSelector(
-    (state) => state.data?.auctionSelectors || null,
+    (state) => state.data?.auctionSelectors || null
   );
 
   const auction = useSelector((state) => state.data?.auctionDetails || null);
@@ -77,10 +77,10 @@ const Settings = ({ auctionId, isTrialType }) => {
   const selectorList = selectorsData?.selectors || [];
   const ratingFields = auction?.ratingField || [];
   const isRatingFieldsLoading = useSelector(
-    (state) => state.loading?.ratingFieldsList,
+    (state) => state.loading?.ratingFieldsList
   );
   const ratingFieldsListData = useSelector(
-    (state) => state.data?.ratingFieldsList,
+    (state) => state.data?.ratingFieldsList
   );
   const filteredRatingFields = ratingFieldsListData?.list || [];
   const filteredRatingFieldsPage = ratingFieldsListData?.page || 1;
@@ -106,7 +106,7 @@ const Settings = ({ auctionId, isTrialType }) => {
         optionsList: Array.isArray(field.options)
           ? field.options.map((opt) => String(opt || ""))
           : [],
-      })),
+      }))
     );
   }, [ratingFields]);
 
@@ -123,7 +123,7 @@ const Settings = ({ auctionId, isTrialType }) => {
         type: ratingType,
         appliesTo: ratingAppliesTo,
         hasOptions: ratingHasOptions,
-      }),
+      })
     );
   }, [
     activeTab,
@@ -142,9 +142,8 @@ const Settings = ({ auctionId, isTrialType }) => {
     if (!auction) {
       dispatch(fetchAuctionDetails(auctionId));
     }
-    if (!selectorsData) {
-      dispatch(fetchAllSelectors(auctionId));
-    }
+
+    dispatch(fetchAllSelectors(auctionId));
   }, [auctionId]);
 
   const handleContactChange = async (e) => {
@@ -226,8 +225,8 @@ const Settings = ({ auctionId, isTrialType }) => {
   const handleChange = (id, key, value) => {
     setFields((prev) =>
       prev.map((field) =>
-        field.id === id ? { ...field, [key]: value } : field,
-      ),
+        field.id === id ? { ...field, [key]: value } : field
+      )
     );
   };
 
@@ -248,7 +247,7 @@ const Settings = ({ auctionId, isTrialType }) => {
               : [""]
             : [],
         };
-      }),
+      })
     );
   };
 
@@ -260,8 +259,8 @@ const Settings = ({ auctionId, isTrialType }) => {
               ...field,
               optionsList: [...(field.optionsList || []), ""],
             }
-          : field,
-      ),
+          : field
+      )
     );
   };
 
@@ -277,7 +276,7 @@ const Settings = ({ auctionId, isTrialType }) => {
           ...field,
           optionsList: nextOptions,
         };
-      }),
+      })
     );
   };
 
@@ -287,14 +286,14 @@ const Settings = ({ auctionId, isTrialType }) => {
         if (field.id !== id) return field;
 
         const nextOptions = (field.optionsList || []).filter(
-          (_, idx) => idx !== optionIndex,
+          (_, idx) => idx !== optionIndex
         );
 
         return {
           ...field,
           optionsList: nextOptions,
         };
-      }),
+      })
     );
   };
 
@@ -349,7 +348,7 @@ const Settings = ({ auctionId, isTrialType }) => {
                   ? options
                   : [],
             };
-          },
+          }
         ),
       };
 
@@ -366,7 +365,7 @@ const Settings = ({ auctionId, isTrialType }) => {
           type: ratingType,
           appliesTo: ratingAppliesTo,
           hasOptions: ratingHasOptions,
-        }),
+        })
       );
 
       toast.success("Fields updated successfully");
@@ -420,8 +419,8 @@ const Settings = ({ auctionId, isTrialType }) => {
                           setContact("");
                           setName("");
                           setSendAdminId(null);
-                        setAddName("");
-                      }}
+                          setAddName("");
+                        }}
                         className="mr-2 flex h-7 w-7 shrink-0 items-center justify-center rounded-md text-[var(--text-secondary)] transition hover:bg-[var(--accent-light)] hover:text-[var(--text-primary)]"
                         title="Clear"
                       >
@@ -555,7 +554,9 @@ const Settings = ({ auctionId, isTrialType }) => {
           <div className="space-y-4">
             {/* Add Fields Section */}
             <div className={panelClass}>
-              <div className={`${panelHeaderClass} flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between`}>
+              <div
+                className={`${panelHeaderClass} flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between`}
+              >
                 <div>
                   <h3 className="text-sm font-semibold text-[var(--text-primary)]">
                     Add Custom Fields
@@ -663,7 +664,7 @@ const Settings = ({ auctionId, isTrialType }) => {
                                     handleOptionChange(
                                       field.id,
                                       optionIndex,
-                                      e.target.value,
+                                      e.target.value
                                     )
                                   }
                                   className={fieldClass}
@@ -678,7 +679,7 @@ const Settings = ({ auctionId, isTrialType }) => {
                                   <X className="h-4 w-4" />
                                 </button>
                               </div>
-                            ),
+                            )
                           )}
                           <button
                             type="button"
@@ -702,7 +703,7 @@ const Settings = ({ auctionId, isTrialType }) => {
                   ))}
                 </div>
 
-                { 
+                {
                   <button
                     onClick={handleUpdate}
                     className={`${secondaryButtonClass} mt-4 w-full sm:w-auto`}
@@ -717,7 +718,9 @@ const Settings = ({ auctionId, isTrialType }) => {
             {/* Saved Fields Section - Improved for mobile */}
             <div className={panelClass}>
               <div className={panelHeaderClass}>
-                <h3 className="text-sm font-semibold text-[var(--text-primary)]">Saved Fields</h3>
+                <h3 className="text-sm font-semibold text-[var(--text-primary)]">
+                  Saved Fields
+                </h3>
                 <p className="mt-0.5 text-xs text-[var(--text-secondary)]">
                   Manage existing rating fields
                 </p>
@@ -728,16 +731,16 @@ const Settings = ({ auctionId, isTrialType }) => {
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 mb-4">
                   <div className="relative">
                     <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--text-secondary)]" />
-                  <input
-                    type="text"
-                    value={ratingSearch}
-                    onChange={(e) => {
-                      setRatingSearch(e.target.value);
-                      setRatingPage(1);
-                    }}
-                    placeholder="Search label"
-                    className={`${fieldClass} pl-10`}
-                  />
+                    <input
+                      type="text"
+                      value={ratingSearch}
+                      onChange={(e) => {
+                        setRatingSearch(e.target.value);
+                        setRatingPage(1);
+                      }}
+                      placeholder="Search label"
+                      className={`${fieldClass} pl-10`}
+                    />
                   </div>
 
                   <select
@@ -831,52 +834,77 @@ const Settings = ({ auctionId, isTrialType }) => {
                       No fields found
                     </div>
                   ) : (
-                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-  {filteredRatingFields.map((item) => (
-    <div
-      key={item?._id || `${item?.label}-${item?.fieldType}`}
-      className="group relative overflow-hidden rounded-lg border border-[var(--border-card)] bg-[var(--bg-card)] p-4 transition-all duration-200 hover:border-[var(--border-primary)] hover:shadow-sm"
-    >
-      <div className="space-y-2">
-        <div className="flex items-start justify-between">
-          <h3 className="font-semibold text-[var(--text-primary)] line-clamp-1">{item?.label}</h3>
-          <span className="rounded-full border border-[var(--border-primary)] bg-[var(--accent-light)] px-2 py-0.5 text-[11px] font-semibold text-[var(--primary)]">
-            {item?.fieldType}
-          </span>
-        </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                      {filteredRatingFields.map((item) => (
+                        <div
+                          key={item?._id || `${item?.label}-${item?.fieldType}`}
+                          className="group relative overflow-hidden rounded-lg border border-[var(--border-card)] bg-[var(--bg-card)] p-4 transition-all duration-200 hover:border-[var(--border-primary)] hover:shadow-sm"
+                        >
+                          <div className="space-y-2">
+                            <div className="flex items-start justify-between">
+                              <h3 className="font-semibold text-[var(--text-primary)] line-clamp-1">
+                                {item?.label}
+                              </h3>
+                              <span className="rounded-full border border-[var(--border-primary)] bg-[var(--accent-light)] px-2 py-0.5 text-[11px] font-semibold text-[var(--primary)]">
+                                {item?.fieldType}
+                              </span>
+                            </div>
 
-        <div className="flex items-center gap-2 text-xs text-[var(--text-secondary)]">
-          <span className="flex items-center gap-1">
-            <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l5 5a2 2 0 01.586 1.414V19a2 2 0 01-2 2H7a2 2 0 01-2-2V5a2 2 0 012-2z" />
-            </svg>
-            {item?.type}
-          </span>
-          <span className="text-gray-300">•</span>
-          <span className="flex items-center gap-1">
-            <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
-            </svg>
-           Applies to - {item?.appliesTo}
-          </span>
-        </div>
+                            <div className="flex items-center gap-2 text-xs text-[var(--text-secondary)]">
+                              <span className="flex items-center gap-1">
+                                <svg
+                                  className="w-3 h-3"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  viewBox="0 0 24 24"
+                                >
+                                  <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth={2}
+                                    d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l5 5a2 2 0 01.586 1.414V19a2 2 0 01-2 2H7a2 2 0 01-2-2V5a2 2 0 012-2z"
+                                  />
+                                </svg>
+                                {item?.type}
+                              </span>
+                              <span className="text-gray-300">•</span>
+                              <span className="flex items-center gap-1">
+                                <svg
+                                  className="w-3 h-3"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  viewBox="0 0 24 24"
+                                >
+                                  <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth={2}
+                                    d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"
+                                  />
+                                </svg>
+                                Applies to - {item?.appliesTo}
+                              </span>
+                            </div>
 
-        {Array.isArray(item?.options) && item.options.length > 0 && (
-          <div className="mt-2">
-            <div className="flex flex-wrap gap-1">
-              {item.options.map((option, idx) => (
-                <span key={idx} className="rounded bg-[var(--secondary-lighter)] px-1.5 py-0.5 text-[11px] text-[var(--text-secondary)]">
-                  {option}
-                </span>
-              ))}
-             
-            </div>
-          </div>
-        )}
-      </div>
-    </div>
-  ))}
-</div>
+                            {Array.isArray(item?.options) &&
+                              item.options.length > 0 && (
+                                <div className="mt-2">
+                                  <div className="flex flex-wrap gap-1">
+                                    {item.options.map((option, idx) => (
+                                      <span
+                                        key={idx}
+                                        className="rounded bg-[var(--secondary-lighter)] px-1.5 py-0.5 text-[11px] text-[var(--text-secondary)]"
+                                      >
+                                        {option}
+                                      </span>
+                                    ))}
+                                  </div>
+                                </div>
+                              )}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
                   )}
                 </div>
 
@@ -905,7 +933,7 @@ const Settings = ({ auctionId, isTrialType }) => {
                     }
                     onClick={() =>
                       setRatingPage((prev) =>
-                        prev < filteredRatingFieldsPages ? prev + 1 : prev,
+                        prev < filteredRatingFieldsPages ? prev + 1 : prev
                       )
                     }
                     className={`${outlineButtonClass} w-full sm:w-auto`}

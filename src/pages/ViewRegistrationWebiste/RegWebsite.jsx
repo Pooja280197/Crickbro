@@ -58,7 +58,7 @@ const RegWebsite = () => {
     "--color-text": websiteThemeMode === "dark" ? "#f8fafc" : activeTheme.dark,
   };
 
-  console.log("page", pageData);
+  
 
   useEffect(() => {
     if (requestedRegistrationTab === "team" && showTeamRegistration) {
@@ -157,7 +157,7 @@ const RegWebsite = () => {
     );
   }
 
-  console.log(pageData, "page");
+ 
 
   return (
     <div className="relative" data-theme={websiteThemeMode} style={themeStyle}>

@@ -171,8 +171,6 @@ const AuctionOverview = ({ auctionId }) => {
         res.data ||
         [];
 
-        console.log("📥 Download data fetched:", playersData);
-
       if (!Array.isArray(playersData) || playersData.length === 0) {
         toast.error("No data to download");
         return;
@@ -929,7 +927,7 @@ const AuctionOverview = ({ auctionId }) => {
             <div className="grid grid-cols-2 gap-4 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 ">
             {players.map((player) => (
               <div
-                key={player._id}
+                key={player?.playerId}
                 className="group relative cursor-pointer overflow-hidden rounded-lg border border-[var(--border-card)] bg-[var(--bg-card)] shadow-[0_8px_22px_rgba(16,32,51,0.08)] transition hover:-translate-y-0.5 hover:border-[var(--border-primary)] hover:shadow-[0_16px_34px_rgba(16,32,51,0.14)]"
                 onClick={() => setViewingPlayer(player)}
               >
@@ -1054,7 +1052,7 @@ const AuctionOverview = ({ auctionId }) => {
 
                       return (
                         <tr
-                          key={player._id}
+                          key={player?.playerId}
                           className="cursor-pointer transition hover:bg-[var(--accent-light)]"
                           onClick={() => setViewingPlayer(player)}
                         >
