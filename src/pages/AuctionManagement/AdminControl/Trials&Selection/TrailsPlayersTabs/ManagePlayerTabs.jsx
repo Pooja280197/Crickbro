@@ -212,15 +212,36 @@ const ManagePlayerTabs = () => {
     return filtered;
   };
 
-  const handleSelectAll = () => {
-    const currentPlayers = getFilteredPlayers();
+  // const handleSelectAll = () => {
+  //   const currentPlayers = getFilteredPlayers();
 
-    if (selectedPlayers.length === currentPlayers.length) {
-      setSelectedPlayers([]);
-    } else {
-      setSelectedPlayers(currentPlayers.map((item) => item.player?._id));
-    }
-  };
+  //   if (selectedPlayers.length === currentPlayers.length) {
+  //     setSelectedPlayers([]);
+  //   } else {
+  //     setSelectedPlayers(currentPlayers.map((item) => item.player?._id));
+  //   }
+  // };
+
+  const handleSelectCurrentPage = () => {
+  const currentPagePlayers = getFilteredPlayers();
+  const currentPagePlayerIds = currentPagePlayers
+    .map(item => item?.player?._id || item?._id)
+    .filter(id => id);
+  
+  setSelectedPlayers(prev => {
+    const newSelection = [...prev];
+    currentPagePlayerIds.forEach(id => {
+      if (!newSelection.includes(id)) {
+        newSelection.push(id);
+      }
+    });
+    return newSelection;
+  });
+};
+
+const handleDeselectAll = () => {
+  setSelectedPlayers([]);
+};
 
   const handleAssignPlayers = () => {
     if (selectedPlayers.length === 0) {
@@ -367,7 +388,9 @@ const ManagePlayerTabs = () => {
             assignmentModalOpen={assignmentModalOpen}
             setAssignmentModalOpen={setAssignmentModalOpen}
             getFilteredPlayers={getFilteredPlayers}
-            handleSelectAll={handleSelectAll}
+            // handleSelectAll={handleSelectAll}
+            handleSelectCurrentPage={handleSelectCurrentPage}
+            handleDeselectAll={handleDeselectAll}
             handleAssignPlayers={handleAssignPlayers}
             handleAddToSupercamp={handleAddToSupercamp}
             supercampLoading={supercampLoading}

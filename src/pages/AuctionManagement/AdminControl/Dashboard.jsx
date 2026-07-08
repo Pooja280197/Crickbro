@@ -17,7 +17,10 @@ import {
 } from "lucide-react";
 import Pagination from "../../../components/Pagination";
 
-const formatCurrency = (value) => `₹${Number(value || 0).toLocaleString()}`;
+const formatCurrency = (value) =>
+  `₹${Number(value || 0).toLocaleString("en-IN", {
+    maximumFractionDigits: 0,
+  })}`;
 
 const formatDate = (date) => {
   if (!date) return "N/A";

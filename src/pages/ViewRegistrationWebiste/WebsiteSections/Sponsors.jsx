@@ -69,6 +69,7 @@ const Sponsors = ({ pagedata }) => {
             gap-6
             md:gap-8
             items-center
+            justify-center
             overflow-x-scroll
             overflow-y-hidden
             whitespace-nowrap

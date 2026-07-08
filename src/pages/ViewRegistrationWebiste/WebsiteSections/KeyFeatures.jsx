@@ -44,7 +44,7 @@ const KeyFeatures = ({ pagedata }) => {
   }, [points])
 
   return (
-    <div ref={sectionRef} className="relative min-h-screen py-12 md:py-20 bg-gray-100" 
+    <div ref={sectionRef} className="relative py-12 md:py-20 bg-gray-100" 
 >
       
       {/* Decorative Elements */}

@@ -32,7 +32,9 @@ const UnassignedPlayersTab = ({
   assignmentModalOpen,
   setAssignmentModalOpen,
   getFilteredPlayers,
-  handleSelectAll,
+  // handleSelectAll,
+  handleSelectCurrentPage,
+  handleDeselectAll,
   handleAssignPlayers,
   handleAddToSupercamp,
   supercampLoading,
@@ -163,12 +165,24 @@ const UnassignedPlayersTab = ({
         <table className="min-w-[860px] w-full text-left text-sm">
           <thead className="bg-[var(--bg-main)] text-[11px] font-bold uppercase tracking-wide text-[var(--text-secondary)] shadow-sm">
             <tr className="border-b border-[var(--border-card)]">
-              <th className="sticky top-0 z-20 w-12 px-3 py-3 bg-[var(--bg-main)]">Select</th>
-              <th className="sticky top-0 z-20 px-3 py-3 bg-[var(--bg-main)]">Player</th>
-              <th className="sticky top-0 z-20 px-3 py-3 bg-[var(--bg-main)]">Batch ID</th>
-              <th className="sticky top-0 z-20 px-3 py-3 bg-[var(--bg-main)]">Role</th>
-              <th className="sticky top-0 z-20 px-3 py-3 bg-[var(--bg-main)]">Mobile</th>
-              <th className="sticky top-0 z-20 px-3 py-3 bg-[var(--bg-main)]">Actions</th>
+              <th className="sticky top-0 z-20 w-12 px-3 py-3 bg-[var(--bg-main)]">
+                Select
+              </th>
+              <th className="sticky top-0 z-20 px-3 py-3 bg-[var(--bg-main)]">
+                Player
+              </th>
+              <th className="sticky top-0 z-20 px-3 py-3 bg-[var(--bg-main)]">
+                Batch ID
+              </th>
+              <th className="sticky top-0 z-20 px-3 py-3 bg-[var(--bg-main)]">
+                Role
+              </th>
+              <th className="sticky top-0 z-20 px-3 py-3 bg-[var(--bg-main)]">
+                Mobile
+              </th>
+              <th className="sticky top-0 z-20 px-3 py-3 bg-[var(--bg-main)]">
+                Actions
+              </th>
             </tr>
           </thead>
           <tbody className="divide-y divide-[var(--border-card)]">
@@ -254,7 +268,7 @@ const UnassignedPlayersTab = ({
                       ? `${core?.countryCode ? `${core.countryCode} ` : ""}${core.mobile}`
                       : core?.mobileNumber || core?.phone || "-"}
                   </td>
-                 
+
                   <td className="px-3 py-3">
                     <div className="flex items-center gap-1.5">
                       <ActionIconButton
@@ -301,7 +315,6 @@ const UnassignedPlayersTab = ({
               className="h-9 w-full rounded-lg border border-[var(--border-card)] bg-[var(--bg-main)] pl-10 pr-3 text-sm font-medium text-[var(--text-primary)] outline-none transition placeholder:text-[var(--text-secondary)] focus:border-[var(--border-primary)] focus:bg-[var(--bg-card)] sm:h-10 sm:pr-4"
             />
           </div>
-
           <div className="relative ">
             <button
               onClick={() => setIsItemsDropdownOpen(!isItemsDropdownOpen)}
@@ -337,19 +350,38 @@ const UnassignedPlayersTab = ({
               </div>
             )}
           </div>
-
           <ViewModeToggle />
-
-          <button
+          {/* <button
             onClick={handleSelectAll}
             className="inline-flex h-9 items-center justify-center rounded-lg border border-[var(--border-card)] bg-[var(--bg-main)] px-3 text-xs font-semibold text-[var(--text-primary)] transition hover:border-[var(--border-primary)] hover:bg-[var(--accent-light)] sm:h-10"
           >
             <span className="sm:inline">
               {selectedPlayers.length === players.length ? "Deselect All" : "Select All"}
             </span>
-            {/* <span className="sm:hidden">Select All</span> */}
-          </button>
+            
+          </button> */}
+          {/* Replace the button section with this */}
+          <div className="flex gap-2">
+            {/* Select All button - Always visible */}
+            <button
+              onClick={handleSelectCurrentPage}
+              className="inline-flex h-9 items-center justify-center rounded-lg border border-[var(--border-card)] bg-[var(--bg-main)] px-3 text-xs font-semibold text-[var(--text-primary)] transition hover:border-[var(--border-primary)] hover:bg-[var(--accent-light)] sm:h-10"
+            >
+              <span className="sm:inline">Select All</span>
+            </button>
 
+            {/* Deselect All button - Show only if there are selected players */}
+            {selectedPlayers.length > 0 && (
+              <button
+                onClick={handleDeselectAll}
+                className="inline-flex h-9 items-center justify-center rounded-lg border border-red-500/30 bg-red-500/10 px-3 text-xs font-semibold text-red-500 transition hover:bg-red-500/20 sm:h-10"
+              >
+                <span className="sm:inline">
+                  Deselect All ({selectedPlayers.length})
+                </span>
+              </button>
+            )}
+          </div>
           <button
             disabled={selectedPlayers.length === 0}
             onClick={handleAssignPlayers}
@@ -359,10 +391,11 @@ const UnassignedPlayersTab = ({
                 : "border border-[var(--border-card)] bg-[var(--bg-main)] text-[var(--text-secondary)]"
             }`}
           >
-            <span className="hidden sm:inline">Assign ({selectedPlayers.length})</span>
+            <span className="hidden sm:inline">
+              Assign ({selectedPlayers.length})
+            </span>
             <span className="sm:hidden">Assign</span>
           </button>
-
           <button
             type="button"
             disabled={selectedPlayers.length === 0 || supercampLoading}
@@ -375,10 +408,14 @@ const UnassignedPlayersTab = ({
           >
             <Trophy className="w-4 h-4" />
             <span className="hidden sm:inline">
-              {supercampLoading ? "Adding..." : `Add to Supercamp (${selectedPlayers.length})`}
+              {supercampLoading
+                ? "Adding..."
+                : `Add to Supercamp (${selectedPlayers.length})`}
             </span>
             <span className="sm:hidden">
-              {supercampLoading ? "Adding..." : `Supercamp (${selectedPlayers.length})`}
+              {supercampLoading
+                ? "Adding..."
+                : `Supercamp (${selectedPlayers.length})`}
             </span>
           </button>
         </div>

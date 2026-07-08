@@ -320,12 +320,12 @@ const RegistrationOverview = ({ auctionId: auctionIdProp }) => {
       : []),
     {
       title: "Total Revenue",
-      value: grossRevenue,
+      value: `₹${grossRevenue.toLocaleString("en-IN")}`,
       icon: <IndianRupee size={18} />,
     },
     {
       title: "Net Revenue",
-      value: netRevenue,
+      value: `₹${netRevenue.toLocaleString("en-IN")}`,
       subtitle: `After 2.3% Transaction Fee + GST`,
       icon: <IndianRupee size={18} />,
     },
