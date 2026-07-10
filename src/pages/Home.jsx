@@ -59,7 +59,7 @@ const Home = ({ theme, onToggleTheme }) => {
         <CTASection />
         <ChatBot/>
       </main>
-      <Footer />
+      <Footer theme={theme}/>
     </div>
   );
 };

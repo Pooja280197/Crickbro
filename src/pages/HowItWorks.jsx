@@ -232,7 +232,7 @@ const HowItWorks = ({ theme, onToggleTheme }) => {
         </section>
       </main>
 
-      <Footer />
+      <Footer theme={theme} />
     </div>
   );
 };

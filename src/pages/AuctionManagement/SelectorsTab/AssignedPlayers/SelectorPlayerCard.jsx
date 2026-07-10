@@ -233,7 +233,7 @@ const PlayerDetailsModal = ({
                           <p className="text-sm font-medium text-[var(--text-primary)]">
                             Rating #{idx + 1}
                           </p>
-                          <div className="inline-flex items-center gap-1 rounded-full border border-[var(--border-primary)] bg-[var(--accent-light)] px-2 py-1 text-sm font-semibold text-[var(--primary)]">
+                          <div className="inline-flex items-center gap-1 rounded-full border border-[var(--border-primary)] bg-[var(--secondary)] px-2 py-1 text-sm font-semibold text-black">
                             <Star className="w-3.5 h-3.5 fill-current" />
                             {ratingItem?.rating ?? 0}
                           </div>

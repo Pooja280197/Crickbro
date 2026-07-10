@@ -197,7 +197,7 @@ const AssignedTrialsTab = ({
 
   const handleOpenRating = (item) => {
     if (isSessionLocked(item)) {
-      toast.error("Session locked hai, is player ki rating nahi ho sakti");
+      toast.error("Session is Locked , you cannot give Rating ");
       return;
     }
 

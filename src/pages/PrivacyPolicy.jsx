@@ -182,7 +182,7 @@ const PrivacyPolicy = ({ theme, onToggleTheme }) => {
         </section>
       </main>
 
-      <Footer />
+      <Footer theme={theme} />
     </div>
   );
 };

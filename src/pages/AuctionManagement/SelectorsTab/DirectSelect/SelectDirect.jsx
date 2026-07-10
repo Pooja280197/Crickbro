@@ -235,6 +235,7 @@ function SelectDirect({ auctionId }) {
           }}
         />
       )}
+    
 
       <div className="flex flex-col gap-y-4 p-3 sm:p-6">
         <div className={`${panelClass} overflow-hidden`}>
@@ -385,7 +386,7 @@ function SelectDirect({ auctionId }) {
               {selectorPlayers?.map((item) => {
                 const playerLocked = isPlayerSessionLocked(item);
                 return (
-                  <div key={item._id} className="relative">
+                  <div key={item.auctionPlayerId} className="relative">
                     <div className="absolute top-2 right-2 z-10">
                       <input
                         type="checkbox"

@@ -1,6 +1,15 @@
 import React, { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
-import { Award, Eye, MapPin, Clock, Calendar, X, Check, Star } from "lucide-react";
+import {
+  Award,
+  Eye,
+  MapPin,
+  Clock,
+  Calendar,
+  X,
+  Check,
+  Star,
+} from "lucide-react";
 import { toast } from "react-toastify";
 import api from "../utils/api";
 
@@ -13,7 +22,6 @@ const PLAYER_ROLES = [
   { value: "bowler", label: "Bowler" },
   { value: "all-rounder", label: "All-Rounder" },
   { value: "wicketkeeper-batsman", label: "Wicketkeeper-Batsman" },
-
 ];
 
 /* ================= GRADIENTS ================= */
@@ -93,12 +101,15 @@ export const PlayerDetailsModal = ({
   initialAction = "",
   actionOnly = false,
   showAllDetails = false,
+  directSelected,
+  grade
 }) => {
   const [showMoreDetails, setShowMoreDetails] = useState(false);
   const [showTrialDetails, setShowTrialDetails] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-  const [showSessionDeleteConfirm, setSessionShowDeleteConfirm] = useState(false);
+  const [showSessionDeleteConfirm, setSessionShowDeleteConfirm] =
+    useState(false);
   const [profileFile, setProfileFile] = useState(null);
   const [profilePreview, setProfilePreview] = useState("");
   const [editForm, setEditForm] = useState({
@@ -121,7 +132,7 @@ export const PlayerDetailsModal = ({
       setShowTrialDetails(showAllDetails);
       setIsEditing(initialAction === "edit");
       setShowDeleteConfirm(initialAction === "delete");
-      setSessionShowDeleteConfirm(initialAction === "removeSession")
+      setSessionShowDeleteConfirm(initialAction === "removeSession");
       setProfileFile(null);
       setProfilePreview(playerData?.profilePicture || "");
     }
@@ -171,7 +182,8 @@ export const PlayerDetailsModal = ({
   const basePrice = player?.basePrice || 0;
   const currentBid = player?.currentBid || 0;
   const status = player?.status || playerData?.status || "";
-  const slotName = player?.slot?.slotName || player?.slot?.location?.venue || "";
+  const slotName =
+    player?.slot?.slotName || player?.slot?.location?.venue || "";
   const sessionName = player?.session?.name || "";
   const sessionDate = player?.session?.slotDate || "";
   const sessionStart = player?.session?.slotStartTime || "";
@@ -223,7 +235,9 @@ export const PlayerDetailsModal = ({
     const normalizedJerseyNumber = toInputString(editForm.jerseyNumber);
     const normalizedJerseyName = toInputString(editForm.jerseyName);
     const normalizedJerseySize = toInputString(editForm.jerseySize);
-    const normalizedPlayerRole = toInputString(editForm.playerRole).toLowerCase();
+    const normalizedPlayerRole = toInputString(
+      editForm.playerRole,
+    ).toLowerCase();
 
     let payload;
 
@@ -275,15 +289,22 @@ export const PlayerDetailsModal = ({
     setShowDeleteConfirm(false);
   };
 
-   const handleConfirmRemoveSession = async () => {
+  const handleConfirmRemoveSession = async () => {
     if (!onRemoveSession) return;
-    await onRemoveSession(player?.slot?._id,player?.session?._id,player?.player?._id);
+    await onRemoveSession(
+      player?.slot?._id,
+      player?.session?._id,
+      player?.player?._id,
+    );
     setSessionShowDeleteConfirm(false);
   };
 
   if (typeof document === "undefined") return null;
 
-  if (actionOnly && (initialAction === "delete" || initialAction === "removeSession")) {
+  if (
+    actionOnly &&
+    (initialAction === "delete" || initialAction === "removeSession")
+  ) {
     const isRemoveSession = initialAction === "removeSession";
 
     return createPortal(
@@ -307,7 +328,11 @@ export const PlayerDetailsModal = ({
             </button>
             <button
               type="button"
-              onClick={isRemoveSession ? handleConfirmRemoveSession : handleConfirmDelete}
+              onClick={
+                isRemoveSession
+                  ? handleConfirmRemoveSession
+                  : handleConfirmDelete
+              }
               disabled={isRemoving}
               className="rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700 disabled:opacity-60"
             >
@@ -353,14 +378,15 @@ export const PlayerDetailsModal = ({
           </div>
         )}
 
-            {showSessionDeleteConfirm && (
+        {showSessionDeleteConfirm && (
           <div className="absolute inset-0 z-20 bg-black/40 flex items-center justify-center p-4">
             <div className="w-full max-w-sm rounded-2xl bg-[var(--bg-card)] shadow-2xl border border-red-100 p-5">
               <h3 className="text-lg font-semibold text-[var(--text-primary)]">
                 Remove Player From Session
               </h3>
               <p className="mt-2 text-sm text-[var(--text-secondary)]">
-                Are you sure you want to remove this player from the Slot/Session?
+                Are you sure you want to remove this player from the
+                Slot/Session?
               </p>
               <div className="mt-4 flex justify-end gap-2">
                 <button
@@ -383,7 +409,6 @@ export const PlayerDetailsModal = ({
           </div>
         )}
 
-
         {/* Close Button */}
         <button
           type="button"
@@ -395,7 +420,6 @@ export const PlayerDetailsModal = ({
 
         {/* Scrollable Body */}
         <div className="professional-scrollbar max-h-[calc(100vh-1rem)] overflow-y-auto p-4 pt-12 sm:max-h-[calc(100vh-2rem)] sm:p-5 sm:pt-12">
-
           {/* Player Header */}
           <div className="mb-4 flex items-center gap-3 border-b border-[var(--border-card)] pb-4">
             <div className="h-16 w-16 shrink-0 overflow-hidden rounded-lg border border-[var(--border-card)] bg-[var(--secondary-lighter)] shadow-sm">
@@ -410,7 +434,7 @@ export const PlayerDetailsModal = ({
               ) : (
                 <div
                   className={`w-full h-full flex items-center justify-center bg-gradient-to-br ${getGradientByName(
-                    playerName
+                    playerName,
                   )} text-[var(--text-dark)] text-lg font-bold`}
                 >
                   {initials}
@@ -478,7 +502,12 @@ export const PlayerDetailsModal = ({
 
             <div className="grid grid-cols-1 gap-2 text-sm sm:grid-cols-2">
               {primaryDetails
-                .filter((detail) => detail.value !== "" && detail.value !== null && detail.value !== undefined)
+                .filter(
+                  (detail) =>
+                    detail.value !== "" &&
+                    detail.value !== null &&
+                    detail.value !== undefined,
+                )
                 .map((detail) => (
                   <div
                     key={detail.label}
@@ -495,7 +524,12 @@ export const PlayerDetailsModal = ({
 
               {(showMoreDetails || showAllDetails) &&
                 additionalDetails
-                  .filter((detail) => detail.value !== "" && detail.value !== null && detail.value !== undefined)
+                  .filter(
+                    (detail) =>
+                      detail.value !== "" &&
+                      detail.value !== null &&
+                      detail.value !== undefined,
+                  )
                   .map((detail) => (
                     <div
                       key={detail.label}
@@ -511,17 +545,21 @@ export const PlayerDetailsModal = ({
                   ))}
             </div>
 
-            {!showAllDetails && additionalDetails.some(
-              (detail) => detail.value !== "" && detail.value !== null && detail.value !== undefined,
-            ) && (
-              <button
-                type="button"
-                onClick={() => setShowMoreDetails((prev) => !prev)}
-                className="mt-2 text-xs font-semibold text-[var(--primary)] hover:text-[var(--secondary)]"
-              >
-                {showMoreDetails ? "Show less details" : "Show more details"}
-              </button>
-            )}
+            {!showAllDetails &&
+              additionalDetails.some(
+                (detail) =>
+                  detail.value !== "" &&
+                  detail.value !== null &&
+                  detail.value !== undefined,
+              ) && (
+                <button
+                  type="button"
+                  onClick={() => setShowMoreDetails((prev) => !prev)}
+                  className="mt-2 text-xs font-semibold text-[var(--primary)] hover:text-[var(--secondary)]"
+                >
+                  {showMoreDetails ? "Show less details" : "Show more details"}
+                </button>
+              )}
 
             {isEditing && (
               <div className="mt-3 rounded-lg border border-[var(--border-card)] bg-[var(--secondary-lighter)] p-3">
@@ -532,7 +570,9 @@ export const PlayerDetailsModal = ({
                   <input
                     type="text"
                     value={editForm.name}
-                    onChange={(e) => handleEditInputChange("name", e.target.value)}
+                    onChange={(e) =>
+                      handleEditInputChange("name", e.target.value)
+                    }
                     placeholder="Name"
                     className="h-10 rounded-lg border border-[var(--border-card)] bg-[var(--bg-card)] px-3 text-sm font-medium text-[var(--text-primary)] outline-none transition placeholder:text-[var(--text-secondary)] focus:border-[var(--border-primary)]"
                   />
@@ -548,20 +588,26 @@ export const PlayerDetailsModal = ({
                   <input
                     type="email"
                     value={editForm.email}
-                    onChange={(e) => handleEditInputChange("email", e.target.value)}
+                    onChange={(e) =>
+                      handleEditInputChange("email", e.target.value)
+                    }
                     placeholder="Email"
                     className="h-10 rounded-lg border border-[var(--border-card)] bg-[var(--bg-card)] px-3 text-sm font-medium text-[var(--text-primary)] outline-none transition placeholder:text-[var(--text-secondary)] focus:border-[var(--border-primary)]"
                   />
                   <input
                     type="text"
                     value={editForm.location}
-                    onChange={(e) => handleEditInputChange("location", e.target.value)}
+                    onChange={(e) =>
+                      handleEditInputChange("location", e.target.value)
+                    }
                     placeholder="Location"
                     className="h-10 rounded-lg border border-[var(--border-card)] bg-[var(--bg-card)] px-3 text-sm font-medium text-[var(--text-primary)] outline-none transition placeholder:text-[var(--text-secondary)] focus:border-[var(--border-primary)]"
                   />
                   <select
                     value={editForm.playerRole}
-                    onChange={(e) => handleEditInputChange("playerRole", e.target.value)}
+                    onChange={(e) =>
+                      handleEditInputChange("playerRole", e.target.value)
+                    }
                     className="h-10 rounded-lg border border-[var(--border-card)] bg-[var(--bg-card)] px-3 text-sm font-medium text-[var(--text-primary)] outline-none transition focus:border-[var(--border-primary)]"
                   >
                     {PLAYER_ROLES.map((option) => (
@@ -573,27 +619,35 @@ export const PlayerDetailsModal = ({
                   <input
                     type="date"
                     value={editForm.dob}
-                    onChange={(e) => handleEditInputChange("dob", e.target.value)}
+                    onChange={(e) =>
+                      handleEditInputChange("dob", e.target.value)
+                    }
                     className="h-10 rounded-lg border border-[var(--border-card)] bg-[var(--bg-card)] px-3 text-sm font-medium text-[var(--text-primary)] outline-none transition focus:border-[var(--border-primary)]"
                   />
                   <input
                     type="text"
                     value={editForm.jerseyNumber}
-                    onChange={(e) => handleEditInputChange("jerseyNumber", e.target.value)}
+                    onChange={(e) =>
+                      handleEditInputChange("jerseyNumber", e.target.value)
+                    }
                     placeholder="Jersey Number"
                     className="h-10 rounded-lg border border-[var(--border-card)] bg-[var(--bg-card)] px-3 text-sm font-medium text-[var(--text-primary)] outline-none transition placeholder:text-[var(--text-secondary)] focus:border-[var(--border-primary)]"
                   />
                   <input
                     type="text"
                     value={editForm.jerseyName}
-                    onChange={(e) => handleEditInputChange("jerseyName", e.target.value)}
+                    onChange={(e) =>
+                      handleEditInputChange("jerseyName", e.target.value)
+                    }
                     placeholder="Jersey Name"
                     className="h-10 rounded-lg border border-[var(--border-card)] bg-[var(--bg-card)] px-3 text-sm font-medium text-[var(--text-primary)] outline-none transition placeholder:text-[var(--text-secondary)] focus:border-[var(--border-primary)]"
                   />
                   <input
                     type="text"
                     value={editForm.jerseySize}
-                    onChange={(e) => handleEditInputChange("jerseySize", e.target.value)}
+                    onChange={(e) =>
+                      handleEditInputChange("jerseySize", e.target.value)
+                    }
                     placeholder="Jersey Size"
                     className="h-10 rounded-lg border border-[var(--border-card)] bg-[var(--bg-card)] px-3 text-sm font-medium text-[var(--text-primary)] outline-none transition placeholder:text-[var(--text-secondary)] focus:border-[var(--border-primary)] sm:col-span-2"
                   />
@@ -602,10 +656,16 @@ export const PlayerDetailsModal = ({
             )}
           </div>
 
-          {(showAllDetails || slotName || sessionName || sessionDate || (sessionStart && sessionEnd)) && (
+          {(showAllDetails ||
+            slotName ||
+            sessionName ||
+            sessionDate ||
+            (sessionStart && sessionEnd)) && (
             <div className="mb-4 rounded-lg border border-[var(--border-card)] bg-[var(--secondary-lighter)] p-3">
               <div className="flex items-center justify-between gap-3 mb-1">
-                <h3 className="text-xs font-semibold text-[var(--text-primary)] uppercase tracking-wide">Trial Details</h3>
+                <h3 className="text-xs font-semibold text-[var(--text-primary)] uppercase tracking-wide">
+                  Trial Details
+                </h3>
                 {!showAllDetails && (
                   <button
                     type="button"
@@ -621,7 +681,9 @@ export const PlayerDetailsModal = ({
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm">
                   {slotName && (
                     <div className="rounded-lg border border-[var(--border-card)] bg-[var(--bg-card)] px-3 py-2">
-                      <p className="text-[11px] uppercase tracking-wide text-[var(--text-secondary)]">Slot</p>
+                      <p className="text-[11px] uppercase tracking-wide text-[var(--text-secondary)]">
+                        Slot
+                      </p>
                       <p className="font-semibold text-[var(--text-primary)] break-words">
                         {slotName}
                       </p>
@@ -629,7 +691,9 @@ export const PlayerDetailsModal = ({
                   )}
                   {sessionName && (
                     <div className="rounded-lg border border-[var(--border-card)] bg-[var(--bg-card)] px-3 py-2">
-                      <p className="text-[11px] uppercase tracking-wide text-[var(--text-secondary)]">Session</p>
+                      <p className="text-[11px] uppercase tracking-wide text-[var(--text-secondary)]">
+                        Session
+                      </p>
                       <p className="font-semibold text-[var(--text-primary)] break-words">
                         {sessionName}
                       </p>
@@ -637,7 +701,9 @@ export const PlayerDetailsModal = ({
                   )}
                   {sessionDate && (
                     <div className="rounded-lg border border-[var(--border-card)] bg-[var(--bg-card)] px-3 py-2">
-                      <p className="text-[11px] uppercase tracking-wide text-[var(--text-secondary)]">Date</p>
+                      <p className="text-[11px] uppercase tracking-wide text-[var(--text-secondary)]">
+                        Date
+                      </p>
                       <p className="font-semibold text-[var(--text-primary)] break-words">
                         {formatDate(sessionDate)}
                       </p>
@@ -645,17 +711,22 @@ export const PlayerDetailsModal = ({
                   )}
                   {sessionStart && sessionEnd && (
                     <div className="rounded-lg border border-[var(--border-card)] bg-[var(--bg-card)] px-3 py-2">
-                      <p className="text-[11px] uppercase tracking-wide text-[var(--text-secondary)]">Time</p>
+                      <p className="text-[11px] uppercase tracking-wide text-[var(--text-secondary)]">
+                        Time
+                      </p>
                       <p className="font-semibold text-[var(--text-primary)] break-words">
                         {formatTime(sessionStart)} - {formatTime(sessionEnd)}
                       </p>
                     </div>
                   )}
-                  {!slotName && !sessionName && !sessionDate && !(sessionStart && sessionEnd) && (
-                    <p className="text-sm text-[var(--text-secondary)] sm:col-span-2">
-                      No trial slot or session details available.
-                    </p>
-                  )}
+                  {!slotName &&
+                    !sessionName &&
+                    !sessionDate &&
+                    !(sessionStart && sessionEnd) && (
+                      <p className="text-sm text-[var(--text-secondary)] sm:col-span-2">
+                        No trial slot or session details available.
+                      </p>
+                    )}
                 </div>
               )}
             </div>
@@ -669,10 +740,11 @@ export const PlayerDetailsModal = ({
               </h3>
 
               <div className="grid grid-cols-2 gap-4 text-sm">
-
                 {(showAllDetails || basePrice > 0) && (
                   <div>
-                    <div className="text-[var(--text-secondary)] text-xs">Base Price</div>
+                    <div className="text-[var(--text-secondary)] text-xs">
+                      Base Price
+                    </div>
                     <div className="text-lg font-semibold text-[var(--text-primary)]">
                       ₹{basePrice.toLocaleString()}
                     </div>
@@ -681,7 +753,9 @@ export const PlayerDetailsModal = ({
 
                 {(showAllDetails || currentBid > 0) && (
                   <div>
-                    <div className="text-[var(--text-secondary)] text-xs">Current Bid</div>
+                    <div className="text-[var(--text-secondary)] text-xs">
+                      Current Bid
+                    </div>
                     <div className="text-lg font-semibold text-[var(--primary)]">
                       ₹{currentBid.toLocaleString()}
                     </div>
@@ -690,7 +764,9 @@ export const PlayerDetailsModal = ({
 
                 {status && (
                   <div>
-                    <div className="text-[var(--text-secondary)] text-xs">Status</div>
+                    <div className="text-[var(--text-secondary)] text-xs">
+                      Status
+                    </div>
                     <div className="font-medium text-[var(--text-primary)]">
                       {status.charAt(0).toUpperCase() + status.slice(1)}
                     </div>
@@ -701,25 +777,39 @@ export const PlayerDetailsModal = ({
           )}
 
           {/* Rating */}
-          {rating?.avgRating > 0 && (
+          {((rating?.avgRating > 0) || directSelected) && (
             <div className="rounded-lg border border-[var(--border-card)] bg-[var(--secondary-lighter)] p-3">
               <h3 className="text-sm font-semibold text-[var(--text-primary)] mb-3">
                 Rating Details
               </h3>
 
-              <div className="flex items-center justify-between mb-3">
-                <span className="text-[var(--text-secondary)] text-sm">Average Rating</span>
+            {rating?.avgRating > 0 &&  <div className="flex items-center justify-between mb-3">
+                <span className="text-[var(--text-secondary)] text-sm">
+                  Average Rating
+                </span>
 
                 <span className="text-2xl font-bold text-[var(--primary)]">
                   {rating.avgRating}
                 </span>
-              </div>
+              </div>}
+
+               {grade &&  <div className="flex items-center justify-between mb-3">
+                <span className="text-[var(--text-secondary)] text-sm">
+                  Grade
+                </span>
+
+                <span className="text-2xl font-bold text-[var(--primary)]">
+                  {grade}
+                </span>
+              </div>}
 
               {rating.playerType && (
                 <div className="flex justify-between text-sm">
-                  <span className="text-[var(--text-secondary)]">Player Type</span>
+                  <span className="text-[var(--text-secondary)]">
+                    Player Type
+                  </span>
                   <span className="font-medium text-[var(--text-primary)]">
-                    {rating.playerType}
+                    {rating?.playerType?.charAt(0)?.toUpperCase() + rating?.playerType?.slice(1) }
                   </span>
                 </div>
               )}
@@ -728,7 +818,11 @@ export const PlayerDetailsModal = ({
         </div>
 
         {/* Footer */}
-        {(onRatePlayer || onGradePlayer || onEdit || onDelete || onRemoveSession) && (
+        {(onRatePlayer ||
+          onGradePlayer ||
+          onEdit ||
+          onDelete ||
+          onRemoveSession) && (
           <div className="flex flex-wrap justify-end gap-2 border-t border-[var(--border-card)] bg-[var(--bg-card)] p-4">
             {!isEditing && onRatePlayer && (
               <button
@@ -849,8 +943,11 @@ const PlayerCard = ({
   // Extract player data from the structure
 
   const playerData = player?.player || player;
-  const playerId = player?.player?._id || player?.playerId || player?.id || player?._id;
-  const playerSlotId = getObjectId(player?.slot?._id || player?.slotId || playerData?.slotId);
+  const playerId =
+    player?.player?._id || player?.playerId || player?.id || player?._id;
+  const playerSlotId = getObjectId(
+    player?.slot?._id || player?.slotId || playerData?.slotId,
+  );
   const playerName = playerData?.name || "";
   const playerImage = playerData?.profilePicture || "";
   const playerBatchId = playerData?.batchId || "";
@@ -897,7 +994,9 @@ const PlayerCard = ({
 
     try {
       setIsRemoving(true);
-      await api.delete(`/webSiteApi/auction/removePlayer/${auctionId}/${playerId}`);
+      await api.delete(
+        `/webSiteApi/auction/removePlayer/${auctionId}/${playerId}`,
+      );
       toast.success("Player removed successfully");
       setDetailsModalOpen(false);
       if (typeof onActionComplete === "function") {
@@ -910,20 +1009,21 @@ const PlayerCard = ({
     }
   };
 
-  
-  const handleRemoveFromSession = async (SlotId,SessionId,playerId) => {
-  
+  const handleRemoveFromSession = async (SlotId, SessionId, playerId) => {
     if (!SlotId || !SessionId) {
       toast.error("Missing auction or player id");
       return;
     }
-    const data={
-      "playerIds":[playerId]
-    }
+    const data = {
+      playerIds: [playerId],
+    };
 
     try {
       setIsRemoving(true);
-      await api.post(`/webSiteApi/auctionSlot/removePlayerFromSession/${SlotId}/${SessionId}`,data);
+      await api.post(
+        `/webSiteApi/auctionSlot/removePlayerFromSession/${SlotId}/${SessionId}`,
+        data,
+      );
       toast.success("Player removed successfully");
       setDetailsModalOpen(false);
       if (typeof onActionComplete === "function") {
@@ -952,11 +1052,17 @@ const PlayerCard = ({
       return selectedSlotSessions;
     }
 
-    if (Array.isArray(player?.slot?.sessions) && player?.slot?.sessions.length > 0) {
+    if (
+      Array.isArray(player?.slot?.sessions) &&
+      player?.slot?.sessions.length > 0
+    ) {
       return player.slot.sessions;
     }
 
-    if (Array.isArray(matchedSlot?.sessions) && matchedSlot.sessions.length > 0) {
+    if (
+      Array.isArray(matchedSlot?.sessions) &&
+      matchedSlot.sessions.length > 0
+    ) {
       return matchedSlot.sessions;
     }
 
@@ -1006,7 +1112,7 @@ const PlayerCard = ({
   if (mode === "select") {
     return (
       <>
-    <div className="group flex w-full flex-col items-center gap-1.5 rounded-lg border border-[var(--border-card)] bg-[var(--bg-card)] p-1.5 shadow-[var(--shadow-card)] transition hover:border-[var(--border-primary)]">
+        <div className="group flex w-full flex-col items-center gap-1.5 rounded-lg border border-[var(--border-card)] bg-[var(--bg-card)] p-1.5 shadow-[var(--shadow-card)] transition hover:border-[var(--border-primary)]">
           <div className="relative">
             {showActions && (
               <div
@@ -1092,7 +1198,6 @@ const PlayerCard = ({
           onRatePlayer={onRatePlayer}
           onGradePlayer={onGradePlayer}
           // onRemoveSession={handleRemoveFromSession}
-          
         />
       </>
     );
@@ -1104,14 +1209,34 @@ const PlayerCard = ({
     const location = player?.slot?.location || {};
     const rating = Number(player?.playersRatings?.avgRating || 0);
     const canAssignSession = !hasAssignedSession && !!playerSlotId;
+    const directSelected = player?.directSelected || false;
+    const grade = player?.directSelectedGrade || null;
 
     return (
       <>
-        <div className={`group flex w-full max-w-sm flex-col overflow-hidden rounded-xl border bg-[var(--bg-card)] shadow-md transition-all duration-300 hover:shadow-lg ${
-          isSelected
-            ? "border-emerald-500 ring-2 ring-emerald-500/25"
-            : "border-[var(--border-card)] hover:border-[var(--border-primary)]"
-        }`}>
+        <div
+          className={` relative group flex w-full max-w-sm flex-col overflow-hidden rounded-xl border bg-[var(--bg-card)] shadow-md transition-all duration-300 hover:shadow-lg ${
+            isSelected
+              ? "border-emerald-500 ring-2 ring-emerald-500/25"
+              : "border-[var(--border-card)] hover:border-[var(--border-primary)]"
+          }`}
+        >
+          {rating > 0 && (
+            <div className="absolute left-2 top-2 z-10 flex items-center gap-1 rounded-md bg-yellow-500 px-2 py-0.5 text-[10px] font-bold text-white shadow">
+              <Star className="h-3 w-3 fill-current" />
+              {rating.toFixed(1)}
+              {/* Ya agar grade dikhana ho to: A+ */}
+            </div>
+          )}
+
+           {directSelected && (
+            <div className="absolute left-2 top-2 z-10 flex items-center gap-1 rounded-md bg-yellow-500 px-2 py-0.5 text-[10px] font-bold text-white shadow">
+              <Star className="h-3 w-3 fill-current" />
+              {grade}
+              {/* Ya agar grade dikhana ho to: A+ */}
+            </div>
+          )}
+          
           <div className="flex gap-3 p-3">
             <button
               type="button"
@@ -1172,7 +1297,9 @@ const PlayerCard = ({
                           : "border-[var(--border-card)] bg-[var(--bg-main)] text-[var(--text-secondary)] hover:border-emerald-500 hover:text-emerald-500"
                       }`}
                       title={isSelected ? "Deselect player" : "Select player"}
-                      aria-label={isSelected ? "Deselect player" : "Select player"}
+                      aria-label={
+                        isSelected ? "Deselect player" : "Select player"
+                      }
                     >
                       <Check className="h-4 w-4" />
                     </button>
@@ -1229,15 +1356,14 @@ const PlayerCard = ({
                 </div>
               ) : null}
 
-              {rating > 0 && (
+              {/* {rating > 0 && (
                 <div className="mt-1 flex items-center gap-1">
                   <Star className="h-3 w-3 text-yellow-500" />
                   <span className="text-xs font-semibold text-[var(--text-primary)]">
                     Rating: {rating.toFixed(2)}
                   </span>
                 </div>
-              )}
-
+              )} */}
             </div>
           </div>
         </div>
@@ -1326,6 +1452,8 @@ const PlayerCard = ({
           onRemoveSession={handleRemoveFromSession}
           onRatePlayer={onRatePlayer}
           onGradePlayer={onGradePlayer}
+          directSelected={ directSelected}
+          grade={grade}
         />
       </>
     );
@@ -1334,7 +1462,7 @@ const PlayerCard = ({
   // Default view mode
   return (
     <>
-    <div className="group flex w-full flex-col items-center gap-1.5 rounded-lg border border-[var(--border-card)] bg-[var(--bg-card)] p-1.5 shadow-[var(--shadow-card)] transition hover:border-[var(--border-primary)]">
+      <div className="group flex w-full flex-col items-center gap-1.5 rounded-lg border border-[var(--border-card)] bg-[var(--bg-card)] p-1.5 shadow-[var(--shadow-card)] transition hover:border-[var(--border-primary)]">
         <div className="relative">
           <div
             onClick={handleViewDetails}
@@ -1382,7 +1510,9 @@ const PlayerCard = ({
           {playerName}
         </p>
         {playerBatchId && (
-          <p className="w-full truncate text-center text-[10px] leading-3 text-[var(--text-secondary)]">{playerBatchId}</p>
+          <p className="w-full truncate text-center text-[10px] leading-3 text-[var(--text-secondary)]">
+            {playerBatchId}
+          </p>
         )}
 
         {showActions && (
@@ -1412,7 +1542,6 @@ const PlayerCard = ({
         type={type}
         onRatePlayer={onRatePlayer}
         onGradePlayer={onGradePlayer}
-        
       />
     </>
   );

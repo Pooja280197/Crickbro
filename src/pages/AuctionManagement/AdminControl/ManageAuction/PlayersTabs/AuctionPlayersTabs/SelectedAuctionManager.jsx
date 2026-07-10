@@ -54,7 +54,7 @@ const SelectedAuctionManager = ({
   const [selectedIds, setSelectedIds] = useState([]);
   const [selectedAuctionIds, setSelectedAuctionIds] = useState([]);
   const [selectedCategoryId, setSelectedCategoryId] = useState([]);
-  const [itemsPerPage, setItemsPerPage] = useState(8);
+  const [itemsPerPage, setItemsPerPage] = useState(12);
   const [isItemsDropdownOpen, setIsItemsDropdownOpen] = useState(false);
   const [unassignedViewMode, setUnassignedViewMode] = useState("grid");
   const [auctionViewMode, setAuctionViewMode] = useState("grid");
@@ -795,7 +795,7 @@ const SelectedAuctionManager = ({
             </button>
             {isItemsDropdownOpen && (
               <div className="absolute right-0 top-full z-[50] mt-1 w-40 overflow-hidden rounded-lg border border-[var(--border-card)] bg-[var(--bg-card)] shadow-[var(--shadow-card)]">
-                {[8, 16, 32, 64, 96].map((num) => (
+                {[12, 24, 36, 48].map((num) => (
                   <button
                     key={num}
                     onClick={() => {

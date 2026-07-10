@@ -117,6 +117,8 @@ function PlayersAssignedToSelector({ auctionId }) {
     }
   };
 
+  
+
   return (
     <>
       {ballRatingConfig && (
@@ -242,7 +244,8 @@ function PlayersAssignedToSelector({ auctionId }) {
             <>
               <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
                 {selectorPlayers?.map((item) => (
-                  <div key={item._id}>
+                
+                  <div key={item.auctionPlayerId}>
                     <SelectorPlayerCard
                       player={item}
                       fetchSelectorPlayers={fetchSelectorPlayers}

@@ -15,7 +15,8 @@ import {
   X,
 } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
-import logo from "../assets/Images/Logo.png";
+import DarkThemeLogo from "../assets/Images/Logo.png";
+import LightThemeLogo from "../assets/crickbro-auction-logo/LightThemeLogo.png";
 import { useLoginPopup } from "../context/LoginPopupContext";
 
 const Header = ({ theme = "light", onToggleTheme }) => {
@@ -96,7 +97,7 @@ const Header = ({ theme = "light", onToggleTheme }) => {
           >
             <img
               className="h-20 w-20 object-contain drop-shadow-[0_8px_14px_rgba(16,32,51,0.1)] max-md:h-[42px] max-md:w-[42px]"
-              src={logo}
+              src={theme == "dark" ? DarkThemeLogo : LightThemeLogo}
               alt="CrickBro"
             />
             <span className="font-heading text-xl font-bold leading-none tracking-normal max-sm:hidden">

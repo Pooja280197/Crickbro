@@ -94,15 +94,15 @@ function DirectSelectModal({ selectedPlayers, selectorPlayers, onClose, auctionI
 
   const handleSave = async () => {
     try {
-      const missingGradePlayer = selectedPlayerDetails.find((player) => {
-        const playerId = player?.player?._id;
-        return !playerGrades[playerId];
-      });
+      // const missingGradePlayer = selectedPlayerDetails.find((player) => {
+      //   const playerId = player?.player?._id;
+      //   return !playerGrades[playerId];
+      // });
 
-      if (missingGradePlayer) {
-        toast.error("Please select grade for all players before saving");
-        return;
-      }
+      // if (missingGradePlayer) {
+      //   toast.error("Please select grade for all players before saving");
+      //   return;
+      // }
 
       const updates = Object.entries(playerSelections).map(([playerId, status]) => ({
         playerId,

@@ -16,6 +16,7 @@ import CreateSlot from "./CreateSlot";
 import CreateSession from "./CreateSession";
 import { toast } from "react-toastify";
 import DeleteConfirmModal from "../../../../../components/DeleteConfirmModal";
+import { useDebounce } from "../../../../../components/useDebounce";
 import {
   CalendarDays,
   ChevronDown,
@@ -37,6 +38,7 @@ const Slot = ({ auctionId }) => {
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(5);
   const [search, setSearch] = useState("");
+  const debouncedSearchQuery = useDebounce(search, 1000);
   const [deleteContext, setDeleteContext] = useState({
     type: null,
     slotId: null,
@@ -53,7 +55,7 @@ const Slot = ({ auctionId }) => {
   );
 
   const slotList = slotDetails?.data || [];
-
+  
   const [slotData, setSlotData] = useState({
     tournamentId: tournamentId,
     auctionId: auctionId || "",

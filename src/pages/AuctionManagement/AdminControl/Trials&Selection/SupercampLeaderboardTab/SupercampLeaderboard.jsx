@@ -19,6 +19,8 @@ import EnableSupercampModal from "./EnableSupercampModal";
 import DeleteConfirmModal from "../../../../../components/DeleteConfirmModal";
 import SupercampPageHeader from "../../../../../components/supercamp/SupercampPageHeader";
 
+const EMPTY_ARRAY = [];
+
 function SupercampLeaderboard({ auctionId }) {
   const dispatch = useDispatch();
   const [search, setSearch] = useState("");
@@ -44,15 +46,15 @@ function SupercampLeaderboard({ auctionId }) {
   const [assignCategoryOpen, setAssignCategoryOpen] = useState(false);
 
   const playersData = useSelector((state) => state.data?.supercampPlayers);
-  const players = playersData?.data || [];
+  const players = playersData?.data || EMPTY_ARRAY;
   const total = playersData?.total ?? 0;
   const totalPages = playersData?.pages ?? 0;
   const loading = useSelector((state) => state.loading?.supercampPlayers);
 
   const roundsData = useSelector((state) => state.data?.supercampRounds);
-  const rounds = roundsData?.data || [];
-  const slotDetail = useSelector((state) => state.data?.slotList?.data || []);
-  const [slotSessions, setSlotSessions] = useState([]);
+  const rounds = roundsData?.data || EMPTY_ARRAY;
+  const slotDetail = useSelector((state) => state.data?.slotList?.data || EMPTY_ARRAY);
+  const [slotSessions, setSlotSessions] = useState(EMPTY_ARRAY);
 
   const fetchPlayers = (p = page) => {
     dispatch(

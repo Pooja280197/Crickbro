@@ -112,7 +112,7 @@ const EditAuctionRules = ({ currentRules, auctionId }) => {
                   inputMode="numeric"
                   pattern="[0-9]*"
                   placeholder="Enter value"
-                  className="w-full bg-transparent text-sm font-medium text-[var(--text-primary)] outline-none placeholder:text-[var(--text-secondary)]"
+                  className="w-full px-2 bg-transparent text-sm font-medium text-[var(--text-primary)] outline-none placeholder:text-[var(--text-secondary)]"
                   value={form[item.key] ?? ""}
                   onChange={(e) =>
                     handleInput(item.key, e.target.value.replace(/\D/g, ""))

@@ -53,6 +53,7 @@ export default function PlayerDetailsPopup({
   isTrialType,
   onDelete,
   activeSubTab,
+  
 }) {
   if (!isOpen || !player) return null;
   if (typeof document === "undefined") return null;
@@ -218,6 +219,8 @@ export default function PlayerDetailsPopup({
   };
 
   const allRatings = getAllRatings();
+  const directSelected = player?.directSelected || false;
+  const grade = player?.directSelectedGrade || null;
 
   return createPortal(
     <div
@@ -269,9 +272,14 @@ export default function PlayerDetailsPopup({
                 <p className="truncate text-sm font-semibold text-[var(--primary)]">{playerRole}</p>
               )}
 
-              {isTrialType && (
+              {(isTrialType && !directSelected) && (
                 <div className="mt-2 inline-flex items-center gap-1 rounded-full border border-[var(--secondary)]/50 bg-[var(--secondary)] px-3 py-1 text-xs font-bold text-[#102033] shadow-[0_0_20px_rgba(255,190,0,0.28)]">
                   ⭐ {rating.toFixed(2)} Rating
+                </div>
+              )}
+              {directSelected && grade && (
+                <div className="mt-2 inline-flex items-center gap-1 rounded-full border border-[var(--secondary)]/50 bg-[var(--secondary)] px-3 py-1 text-xs font-bold text-[#102033] shadow-[0_0_20px_rgba(255,190,0,0.28)]">
+                  🏆 {grade} Grade
                 </div>
               )}
             </div>

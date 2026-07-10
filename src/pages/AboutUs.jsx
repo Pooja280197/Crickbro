@@ -24,9 +24,9 @@ import Team5 from "../assets/Members/Utkarsh Singh.jpeg";
 import Team6 from "../assets/Members/Kshitij Malviya.jpeg";
 import Team7 from "../assets/Members/Monika Nagkani.jpeg";
 import Team8 from "../assets/Members/Nirmal Kumawat.jpeg";
-import Team9 from "../assets/Members/Yogesh Salame.jpeg";
+// import Team9 from "../assets/Members/Yogesh Salame.jpeg";
 import Team10 from "../assets/Members/Ashwin.png";
-import Team11 from "../assets/Members/Khushi.jpeg";
+// import Team11 from "../assets/Members/Khushi.jpeg";
 
 const leaders = [
   {
@@ -111,9 +111,9 @@ const team = [
   { name: "Kshitij Malviya", image: Team6, profile: "Engineering Team" },
   { name: "Monika Nagkani", image: Team7, profile: "Brand Creatives" },
   { name: "Nirmal Kumawat", image: Team8, profile: "Brand Creatives" },
-  { name: "Yogesh Salame", image: Team9, profile: "Brand Creatives" },
+  // { name: "Yogesh Salame", image: Team9, profile: "Brand Creatives" },
   { name: "Ashwin", image: Team10, profile: "Brand and Media" },
-  { name: "Khushi", image: Team11, profile: "Brand and Media" },
+  // { name: "Khushi", image: Team11, profile: "Brand and Media" },
 ];
 
 const stats = [
@@ -474,7 +474,7 @@ export default function AboutUs({ theme, onToggleTheme }) {
         </section>
       </main>
 
-      <Footer />
+      <Footer theme={theme} />
     </div>
   );
 }

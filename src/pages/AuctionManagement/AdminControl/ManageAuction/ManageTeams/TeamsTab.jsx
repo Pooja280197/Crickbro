@@ -43,6 +43,8 @@ const outlineButtonClass =
 const iconTileClass =
   "flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-[var(--border-primary)] bg-[var(--accent-light)] text-[var(--primary)]";
 
+  const EMPTY_ARRAY=[];
+  const EMPTY_OBJECT={};
 const TeamsTab = ({ auctionId }) => {
   const dispatch = useDispatch();
   const tournamentId = useSelector((state) => state.tournamentId);
@@ -66,15 +68,15 @@ const TeamsTab = ({ auctionId }) => {
   );
 
   const tournamentTeamData = useSelector(
-    (state) => state.data?.allAuctionTeams || {},
+    (state) => state.data?.allAuctionTeams || EMPTY_OBJECT,
   );
 
   const auctionTeamData = useSelector(
-    (state) => state.data?.auctionTeams?.data || {},
+    (state) => state.data?.auctionTeams?.data || EMPTY_OBJECT,
   );
 
-  const tournamentTeam = tournamentTeamData || [];
-  const auctionTeam = auctionTeamData?.data || [];
+  const tournamentTeam = tournamentTeamData || EMPTY_ARRAY;
+  const auctionTeam = auctionTeamData?.data || EMPTY_ARRAY;
   const totalAuctionPages = auctionTeamData?.pages || 1;
   const totalAuctionTeams = auctionTeamData?.total || 0;
 

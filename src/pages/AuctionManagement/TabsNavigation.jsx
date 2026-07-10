@@ -232,7 +232,7 @@ const tabStructure = [
       { key: "manageTeams", label: "Manage Teams", icon: UsersRound },
       { key: "players", label: "Manage Players", icon: Users },
       { key: "overlayLinks", label: "Live Links", icon: Link2 },
-      { key: "biddingPanel", label: "Auction Room", icon: Gavel },
+      { key: "biddingPanel", label: "Admin Panel", icon: Gavel },
       { key: "createPosters", label: "Create Posters", icon: Link2Icon },
     ],
   },
@@ -707,7 +707,7 @@ const AuctionDetails = ({ theme, onToggleTheme }) => {
             </div>
           </div>
         </main>
-        <Footer />
+        <Footer theme={theme}/>
       </>
     );
   }

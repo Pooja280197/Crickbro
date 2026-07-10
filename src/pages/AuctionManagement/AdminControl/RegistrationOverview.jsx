@@ -826,7 +826,7 @@ const RegistrationOverview = ({ auctionId: auctionIdProp }) => {
                       Role
                     </p>
                     <p className="mt-1 text-sm font-semibold text-[var(--text-primary)]">
-                      {selectedRegistration?.player?.playerRole || "-"}
+                      {!isTeamMode && selectedRegistration?.player?.playerRole || "-"}
                     </p>
                   </div>
                 </div>

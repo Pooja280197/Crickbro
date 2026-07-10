@@ -1130,7 +1130,7 @@ const Enquiries = ({ theme, onToggleTheme }) => {
           </>
         )}
       </main>
-      <Footer />
+      <Footer theme={theme} />
     </div>
   );
 };

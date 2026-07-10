@@ -6,10 +6,11 @@ import {
   FaLinkedinIn,
   FaYoutube,
 } from "react-icons/fa";
-import logo from "../assets/Images/Logo.png";
+import DarkThemeLogo from "../assets/Images/Logo.png";
+import LightThemeLogo from "../assets/crickbro-auction-logo/LightThemeLogo.png";
 import { contactEmail } from "../config/env";
 
-const Footer = ({ isDarkTheme = false }) => {
+const Footer = ({ theme ,isDarkTheme = false }) => {
   const currentYear = new Date().getFullYear();
 
   const footerLinks = {
@@ -63,11 +64,11 @@ const Footer = ({ isDarkTheme = false }) => {
           {/* ================= BRAND ================= */}
           <div className="col-span-2 w-full md:col-span-1 md:min-w-[260px]">
             <div className="mb-4 flex items-center gap-3">
-              <div className={`flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-xl border ${isDarkTheme ? "border-gray-700 bg-gray-800" : "border-[var(--border-card)] bg-[var(--bg-card)]"} md:h-24 md:w-24`}>
+              <div className={`flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-xl border border-[var(--border-card)]  md:h-24 md:w-24`}>
                 <img
                   loading="lazy"
                   decoding="async"
-                  src={logo}
+                  src={theme == "dark" ? DarkThemeLogo : LightThemeLogo}
                   alt="CrickBro Logo"
                   className="h-12 w-12 object-contain md:h-24 md:w-24"
                 />

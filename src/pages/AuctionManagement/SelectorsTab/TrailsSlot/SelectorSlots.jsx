@@ -21,6 +21,7 @@ const outlineButtonClass =
 const iconTileClass =
   "flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-[var(--border-primary)] bg-[var(--accent-light)] text-[var(--primary)]";
 
+ const EMPTY_ARRAY = []; 
 const SelectorSlots = ({ auctionId }) => {
   const dispatch = useDispatch();
   const [selectedSlot, setSelectedSlot] = useState(null);
@@ -30,7 +31,7 @@ const SelectorSlots = ({ auctionId }) => {
   const [page, setPage] = useState(1);
   const pageSize = 12;
 
-  const slotsData = useSelector((state) => state.data?.mySlots?.data || []);
+  const slotsData = useSelector((state) => state.data?.mySlots?.data || EMPTY_ARRAY);
   const normalizedSearch = search.trim().toLowerCase();
 
   const uniqueSlotTypes = [

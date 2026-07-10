@@ -776,7 +776,7 @@ const HotAuctions = ({ theme, onToggleTheme }) => {
         </div>
       </section>
       {!isHome && <ChatBot />}
-      {!isHome && <Footer />}
+      {!isHome && <Footer theme={theme} />}
     </>
   );
 };

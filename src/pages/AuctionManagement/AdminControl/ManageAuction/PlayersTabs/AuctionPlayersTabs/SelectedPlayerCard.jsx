@@ -46,6 +46,8 @@ export default function PlayerCard({
   onSelect,
   onDelete,
   onViewDetails,
+  isTrialType
+
 }) {
   const [imageError, setImageError] = useState(false);
   const playerName = player?.player?.name || "Unknown";
@@ -57,6 +59,7 @@ export default function PlayerCard({
       player?.playerRole ||
       player?.playersRatings?.playerType,
   );
+ 
 
   return (
     <div
@@ -89,6 +92,24 @@ export default function PlayerCard({
           {selected ? <Check className="h-3.5 w-3.5" /> : null}
         </button>
       )}
+
+      {/* {selectable && (
+        <button
+          type="button"
+          onClick={(event) => {
+            event.stopPropagation();
+            onSelect?.();
+          }}
+          className={`absolute right-2 top-2 z-20 !flex !h-6 !max-h-6 !min-h-0 !w-6 !min-w-0 !max-w-6 aspect-square shrink-0 items-center justify-center rounded-md border !p-0 text-[10px] leading-none shadow-sm transition ${
+            selected
+              ? "border-[var(--secondary)] bg-[var(--secondary)] text-[#102033]"
+              : "border-[var(--border-card)] bg-[var(--bg-main)] text-[var(--text-secondary)] hover:border-[var(--border-primary)] hover:text-[var(--primary)]"
+          }`}
+        
+        >
+          
+        </button>
+      )} */}
 
       {showDelete && (
         <button
@@ -161,6 +182,16 @@ export default function PlayerCard({
           </button>
         </div>
       )}
+       {isTrialType &&
+          (player?.directSelected ? (
+            <span className="absolute top-2 left-2 bg-[#ffb800] px-2 py-1 rounded text-[#1a1a1a] font-semibold text-[9px] shadow-sm">
+              {player?.directSelectedGrade || "N/A"}
+            </span>
+          ) : (
+            <span className="absolute top-1 left-1 bg-[#0066ff]/90 px-1.5 py-0.5 rounded text-[#00d4ff] font-semibold text-[9px] shadow-sm">
+              {Number(player?.playersRatings?.avgRating || 0).toFixed(2)}
+            </span>
+          ))}
     </div>
   );
 }

@@ -338,7 +338,7 @@ const TeamDetails = ({ auctionId, playerId }) => {
             Ready for Live Bidding?
           </h2>
           <p className="mt-3 text-sm leading-6 text-[var(--text-secondary)]">
-            Join the auction room to bid in real time, track your purse, and use RTM cards when required.
+            Join the admin panel to bid in real time, track your purse, and use RTM cards when required.
           </p>
           <button
             onClick={handleLiveBiddingClick}
